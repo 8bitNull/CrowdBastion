@@ -1,4 +1,6 @@
 """User workflow regression tests; all system effects are confined to a temporary tree."""
+import fnmatch
+import glob
 import os
 from pathlib import Path
 import re
@@ -123,7 +125,43 @@ journalctl() { record journalctl "$@"; }
         self.run_shell('configure_log_acquis')
         docs = list(yaml.safe_load_all((self.config/'acquis.d/web-sites.yaml').read_text()))
         filenames = [f for doc in docs for f in doc.get('filenames', [])]
-        self.assertFalse(any(f.endswith('/access.log') or f.endswith('/error.log') for f in filenames))
+        self.assertEqual(len(filenames), len(set(filenames)))
+        for filename in filenames:
+            if not glob.has_magic(filename):
+                self.assertFalse(any(
+                    other != filename and fnmatch.fnmatchcase(filename, other)
+                    for other in filenames
+                ), filename)
+
+    def test_1panel_http_logs_are_acquired_once_without_stream_or_php_logs(self):
+        # Reproduce the host paths supplied in the user's acquisition failure.
+        http_logs = [
+            'opt/1panel/apps/openresty/openresty/log/access.log',
+            'opt/1panel/apps/openresty/openresty/log/error.log',
+            'opt/1panel/www/sites/shop.example.com/log/access.log',
+            'opt/1panel/www/sites/shop.example.com/log/error.log',
+            'opt/1panel/www/sites/second.example.com/log/access.log',
+            'opt/1panel/www/sites/second.example.com/log/error.log',
+        ]
+        other_logs = [
+            'opt/1panel/apps/openresty/openresty/log/stream-access.log',
+            'opt/1panel/runtime/php/php84/log/fpm.error.log',
+        ]
+        for name in http_logs + other_logs:
+            path = self.base / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        p = self.run_shell('configure_log_acquis')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        docs = list(yaml.safe_load_all((self.config/'acquis.d/web-sites.yaml').read_text()))
+        acquired = [
+            (path, doc['labels']['type'])
+            for doc in docs for pattern in doc.get('filenames', [])
+            for path in glob.glob(pattern)
+        ]
+        self.assertCountEqual(acquired, [
+            (str(self.base/name), 'nginx') for name in http_logs
+        ])
 
     def test_baseline_keeps_custom_scenarios(self):
         scenario = self.config/'scenarios/custom.yaml'

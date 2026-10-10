@@ -83,13 +83,21 @@ Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://do
 
 | 环境 | 常见日志路径 |
 | --- | --- |
-| 1Panel OpenResty | `/opt/1panel/apps/openresty/openresty/logs/*.log`、`/opt/1panel/apps/openresty/openresty/data/sites/*/log/*.log` |
+| 1Panel OpenResty | `/opt/1panel/apps/openresty/openresty/log/{access,error}.log`、`/opt/1panel/www/sites/*/log/{access,error}.log`；兼容旧版 `logs/` 和 `data/sites/` 布局 |
 | 科技lion LDNMP | `/home/web/log/nginx/*.log`、`/home/web/log/nginx/*/*.log` |
 | 宿主机 Nginx | `/var/log/nginx/*.log` |
 | NPM | `/home/docker/npm/data/logs/*.log`、`/opt/npm/data/logs/*.log`、`/opt/nginx-proxy-manager/data/logs/*.log`、`/data/logs/*.log`、`/var/log/nginx-proxy-manager/*.log` |
 | SSH 认证 | `/var/log/auth.log`、`/var/log/secure` |
 
-Nginx、NPM、系统日志分别使用 `nginx`、`nginx-proxy-manager`、`syslog` 标签。采集不重复列出已被通配符覆盖的 `access.log`/`error.log`。实际日志位置、格式、自定义挂载目录和仅使用 journald 的系统需要按部署调整。用 `cscli metrics` 核查采集和解析；存在配置文件不等于实际采集成功。
+Nginx、NPM、系统日志分别使用 `nginx`、`nginx-proxy-manager`、`syslog` 标签。表中的 `{access,error}` 表示两个独立文件，生成的 YAML 不使用花括号展开。1Panel 只采集上述 HTTP access/error 日志，避免把 TCP/UDP 的 `stream-access.log` 或 PHP 日志交给 HTTP 解析器。采集不重复列出已被通配符覆盖的文件。实际日志位置、格式、自定义挂载目录和仅使用 journald 的系统需要按部署调整。用 `cscli metrics` 核查采集和解析；存在配置文件不等于实际采集成功。
+
+### 解析成功率为 0% 的排查
+
+先查看 `sudo cscli metrics` 的 Acquisition Metrics。如果没有 Web 文件来源，在确认网站产生新访问日志后，核对实际文件路径与采集配置；1Panel 的 `log/` 与 `logs/`、`www/sites/` 与 `data/sites/` 是不同目录。更新仓库本身不会修改服务器上已有的采集 YAML，需备份并调整配置，执行 `sudo crowdsec -t`，校验成功后重启 CrowdSec，再访问网站观察读取和解析计数。
+
+若只有 SSH journal 来源，且 `syslog-logs` 成功、`sshd-logs` 全部未解析，说明外层日志格式已识别，内部消息没有匹配已加载的 SSH 事件解析器。`Accepted password` 属于成功登录，不能用失败登录解析器是否匹配来判断 SSH 防护是否失效。核查时官方 `sshd-logs` 已支持 `sshd-session`，但 `sshd-success-logs` 的过滤器仍仅匹配 `sshd`；因此新版 OpenSSH 的成功登录和普通会话消息可能显示为未解析。应结合日志样本与 `cscli explain --file /path/to/sample.log --type syslog` 判断，不应把所有会话消息强行转换成失败登录事件。
+
+防火墙执行 CAPI 社区名单、日志检测产生本机决策、AppSec 检查在线请求分别有独立指标；社区名单有阻断并不能证明本机 Web 日志已接入，日志解析率也不能单独证明 AppSec 是否生效。
 
 管理员 IP 从 `SSH_CLIENT` 或 `SSH_CONNECTION` 提取，无法识别时手工输入；白名单包含回环和常见内网网段。手动封禁接受 IPv4/IPv6，会规范化地址并拒绝封禁当前 SSH IP。时长使用 Go duration，如 `4h`、`24h`、`168h`；7 天应填写 `168h`。
 

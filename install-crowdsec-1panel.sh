@@ -215,8 +215,16 @@ configure_log_acquis() {
     mkdir -p "$(dirname "$target")" || return 1
     cat > "$target" <<'EOF'
 filenames:
-  - /opt/1panel/apps/openresty/openresty/logs/*.log
-  - /opt/1panel/apps/openresty/openresty/data/sites/*/log/*.log
+  # HTTP 日志；stream-access.log 使用不同格式，不能标记为 nginx HTTP。
+  - /opt/1panel/apps/openresty/openresty/log/access.log
+  - /opt/1panel/apps/openresty/openresty/log/error.log
+  - /opt/1panel/www/sites/*/log/access.log
+  - /opt/1panel/www/sites/*/log/error.log
+  # 兼容旧版或其他部署布局。
+  - /opt/1panel/apps/openresty/openresty/logs/access.log
+  - /opt/1panel/apps/openresty/openresty/logs/error.log
+  - /opt/1panel/apps/openresty/openresty/data/sites/*/log/access.log
+  - /opt/1panel/apps/openresty/openresty/data/sites/*/log/error.log
   - /home/web/log/nginx/*.log
   - /home/web/log/nginx/*/*.log
   - /var/log/nginx/*.log
