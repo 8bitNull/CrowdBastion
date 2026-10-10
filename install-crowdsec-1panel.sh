@@ -243,11 +243,38 @@ labels:
   type: nginx
 ---
 filenames:
-  - /home/docker/npm/data/logs/*.log
-  - /opt/npm/data/logs/*.log
-  - /opt/nginx-proxy-manager/data/logs/*.log
-  - /data/logs/*.log
-  - /var/log/nginx-proxy-manager/*.log
+  # 科技lion NPM 的默认挂载目录已确认；其他目录仅为候选。
+  # 只采集官方 HTTP 日志，排除 stream-* 与 fallback_stream_*。
+  - /home/docker/npm/data/logs/*host*_access.log
+  - /home/docker/npm/data/logs/*host*_error.log
+  - /home/docker/npm/data/logs/fallback_http_access.log
+  - /home/docker/npm/data/logs/fallback_http_error.log
+  - /home/docker/npm/data/logs/letsencrypt-requests_access.log
+  - /home/docker/npm/data/logs/letsencrypt-requests_error.log
+  - /opt/npm/data/logs/*host*_access.log
+  - /opt/npm/data/logs/*host*_error.log
+  - /opt/npm/data/logs/fallback_http_access.log
+  - /opt/npm/data/logs/fallback_http_error.log
+  - /opt/npm/data/logs/letsencrypt-requests_access.log
+  - /opt/npm/data/logs/letsencrypt-requests_error.log
+  - /opt/nginx-proxy-manager/data/logs/*host*_access.log
+  - /opt/nginx-proxy-manager/data/logs/*host*_error.log
+  - /opt/nginx-proxy-manager/data/logs/fallback_http_access.log
+  - /opt/nginx-proxy-manager/data/logs/fallback_http_error.log
+  - /opt/nginx-proxy-manager/data/logs/letsencrypt-requests_access.log
+  - /opt/nginx-proxy-manager/data/logs/letsencrypt-requests_error.log
+  - /data/logs/*host*_access.log
+  - /data/logs/*host*_error.log
+  - /data/logs/fallback_http_access.log
+  - /data/logs/fallback_http_error.log
+  - /data/logs/letsencrypt-requests_access.log
+  - /data/logs/letsencrypt-requests_error.log
+  - /var/log/nginx-proxy-manager/*host*_access.log
+  - /var/log/nginx-proxy-manager/*host*_error.log
+  - /var/log/nginx-proxy-manager/fallback_http_access.log
+  - /var/log/nginx-proxy-manager/fallback_http_error.log
+  - /var/log/nginx-proxy-manager/letsencrypt-requests_access.log
+  - /var/log/nginx-proxy-manager/letsencrypt-requests_error.log
 labels:
   type: nginx-proxy-manager
 ---

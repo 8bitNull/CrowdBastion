@@ -22,8 +22,9 @@ class Workflows(unittest.TestCase):
         self.base = Path(self.tmp.name)
         source = SCRIPT.read_text()
         source = re.sub(r'^main "\$@"\s*$', '', source, flags=re.M)
-        for prefix in ['/etc/', '/var/', '/opt/', '/run/', '/home/', '/data/logs']:
-            source = source.replace(prefix, str(self.base) + prefix)
+        # Rewrite absolute paths once; /data/logs inside an NPM mount is a suffix.
+        source = re.sub(r'(?<![\w./-])(?:/(?:etc|var|opt|run|home)/|/data/logs)',
+                        lambda match: str(self.base) + match.group(0), source)
         self.source = self.base / "manager.sh"
         self.source.write_text(source)
         (self.base / "lib").mkdir()
@@ -170,6 +171,44 @@ journalctl() { record journalctl "$@"; }
         self.run_shell('reset_waf_to_core_baseline true', '\n')
         self.assertTrue(scenario.exists())
         self.assertNotIn('collections remove', self.commands())
+
+    def test_ldnmp_default_http_logs_are_acquired_with_nginx_label(self):
+        paths = ['home/web/log/nginx/access.log', 'home/web/log/nginx/error.log']
+        for name in paths:
+            path = self.base/name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch()
+        self.assertEqual(self.run_shell('configure_log_acquis').returncode, 0)
+        docs = list(yaml.safe_load_all((self.config/'acquis.d/web-sites.yaml').read_text()))
+        acquired = [(path, doc['labels']['type'])
+                    for doc in docs for pattern in doc.get('filenames', [])
+                    for path in glob.glob(pattern)]
+        self.assertCountEqual(acquired, [(str(self.base/name), 'nginx') for name in paths])
+
+    def test_npm_presets_acquire_http_logs_without_stream_or_global_logs(self):
+        roots = ['home/docker/npm/data/logs', 'opt/npm/data/logs',
+                 'opt/nginx-proxy-manager/data/logs', 'data/logs',
+                 'var/log/nginx-proxy-manager']
+        http_names = ['proxy-host-1_access.log', 'proxy-host-1_error.log',
+                      'redirection-host-2_access.log', 'redirection-host-2_error.log',
+                      'dead-host-3_access.log', 'dead-host-3_error.log',
+                      'default-host_access.log', 'default-host_error.log',
+                      'fallback_http_access.log', 'fallback_http_error.log',
+                      'letsencrypt-requests_access.log', 'letsencrypt-requests_error.log']
+        excluded_names = ['stream-4_access.log', 'stream-4_error.log',
+                          'fallback_stream_access.log', 'fallback_error.log']
+        for root in roots:
+            directory = self.base/root
+            directory.mkdir(parents=True)
+            for name in http_names + excluded_names:
+                (directory/name).touch()
+        self.assertEqual(self.run_shell('configure_log_acquis').returncode, 0)
+        docs = list(yaml.safe_load_all((self.config/'acquis.d/web-sites.yaml').read_text()))
+        acquired = [(path, doc['labels']['type'])
+                    for doc in docs for pattern in doc.get('filenames', [])
+                    for path in glob.glob(pattern)]
+        self.assertCountEqual(acquired, [(str(self.base/root/name), 'nginx-proxy-manager')
+                                       for root in roots for name in http_names])
 
     def test_metrics_bind_to_loopback_and_preserve_other_settings(self):
         self.run_shell('enable_prometheus_metrics')
