@@ -57,7 +57,7 @@ def merged_config(path):
     return data
 
 
-def acquisition_locations(root):
+def acquisition_locations(root, filename='crowdsec-1key-log-repair.yaml'):
     service = merged_config(str(Path(root)/'config.yaml')).get('crowdsec_service', {})
     if not isinstance(service, dict) or service.get('enable') is False:
         raise ValueError('未启用日志处理服务 crowdsec_service')
@@ -67,10 +67,40 @@ def acquisition_locations(root):
         raise ValueError('请先在 crowdsec_service.acquisition_dir 设置有效的绝对目录')
     if single and not Path(single).is_absolute():
         raise ValueError('acquisition_path 必须为绝对路径')
-    repair = Path(directory)/'crowdsec-1key-log-repair.yaml'
+    repair = Path(directory)/filename
     if repair.is_symlink():
         raise ValueError('修复采集文件是符号链接，请先确认并改为普通文件：'+str(repair))
     return directory, single, repair
+
+
+def appsec_sources(root):
+    directory, single, _ = acquisition_locations(root, 'crowdsec-1key-appsec.yaml')
+    paths = ([single] if single else []) + [*glob.glob(glob.escape(directory)+'/*.yaml'),
+                                          *glob.glob(glob.escape(directory)+'/*.yml')]
+    return [(path, doc) for path in dict.fromkeys(paths) if Path(path).exists()
+            for doc in read(path, True) if isinstance(doc, dict) and doc.get('source') == 'appsec']
+
+
+def docker_bouncer_path(target):
+    records = json.load(sys.stdin)
+    if not isinstance(records, list):
+        raise ValueError('Docker 挂载数据不是列表')
+    matches = [record for record in records
+               if target == record['Destination'].rstrip('/')
+               or target.startswith(record['Destination'].rstrip('/')+'/')]
+    if not matches:
+        raise ValueError('Web Bouncer 配置没有持久化挂载，请先按官方文档持久化安装')
+    record = max(matches, key=lambda r: len(r['Destination'].rstrip('/')))
+    if record.get('Type') not in ['bind', 'volume']:
+        raise ValueError('Web Bouncer 配置被非持久化挂载遮住，请先配置 bind 或 volume 挂载')
+    source = Path(record['Source'])
+    if not source.is_absolute():
+        raise ValueError('Docker 挂载 Source 必须为绝对路径')
+    suffix = target[len(record['Destination'].rstrip('/')):].lstrip('/')
+    result = source/suffix if suffix else source
+    if any(char in str(result) for char in '\t\r\n') or result.is_symlink() or not result.is_file():
+        raise ValueError('Web Bouncer 挂载配置必须是可读取的普通文件，且路径不能含制表符或换行')
+    print(result)
 
 
 def go_glob(pattern):
@@ -315,12 +345,25 @@ def main(args):
         write(path, {'name': 'custom/admin-whitelist', 'description': 'Admin and internal networks', 'whitelist': {'reason': 'Administrator protection', 'ip': ips, 'cidr': ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '100.64.0.0/10']}})
     elif action == 'appsec-existing':
         root, own = args
-        paths = [str(Path(root)/'acquis.yaml'), *glob.glob(str(Path(root)/'acquis.d/*.yaml')), *glob.glob(str(Path(root)/'acquis.d/*.yml'))]
-        for path in paths:
-            if path == own or not Path(path).exists():
-                continue
-            if any(isinstance(d, dict) and d.get('source') == 'appsec' for d in read(path, True)):
+        for path, _ in appsec_sources(root):
+            if path != own:
                 print(path)
+    elif action == 'appsec-file':
+        print(acquisition_locations(args[0], 'crowdsec-1key-appsec.yaml')[2])
+    elif action == 'appsec-listeners':
+        for path, doc in appsec_sources(args[0]):
+            address = doc.get('listen_addr')
+            if not address or not isinstance(address, str) or any(c in address for c in '\r\n\t'):
+                raise ValueError('AppSec listen_addr 无效：'+path)
+            print(address)
+    elif action == 'docker-bouncer-path':
+        docker_bouncer_path(args[0])
+    elif action == 'appsec-web-hooks':
+        text = sys.stdin.read()
+        if re.search(r'\b(?:cs|crowdsec)\.Allow\s*\(', text):
+            print('crowdsec')
+        if re.search(r'access_by_lua_file\s+[^;]*1pwaf/', text):
+            print('1pwaf')
     elif action == 'appsec':
         write(args[0], {'source': 'appsec', 'listen_addr': '127.0.0.1:7422', 'appsec_configs': ['crowdsecurity/appsec-default'], 'labels': {'type': 'appsec'}})
     elif action == 'bouncer':
@@ -370,15 +413,46 @@ def main(args):
             else:
                 doc.pop('notifications', None)
         write(path, docs, True)
-    elif action == 'web-bouncer':
-        path, url = args
+    elif action in ['web-bouncer', 'stage-web-bouncer']:
+        path, url, *destination = args
         text = Path(path).read_text()
         line = 'APPSEC_URL='+url
         text = re.sub(r'^APPSEC_URL=.*$', line, text, flags=re.M) if re.search(r'^APPSEC_URL=', text, re.M) else text.rstrip()+'\n'+line+'\n'
-        fd, tmp = tempfile.mkstemp(dir=Path(path).parent)
+        target = Path(destination[0]) if destination else Path(path)
+        fd, tmp = tempfile.mkstemp(dir=target.parent)
         with os.fdopen(fd, 'w') as f:
             f.write(text)
-        os.replace(tmp, path)
+        os.replace(tmp, target)
+    elif action == 'link-docker-bouncer':
+        path, state, container, target, name = args
+        links = read(state) if Path(state).exists() else {}
+        if path in links:
+            if links[path].get('name', links[path]['container']) != name:
+                raise ValueError('该配置已有其他容器的接入记录，请先停用原接入')
+            main(['docker-link-current', path])
+        match = re.search(r'^APPSEC_URL=(.*)$', Path(path).read_text(), re.M)
+        links.setdefault(path, {'container': container, 'target': target, 'name': name,
+                                'previous_url': match.group(1) if match else ''})
+        links[path].update(container=container, name=name, target=target)
+        write(state, links)
+    elif action == 'docker-link-current':
+        if re.findall(r'^APPSEC_URL=(.*)$', Path(args[0]).read_text(), re.M) != ['http://127.0.0.1:7422']:
+            raise ValueError('Web Bouncer 的 APPSEC_URL 已被手工修改，请先核对接入；未覆盖配置')
+    elif action == 'docker-link-owned':
+        if args[0] not in read(args[1]):
+            raise ValueError('该容器接入不由本工具管理')
+    elif action == 'docker-appsec-links':
+        for path, link in read(args[0]).items():
+            if any(c in path+link['container']+link['target'] for c in '\t\r\n'):
+                raise ValueError('容器接入记录无效')
+            name = link.get('name', link['container'])
+            if not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_.-]*', name):
+                raise ValueError('容器接入记录中的名称无效')
+            print(name+'\t'+path+'\t'+link['target'])
+    elif action == 'restore-docker-bouncer':
+        path, state, destination = args
+        link = read(state)[path]
+        main(['stage-web-bouncer', path, link['previous_url'], destination])
     elif action == 'link-web-bouncer':
         path, state = args
         links = read(state) if Path(state).exists() else {}

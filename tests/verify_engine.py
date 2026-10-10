@@ -87,6 +87,8 @@ def verify(release):
         data = helper.read(appsec)
         data['listen_addr'] = f'127.0.0.1:{appsec_port}'
         helper.write(appsec, data)
+        assert str(appsec) == str(helper.acquisition_locations(cfg, 'crowdsec-1key-appsec.yaml')[2])
+        assert [(path, doc['listen_addr']) for path, doc in helper.appsec_sources(cfg)] == [(str(appsec), f'127.0.0.1:{appsec_port}')]
         helper.main(['whitelist', str(cfg/'parsers/s02-enrich/99-admin-whitelist.yaml'), '203.0.113.9'])
         received = []
 

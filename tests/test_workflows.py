@@ -73,7 +73,7 @@ pkill() { record pkill "$@"; return 0; }
 pgrep() { return 1; }
 dpkg-query() { return 1; }
 rpm() { return 1; }
-ss() { return 0; }
+ss() { if [[ "$*" == '-H -lnt' ]]; then echo 'LISTEN 0 128 127.0.0.1:7422 0.0.0.0:*'; fi; }
 sleep() { :; }
 clear() { :; }
 journalctl() { record journalctl "$@"; }
@@ -282,6 +282,209 @@ journalctl() { record journalctl "$@"; }
         self.run_shell('setup_appsec', '0\n')
         self.assertFalse((d/'crowdsec-1key-appsec.yaml').exists())
         self.assertNotIn('collections install', self.commands())
+
+    def appsec_docker_stub(self, mounted=False, network='host', hook=True, waf=True):
+        config = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
+        if mounted:
+            config.parent.mkdir(exist_ok=True)
+            config.write_text('API_KEY=keep-secret\nAPPSEC_URL=http://old.example:7422\n')
+        mounts = json.dumps([{'Type': 'bind', 'Source': str(config), 'Destination': str(config)}] if mounted else [])
+        effective = ('init_by_lua_block { require "crowdsec" }\naccess_by_lua_block { cs.Allow(ngx.var.remote_addr) }\n' if hook else '')
+        if waf:
+            effective += 'access_by_lua_file /usr/local/openresty/1pwaf/waf.lua;\n'
+        return '''docker() {
+ record docker "$@"
+ case "$1" in
+ ps) echo 'web123 1panel/openresty:test openresty';;
+ inspect) case "$3" in
+ *NetworkMode*) echo '''+shlex.quote(network)+''';;
+ *Mounts*) printf '%s\\n' '''+shlex.quote(mounts)+''';;
+ *Running*) echo true;; esac;;
+ exec) case "$4" in
+ -T) printf '%s\\n' '''+shlex.quote(effective)+''';;
+ -t) return 0;;
+ -s) return 0;; esac;;
+ esac
+}'''
+
+    def test_appsec_container_missing_bouncer_has_guidance_not_host_options(self):
+        p = self.run_shell('setup_appsec', '0\n', self.appsec_docker_stub(hook=False))
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertNotIn('2. 接入宿主机 OpenResty Bouncer', p.stdout)
+        self.assertIn('1Panel WAF', p.stdout+p.stderr)
+        self.assertIn('host 网络', p.stdout+p.stderr)
+        self.assertIn('缺少 CrowdSec Web Bouncer', p.stdout+p.stderr)
+        self.assertNotIn('数据源已加载，监听', p.stdout)
+        self.assertNotIn('docker cp', self.commands())
+
+    def test_appsec_setup_without_listener_does_not_claim_engine_ready(self):
+        p = self.run_shell('setup_appsec', '0\n', 'ss() { return 0; }')
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertNotIn('[SUCCESS]', p.stdout)
+        self.assertIn('未监听', p.stdout+p.stderr)
+
+    def test_appsec_uses_active_custom_acquisition_directory(self):
+        active = self.base/'custom-acquis'
+        (self.config/'config.yaml.local').write_text(yaml.safe_dump({'crowdsec_service': {'acquisition_dir': str(active)}}))
+        p = self.run_shell('setup_appsec', '0\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertTrue((active/'crowdsec-1key-appsec.yaml').exists())
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-appsec.yaml').exists())
+
+    def test_appsec_existing_container_bouncer_is_linked_and_secret_preserved(self):
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', self.appsec_docker_stub(mounted=True))
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        content = (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text()
+        self.assertIn('APPSEC_URL=http://127.0.0.1:7422', content)
+        self.assertIn('API_KEY=keep-secret', content)
+        self.assertNotIn('keep-secret', p.stdout+p.stderr)
+        self.assertIn('docker exec web123 nginx -t', self.commands())
+        self.assertIn('docker exec web123 nginx -s reload', self.commands())
+
+    def test_appsec_container_bridge_is_not_given_loopback_url(self):
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', self.appsec_docker_stub(mounted=True, network='bridge'))
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertNotIn('nginx -s reload', self.commands())
+        self.assertIn('仅支持 host 网络', p.stdout+p.stderr)
+
+    def test_appsec_container_bouncer_without_hook_is_not_modified(self):
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', self.appsec_docker_stub(mounted=True, hook=False))
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertNotIn('nginx -s reload', self.commands())
+        self.assertIn('缺少 CrowdSec Web Bouncer 请求处理调用', p.stdout+p.stderr)
+
+    def test_appsec_container_reload_failure_restores_config(self):
+        stub = self.appsec_docker_stub(mounted=True).replace('-s) return 0', '-s) return 1')
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertFalse((self.config/'crowdsec-1key-appsec-docker-links.yaml').exists())
+
+    def test_appsec_container_disable_restores_previous_url_and_reloads(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        p = self.run_shell('disable_appsec', 'y\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-appsec.yaml').exists())
+        self.assertFalse((self.config/'crowdsec-1key-appsec-docker-links.yaml').exists())
+
+    def test_appsec_container_disable_core_failure_restores_runtime_url(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        p = self.run_shell('disable_appsec', 'y\n', stub+'\ncrowdsec() { record crowdsec "$@"; return 1; }')
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://127.0.0.1:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertTrue((self.config/'crowdsec-1key-appsec-docker-links.yaml').exists())
+
+    def test_appsec_container_disable_preserves_manual_url_change(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        file = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
+        file.write_text(file.read_text().replace('http://127.0.0.1:7422', 'http://user.example:7422'))
+        p = self.run_shell('disable_appsec', 'y\n', stub)
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('http://user.example:7422', file.read_text())
+        self.assertTrue((self.config/'acquis.d/crowdsec-1key-appsec.yaml').exists())
+
+    def test_appsec_container_link_cancel_does_not_change_bouncer(self):
+        p = self.run_shell('setup_appsec', '3\nweb123\nn\n', self.appsec_docker_stub(mounted=True))
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_appsec_recreated_container_can_restore_same_persistent_config(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        recreated = stub.replace("web123 1panel", "web456 1panel").replace('inspect) case', 'inspect) [[ "$4" == web123 ]] && return 1; case')
+        p = self.run_shell('disable_appsec', 'y\n', recreated)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertIn('docker exec openresty nginx -s reload', self.commands())
+
+    def test_appsec_disable_staging_failure_reloads_restored_host_config(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        host = self.config/'bouncers/crowdsec-nginx-bouncer.conf'
+        host.write_text('APPSEC_URL=http://127.0.0.1:7422\n')
+        (self.config/'crowdsec-1key-appsec-links.yaml').write_text(yaml.safe_dump({str(host): 'http://host-old.example:7422'}))
+        overrides = stub+'\nnginx() { record nginx "$@"; return 0; }\nmktemp() { if [[ "$1" == -d ]]; then command mktemp "$@"; else return 1; fi; }'
+        p = self.run_shell('disable_appsec', 'y\n', overrides)
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://127.0.0.1:7422', host.read_text())
+        self.assertGreaterEqual(self.commands().count('systemctl reload nginx'), 2)
+
+    def test_appsec_disable_source_removal_failure_restores_and_reloads_container(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        overrides = stub+'\nrm() { if [[ "$*" == *crowdsec-1key-appsec.yaml ]]; then return 1; else command rm "$@"; fi; }'
+        p = self.run_shell('disable_appsec', 'y\n', overrides)
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://127.0.0.1:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertTrue((self.config/'crowdsec-1key-appsec-docker-links.yaml').exists())
+        self.assertGreaterEqual(self.commands().count('docker exec openresty nginx -s reload'), 2)
+
+    def test_appsec_repeated_container_link_preserves_original_url(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        for _ in range(2):
+            p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+            self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        p = self.run_shell('disable_appsec', 'y\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+
+    def test_appsec_relink_updates_changed_container_config_destination(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        config = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
+        old_mounts = json.dumps([{'Type': 'bind', 'Source': str(config), 'Destination': str(config)}])
+        new_mounts = json.dumps([{'Type': 'bind', 'Source': str(config), 'Destination': str(self.config/'bouncers/crowdsec-nginx-bouncer.conf')}])
+        remounted = stub.replace(shlex.quote(old_mounts), shlex.quote(new_mounts))
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', remounted)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        p = self.run_shell('disable_appsec', 'y\n', remounted)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', config.read_text())
+
+    def test_appsec_status_without_source_reports_missing_and_stays_read_only(self):
+        p = self.run_shell('check_appsec_status', overrides=self.appsec_docker_stub(hook=False))
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('没有启用的 AppSec 数据源', p.stdout+p.stderr)
+        self.assertNotRegex(self.commands(), 'systemctl (restart|reload)|nginx -s|collections install')
+
+    def test_appsec_container_unpersisted_config_is_not_linked(self):
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', self.appsec_docker_stub(hook=True))
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('持久化', p.stdout+p.stderr)
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_appsec_container_tmpfs_child_shadows_parent_mount(self):
+        stub = self.appsec_docker_stub(mounted=True)
+        original = json.dumps([{'Type': 'bind', 'Source': str(self.config/'bouncers/crowdsec-openresty-bouncer.conf'), 'Destination': str(self.config/'bouncers/crowdsec-openresty-bouncer.conf')}])
+        mounts = json.dumps([
+            {'Type': 'bind', 'Source': str(self.config), 'Destination': str(self.config)},
+            {'Type': 'tmpfs', 'Source': '', 'Destination': str(self.config/'bouncers')}])
+        stub = stub.replace(shlex.quote(original), shlex.quote(mounts))
+        p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_purge_with_managed_container_appsec_links_stops_before_changes(self):
+        (self.config/'crowdsec-1key-appsec-docker-links.yaml').write_text('custom-path:\n  container: web123\n')
+        p = self.run_shell('deep_purge_residuals', 'y\n')
+        self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertNotIn('systemctl stop', self.commands())
+        self.assertIn('容器 Web Bouncer', p.stdout+p.stderr)
 
     def test_all_main_menu_entries_dispatch(self):
         names = ['install_crowdsec_core','manage_web_ui','manage_waf_rules','manage_auto_update','manage_firewall_ops','bind_crowdsec_console','manage_telegram','smart_audit_and_optimize','check_health_status','manage_uninstall_center']

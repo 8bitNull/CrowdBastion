@@ -73,13 +73,17 @@ labels:
   type: appsec
 ```
 
-随后可选择接入已有的宿主机 Nginx/OpenResty Bouncer，将其 `APPSEC_URL` 设置为 `http://127.0.0.1:7422`。脚本不代替安装 Web Bouncer 和启用网站内的 Bouncer 集成；缺少对应配置时会明确报告。已有外部 AppSec 数据源时不会创建重复监听。
+配置写入实际启用的 `crowdsec_service.acquisition_dir`（读取 `config.yaml` 与 `.local`），校验并重启后检查 `127.0.0.1:7422` 是否存在监听。监听未出现时返回失败并提示查看日志；存在监听也只代表引擎连接入口可用，网站接入还需单独验证。已有外部 AppSec 数据源时不会创建重复监听。
 
-Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。1Panel/NPM 容器内部的 `127.0.0.1` 通常不是宿主机；容器部署需按上游文档配置专用网络和兼容组件。脚本不会自动修改容器内部 Nginx，也不会将 AppSec 端口直接暴露到公网。
+接入菜单仅显示已安装且命令可用的宿主机 Nginx/OpenResty Bouncer，另提供 `3：接入已有 Docker Web Bouncer`。Docker 接入支持运行中的 Nginx/OpenResty/NPM 镜像：选择容器后核对 `host` 网络、有效 Nginx 配置中的 CrowdSec 请求处理调用，以及官方 Bouncer 配置的 bind/volume 持久化挂载。满足条件才备份并修改 `APPSEC_URL=http://127.0.0.1:7422`，执行容器内 `nginx -t` 和重载；失败恢复配置并重载原配置。它不替代 Web Bouncer 的首次安装、注册和网站启用。
+
+Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。Docker 的 `host` 网络共享宿主机网络，可以连接宿主机 `127.0.0.1:7422`；bridge 等网络下该地址指向容器自身，脚本会停止自动接入并提示配置私有网络。AppSec 端口保持本机监听。
+
+检测到 1Panel 的 `1pwaf/waf.lua` 时会提示保留已有 Lua 请求处理逻辑。缺少 CrowdSec 请求处理组件时，脚本明确报告前提缺失，保留网站配置。首次安装需按[官方 OpenResty Bouncer 文档](https://docs.crowdsec.net/u/bouncers/openresty/)处理持久化、注册和 Lua 钩子共存；直接覆盖 1Panel WAF 的请求处理阶段可能使它失效。`--appsec-status` 会同时检查有效数据源、监听、容器网络及请求处理组件，不仅展示指标。
 
 验证方式：菜单 `3 → 11` 或 `--verify-appsec` 输入自己管理的网站根地址，比较 `cscli metrics show appsec` 的前后计数，并检查 `/.env` 请求响应。预期是 HTTP 403、Processed/Blocked 增加，以及对应规则命中。单独一个 403 不能证明 AppSec 生效。
 
-停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。容器/外部代理需要自行同步停用转发。
+停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。管理的 Docker 接入按容器名称与实际持久化挂载核对，支持容器重建后安全恢复；手工改过地址、挂载或网络时先停止并要求核对。失败时恢复配置并重载已变更的服务/容器。未由本工具接入的容器和外部代理需要自行同步停用转发。
 
 ## 日志采集与防火墙
 
@@ -152,8 +156,8 @@ bash install-crowdsec-1panel.sh --help
 | `--install-webui` | 部署/更新 WebUI |
 | `--reset-webui-credentials` | 检查并选择轮换 WebUI 凭据 |
 | `--install-waf` | 安装 Web 日志检测集合 |
-| `--install-appsec` | 配置 AppSec 并选择接入 Web Bouncer |
-| `--appsec-status` | AppSec 状态与指标 |
+| `--install-appsec` | 配置 AppSec、检查部署方式并接入已有宿主机/Docker Web Bouncer |
+| `--appsec-status` | 只读检查 AppSec 数据源、监听、容器接入组件与指标 |
 | `--verify-appsec` | 对指定网站执行官方验证请求 |
 | `--disable-appsec` | 停用本工具 AppSec |
 | `--enable-cron` | 每天 03:30 更新 Hub |

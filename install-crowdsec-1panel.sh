@@ -12,6 +12,7 @@ TG_NOTIF_FILE="${CS_DIR}/notifications/crowdsec-1key-telegram.yaml"
 PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
+APPSEC_DOCKER_LINKS="${CS_DIR}/crowdsec-1key-appsec-docker-links.yaml"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
 LOG_REPAIR_STAGE=''
 LOG_REPAIR_COUNT=0
@@ -630,32 +631,137 @@ uninstall_all_waf_extensions() {
     log_succ '已处理已知 Web 日志检测集合。'
 }
 
+appsec_default_listener_ready() {
+    ss -H -lnt | awk '$4 == "127.0.0.1:7422" {found=1} END {exit !found}'
+}
+
+appsec_containers() {
+    command -v docker >/dev/null 2>&1 || return 0
+    local containers id image name
+    containers=$(docker ps --format '{{.ID}} {{.Image}} {{.Names}}') || { log_warn 'Docker 不可用，容器接入检查未完成。'; return 1; }
+    while read -r id image name; do
+        case "$image" in
+            *nginx*|*openresty*) printf '%s %s %s\n' "$id" "$image" "$name" ;;
+        esac
+    done <<< "$containers"
+}
+
+diagnose_appsec_containers() {
+    local containers id image name network effective hooks
+    containers=$(appsec_containers) || return 1
+    while read -r id image name; do
+        [[ -z "$id" ]] && continue
+        log_info "Web 容器：${name}（${id}，${image}）"
+        network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$id") || return 1
+        if [[ "$network" == host ]]; then
+            log_info 'host 网络：容器可通过 127.0.0.1:7422 连接宿主机 AppSec。'
+        else
+            log_warn "${network} 网络：容器内 loopback 不指向宿主机，请配置私有网络可达的 AppSec 地址。"
+        fi
+        if ! effective=$(docker exec "$id" nginx -T 2>&1); then
+            log_warn '容器 nginx -T 失败，未能核验网站请求处理组件。'
+            continue
+        fi
+        hooks=$(printf '%s' "$effective" | yaml_tool appsec-web-hooks) || return 1
+        [[ "$hooks" == *1pwaf* ]] && log_warn '检测到 1Panel WAF 的 Lua 接入；安装 CrowdSec 时需合并请求处理逻辑，保留现有 WAF。'
+        if [[ "$hooks" == *crowdsec* ]]; then
+            log_info '配置中发现 CrowdSec 请求处理调用；仍需用实际网站请求确认路由和 AppSec 计数。'
+        else
+            log_warn '缺少 CrowdSec Web Bouncer 请求处理调用；仅配置 AppSec 引擎不会增加网站请求计数。'
+            log_info '官方安装与接入文档：https://docs.crowdsec.net/u/bouncers/openresty/'
+        fi
+    done <<< "$containers"
+}
+
+link_docker_appsec() {
+    local containers id image name selected='' network effective hooks target file mounts stage
+    containers=$(appsec_containers) || return 1
+    [[ -n "$containers" ]] || { log_err '没有检测到运行中的 Nginx/OpenResty 容器。'; return 1; }
+    printf '%s\n' "$containers"
+    prompt selected '输入上面容器 ID 或名称（留空取消）: ' || return 0
+    [[ -n "$selected" ]] || return 0
+    while read -r id image name; do
+        if [[ "$selected" == "$id" || "$selected" == "$name" ]]; then selected="$id"; break; fi
+    done <<< "$containers"
+    [[ "$selected" == "$id" ]] || { log_err '请选择列表中的容器。'; return 1; }
+    network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$selected") || return 1
+    [[ "$network" == host ]] || { log_err '自动接入仅支持 host 网络；其他网络需先按官方文档配置私有网络地址。'; return 1; }
+    effective=$(docker exec "$selected" nginx -T 2>&1) || { log_err '容器 nginx -T 失败，未修改接入。'; return 1; }
+    hooks=$(printf '%s' "$effective" | yaml_tool appsec-web-hooks) || return 1
+    [[ "$hooks" == *crowdsec* ]] || { log_err '缺少 CrowdSec Web Bouncer 请求处理调用，请先安装并在网站中启用；现有 1Panel WAF 保留。'; return 1; }
+    mounts=$(docker inspect --format '{{json .Mounts}}' "$selected") || return 1
+    file=''
+    for target in "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf"; do
+        if file=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target" 2>/dev/null); then break; fi
+        file=''
+    done
+    [[ -n "$file" ]] || { log_err '未找到持久化挂载的官方 Web Bouncer 配置；请先按官方文档安装并持久化配置。'; return 1; }
+    if [[ -f "$APPSEC_LINKS" ]] && yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then
+        log_err '该配置已有宿主机接入记录，请先停用原接入。'
+        return 1
+    fi
+    confirm "将容器 ${name} 的已有 Web Bouncer 接入 AppSec，并校验、重载？" || return 0
+    stage=$(mktemp) || return 1
+    if ! yaml_tool stage-web-bouncer "$file" 'http://127.0.0.1:7422' "$stage"; then rm -f -- "$stage"; return 1; fi
+    begin_config_change "$file" "$APPSEC_DOCKER_LINKS" || { rm -f -- "$stage"; return 1; }
+    if ! yaml_tool link-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$selected" "$target" "$name" || ! cp -- "$stage" "$file" || ! docker exec "$selected" nginx -t || ! docker exec "$selected" nginx -s reload; then
+        restore_config_change
+        if ! docker exec "$selected" nginx -t || ! docker exec "$selected" nginx -s reload; then
+            log_warn '恢复配置后容器重载失败，请检查容器运行状态。'
+        fi
+        rm -f -- "$stage"
+        return 1
+    fi
+    rm -f -- "$stage"
+    log_succ '容器内已有 Web Bouncer 的 AppSec 地址已配置并重载；请验证实际网站请求和指标。'
+}
+
 setup_appsec() {
-    require_core && require_yaml || return 1
+    require_core && require_yaml && require_commands ss || return 1
+    APPSEC_FILE=$(yaml_tool appsec-file "$CS_DIR") || return 1
     local external
     external=$(yaml_tool appsec-existing "$CS_DIR" "$APPSEC_FILE") || return 1
     if [[ -n "$external" ]]; then
         log_warn "已有外部 AppSec 配置，避免重复监听，未改写: ${external}"
+        diagnose_appsec_containers || return 1
         return 0
     fi
     log_info '启用官方 AppSec 数据源；Firewall Bouncer 不支持转发 HTTP 请求。'
     install_collections crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules || return 1
     begin_config_change "$APPSEC_FILE" || return 1
+    mkdir -p "$(dirname "$APPSEC_FILE")" || return 1
     if ! yaml_tool appsec "$APPSEC_FILE"; then restore_config_change; return 1; fi
     apply_core_config || return 1
-    log_succ 'AppSec 数据源已加载，监听 127.0.0.1:7422。'
+    local attempt
+    for attempt in {1..10}; do
+        appsec_default_listener_ready && break
+        sleep 1
+    done
+    if ! appsec_default_listener_ready; then
+        log_err 'AppSec 配置已写入，但 127.0.0.1:7422 未监听；请检查 journalctl -u crowdsec 和 /var/log/crowdsec.log。网站尚未接入。'
+        return 1
+    fi
+    log_info 'AppSec 配置已校验，127.0.0.1:7422 存在监听；网站接入仍需 Web Bouncer。'
     local choice file service
-    printf '1. 接入宿主机 Nginx Bouncer\n2. 接入宿主机 OpenResty Bouncer\n0. 仅配置引擎（容器/外部代理需自行接入）\n'
-    prompt choice '请选择 [0-2]: ' || return 0
+    diagnose_appsec_containers || return 1
+    [[ -f "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" ]] && command -v nginx >/dev/null 2>&1 && printf '1. 接入已有宿主机 Nginx Bouncer\n'
+    [[ -f "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" ]] && command -v openresty >/dev/null 2>&1 && printf '2. 接入已有宿主机 OpenResty Bouncer\n'
+    printf '3. 接入已有 Docker Web Bouncer（host 网络、持久化配置）\n0. 仅配置引擎，稍后接入网站\n'
+    prompt choice '请选择可用接入项（0 结束）: ' || return 0
     case "$choice" in
         1) file="${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf"; service=nginx ;;
         2) file="${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; service=openresty ;;
+        3) link_docker_appsec; return $? ;;
         0|'')
-            log_warn '尚未验证 HTTP 转发。1Panel/NPM 容器内的 127.0.0.1 通常不指向宿主机，请按上游文档配置专用网络。'
+            log_warn '仅完成引擎配置；网站请求尚未验证，AppSec 计数可为零。'
             return 0 ;;
         *) log_err '无效选项，引擎已配置但 Web Bouncer 未接入。'; return 1 ;;
     esac
     [[ -f "$file" ]] || { log_err "未安装对应 Web Bouncer: ${file}；引擎已配置，网站尚未接入。"; return 1; }
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]] && yaml_tool docker-link-owned "$file" "$APPSEC_DOCKER_LINKS" >/dev/null 2>&1; then
+        log_err '该配置已有容器接入记录，请先停用原接入。'
+        return 1
+    fi
     require_commands "$service" || return 1
     begin_config_change "$file" "$APPSEC_LINKS" || return 1
     yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" || { restore_config_change; return 1; }
@@ -669,9 +775,26 @@ setup_appsec() {
 }
 
 check_appsec_status() {
-    require_core || return 1
+    require_core && require_yaml && require_commands ss || return 1
+    local addresses address result=0
+    addresses=$(yaml_tool appsec-listeners "$CS_DIR") || return 1
+    if [[ -z "$addresses" ]]; then
+        log_err '没有启用的 AppSec 数据源；请先运行 --install-appsec。'
+        result=1
+    else
+        while read -r address; do
+            if ss -H -lnt | awk -v address="$address" '$4 == address {found=1} END {exit !found}'; then
+                log_info "AppSec 配置地址存在监听：${address}。"
+            else
+                log_warn "AppSec 配置地址未监听：${address}。"
+                result=1
+            fi
+        done <<< "$addresses"
+    fi
+    diagnose_appsec_containers || result=1
     cscli appsec-configs list && cscli metrics show appsec || return 1
     log_info '确认 Processed/Blocked 随测试请求变化，不能仅凭 HTTP 403 判断 WAF 生效。'
+    return "$result"
 }
 
 verify_appsec() {
@@ -687,36 +810,81 @@ verify_appsec() {
     log_info '预期 HTTP 403 且 AppSec Processed/Blocked 计数增加；请同时确认具体规则命中。'
 }
 
+rollback_appsec_runtime() {
+    restore_config_change || return 1
+    local target mode=host
+    for target in "$@"; do
+        if [[ "$target" == -- ]]; then
+            mode=docker
+        elif [[ "$mode" == host ]]; then
+            systemctl reload "$target" || log_warn "恢复配置后 ${target} 重载失败。"
+        elif ! docker exec "$target" nginx -t || ! docker exec "$target" nginx -s reload; then
+            log_warn "恢复配置后容器 ${target} 重载失败。"
+        fi
+    done
+}
+
 disable_appsec() {
     require_core && require_yaml || return 1
+    APPSEC_FILE=$(yaml_tool appsec-file "$CS_DIR") || return 1
     if [[ ! -f "$APPSEC_FILE" ]]; then log_info '本工具未配置 AppSec，外部接入保留。'; return 0; fi
     confirm '停用本工具配置的 AppSec？外部数据源和规则集合保留。' || return 0
     local files=("$APPSEC_FILE" "$APPSEC_LINKS") file service
     local reloaded=()
+    local docker_links='' container target resolved mounts running stage
+    local docker_reloaded=()
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then
+        require_commands docker || return 1
+        docker_links=$(yaml_tool docker-appsec-links "$APPSEC_DOCKER_LINKS") || return 1
+        while IFS=$'\t' read -r container file target; do
+            [[ -z "$container" ]] && continue
+            running=$(docker inspect --format '{{.State.Running}}' "$container") || return 1
+            [[ "$running" == true ]] || { log_err '管理的 Web 容器未运行；请先恢复容器再停用接入。'; return 1; }
+            running=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$container") || return 1
+            [[ "$running" == host ]] || { log_err '管理的 Web 容器网络已变化，未停用引擎。'; return 1; }
+            mounts=$(docker inspect --format '{{json .Mounts}}' "$container") || return 1
+            resolved=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target") || return 1
+            [[ "$resolved" == "$file" ]] || { log_err '容器配置挂载已变化，请先核对接入；未停用引擎。'; return 1; }
+            yaml_tool docker-link-current "$file" || return 1
+            files+=("$file")
+        done <<< "$docker_links"
+        files+=("$APPSEC_DOCKER_LINKS")
+    fi
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
         if [[ -f "$file" && -f "$APPSEC_LINKS" ]] && yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then files+=("$file"); fi
     done
     begin_config_change "${files[@]}" || return 1
-    for file in "${files[@]:2}"; do
+    for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
+        if [[ ! -f "$file" || ! -f "$APPSEC_LINKS" ]] || ! yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then continue; fi
         if grep -Fxq 'APPSEC_URL=http://127.0.0.1:7422' "$file"; then
-            yaml_tool unlink-web-bouncer "$file" "$APPSEC_LINKS" || { restore_config_change; return 1; }
+            yaml_tool unlink-web-bouncer "$file" "$APPSEC_LINKS" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
             service=nginx
             [[ "$file" == *openresty* ]] && service=openresty
             if ! "$service" -t || ! systemctl reload "$service"; then
-                restore_config_change
-                systemctl reload "$service" || true
-                for service in "${reloaded[@]}"; do systemctl reload "$service" || true; done
+                rollback_appsec_runtime "${reloaded[@]}" "$service" -- "${docker_reloaded[@]}"
                 return 1
             fi
             reloaded+=("$service")
         fi
     done
-    rm -f "$APPSEC_FILE" || return 1
+    while IFS=$'\t' read -r container file target; do
+        [[ -z "$container" ]] && continue
+        stage=$(mktemp) || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
+        if ! yaml_tool restore-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$stage" || ! cp -- "$stage" "$file" || ! docker exec "$container" nginx -t || ! docker exec "$container" nginx -s reload; then
+            rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}" "$container"
+            rm -f -- "$stage"
+            return 1
+        fi
+        rm -f -- "$stage"
+        docker_reloaded+=("$container")
+    done <<< "$docker_links"
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then rm -f -- "$APPSEC_DOCKER_LINKS" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }; fi
+    rm -f "$APPSEC_FILE" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
     if ! apply_core_config; then
-        for service in "${reloaded[@]}"; do systemctl reload "$service" || true; done
+        rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"
         return 1
     fi
-    log_succ '本工具 AppSec 数据源已停用；容器或外部代理请同步停用请求转发。'
+    log_succ '本工具 AppSec 数据源及记录过的 Web Bouncer 地址已恢复；未管理的容器或外部代理请同步停用请求转发。'
 }
 
 manage_waf_rules() {
@@ -1036,6 +1204,10 @@ audit_crowdsec_residuals() {
 deep_purge_residuals() {
     confirm '永久删除 CrowdSec 核心、数据、Bouncer 与本工具 WebUI？' || return 0
     require_commands systemctl || return 1
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then
+        log_err '仍有本工具记录的容器 Web Bouncer 接入。请先停用 AppSec 接入并移除容器内 Web Bouncer，再卸载核心。'
+        return 1
+    fi
     local web_config
     for web_config in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
         if [[ -f "$web_config" ]]; then
@@ -1135,8 +1307,8 @@ show_help() {
   --install-webui      部署/更新 WebUI
   --reset-webui-credentials 检查/轮换 WebUI 独立凭据
   --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
-  --install-appsec     配置 AppSec 引擎与已安装的 Web Bouncer
-  --appsec-status      查看 AppSec 指标
+  --install-appsec     识别部署方式，配置引擎并接入已有宿主机/Docker Web Bouncer
+  --appsec-status      只读检查 AppSec 数据源、监听、容器组件与指标
   --verify-appsec      对用户指定网站执行官方 /.env 验证
   --disable-appsec     停用本工具 AppSec
   --enable-cron        每天 03:30 更新 Hub
