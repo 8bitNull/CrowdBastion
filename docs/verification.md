@@ -14,6 +14,7 @@
 | 通配符和具体 access/error 路径同时采集 | 去除被通配符覆盖的重复条目，保留用户其他采集文件 |
 | 1Panel 真实目录为 `log/` 与 `www/sites/`，原预设仅包含 `logs/` 与 `data/sites/` | 补齐用户反馈的真实 HTTP 日志路径，保留旧布局兼容；不采集 `stream-access.log` 或 PHP 日志 |
 | 同一 1Panel 容器的 `/www` 实际挂载为 `/opt/1panel/1panel/www`，站点访问不写全局日志 | 补齐该已确认的挂载布局；回归覆盖两个宿主机站点根目录，文档要求按 nginx -T 与实际 Mounts 对照路径 |
+| 已安装配置无法通过菜单修复实际 Docker 日志挂载 | 菜单 8 与 `--repair-logs` 根据现有 HTTP 文件及实际 Mounts 补齐独立采集文件；读取实际启用的采集目录，去重并保留其他配置，校验失败回滚 |
 | NPM 目录使用 `*.log`，会把 stream 日志当成 HTTP 日志；候选宿主机路径容易被当作官方固定路径 | 核对科技lion 的 LDNMP/NPM 上游挂载与 NPM 官方模板，收窄 NPM 到 HTTP 文件，文档明确默认和候选目录及 Docker 挂载验证方法 |
 | 日志集合被描述为已部署完整 WAF | 区分日志检测、Firewall Bouncer 和 AppSec；补全官方数据源及 Web Bouncer 接入流程 |
 | 宣称固定“56 个黄金规则”，回退时清空 collections/scenarios | 补齐官方基础集合，保留自定义及 AppSec，不宣称固定数量 |
@@ -32,11 +33,12 @@
 
 ## 模拟用户操作
 
-`tests/test_workflows.py` 共 **63 项**测试全部通过，覆盖主菜单和全部子菜单的流程，以及关键正常、失败、取消、重复操作：
+`tests/test_workflows.py` 共 **79 项**测试全部通过，覆盖主菜单和全部子菜单的流程，以及关键正常、失败、取消、重复操作：
 
 - 核心安装成功/软件包失败、管理员白名单、配置验证失败恢复。
 - 复现用户反馈的 1Panel 文件目录及 `/opt/1panel/1panel/www` 挂载变体，验证生成的采集配置匹配全部 HTTP access/error 文件且每个文件只匹配一次，排除 stream/PHP 日志；两次路径修复前对应回归均失败，修复后通过。
 - 核对 LDNMP 默认文件的 nginx 标签；NPM 五个预设目录中的官方 HTTP 文件均匹配一次，排除 stream/fallback stream/主进程日志。NPM 回归修复前失败、修复后通过；这些文件匹配测试不替代真实部署日志解析验证。
+- 菜单 8 和独立日志修复：实际 1Panel/NPM 自定义挂载、含空格和通配符特殊字符的路径、父子挂载遮蔽、单文件/Go 通配符/符号链接别名去重、Docker 不可用回退、原配置保留、取消、重复运行、校验失败恢复。读取 `.local` 指定的采集目录；日志处理服务禁用、目录未配置、修复文件是符号链接或挂载数据无效时，在写入及重启前停止。
 - WebUI 首次部署、凭据复用、独立登录检查、轮换、拉取失败、运行失败恢复、原镜像固定与定向卸载。
 - 日志规则安装失败、基础集合补齐、自定义规则保留、指定卸载取消。
 - 官方 AppSec YAML、外部监听保留、Web Bouncer 缺失、接入前 URL 恢复、停用失败时恢复运行配置。
@@ -64,7 +66,8 @@ python3 -m unittest discover -s tests -v
 
 - 官方 Hub 接受全部 11 个使用到的集合：Linux、SSH、Nginx、NPM、HTTP-CVE、基础 HTTP、良性行为白名单、WordPress、iptables、AppSec 虚拟补丁与通用规则。
 - 官方 HTTP 通知插件真实渲染本工具模板并向本地接收端发送有效 JSON；特殊引号、换行、空 Source 和空 Decisions 的告警检查通过。字段先以 toJson/fromJson 转为实际值，避免输出 Go 指针信息。
-- `crowdsec -t` 接受 AppSec 数据源、Profiles、通知、管理员白名单及 `db_config.use_wal`。
+- `crowdsec -t` 接受修复生成的文件采集、AppSec 数据源、Profiles、通知、管理员白名单及 `db_config.use_wal`。
+- 日志修复的真实引擎回归：模拟 `/www` 的宿主机挂载来源，路径包含空格、方括号与反斜杠；修复生成正确的 Go 转义路径。引擎实际启动后追加 HTTP 日志，对应文件出现在 Acquisition Metrics 中。
 - 引擎实际启动后，按官方 AppSec 协议发送 `/.env` 请求，得到 **HTTP 403 / action=ban**；普通 `/` 请求得到 **HTTP 200 / action=allow**。
 - AppSec 指标包含 `crowdsecurity/vpatch-env-access` 规则命中。
 - LAPI 登录、手动添加及删除封禁决策成功。

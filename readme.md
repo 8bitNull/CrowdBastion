@@ -46,7 +46,7 @@ sudo bash install-crowdsec-1panel.sh
 | 5 | 查看警报和决策、手动封禁/解封 IP、检查防火墙、修复 Bouncer 连接配置 |
 | 6 | 提交 Console 注册；成功后仍需在官方控制台接受注册 |
 | 7 | 配置、测试、检查或停用本工具 Telegram 通道 |
-| 8 | 只读诊断后选择补齐基础规则和启用指标 |
+| 8 | 只读诊断后选择补齐基础规则、修复 HTTP 日志采集和启用指标 |
 | 9 | 只读健康检查，检查服务、LAPI、配置、注册节点、采集指标和防火墙资源 |
 | 10 | 明确确认后卸载，或执行只读残留检查 |
 
@@ -106,11 +106,25 @@ NPM 根据[官方模板](https://github.com/NginxProxyManager/nginx-proxy-manage
 
 ### 解析成功率为 0% 的排查
 
-先查看 `sudo cscli metrics` 的 Acquisition Metrics。如果没有 Web 文件来源，在确认网站产生新访问日志后，核对实际文件路径与采集配置；1Panel 的 `log/` 与 `logs/`、`www/sites/` 与 `data/sites/` 是不同目录。更新仓库本身不会修改服务器上已有的采集 YAML，需备份并调整配置，执行 `sudo crowdsec -t`，校验成功后重启 CrowdSec，再访问网站观察读取和解析计数。
+先查看 `sudo cscli metrics` 的 Acquisition Metrics。如果没有 Web 文件来源，在确认网站产生新访问日志后，核对实际文件路径与采集配置；1Panel 的 `log/` 与 `logs/`、`www/sites/`、`1panel/www/sites/` 与 `data/sites/` 是不同目录。更新仓库本身不会修改服务器上已有的采集 YAML；可通过下面的修复入口补齐，再访问网站观察读取和解析计数。
 
 若只有 SSH journal 来源，且 `syslog-logs` 成功、`sshd-logs` 全部未解析，说明外层日志格式已识别，内部消息没有匹配已加载的 SSH 事件解析器。`Accepted password` 属于成功登录，不能用失败登录解析器是否匹配来判断 SSH 防护是否失效。核查时官方 `sshd-logs` 已支持 `sshd-session`，但 `sshd-success-logs` 的过滤器仍仅匹配 `sshd`；因此新版 OpenSSH 的成功登录和普通会话消息可能显示为未解析。应结合日志样本与 `cscli explain --file /path/to/sample.log --type syslog` 判断，不应把所有会话消息强行转换成失败登录事件。
 
 防火墙执行 CAPI 社区名单、日志检测产生本机决策、AppSec 检查在线请求分别有独立指标；社区名单有阻断并不能证明本机 Web 日志已接入，日志解析率也不能单独证明 AppSec 是否生效。
+
+### 修复日志采集路径
+
+菜单 `8` 确认应用修复时，会同时检查日志目录和 Docker 实际挂载；也可单独执行：
+
+```bash
+sudo bash install-crowdsec-1panel.sh --repair-logs
+```
+
+修复扫描预设目录，以及运行中的 Nginx/OpenResty 镜像的 `/www`、`/www/sites`、`/var/log/nginx` 挂载和 NPM 的 `/data`、`/data/logs` 挂载。它按映射找到宿主机上实际存在的 HTTP 日志，包括 `/opt/1panel/1panel/www` 和其他自定义 Source。Docker 不可用时提示并仅扫描预设；忽略不相关的挂载和被子挂载遮住的旧文件。自定义镜像名或其他容器日志布局需要手工核对。
+
+修复读取 `config.yaml` 与 `.local` 合并后的 `crowdsec_service.acquisition_path`、`acquisition_dir`，跳过已被现有配置采集的同一文件（含 `filename`、通配符和符号链接别名）。新增日志写入实际 `acquisition_dir` 下的 `crowdsec-1key-log-repair.yaml`，默认是 `/etc/crowdsec/acquis.d/crowdsec-1key-log-repair.yaml`；原有采集文件、标签和其他数据源保留。日志处理服务或目录采集未启用，或修复文件本身是符号链接时，会停止并说明原因。
+
+单独修复会列出待补齐文件并请求确认；备份后写入，运行 `crowdsec -t`，成功后重启 CrowdSec，失败则恢复配置。重复执行跳过已采集文件；没有新增时单独修复不重启服务。修复只添加当前实际存在的日志文件，新建站点后可再次执行；它不改变日志格式、权限、已有过滤规则，也不会把不存在或无法读取的日志描述为修复成功。完成后访问网站，用 `cscli metrics` 核实计数。
 
 管理员 IP 从 `SSH_CLIENT` 或 `SSH_CONNECTION` 提取，无法识别时手工输入；白名单包含回环和常见内网网段。手动封禁接受 IPv4/IPv6，会规范化地址并拒绝封禁当前 SSH IP。时长使用 Go duration，如 `4h`、`24h`、`168h`；7 天应填写 `168h`。
 
@@ -145,13 +159,14 @@ bash install-crowdsec-1panel.sh --help
 | `--enable-cron` | 每天 03:30 更新 Hub |
 | `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
+| `--repair-logs` | 按实际日志与 Docker 挂载补齐 HTTP 采集，保留现有配置 |
 | `--reset-baseline`、`--reset-56` | 补齐基础集合；兼容旧参数，保留自定义/AppSec，不保证固定场景数 |
 | `--uninstall-waf` | 确认后移除已知 Web 日志扩展 |
 | `--check-clean` | 只读残留检查 |
 | `--deep-clean`、`--purge`、`--uninstall` | 确认后卸载和删除数据 |
 | `--telegram` | Telegram 管理菜单 |
 | `--telegram-test` | 官方通知插件测试 |
-| `--optimize` | 诊断并选择应用基础配置 |
+| `--optimize` | 诊断后选择修复日志采集、基础规则与指标配置 |
 | `--enable-wal` | 确认本地 SQLite 后启用官方 WAL 配置 |
 | `--status` | 只读健康检查 |
 | `--help`、`-h` | 帮助，不需要 root |

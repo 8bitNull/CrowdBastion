@@ -57,10 +57,214 @@ def merged_config(path):
     return data
 
 
+def acquisition_locations(root):
+    service = merged_config(str(Path(root)/'config.yaml')).get('crowdsec_service', {})
+    if not isinstance(service, dict) or service.get('enable') is False:
+        raise ValueError('未启用日志处理服务 crowdsec_service')
+    directory = service.get('acquisition_dir')
+    single = service.get('acquisition_path')
+    if not directory or not Path(directory).is_absolute():
+        raise ValueError('请先在 crowdsec_service.acquisition_dir 设置有效的绝对目录')
+    if single and not Path(single).is_absolute():
+        raise ValueError('acquisition_path 必须为绝对路径')
+    repair = Path(directory)/'crowdsec-1key-log-repair.yaml'
+    if repair.is_symlink():
+        raise ValueError('修复采集文件是符号链接，请先确认并改为普通文件：'+str(repair))
+    return directory, single, repair
+
+
+def go_glob(pattern):
+    """Match Unix Go filepath.Glob semantics used by CrowdSec's file source."""
+    paths = ['/'] if pattern.startswith('/') else ['.']
+    for component in pattern.split('/'):
+        if not component:
+            continue
+        i, literal, regex, wildcard = 0, '', '', False
+
+        def character():
+            nonlocal i
+            if i >= len(component):
+                raise ValueError('日志通配符格式无效：'+pattern)
+            char = component[i]
+            i += 1
+            if char == '\\':
+                if i >= len(component):
+                    raise ValueError('日志通配符格式无效：'+pattern)
+                char = component[i]
+                i += 1
+            return char
+
+        while i < len(component):
+            token = component[i]
+            if token in '*?':
+                wildcard = True
+                regex += '.*' if token == '*' else '.'
+                i += 1
+            elif token == '[':
+                wildcard = True
+                i += 1
+                negate = i < len(component) and component[i] == '^'
+                if negate:
+                    i += 1
+                members, consumed = [], 0
+                while i < len(component) and component[i] != ']':
+                    first = character()
+                    consumed += 1
+                    if i < len(component) and component[i] == '-':
+                        i += 1
+                        last = character()
+                        if first <= last:
+                            members.append(re.escape(first)+'-'+re.escape(last))
+                    else:
+                        members.append(re.escape(first))
+                if not consumed or i >= len(component):
+                    raise ValueError('日志通配符格式无效：'+pattern)
+                i += 1
+                regex += ('['+('^' if negate else '')+''.join(members)+']'
+                          if members else ('.' if negate else '(?!)'))
+            else:
+                char = character()
+                literal += char
+                regex += re.escape(char)
+        if not wildcard:
+            paths = [os.path.join(path, literal) for path in paths
+                     if os.path.lexists(os.path.join(path, literal))]
+        else:
+            try:
+                matcher = re.compile(regex, re.S)
+            except re.error as error:
+                raise ValueError('日志通配符格式无效：'+pattern) from error
+            matches = []
+            for path in paths:
+                try:
+                    with os.scandir(path) as entries:
+                        matches.extend(entry.path for entry in entries if matcher.fullmatch(entry.name))
+                except (FileNotFoundError, NotADirectoryError, PermissionError):
+                    continue
+            paths = matches
+    return paths
+
+
+def go_escape(path):
+    return ''.join('\\'+char if char in '\\*?[]' else char for char in path)
+
+
+def stage_log_repair(root, presets, mounts, destination):
+    """Add existing, unacquired HTTP files to a dedicated acquisition file."""
+    npm_names = ['*host*_access.log', '*host*_error.log',
+                 'fallback_http_access.log', 'fallback_http_error.log',
+                 'letsencrypt-requests_access.log', 'letsencrypt-requests_error.log']
+    directory, single, original = acquisition_locations(root)
+    candidates, hidden, visible = [], set(), set()
+    for line in Path(mounts).read_text().splitlines():
+        kind, encoded = line.split('\t', 1)
+        if kind not in ['nginx', 'nginx-proxy-manager']:
+            raise ValueError('未知日志类型')
+        records = json.loads(encoded)
+        if not isinstance(records, list):
+            raise ValueError('Docker 挂载数据不是列表')
+        for record in records:
+            target = record['Destination'].rstrip('/')
+            patterns = []
+            if record.get('Type', 'bind') not in ['bind', 'volume']:
+                continue
+            supported = target in (['/data', '/data/logs'] if kind == 'nginx-proxy-manager'
+                                   else ['/www', '/www/sites', '/var/log/nginx'])
+            if not supported:
+                continue
+            source = record['Source']
+            if not Path(source).is_absolute():
+                raise ValueError('Docker 挂载 Source 必须为绝对路径')
+            prefix = glob.escape(source.rstrip('/'))
+            if kind == 'nginx-proxy-manager':
+                log_directory = prefix + ('/logs' if target == '/data' else '')
+                patterns = [log_directory+'/'+name for name in npm_names]
+            elif target == '/www':
+                patterns = [prefix+'/sites/*/log/'+name for name in ['access.log', 'error.log']]
+            elif target == '/www/sites':
+                patterns = [prefix+'/*/log/'+name for name in ['access.log', 'error.log']]
+            elif target == '/var/log/nginx':
+                patterns = [prefix+'/'+name for name in ['access.log', 'error.log']]
+            for pattern in patterns:
+                for filename in glob.glob(pattern):
+                    virtual = target+'/'+os.path.relpath(filename, source)
+                    canonical = os.path.realpath(filename)
+                    shadowed = any(other['Destination'].rstrip('/') != target
+                                   and other['Destination'].rstrip('/').startswith(target+'/')
+                                   and (virtual == other['Destination'].rstrip('/')
+                                        or virtual.startswith(other['Destination'].rstrip('/')+'/'))
+                                   for other in records)
+                    if shadowed:
+                        hidden.add(canonical)
+                    else:
+                        visible.add(canonical)
+                        candidates.append((glob.escape(filename), kind))
+
+    for doc in read(presets, multiple=True):
+        kind = doc.get('labels', {}).get('type')
+        if kind in ['nginx', 'nginx-proxy-manager']:
+            candidates.extend((pattern, kind) for pattern in doc.get('filenames', []))
+
+    acquired = {}
+    paths = ([single] if single else []) + [*glob.glob(glob.escape(directory)+'/*.yaml'),
+                                          *glob.glob(glob.escape(directory)+'/*.yml')]
+    for path in paths:
+        if not Path(path).exists():
+            continue
+        for doc in read(path, multiple=True):
+            if not doc or doc.get('source', 'file') != 'file':
+                continue
+            filenames = doc.get('filenames', [])
+            if isinstance(filenames, str):
+                filenames = [filenames]
+            if doc.get('filename'):
+                filenames = [*filenames, doc['filename']]
+            for pattern in filenames:
+                for filename in go_glob(pattern):
+                    acquired[os.path.realpath(filename)] = doc.get('labels', {}).get('type')
+
+    additions = {}
+    for pattern, kind in candidates:
+        for filename in sorted(glob.glob(pattern)):
+            path = Path(filename)
+            if not path.is_file() or path.name.startswith(('stream-', 'stream_', 'fallback_stream_')):
+                continue
+            canonical = os.path.realpath(filename)
+            if canonical in hidden and canonical not in visible:
+                continue
+            if canonical in acquired:
+                if acquired[canonical] != kind:
+                    print(f'[WARN] 日志已被其他类型采集，请核对标签：{filename}', file=sys.stderr)
+                continue
+            if not os.access(filename, os.R_OK):
+                print(f'[WARN] 无法读取日志，跳过：{filename}', file=sys.stderr)
+                continue
+            additions.setdefault(kind, []).append(go_escape(canonical))
+            acquired[canonical] = kind
+            print(f'[INFO] 待补齐日志采集（{kind}）：{canonical}', file=sys.stderr)
+
+    count = sum(len(names) for names in additions.values())
+    if count:
+        docs = [doc for doc in read(original, multiple=True) if doc] if original.exists() else []
+        for kind, names in additions.items():
+            for doc in docs:
+                if set(doc) <= {'filenames', 'labels'} and doc.get('labels') == {'type': kind} and isinstance(doc.get('filenames'), list):
+                    doc['filenames'].extend(names)
+                    break
+            else:
+                docs.append({'filenames': names, 'labels': {'type': kind}})
+        write(destination, docs, multiple=True)
+    print(count)
+
+
 def main(args):
     action, *args = args
     if action == 'get':
         get(*args)
+    elif action == 'repair-log-acquis':
+        stage_log_repair(*args)
+    elif action == 'log-repair-file':
+        print(acquisition_locations(args[0])[2])
     elif action == 'credentials-config':
         source, credentials, destination = args
         data = merged_config(source)

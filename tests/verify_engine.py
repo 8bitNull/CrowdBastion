@@ -71,6 +71,17 @@ def verify(release):
         cli('hub', 'update')
         cli('collections', 'install', 'crowdsecurity/linux', 'crowdsecurity/sshd', 'crowdsecurity/nginx', 'crowdsecurity/nginx-proxy-manager', 'crowdsecurity/http-cve', 'crowdsecurity/base-http-scenarios', 'crowdsecurity/whitelist-good-actors', 'crowdsecurity/wordpress', 'crowdsecurity/iptables', 'crowdsecurity/appsec-virtual-patching', 'crowdsecurity/appsec-generic-rules')
         print('All manager collection names accepted by official Hub.', flush=True)
+        # Use actual bind-source files, including characters special to Go globs.
+        web = base/r'host web[qa]\logs'
+        log_file = web/'sites/bob.example.com/log/access.log'
+        log_file.parent.mkdir(parents=True)
+        log_file.touch()
+        presets, mounts = base/'presets.yaml', base/'mounts.tsv'
+        presets.write_text('')
+        mounts.write_text('nginx\t'+json.dumps([{'Type': 'bind', 'Source': str(web), 'Destination': '/www'}])+'\n')
+        repair = cfg/'acquis.d/crowdsec-1key-log-repair.yaml'
+        helper.stage_log_repair(cfg, presets, mounts, repair)
+        assert helper.read(repair)['labels']['type'] == 'nginx'
         appsec = cfg/'acquis.d/crowdsec-1key-appsec.yaml'
         helper.main(['appsec', str(appsec)])
         data = helper.read(appsec)
@@ -107,7 +118,7 @@ def verify(release):
             checked = subprocess.run([str(engine), '-c', str(config_path), '-t'], text=True, capture_output=True, timeout=60)
             if checked.returncode:
                 raise RuntimeError(checked.stdout[-4000:]+checked.stderr[-4000:])
-            print('crowdsec -t: PASS (AppSec, profiles, notification, administrator whitelist).', flush=True)
+            print('crowdsec -t: PASS (log repair, AppSec, profiles, notification, administrator whitelist).', flush=True)
             key = cli('bouncers', 'add', 'qa-appsec', '-o', 'raw').strip()
             log = base/'engine.log'
             with log.open('w') as f:
@@ -123,6 +134,17 @@ def verify(release):
                             time.sleep(.2)
                     else:
                         raise RuntimeError('Engine startup timeout:\n'+log.read_text()[-6000:])
+
+                    with log_file.open('a') as access:
+                        access.write('203.0.113.10 - - ['+time.strftime('%d/%b/%Y:%H:%M:%S +0000', time.gmtime())+'] "GET / HTTP/1.1" 200 42 "-" "CrowdSec integration test"\n')
+                    for _ in range(30):
+                        acquired = cli('metrics', 'show', 'acquisition', '-o', 'json')
+                        if str(log_file) in acquired.replace('\\\\', '\\'):
+                            break
+                        time.sleep(.2)
+                    else:
+                        raise RuntimeError('Repaired log source absent from acquisition metrics:\n'+acquired)
+                    print('Live repaired HTTP file with spaces, brackets and backslash: acquisition metrics present.', flush=True)
 
                     headers = {'X-Crowdsec-Appsec-Ip': '203.0.113.10', 'X-Crowdsec-Appsec-Uri': '/.env', 'X-Crowdsec-Appsec-Host': 'test.example', 'X-Crowdsec-Appsec-Verb': 'GET', 'X-Crowdsec-Appsec-Api-Key': key, 'X-Crowdsec-Appsec-User-Agent': 'CrowdSec integration test', 'X-Crowdsec-Appsec-Http-Version': '11'}
                     request = urllib.request.Request(f'http://127.0.0.1:{appsec_port}/', headers=headers)

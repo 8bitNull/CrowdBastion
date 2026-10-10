@@ -12,6 +12,9 @@ TG_NOTIF_FILE="${CS_DIR}/notifications/crowdsec-1key-telegram.yaml"
 PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
+LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
+LOG_REPAIR_STAGE=''
+LOG_REPAIR_COUNT=0
 WEBUI_IMAGE="ghcr.io/theduffman85/crowdsec-web-ui:latest"
 BACKUP_PATHS=()
 BACKUP_COPIES=()
@@ -222,7 +225,7 @@ install_crowdsec_core() {
 }
 
 configure_log_acquis() {
-    local target="${CS_DIR}/acquis.d/web-sites.yaml"
+    local target="${1:-${CS_DIR}/acquis.d/web-sites.yaml}"
     mkdir -p "$(dirname "$target")" || return 1
     cat > "$target" <<'EOF'
 filenames:
@@ -288,6 +291,70 @@ labels:
   type: syslog
 EOF
     log_info "已配置常见日志路径: ${target}；请用 cscli metrics 核实实际采集。"
+}
+
+cleanup_log_repair() {
+    if [[ -n "$LOG_REPAIR_STAGE" ]]; then rm -rf -- "$LOG_REPAIR_STAGE"; fi
+    LOG_REPAIR_STAGE=''
+    LOG_REPAIR_COUNT=0
+}
+
+prepare_log_repair() {
+    LOG_REPAIR_FILE=$(yaml_tool log-repair-file "$CS_DIR") || return 1
+    LOG_REPAIR_STAGE=$(mktemp -d) || return 1
+    LOG_REPAIR_COUNT=0
+    local containers id image kind mounts
+    configure_log_acquis "${LOG_REPAIR_STAGE}/presets.yaml" >/dev/null || { cleanup_log_repair; return 1; }
+    : > "${LOG_REPAIR_STAGE}/mounts.tsv"
+    if command -v docker >/dev/null 2>&1; then
+        if containers=$(docker ps --format '{{.ID}} {{.Image}}'); then
+            while read -r id image; do
+                [[ -z "$id" ]] && continue
+                case "$image" in
+                    *nginx-proxy-manager*) kind=nginx-proxy-manager ;;
+                    *nginx*|*openresty*) kind=nginx ;;
+                    *) continue ;;
+                esac
+                if ! mounts=$(docker inspect --format '{{json .Mounts}}' "$id"); then
+                    log_warn "无法读取 ${id} 的挂载，使用预设路径继续检查。"
+                    continue
+                fi
+                printf '%s\t%s\n' "$kind" "$mounts" >> "${LOG_REPAIR_STAGE}/mounts.tsv" || { cleanup_log_repair; return 1; }
+            done <<< "$containers"
+        else
+            log_warn 'Docker 不可用，仅检查预设日志目录。'
+        fi
+    fi
+    if ! LOG_REPAIR_COUNT=$(yaml_tool repair-log-acquis "$CS_DIR" "${LOG_REPAIR_STAGE}/presets.yaml" "${LOG_REPAIR_STAGE}/mounts.tsv" "${LOG_REPAIR_STAGE}/repaired.yaml"); then
+        cleanup_log_repair
+        return 1
+    fi
+    log_info "日志路径检查完成，待补齐 ${LOG_REPAIR_COUNT} 个文件。"
+}
+
+apply_staged_log_repair() {
+    [[ "$LOG_REPAIR_COUNT" == 0 ]] && return 0
+    if [[ -L "$LOG_REPAIR_FILE" ]]; then log_err '修复采集文件是符号链接，未写入。'; return 1; fi
+    mkdir -p "$(dirname "$LOG_REPAIR_FILE")" && cp -- "${LOG_REPAIR_STAGE}/repaired.yaml" "$LOG_REPAIR_FILE"
+}
+
+repair_log_acquis() {
+    require_core && require_yaml || return 1
+    prepare_log_repair || return 1
+    if [[ "$LOG_REPAIR_COUNT" == 0 ]]; then
+        log_info '未发现需要补齐的现有 HTTP 日志；请结合新请求与 cscli metrics 核验。'
+        cleanup_log_repair
+        return 0
+    fi
+    if ! confirm '补齐上述日志采集并校验、重启 CrowdSec？'; then cleanup_log_repair; return 0; fi
+    begin_config_change "$LOG_REPAIR_FILE" || { cleanup_log_repair; return 1; }
+    if ! apply_staged_log_repair || ! apply_core_config; then
+        restore_config_change
+        cleanup_log_repair
+        return 1
+    fi
+    log_succ "已补齐 ${LOG_REPAIR_COUNT} 个日志文件。现有采集配置保留；请访问网站后查看 cscli metrics。"
+    cleanup_log_repair
 }
 
 enable_prometheus_metrics() {
@@ -925,12 +992,14 @@ smart_audit_and_optimize() {
     free -m
     df -h /
     check_health_status || true
-    log_info '可应用项目：补齐基础集合、启用 loopback 指标。保留日志自定义配置、账号与 AppSec。'
+    log_info '可应用项目：补齐基础集合、按预设目录和 Docker 挂载修复 HTTP 日志采集、启用 loopback 指标。保留现有配置、账号与 AppSec。'
     confirm '应用上述配置？' || return 0
     require_yaml || return 1
-    begin_config_change "${CS_DIR}/config.yaml" "${CS_DIR}/config.yaml.local" || return 1
-    if ! reset_waf_to_core_baseline || ! enable_prometheus_metrics || ! apply_core_config; then restore_config_change; return 1; fi
-    log_succ '已应用并验证基础规则与指标配置。'
+    prepare_log_repair || return 1
+    begin_config_change "${CS_DIR}/config.yaml" "${CS_DIR}/config.yaml.local" "$LOG_REPAIR_FILE" || { cleanup_log_repair; return 1; }
+    if ! reset_waf_to_core_baseline || ! enable_prometheus_metrics || ! apply_staged_log_repair || ! apply_core_config; then restore_config_change; cleanup_log_repair; return 1; fi
+    cleanup_log_repair
+    log_succ '已完成基础修复并校验配置；日志采集请通过新增访问与 cscli metrics 核验。'
     log_info 'SQLite WAL 可使用 --enable-wal，在确认数据库位于本地磁盘后启用官方 db_config.use_wal。'
 }
 
@@ -1038,7 +1107,7 @@ manage_uninstall_center() {
 show_main_menu() {
     local choice
     while true; do
-        printf '\nCrowdSec 管理中心 — 首次使用请先安装 [1]，再检查 [9]\n1. 安装核心与 Firewall Bouncer\n2. WebUI 管理\n3. 日志规则与 AppSec WAF\n4. Hub 定时更新\n5. 黑名单与防火墙\n6. 注册 Console\n7. Telegram 告警\n8. 诊断与基础配置优化\n9. 只读健康检查\n10. 卸载与只读残留检查\n0. 退出\n'
+        printf '\nCrowdSec 管理中心 — 首次使用请先安装 [1]，再检查 [9]\n1. 安装核心与 Firewall Bouncer\n2. WebUI 管理\n3. 日志规则与 AppSec WAF\n4. Hub 定时更新\n5. 黑名单与防火墙\n6. 注册 Console\n7. Telegram 告警\n8. 诊断、修复与基础配置优化\n9. 只读健康检查\n10. 卸载与只读残留检查\n0. 退出\n'
         prompt choice '请选择 [0-10]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
             1) install_crowdsec_core ;;
@@ -1073,6 +1142,7 @@ show_help() {
   --enable-cron        每天 03:30 更新 Hub
   --clean-redundant    查看节点并选择注销（不自动批量删除）
   --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
+  --repair-logs        按现有日志及 Docker 挂载补齐 HTTP 采集，保留原配置
   --reset-baseline     补齐基础集合，保留自定义与 AppSec
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      选择确认后移除已知 Web 日志规则
@@ -1080,7 +1150,7 @@ show_help() {
   --deep-clean/--purge 确认后卸载并清理数据
   --telegram           Telegram 管理菜单
   --telegram-test      使用官方通知插件测试
-  --optimize           诊断后选择应用基础配置
+  --optimize           诊断后选择修复日志采集、基础规则与指标配置
   --enable-wal         确认本地 SQLite 后配置官方 use_wal
   --status             只读健康检查
   --uninstall          确认后卸载并清理数据
@@ -1105,6 +1175,7 @@ main() {
         --disable-appsec) disable_appsec ;;
         --clean-redundant) check_and_clean_redundant_instances ;;
         --repair-bouncer) repair_firewall_bouncer ;;
+        --repair-logs) repair_log_acquis ;;
         --reset-baseline|--reset-56) reset_waf_to_core_baseline ;;
         --uninstall-waf) uninstall_all_waf_extensions ;;
         --check-clean) audit_crowdsec_residuals ;;

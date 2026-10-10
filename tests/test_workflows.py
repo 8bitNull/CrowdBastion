@@ -1,6 +1,7 @@
 """User workflow regression tests; all system effects are confined to a temporary tree."""
 import fnmatch
 import glob
+import json
 import os
 from pathlib import Path
 import re
@@ -37,6 +38,10 @@ class Workflows(unittest.TestCase):
         self.config.mkdir(parents=True)
         (self.base / "etc/cron.d").mkdir(parents=True)
         (self.config / "config.yaml").write_text('api:\n  client:\n    credentials_path: '+str(self.config/'local_api_credentials.yaml')+'\n  server:\n    listen_uri: 127.0.0.1:8080\nprometheus:\n  enabled: false\n  listen_addr: 0.0.0.0\n  listen_port: 6060\n  level: aggregated\n')
+        with (self.config/'config.yaml').open('a') as config_file:
+            config_file.write(yaml.safe_dump({'crowdsec_service': {
+                'acquisition_path': str(self.config/'acquis.yaml'),
+                'acquisition_dir': str(self.config/'acquis.d')}}))
         (self.config / "local_api_credentials.yaml").write_text('url: http://127.0.0.1:8080/\nlogin: webui-legitimate-host\npassword: test-password\n')
         (self.config / "profiles.yaml").write_text('name: default_ip_remediation\nfilters:\n  - Alert.Remediation == true\ndecisions:\n  - type: ban\n    duration: 4h\non_success: break\n')
 
@@ -386,6 +391,239 @@ journalctl() { record journalctl "$@"; }
         self.assertNotIn('collections install', self.commands())
         self.assertNotIn('apt-get', self.commands())
         self.assertNotIn('systemctl restart', self.commands())
+
+    def web_log(self, relative):
+        path = self.base/relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('test HTTP log\n')
+        return path
+
+    def repaired_sources(self):
+        path = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
+        return [(name, doc['labels']['type'])
+                for doc in yaml.safe_load_all(path.read_text())
+                for name in doc.get('filenames', [])]
+
+    def test_optimize_repairs_missing_1panel_log_acquisition(self):
+        log = self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        original = self.config/'acquis.d/web-sites.yaml'
+        original.parent.mkdir()
+        original.write_text('# Keep my custom settings\nfilenames: [/custom/access.log]\nlabels: {type: nginx, site: custom}\n')
+        before = original.read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn((str(log), 'nginx'), self.repaired_sources())
+        self.assertEqual(original.read_bytes(), before)
+        self.assertIn('systemctl restart crowdsec', self.commands())
+
+    def test_log_repair_discovers_custom_docker_mounts_and_excludes_stream_logs(self):
+        nginx_log = self.web_log('srv/custom panel/www/sites/bob.example.com/log/access.log')
+        npm_log = self.web_log('srv/custom-npm/logs/proxy-host-1_access.log')
+        self.web_log('srv/custom-npm/logs/stream-1_access.log')
+        self.web_log('srv/custom-npm/logs/fallback_stream_access.log')
+        nginx_mounts = json.dumps([{'Source': str(self.base/'srv/custom panel/www'), 'Destination': '/www'}])
+        npm_mounts = json.dumps([{'Source': str(self.base/'srv/custom-npm/logs'), 'Destination': '/data/logs'}])
+        override = '''docker() {
+ record docker "$@"
+ case "$*" in
+  'ps --format {{.ID}} {{.Image}}') printf '%s\\n' 'web1 1panel/openresty:latest' 'web2 jc21/nginx-proxy-manager:latest' 'other cloudflare/cloudflared:latest' ;;
+  'inspect --format {{json .Mounts}} web1') printf '%s\\n' ''' + shlex.quote(nginx_mounts) + ''' ;;
+  'inspect --format {{json .Mounts}} web2') printf '%s\\n' ''' + shlex.quote(npm_mounts) + ''' ;;
+  *) return 1 ;;
+ esac
+}'''
+        p = self.run_shell('main --repair-logs', 'y\n', override)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertCountEqual(self.repaired_sources(), [(str(nginx_log), 'nginx'),
+                                                       (str(npm_log), 'nginx-proxy-manager')])
+
+    def test_log_repair_is_idempotent_and_skips_logs_already_acquired_via_alias(self):
+        directory = self.base/'opt/1panel/1panel/www/sites/bob.example.com/log'
+        covered = self.web_log(str(directory.relative_to(self.base)/'access.log'))
+        added = self.web_log(str(directory.relative_to(self.base)/'error.log'))
+        alias = self.base/'alias-access.log'
+        alias.symlink_to(covered)
+        original = self.config/'acquis.d/custom.yaml'
+        original.parent.mkdir()
+        original.write_text(yaml.safe_dump({'filenames': [str(alias)], 'labels': {'type': 'nginx'}}))
+        before = original.read_bytes()
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.repaired_sources(), [(str(added), 'nginx')])
+        repair = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
+        first = repair.read_bytes()
+        self.trace.write_text('')
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(repair.read_bytes(), first)
+        self.assertEqual(original.read_bytes(), before)
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_cancel_keeps_acquisition_and_services_unchanged(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        p = self.run_shell('repair_log_acquis', 'n\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_validation_failure_restores_existing_repair_config(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        repair = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
+        repair.parent.mkdir()
+        repair.write_text('# Previous repair\nfilenames: [/custom/other.log]\nlabels: {type: nginx}\n')
+        before = repair.read_bytes()
+        p = self.run_shell('repair_log_acquis', 'y\n',
+                           'crowdsec() { record crowdsec "$@"; return 1; }')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertIn('crowdsec -t', self.commands())
+        self.assertEqual(repair.read_bytes(), before)
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_with_unavailable_docker_still_finds_existing_preset_logs(self):
+        log = self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        p = self.run_shell('repair_log_acquis', 'y\n',
+                           'docker() { record docker "$@"; return 1; }')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn((str(log), 'nginx'), self.repaired_sources())
+
+    def test_log_repair_malformed_mount_data_stops_without_writing_config(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        p = self.run_shell('repair_log_acquis', 'y\n', '''docker() {
+ record docker "$@"
+ case "$1" in ps) echo 'web1 1panel/openresty:latest';; inspect) echo 'not-json';; esac
+}''')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertIn('docker inspect --format', self.commands())
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_respects_active_acquisition_paths_from_config_local(self):
+        covered = self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        added = self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/error.log')
+        active = self.base/'srv/crowdsec-acquis'
+        active.mkdir(parents=True)
+        single = self.base/'srv/custom-acquisition.yaml'
+        single.write_text(yaml.safe_dump({'filenames': [str(covered)], 'labels': {'type': 'nginx'}}))
+        override = self.config/'config.yaml.local'
+        override.write_text(yaml.safe_dump({'crowdsec_service': {
+            'acquisition_path': str(single), 'acquisition_dir': str(active)}}))
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        repair = active/'crowdsec-1key-log-repair.yaml'
+        self.assertTrue(repair.exists(), p.stdout+p.stderr)
+        docs = list(yaml.safe_load_all(repair.read_text()))
+        self.assertEqual([name for doc in docs for name in doc['filenames']], [str(added)])
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+
+    def test_log_repair_excludes_files_hidden_by_more_specific_docker_mounts(self):
+        self.web_log('home/docker/npm/data/logs/proxy-host-1_access.log')
+        self.web_log('opt/1panel/www/sites/old.example.com/log/access.log')
+        npm_log = self.web_log('srv/active-npm/proxy-host-2_access.log')
+        nginx_log = self.web_log('srv/active-sites/bob.example.com/log/access.log')
+        npm_mounts = json.dumps([
+            {'Source': str(self.base/'home/docker/npm/data'), 'Destination': '/data'},
+            {'Source': str(self.base/'srv/active-npm'), 'Destination': '/data/logs'}])
+        nginx_mounts = json.dumps([
+            {'Source': str(self.base/'opt/1panel/www'), 'Destination': '/www'},
+            {'Source': str(self.base/'srv/active-sites'), 'Destination': '/www/sites'}])
+        override = '''docker() {
+ record docker "$@"
+ case "$1" in
+  ps) printf '%s\\n' 'web1 1panel/openresty:latest' 'web2 jc21/nginx-proxy-manager:latest' ;;
+  inspect) case "${@: -1}" in
+   web1) printf '%s\\n' '''+shlex.quote(nginx_mounts)+''' ;;
+   web2) printf '%s\\n' '''+shlex.quote(npm_mounts)+''' ;;
+   esac ;;
+ esac
+}'''
+        p = self.run_shell('repair_log_acquis', 'y\n', override)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertCountEqual(self.repaired_sources(), [(str(nginx_log), 'nginx'),
+                                                       (str(npm_log), 'nginx-proxy-manager')])
+
+    def test_log_repair_skips_single_filename_and_go_escaped_existing_sources(self):
+        cases = [('filename', 'bob.example.com', None),
+                 ('filenames', 'bob[one]', r'bob\[one\]'),
+                 ('filenames', 'bob!', 'bob[!x]'),
+                 ('filenames', 'b', '[^z-a]')]
+        for key, folder, pattern_folder in cases:
+            with self.subTest(key=key, folder=folder):
+                self.web_log('opt/1panel/1panel/www/sites/'+folder+'/log/access.log')
+        original = self.config/'acquis.d/other.yaml'
+        original.parent.mkdir()
+        docs = []
+        for key, folder, pattern_folder in cases:
+            pattern = str(self.base/'opt/1panel/1panel/www/sites')+'/'+(pattern_folder or folder)+'/log/access.log'
+            docs.append({key: pattern if key == 'filename' else [pattern], 'labels': {'type': 'nginx'}})
+        docs.append({'filenames': [str(self.base/'opt/1panel/1panel/www/sites')+'/[z-a]/log/access.log'],
+                     'labels': {'type': 'nginx'}})
+        original.write_text(yaml.safe_dump_all(docs))
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_rejects_symlink_destination_without_changing_target(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        target = self.base/'external-acquisition.yaml'
+        target.write_text('filenames: [/custom/old.log]\nlabels: {type: nginx}\n')
+        before = target.read_bytes()
+        repair = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
+        repair.parent.mkdir()
+        repair.symlink_to(target)
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertEqual(target.read_bytes(), before)
+        self.assertTrue(repair.is_symlink())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_ignores_unrelated_tmpfs_mounts(self):
+        log = self.web_log('srv/custom-nginx/access.log')
+        mounts = json.dumps([
+            {'Type': 'bind', 'Source': str(self.base/'srv/custom-nginx'), 'Destination': '/var/log/nginx'},
+            {'Type': 'tmpfs', 'Source': '', 'Destination': '/tmp'}])
+        override = '''docker() {
+ case "$1" in ps) echo 'web1 nginx:alpine';;
+ inspect) printf '%s\\n' '''+shlex.quote(mounts)+''' ;;
+ esac
+}'''
+        p = self.run_shell('repair_log_acquis', 'y\n', override)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.repaired_sources(), [(str(log), 'nginx')])
+
+    def test_log_repair_disabled_acquisition_directory_stops_without_writes(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        (self.config/'config.yaml.local').write_text('crowdsec_service:\n  acquisition_dir: null\n')
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_missing_acquisition_directory_stops_without_writes(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        config = self.config/'config.yaml'
+        data = yaml.safe_load(config.read_text())
+        del data['crowdsec_service']['acquisition_dir']
+        config.write_text(yaml.safe_dump(data))
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_disabled_agent_stops_without_writes(self):
+        self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+        (self.config/'config.yaml.local').write_text('crowdsec_service:\n  enable: false\n')
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_log_repair_outputs_go_escaped_literal_paths(self):
+        self.web_log(r'opt/1panel/1panel/www/sites/bob[one]\two/log/access.log')
+        p = self.run_shell('repair_log_acquis', 'y\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        expected = str(self.base)+r'/opt/1panel/1panel/www/sites/bob\[one\]\\two/log/access.log'
+        self.assertEqual(self.repaired_sources(), [(expected, 'nginx')])
 
     def test_collection_removal_cancel_preserves_rules(self):
         self.run_shell('uninstall_specific_waf_collection', 'crowdsecurity/wordpress\nn\n')
