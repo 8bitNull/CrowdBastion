@@ -1,121 +1,162 @@
-# CrowdSec 防护管理脚本
+# CrowdSec 防护管理中心
 
-面向 1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）和宿主机 Nginx 的 Bash 管理工具，集中管理 CrowdSec、防火墙 Bouncer、日志采集、规则库、WebUI 和 Telegram 告警。
-
-## 环境要求
-
-- 使用 root 权限，在由 systemd 管理的 Linux 宿主机上运行。
-- 脚本包含 Debian、Ubuntu、CentOS、RHEL、AlmaLinux、Rocky Linux 和 Fedora 的软件包安装分支；实际可安装性取决于系统版本及 CrowdSec 软件源。
-- 需要访问 CrowdSec 软件源和 Hub；部署 WebUI 还需要访问 GitHub Container Registry。
-- WebUI 需要预先安装 Docker，优先使用 `docker compose`，其次使用 `docker-compose`，均不可用时使用 `docker run`。
-- 定时更新需要运行中的 cron 服务；SQLite 调优使用 `sqlite3` 或 Python 3。
+面向 1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）和宿主机 Nginx/OpenResty 的管理工具。提供 CrowdSec 安装、日志检测规则、Firewall Bouncer、AppSec 接入、WebUI、Telegram 告警与日常运维菜单。
 
 ## 开始使用
 
-在包含脚本的目录执行：
+下载完整仓库后运行，配置辅助程序 `lib/crowdsec_config.py` 必须与脚本一起保留：
 
 ```bash
+# 私有仓库需要先配置 GitHub 访问凭据
+git clone https://github.com/8bitNull/crowdsec-1key.git
+cd crowdsec-1key
 sudo bash install-crowdsec-1panel.sh
 ```
 
-建议先选择菜单 `1` 安装核心与 Firewall Bouncer，再用菜单 `9` 检查服务和配置，按需配置规则、定时任务、WebUI 与告警。
+首次使用建议依次选择：
+
+1. 菜单 `1` 安装 CrowdSec 与 Firewall Bouncer，确认管理员公网 IP。
+2. 菜单 `9` 检查服务、LAPI、日志解析指标与防火墙资源。
+3. 菜单 `3` 按网站类型安装日志规则；需要在线请求检查时另行配置 AppSec。
+4. 按需配置菜单 `4` 的规则更新、菜单 `2` 的 WebUI 和菜单 `7` 的 Telegram。
+
+子菜单在操作后保留，输入 `0` 返回；输入结束或 `Ctrl+D` 可退出菜单。删除、注销、停用和卸载操作默认取消，需要明确输入 `y`。命令行操作失败返回非零状态，交互菜单会保留供继续操作。
+
+## 环境要求
+
+- root 权限、Bash 和由 systemd 管理的 Linux 宿主机。
+- 核心安装包含 Debian/Ubuntu 及 CentOS/RHEL/AlmaLinux/Rocky/Fedora 分支；软件包可用性取决于发行版版本与官方软件源。
+- 配置编辑需要 Python 3 与 PyYAML；核心安装会安装相应系统软件包。已装 CrowdSec 的机器可先安装 `python3-yaml`（Debian/Ubuntu）或 `python3-pyyaml`（RHEL 系列）。
+- WebUI 需要预装 Docker 和 Docker Compose；支持 `docker compose` 或旧版 `docker-compose`。
+- 定时更新需要运行中的 `cron`/`crond` 服务。
+- 需要访问 CrowdSec 软件源、Hub；WebUI 需要访问 `ghcr.io`，Telegram 需要访问所配置的 HTTPS 端点。
 
 ## 主菜单
 
 | 选项 | 功能 |
 | --- | --- |
-| 1 | 安装或重装 CrowdSec 与 Firewall Bouncer，优先尝试 nftables，回退到 iptables；配置日志采集、基础规则和管理员白名单 |
-| 2 | 部署或更新 WebUI、删除 WebUI、查看容器日志、重新生成 LAPI 连接凭据 |
-| 3 | 安装 Web、WordPress、网络扫描场景规则，查看和升级规则集合 |
-| 4 | 开启、调整或关闭每日 Hub 更新任务 |
-| 5 | 查看封禁与警报、手动封禁或解封 IP、查看防火墙状态与解析指标 |
-| 6 | 使用 Enrollment Key 绑定 CrowdSec Console |
-| 7 | 配置、测试、检查或关闭 Telegram 告警，支持自定义 Telegram API 端点 |
-| 8 | 诊断资源与 Web 环境，执行 SQLite WAL 调优、采集配置重建、规则补齐和指标配置 |
-| 9 | 检查核心服务、Bouncer、WebUI 和 CrowdSec 配置 |
-| 10 | 完全卸载 CrowdSec、防火墙 Bouncer、WebUI 及相关配置和数据 |
-| 0 | 退出 |
+| 1 | 安装核心和官方 Firewall Bouncer，写入常见日志采集、管理员白名单及基础规则 |
+| 2 | 部署/更新 WebUI、卸载本工具 WebUI、查看日志、检查/轮换其独立凭据、查看并选择注销 Machine |
+| 3 | 管理日志检测规则、补齐基础集合，以及配置、检查、验证或停用 AppSec |
+| 4 | 设置、查看或关闭每天的 Hub 规则更新任务 |
+| 5 | 查看警报和决策、手动封禁/解封 IP、检查防火墙、修复 Bouncer 连接配置 |
+| 6 | 提交 Console 注册；成功后仍需在官方控制台接受注册 |
+| 7 | 配置、测试、检查或停用本工具 Telegram 通道 |
+| 8 | 只读诊断后选择补齐基础规则和启用指标 |
+| 9 | 只读健康检查，检查服务、LAPI、配置、注册节点、采集指标和防火墙资源 |
+| 10 | 明确确认后卸载，或执行只读残留检查 |
 
-管理员 IP 从 `SSH_CLIENT`、`SSH_CONNECTION` 或当前登录信息提取；无法识别时会要求手工输入。白名单包含回环地址、私有 IPv4 网段及 `100.64.0.0/10`。
+Machine 是 LAPI 客户端凭据，名字相似不代表重复的防御引擎；脚本不会根据名称、日期或版本自动重建宿主机身份，也不会批量删除所有 `webui-*` 或其他 Bouncer。
 
-## 命令行入口
+## 日志检测与 AppSec WAF
 
-```bash
-sudo bash install-crowdsec-1panel.sh --install-core
-sudo bash install-crowdsec-1panel.sh --install-webui
-sudo bash install-crowdsec-1panel.sh --install-waf
-sudo bash install-crowdsec-1panel.sh --enable-cron
-sudo bash install-crowdsec-1panel.sh --telegram
-sudo bash install-crowdsec-1panel.sh --telegram-test
-sudo bash install-crowdsec-1panel.sh --optimize
-sudo bash install-crowdsec-1panel.sh --uninstall
+日志检测读取访问日志、识别行为并形成决策，由 Bouncer 执行相应阻断。安装 `http-cve`、`base-http-scenarios` 等日志集合不会自动建立在线请求检查链路。
+
+根据 [官方 AppSec 介绍](https://docs.crowdsec.net/docs/next/appsec/intro/) 和 [Nginx/OpenResty quickstart](https://docs.crowdsec.net/docs/next/appsec/quickstart/nginxopenresty/)，AppSec 需要三个部分：
+
+1. 官方集合 `crowdsecurity/appsec-virtual-patching` 和 `crowdsecurity/appsec-generic-rules`。
+2. 启用 `source: appsec` 数据源，并重启 CrowdSec。
+3. 已安装、注册并在网站中启用的 AppSec 兼容 Web Bouncer，将 HTTP 请求转发给 AppSec。
+
+菜单 `3 → 9` 或 `--install-appsec` 安装集合，并创建：
+
+```yaml
+source: appsec
+listen_addr: 127.0.0.1:7422
+appsec_configs:
+  - crowdsecurity/appsec-default
+labels:
+  type: appsec
 ```
 
-这些参数用于直接进入对应功能，多数仍包含交互提示，不适合作为完全无人值守的部署接口。`--install-waf` 安装 Nginx、HTTP-CVE、基础 HTTP 场景及良性行为白名单，菜单中的 Web 套件另包含 NPM 集合。
+随后可选择接入已有的宿主机 Nginx/OpenResty Bouncer，将其 `APPSEC_URL` 设置为 `http://127.0.0.1:7422`。脚本不代替安装 Web Bouncer 和启用网站内的 Bouncer 集成；缺少对应配置时会明确报告。已有外部 AppSec 数据源时不会创建重复监听。
 
-## 日志采集范围
+Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。1Panel/NPM 容器内部的 `127.0.0.1` 通常不是宿主机；容器部署需按上游文档配置专用网络和兼容组件。脚本不会自动修改容器内部 Nginx，也不会将 AppSec 端口直接暴露到公网。
 
-脚本将以下常见路径写入 `/etc/crowdsec/acquis.d/web-sites.yaml`：
+验证方式：菜单 `3 → 11` 或 `--verify-appsec` 输入自己管理的网站根地址，比较 `cscli metrics show appsec` 的前后计数，并检查 `/.env` 请求响应。预期是 HTTP 403、Processed/Blocked 增加，以及对应规则命中。单独一个 403 不能证明 AppSec 生效。
 
-| 环境 | 日志路径 |
+停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。容器/外部代理需要自行同步停用转发。
+
+## 日志采集与防火墙
+
+采集配置为 `/etc/crowdsec/acquis.d/web-sites.yaml`：
+
+| 环境 | 常见日志路径 |
 | --- | --- |
 | 1Panel OpenResty | `/opt/1panel/apps/openresty/openresty/logs/*.log`、`/opt/1panel/apps/openresty/openresty/data/sites/*/log/*.log` |
 | 科技lion LDNMP | `/home/web/log/nginx/*.log`、`/home/web/log/nginx/*/*.log` |
 | 宿主机 Nginx | `/var/log/nginx/*.log` |
 | NPM | `/home/docker/npm/data/logs/*.log`、`/opt/npm/data/logs/*.log`、`/opt/nginx-proxy-manager/data/logs/*.log`、`/data/logs/*.log`、`/var/log/nginx-proxy-manager/*.log` |
-| SSH / 系统认证 | `/var/log/auth.log`、`/var/log/secure` |
+| SSH 认证 | `/var/log/auth.log`、`/var/log/secure` |
 
-Nginx 日志使用 `nginx` 标签，NPM 使用 `nginx-proxy-manager`，认证日志使用 `syslog`。自定义挂载目录需要自行调整采集配置，并通过 `cscli metrics` 确认日志确实被读取和解析。
+Nginx、NPM、系统日志分别使用 `nginx`、`nginx-proxy-manager`、`syslog` 标签。采集不重复列出已被通配符覆盖的 `access.log`/`error.log`。实际日志位置、格式、自定义挂载目录和仅使用 journald 的系统需要按部署调整。用 `cscli metrics` 核查采集和解析；存在配置文件不等于实际采集成功。
 
-## WebUI、指标与告警
+管理员 IP 从 `SSH_CLIENT` 或 `SSH_CONNECTION` 提取，无法识别时手工输入；白名单包含回环和常见内网网段。手动封禁接受 IPv4/IPv6，会规范化地址并拒绝封禁当前 SSH IP。时长使用 Go duration，如 `4h`、`24h`、`168h`；7 天应填写 `168h`。
 
-WebUI 使用镜像 `ghcr.io/theduffman85/crowdsec-web-ui:latest`，采用宿主机网络。访问端口默认 `3000`，部署时可修改；LAPI 端口默认 `8080`，脚本会尝试从 CrowdSec 配置读取实际端口。Prometheus 指标端口为 `6060`，供 WebUI 展示解析器和组件指标。
+Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方软件包配置及其他凭据，在 `.yaml.local` 中更新 LAPI 地址和密钥；iptables 模式检测到 `DOCKER-USER` 时加入对应链。核验会检查 IPv4、IPv6、配置中的 nftables 表及默认 IPSet 资源，但仍需在实际主机上确认 Bouncer 拉取和流量阻断。
 
-脚本会注册独立的 LAPI Machine 账号，并将配置与持久化数据放入 `/opt/crowdsec-web-ui`。脚本提示该 WebUI 默认没有登录密码页面，因此应限制访问，并通过反向代理配置 HTTPS 和身份认证。
+## WebUI、Telegram 与更新
 
-Telegram 配置需要 Bot Token、Chat ID，可指定 API 代理端点。配置保存在 `/etc/crowdsec/notifications/http.yaml`，告警路由涉及 `/etc/crowdsec/profiles.yaml`，Telegram 网段白名单保存在 `/etc/crowdsec/parsers/s02-enrich/tg-whitelist.yaml`。这些运行时配置可能含有凭据，不应提交到源码仓库。
+WebUI 使用 `ghcr.io/theduffman85/crowdsec-web-ui:latest`，宿主机网络，端口默认 `3000`。LAPI 地址从宿主机凭据读取；指标配置为 `127.0.0.1:6060`。已有有效独立 Machine 会被复用；凭据检查真正验证 WebUI 账号，轮换成功后才注销旧账号。镜像拉取失败保留现有部署；更新失败会恢复配置并尝试用原镜像恢复旧容器。数据在 `/opt/crowdsec-web-ui`，应按镜像实际认证功能设置访问保护并使用 HTTPS 反向代理。
 
-## 自动更新与运维
+Telegram 使用独立通知名称 `crowdsec_1key_telegram` 和 `/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml`，保留既有通道。模板先转换模型字段为实际值，再使用 `toJson` 生成请求体，支持多条告警和没有决策的告警；测试走官方 `cscli notifications test`，会真实向所配置机器人发送消息。告警发送是出站请求，不添加 Telegram 来源网段白名单。旧脚本写入的 `http_default` 通道和白名单不会自动删除，升级后应人工确认是否继续保留，避免重复通知。
 
-默认定时任务在服务器本地时间每天 `03:30` 执行：
+默认规则更新使用服务器时区的每天 `03:30`，写入 `/etc/cron.d/crowdsec-autoupdate`，依次执行 Hub 更新、升级、配置校验和服务重载。自定义时分会验证范围。此任务更新 Hub 规则，CAPI 社区名单由 CrowdSec 引擎自身同步。
 
-```bash
-cscli hub update && cscli hub upgrade && systemctl reload crowdsec
-```
+SQLite 优化使用官方 `db_config.use_wal: true`，通过 `--enable-wal` 在确认数据库位于本地磁盘后启用。网络共享盘不适合 WAL。本工具不直接对运行中的数据库执行临时 PRAGMA 或 VACUUM，不承诺固定性能倍数。
 
-任务文件为 `/etc/cron.d/crowdsec-autoupdate`。它更新 Hub 规则并重载服务；社区封禁名单同步由 CrowdSec 自身机制负责。
-
-常用检查命令：
+## 命令行入口
 
 ```bash
-sudo crowdsec -t
-sudo systemctl status crowdsec --no-pager
-sudo cscli bouncers list
-sudo cscli collections list
-sudo cscli metrics
-sudo cscli decisions list
-sudo cscli alerts list
-sudo journalctl -u crowdsec -n 100 --no-pager
-sudo docker logs --tail 100 crowdsec-web-ui
+bash install-crowdsec-1panel.sh --help
 ```
 
-## 操作影响与注意事项
+| 参数 | 功能 |
+| --- | --- |
+| `--install-core` | 安装核心和 Firewall Bouncer |
+| `--install-webui` | 部署/更新 WebUI |
+| `--reset-webui-credentials` | 检查并选择轮换 WebUI 凭据 |
+| `--install-waf` | 安装 Web 日志检测集合 |
+| `--install-appsec` | 配置 AppSec 并选择接入 Web Bouncer |
+| `--appsec-status` | AppSec 状态与指标 |
+| `--verify-appsec` | 对指定网站执行官方验证请求 |
+| `--disable-appsec` | 停用本工具 AppSec |
+| `--enable-cron` | 每天 03:30 更新 Hub |
+| `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
+| `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
+| `--reset-baseline`、`--reset-56` | 补齐基础集合；兼容旧参数，保留自定义/AppSec，不保证固定场景数 |
+| `--uninstall-waf` | 确认后移除已知 Web 日志扩展 |
+| `--check-clean` | 只读残留检查 |
+| `--deep-clean`、`--purge`、`--uninstall` | 确认后卸载和删除数据 |
+| `--telegram` | Telegram 管理菜单 |
+| `--telegram-test` | 官方通知插件测试 |
+| `--optimize` | 诊断并选择应用基础配置 |
+| `--enable-wal` | 确认本地 SQLite 后启用官方 WAL 配置 |
+| `--status` | 只读健康检查 |
+| `--help`、`-h` | 帮助，不需要 root |
 
-- 安装、调优和告警配置会修改系统配置并可能重启服务；操作前应备份 `/etc/crowdsec` 及相关数据。
-- 本脚本主要通过日志检测和 Firewall Bouncer 执行 IP 封禁；安装 Web 场景集合并不等同于部署在线请求检查的 AppSec WAF。
-- 白名单用于降低管理员误封风险，部署后仍应检查实际封禁决策和 Bouncer 状态。
-- 脚本多处使用 `|| true` 继续执行，完成提示不能替代服务、配置和日志验证。
-- 调优会重建采集配置，并可能修复或隔离损坏的白名单解析器文件。
-- 完全卸载需输入确认，并会删除 `/etc/crowdsec`、`/var/lib/crowdsec`、WebUI 数据及定时任务；仅卸载 WebUI 也会删除其持久化目录。
+每次仅指定一个操作。命令行仍保留必要的输入与确认，不能直接当作无人值守部署接口。
 
-## 源码与检查
+## 备份、失败恢复与卸载
 
-核心源码：[`install-crowdsec-1panel.sh`](install-crowdsec-1panel.sh)。
+配置修改前备份保存在 `/var/backups/crowdsec-1key/change.*`，目录权限为 `700`，含凭据的配置文件权限为 `600`。结构化 YAML 编辑保留无关配置值，可能重排格式或去除注释；原始文件保留在备份中。
 
-只检查 Bash 语法，不执行安装或修改防火墙：
+配置校验失败不重启核心；服务启动失败会恢复配置并尝试恢复原服务。Hub 集合下载/安装不属于配置文件回滚范围；失败时保留诊断输出，修复后可重新执行。
+
+卸载需要明确确认，会停止服务、卸载检测到的软件包并删除 CrowdSec 数据和本工具 WebUI。若仍存在宿主机 Web Bouncer 集成，需先按上游文档移除集成并验证网站，否则核心卸载会中止。服务停止后仍有防火墙资源时会中止清理，保留配置供排查。备份、系统日志及软件源不自动删除；其他容器和不属于本工具的目录不进行广泛匹配清理。
+
+## 验证与官方参考
 
 ```bash
 bash -n install-crowdsec-1panel.sh
+shellcheck install-crowdsec-1panel.sh
+python3 -m pip install -r tests/requirements.txt
+python3 -m unittest discover -s tests -v
+
+# 可选：下载并解压官方 CrowdSec Linux 发布包后运行真实引擎检查
+python3 tests/verify_engine.py /path/to/crowdsec-v1.8.1
 ```
 
-相关项目：[CrowdSec](https://github.com/crowdsecurity/crowdsec)、[CrowdSec Hub](https://hub.crowdsec.net/)、[CrowdSec Web UI](https://github.com/TheDuffman85/crowdsec-web-ui)。
+测试覆盖与部署验证边界详见 [验证记录](docs/verification.md)。真实引擎检查会下载 Hub 集合，在临时目录和 loopback 端口运行，不安装系统服务、不修改防火墙、不向真实 Telegram 发送消息。
+
+参考：[AppSec 数据源](https://docs.crowdsec.net/docs/next/log_processor/data_sources/appsec/)、[HTTP 通知插件](https://docs.crowdsec.net/docs/next/local_api/notification_plugins/http/)、[Profiles](https://docs.crowdsec.net/docs/next/local_api/profiles/intro/)、[CrowdSec 配置与 WAL](https://docs.crowdsec.net/docs/next/configuration/crowdsec_configuration/)、[Firewall Bouncer](https://docs.crowdsec.net/u/bouncers/firewall/)、[WebUI 上游](https://github.com/TheDuffman85/crowdsec-web-ui)。
