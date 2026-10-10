@@ -323,6 +323,28 @@ journalctl() { record journalctl "$@"; }
         self.assertNotIn('collections install', self.commands())
         self.assertNotIn('systemctl restart', self.commands())
 
+    def test_optimize_without_yaml_can_diagnose_and_cancel(self):
+        before = (self.config/'config.yaml').read_text()
+        p = self.run_shell('smart_audit_and_optimize', 'n\n',
+                           'require_yaml() { return 1; }')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('cscli metrics', self.commands())
+        self.assertEqual((self.config/'config.yaml').read_text(), before)
+        self.assertNotIn('collections install', self.commands())
+        self.assertNotIn('apt-get', self.commands())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_optimize_without_yaml_stops_before_applying_changes(self):
+        before = (self.config/'config.yaml').read_text()
+        p = self.run_shell('smart_audit_and_optimize', 'y\n',
+                           'require_yaml() { return 1; }')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('cscli metrics', self.commands())
+        self.assertEqual((self.config/'config.yaml').read_text(), before)
+        self.assertNotIn('collections install', self.commands())
+        self.assertNotIn('apt-get', self.commands())
+        self.assertNotIn('systemctl restart', self.commands())
+
     def test_collection_removal_cancel_preserves_rules(self):
         self.run_shell('uninstall_specific_waf_collection', 'crowdsecurity/wordpress\nn\n')
         self.assertNotIn('collections remove', self.commands())

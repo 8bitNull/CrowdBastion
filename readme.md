@@ -31,6 +31,10 @@ sudo bash install-crowdsec-1panel.sh
 - 定时更新需要运行中的 `cron`/`crond` 服务。
 - 需要访问 CrowdSec 软件源、Hub；WebUI 需要访问 `ghcr.io`，Telegram 需要访问所配置的 HTTPS 端点。
 
+若提示缺少 PyYAML，Debian/Ubuntu 执行 `sudo apt-get update && sudo apt-get install -y python3-yaml`，RHEL 系列使用 `sudo dnf install -y python3-pyyaml`（旧系统使用 yum），随后执行 `sudo python3 -c 'import yaml; print(yaml.__version__)'` 验证。若系统软件包已安装但验证仍失败，应检查当前 `python3` 是否来自自定义安装或虚拟环境；安装包必须与脚本实际使用的解释器对应。无需为补齐此依赖重新安装 CrowdSec。
+
+菜单 `8` 先执行只读诊断，确认应用配置后才检查 PyYAML；缺少依赖时会在任何配置修改前停止，并显示安装命令。菜单 `9` 不要求先安装该依赖，但缺少依赖时无法额外解析 Bouncer 配置中的自定义防火墙表。
+
 ## 主菜单
 
 | 选项 | 功能 |

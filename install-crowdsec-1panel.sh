@@ -72,6 +72,17 @@ require_yaml() {
     fi
     if ! python3 -c 'import yaml' 2>/dev/null; then
         log_err '需要 PyYAML：Debian/Ubuntu 安装 python3-yaml；RHEL 系列安装 python3-pyyaml。'
+        case "${OS_ID:-linux}" in
+            debian|ubuntu)
+                log_info '安装命令：sudo apt-get update && sudo apt-get install -y python3-yaml' ;;
+            centos|rhel|almalinux|rocky|fedora)
+                if command -v dnf >/dev/null 2>&1; then
+                    log_info '安装命令：sudo dnf install -y python3-pyyaml'
+                else
+                    log_info '安装命令：sudo yum install -y python3-pyyaml'
+                fi ;;
+        esac
+        log_info "当前 Python：$(command -v python3)；安装后请验证：sudo python3 -c 'import yaml; print(yaml.__version__)'"
         return 1
     fi
 }
@@ -879,13 +890,14 @@ auto_heal_broken_parsers() {
 }
 
 smart_audit_and_optimize() {
-    require_core && require_yaml || return 1
+    require_core || return 1
     printf '\n资源概况:\n'
     free -m
     df -h /
     check_health_status || true
     log_info '可应用项目：补齐基础集合、启用 loopback 指标。保留日志自定义配置、账号与 AppSec。'
     confirm '应用上述配置？' || return 0
+    require_yaml || return 1
     begin_config_change "${CS_DIR}/config.yaml" "${CS_DIR}/config.yaml.local" || return 1
     if ! reset_waf_to_core_baseline || ! enable_prometheus_metrics || ! apply_core_config; then restore_config_change; return 1; fi
     log_succ '已应用并验证基础规则与指标配置。'
