@@ -231,6 +231,9 @@ filenames:
   - /opt/1panel/apps/openresty/openresty/log/error.log
   - /opt/1panel/www/sites/*/log/access.log
   - /opt/1panel/www/sites/*/log/error.log
+  # 部分安装将 /opt/1panel/1panel/www 挂载到容器 /www。
+  - /opt/1panel/1panel/www/sites/*/log/access.log
+  - /opt/1panel/1panel/www/sites/*/log/error.log
   # 兼容旧版或其他部署布局。
   - /opt/1panel/apps/openresty/openresty/logs/access.log
   - /opt/1panel/apps/openresty/openresty/logs/error.log

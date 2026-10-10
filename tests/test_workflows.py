@@ -143,6 +143,9 @@ journalctl() { record journalctl "$@"; }
             'opt/1panel/www/sites/shop.example.com/log/error.log',
             'opt/1panel/www/sites/second.example.com/log/access.log',
             'opt/1panel/www/sites/second.example.com/log/error.log',
+            # Actual /www mount reported by the user: /opt/1panel/1panel/www.
+            'opt/1panel/1panel/www/sites/bob.example.com/log/access.log',
+            'opt/1panel/1panel/www/sites/bob.example.com/log/error.log',
         ]
         other_logs = [
             'opt/1panel/apps/openresty/openresty/log/stream-access.log',
