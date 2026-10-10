@@ -4,10 +4,9 @@
 
 ## 开始使用
 
-下载完整仓库后运行，配置辅助程序 `lib/crowdsec_config.py` 必须与脚本一起保留：
+下载完整仓库后运行，整个 `lib/` 目录必须与脚本一起保留：
 
 ```bash
-# 私有仓库需要先配置 GitHub 访问凭据
 git clone https://github.com/8bitNull/crowdsec-1key.git
 cd crowdsec-1key
 sudo bash install-crowdsec-1panel.sh
@@ -75,15 +74,26 @@ labels:
 
 配置写入实际启用的 `crowdsec_service.acquisition_dir`（读取 `config.yaml` 与 `.local`），校验并重启后检查 `127.0.0.1:7422` 是否存在监听。监听未出现时返回失败并提示查看日志；存在监听也只代表引擎连接入口可用，网站接入还需单独验证。已有外部 AppSec 数据源时不会创建重复监听。
 
-接入菜单仅显示已安装且命令可用的宿主机 Nginx/OpenResty Bouncer，另提供 `3：接入已有 Docker Web Bouncer`。Docker 接入支持运行中的 Nginx/OpenResty/NPM 镜像：选择容器后核对 `host` 网络、有效 Nginx 配置中的 CrowdSec 请求处理调用，以及官方 Bouncer 配置的 bind/volume 持久化挂载。满足条件才备份并修改 `APPSEC_URL=http://127.0.0.1:7422`，执行容器内 `nginx -t` 和重载；失败恢复配置并重载原配置。它不替代 Web Bouncer 的首次安装、注册和网站启用。
+接入菜单显示已安装且命令可用的宿主机 Bouncer，并提供 `3：接入已有 Docker Web Bouncer`、`4：首次安装 Web Bouncer`。首次安装也可单独执行 `sudo bash install-crowdsec-1panel.sh --install-web-bouncer`，前提是 AppSec 已监听。Docker 已有接入会核对 `host` 网络、有效 CrowdSec 请求调用和真实 bind/volume 配置挂载，备份后修改 `APPSEC_URL`、执行 `nginx -t` 并重载。首次安装生成的持久化配置也支持该入口。
+
+| 环境 | 首次安装适配与前提 |
+| --- | --- |
+| 1Panel OpenResty | 支持已确认的 `1pwaf/data/conf/waf.conf` 布局及 `host` 网络；从实际 Mounts 定位配置，不依赖固定宿主机目录 |
+| 科技lion LDNMP | 上游默认 `nginx:alpine` 不具备 Lua 能力，脚本会解释原因并停止；已有兼容 Lua 运行时、HTTP 层 `conf.d` 持久化入口及 `host` 网络时可安装 |
+| Nginx Proxy Manager | 检测实际 Lua 能力，使用持久化 `/data/nginx/custom/http_top.conf`；要求 `host` 网络，存在 `satisfy any` 或其他 Lua 请求钩子时先人工处理冲突 |
+| 宿主机 Nginx/OpenResty | Debian/Ubuntu 标准软件包环境使用官方 Bouncer 包；要求 CrowdSec apt 候选版本和已准备好的依赖，安装计划涉及其他软件包时停止，保留现有服务 |
+
+容器安装使用 SHA256 校验的官方 OpenResty Bouncer `v1.2.3` 和 lua-resty-http `v0.17.1`。库、模板、私有配置及钩子保存在同一持久化挂载中，并注册独立 Bouncer 账号。1Panel 原初始化、请求、worker 脚本先执行，再调用 CrowdSec，保留日志钩子、共享字典和原 Lua 搜索路径。使用 `loadfile` 后直接调用 Lua 函数以兼容 WAF 的 `ngx.exit`/协程行为；CrowdSec 及 HTTP 依赖单独命名，避免替换原 WAF 的 `resty.http`。
 
 Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。Docker 的 `host` 网络共享宿主机网络，可以连接宿主机 `127.0.0.1:7422`；bridge 等网络下该地址指向容器自身，脚本会停止自动接入并提示配置私有网络。AppSec 端口保持本机监听。
 
-检测到 1Panel 的 `1pwaf/waf.lua` 时会提示保留已有 Lua 请求处理逻辑。缺少 CrowdSec 请求处理组件时，脚本明确报告前提缺失，保留网站配置。首次安装需按[官方 OpenResty Bouncer 文档](https://docs.crowdsec.net/u/bouncers/openresty/)处理持久化、注册和 Lua 钩子共存；直接覆盖 1Panel WAF 的请求处理阶段可能使它失效。`--appsec-status` 会同时检查有效数据源、监听、容器网络及请求处理组件，不仅展示指标。
+未知 Lua 钩子、子级请求钩子覆盖、只读/非持久化挂载以及网络不满足前提时会停止安装。安装失败恢复原配置；确认原运行配置重载成功后才移除资源并注销新账号。恢复重载失败则保留资源和账号，记录 `recovery-required` 供后续恢复，避免删除仍被运行中 worker 使用的依赖。`--appsec-status` 同时检查数据源、监听、容器网络及请求处理组件。
 
 验证方式：菜单 `3 → 11` 或 `--verify-appsec` 输入自己管理的网站根地址，比较 `cscli metrics show appsec` 的前后计数，并检查 `/.env` 请求响应。预期是 HTTP 403、Processed/Blocked 增加，以及对应规则命中。单独一个 403 不能证明 AppSec 生效。
 
 停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。管理的 Docker 接入按容器名称与实际持久化挂载核对，支持容器重建后安全恢复；手工改过地址、挂载或网络时先停止并要求核对。失败时恢复配置并重载已变更的服务/容器。未由本工具接入的容器和外部代理需要自行同步停用转发。
+
+`3 → 13` 或 `--remove-web-bouncer` 撤销本工具首次安装的原生容器 Bouncer：核对挂载和文件内容，先恢复原网站/WAF 配置并重载，再注销账号、清理资源。清理失败保留 `cleanup-pending` 记录，可重复执行；已经删除的账号/资源不会阻止重试。手工修改过的配置或资源会保留并要求核对。宿主机官方软件包的撤销请按[官方 Nginx](https://docs.crowdsec.net/u/bouncers/nginx/)或 [OpenResty](https://docs.crowdsec.net/u/bouncers/openresty/)文档进行，先确认网站正常再卸载核心。
 
 ## 日志采集与防火墙
 

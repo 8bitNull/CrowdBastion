@@ -18,6 +18,9 @@
 | NPM 目录使用 `*.log`，会把 stream 日志当成 HTTP 日志；候选宿主机路径容易被当作官方固定路径 | 核对科技lion 的 LDNMP/NPM 上游挂载与 NPM 官方模板，收窄 NPM 到 HTTP 文件，文档明确默认和候选目录及 Docker 挂载验证方法 |
 | 日志集合被描述为已部署完整 WAF | 区分日志检测、Firewall Bouncer 和 AppSec；补全官方数据源及 Web Bouncer 接入流程 |
 | Docker 1Panel OpenResty 被引导选择宿主机 Bouncer；未核验监听就提示引擎已加载 | 按实际安装展示宿主机选项，检查实际监听；识别容器网络与 1Panel WAF，支持接入已安装且有持久化配置的 host 网络 Docker Web Bouncer；缺少组件时说明安装前提 |
+| 1Panel 仅有原 WAF，没有 CrowdSec Web Bouncer，AppSec 一直无请求 | 增加首次安装入口，持久化官方 Lua 库与私有配置，原 WAF 先执行、日志钩子保留；按运行时 Lua 能力适配 LDNMP/NPM 与宿主机包安装 |
+| 原 WAF 用 dofile 组合时 ngx.exit 跨 C 调用边界报错 | 真实 OpenResty 复现后改用 loadfile 加载并直接调用 Lua 函数；原 WAF 阻断与 AppSec 阻断均通过真实请求验证 |
+| 回滚重载失败后删除仍可能被运行中 worker 使用的依赖；已注销账号阻止清理重试 | 回滚运行失败保留账号和资源并记录恢复状态；重载成功后清理提交，失败可重试，核对账号不存在后继续 |
 | 宣称固定“56 个黄金规则”，回退时清空 collections/scenarios | 补齐官方基础集合，保留自定义及 AppSec，不宣称固定数量 |
 | 名称、版本、日期导致宿主机凭据“异常”误判，检查会重建账号 | 用真实 LAPI 登录判断；健康检查只读，身份修复不自动覆盖 |
 | WebUI 更新先注销所有 webui-* 并删除旧容器 | 复用并校验独立凭据，先拉取镜像；失败恢复配置和旧镜像容器，轮换成功后才注销旧凭据 |
@@ -53,13 +56,15 @@
 - 缺少 PyYAML 时仍完成菜单 8 的只读诊断；取消正常返回，确认应用时在修改配置、规则或服务之前停止，不隐式安装依赖。
 - 注销节点的宿主机保护、残留检查只读、卸载取消、确认删除范围、Web Bouncer 保护和自定义防火墙资源保护。
 
+完整回归共 **148 项**全部通过。首次安装测试另覆盖真实 Mounts、已知 WAF 三阶段与日志保留、依赖隔离/私有密钥、无 Lua/未知钩子/子钩子/satisfy any/bridge/只读或 tmpfs 遮蔽拒绝、持久化 HTTP 入口、取消、重复安装、下载校验/注册失败、重载回滚、恢复失败保留运行依赖、撤销与清理重试、资源手工修改保护，以及 Lua 文件钩子的诊断与重新接入。宿主机模拟测试覆盖官方包候选版本/安装计划、标准配置路径、已有账号保留、Lua 冲突拒绝和失败恢复。固定资源集成测试需要校验过的官方归档；未提供时会明确 skip。
+
 测试使用临时目录和模拟的系统命令。它验证脚本的流程与配置产物，不等同于安装真实系统软件包或运行真实 Docker 容器。
 
 验证命令：
 
 ```bash
-bash -n install-crowdsec-1panel.sh
-shellcheck install-crowdsec-1panel.sh
+bash -n install-crowdsec-1panel.sh lib/native_web_bouncer.sh lib/host_web_bouncer.sh
+shellcheck -x install-crowdsec-1panel.sh lib/native_web_bouncer.sh lib/host_web_bouncer.sh
 python3 -m unittest discover -s tests -v
 ```
 
@@ -83,6 +88,20 @@ python3 -m unittest discover -s tests -v
 ```bash
 python3 tests/verify_engine.py /path/to/crowdsec-v1.8.1 /path/to/crowdsec-firewall-bouncer-v0.0.36
 ```
+
+`tests/verify_web.py` 下载并核验官方 OpenResty **1.25.3.2** Debian 包，使用 `dpkg-deb -x` 隔离解包，不安装系统服务；与真实 CrowdSec **1.8.1**、OpenResty Bouncer **1.2.3**、lua-resty-http **0.17.1** 联合验证：
+
+- 生成配置通过真实 `nginx -t`；普通 `/` 请求到达后端。
+- 原 WAF 的 `/waf-block` 返回 403，AppSec 计数不增加，证明原 WAF 在 CrowdSec 前执行并可阻断。
+- `/.env` 请求被 AppSec 阻断，未到达后端；真实 `cs_appsec_reqs_total` 从 **0 → 2**，规则 `crowdsecurity/vpatch-env-access` 命中。
+- 原 init/access/worker/log 脚本实际执行，原 `resty.http` 已加载模块和磁盘文件保持原值。
+
+```bash
+python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
+  /path/to/crowdsec-openresty-bouncer-v1.2.3.tgz /path/to/lua-resty-http-v0.17.1.tgz
+```
+
+测试使用模拟原 WAF 行为的 Lua 脚本，验证组合机制，不替代 1Panel 专有 WAF、各版本 NPM/LDNMP 的生产兼容性验证。
 
 ## 真实部署验证边界
 

@@ -13,6 +13,11 @@ PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
 APPSEC_DOCKER_LINKS="${CS_DIR}/crowdsec-1key-appsec-docker-links.yaml"
+WEB_INSTALLS="${CS_DIR}/crowdsec-1key-web-installs.json"
+# shellcheck source=lib/native_web_bouncer.sh
+source "${SCRIPT_DIR}/lib/native_web_bouncer.sh"
+# shellcheck source=lib/host_web_bouncer.sh
+source "${SCRIPT_DIR}/lib/host_web_bouncer.sh"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
 LOG_REPAIR_STAGE=''
 LOG_REPAIR_COUNT=0
@@ -647,7 +652,7 @@ appsec_containers() {
 }
 
 diagnose_appsec_containers() {
-    local containers id image name network effective hooks
+    local containers id image name network effective hooks mounts
     containers=$(appsec_containers) || return 1
     while read -r id image name; do
         [[ -z "$id" ]] && continue
@@ -663,6 +668,10 @@ diagnose_appsec_containers() {
             continue
         fi
         hooks=$(printf '%s' "$effective" | yaml_tool appsec-web-hooks) || return 1
+        if [[ "$hooks" != *crowdsec* && -f "$WEB_INSTALLS" ]]; then
+            mounts=$(docker inspect --format '{{json .Mounts}}' "$id") || return 1
+            if web_tool active-hooks "$WEB_INSTALLS" "$name" <(printf '%s' "$mounts") <(printf '%s' "$effective") >/dev/null 2>&1; then hooks+=crowdsec; fi
+        fi
         [[ "$hooks" == *1pwaf* ]] && log_warn '检测到 1Panel WAF 的 Lua 接入；安装 CrowdSec 时需合并请求处理逻辑，保留现有 WAF。'
         if [[ "$hooks" == *crowdsec* ]]; then
             log_info '配置中发现 CrowdSec 请求处理调用；仍需用实际网站请求确认路由和 AppSec 计数。'
@@ -688,10 +697,16 @@ link_docker_appsec() {
     [[ "$network" == host ]] || { log_err '自动接入仅支持 host 网络；其他网络需先按官方文档配置私有网络地址。'; return 1; }
     effective=$(docker exec "$selected" nginx -T 2>&1) || { log_err '容器 nginx -T 失败，未修改接入。'; return 1; }
     hooks=$(printf '%s' "$effective" | yaml_tool appsec-web-hooks) || return 1
-    [[ "$hooks" == *crowdsec* ]] || { log_err '缺少 CrowdSec Web Bouncer 请求处理调用，请先安装并在网站中启用；现有 1Panel WAF 保留。'; return 1; }
     mounts=$(docker inspect --format '{{json .Mounts}}' "$selected") || return 1
+    if [[ "$hooks" != *crowdsec* ]] && web_tool active-hooks "$WEB_INSTALLS" "$name" <(printf '%s' "$mounts") <(printf '%s' "$effective") >/dev/null 2>&1; then hooks+=crowdsec; fi
+    [[ "$hooks" == *crowdsec* ]] || { log_err '缺少 CrowdSec Web Bouncer 请求处理调用，请先安装并在网站中启用；现有 1Panel WAF 保留。'; return 1; }
     file=''
-    for target in "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf"; do
+    local native_targets=''
+    native_targets=$(web_tool targets "$WEB_INSTALLS" "$name") || return 1
+    local targets=()
+    while IFS= read -r target; do [[ -n "$target" ]] && targets+=("$target"); done <<< "$native_targets"
+    targets+=("${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf")
+    for target in "${targets[@]}"; do
         if file=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target" 2>/dev/null); then break; fi
         file=''
     done
@@ -746,12 +761,13 @@ setup_appsec() {
     diagnose_appsec_containers || return 1
     [[ -f "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" ]] && command -v nginx >/dev/null 2>&1 && printf '1. 接入已有宿主机 Nginx Bouncer\n'
     [[ -f "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" ]] && command -v openresty >/dev/null 2>&1 && printf '2. 接入已有宿主机 OpenResty Bouncer\n'
-    printf '3. 接入已有 Docker Web Bouncer（host 网络、持久化配置）\n0. 仅配置引擎，稍后接入网站\n'
+    printf '3. 接入已有 Docker Web Bouncer（host 网络、持久化配置）\n4. 首次安装 Web Bouncer（Docker/宿主机）\n0. 仅配置引擎，稍后接入网站\n'
     prompt choice '请选择可用接入项（0 结束）: ' || return 0
     case "$choice" in
         1) file="${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf"; service=nginx ;;
         2) file="${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; service=openresty ;;
         3) link_docker_appsec; return $? ;;
+        4) install_web_bouncer; return $? ;;
         0|'')
             log_warn '仅完成引擎配置；网站请求尚未验证，AppSec 计数可为零。'
             return 0 ;;
@@ -891,8 +907,8 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n0. 返回\n'
-        prompt choice '请选择 [0-12]: ' || return 0
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n0. 返回\n'
+        prompt choice '请选择 [0-13]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
             2) install_collections crowdsecurity/wordpress && crowdsec -t && systemctl reload crowdsec ;;
@@ -906,6 +922,7 @@ manage_waf_rules() {
             10) check_appsec_status ;;
             11) verify_appsec ;;
             12) disable_appsec ;;
+            13) remove_docker_web_bouncer ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1204,6 +1221,12 @@ audit_crowdsec_residuals() {
 deep_purge_residuals() {
     confirm '永久删除 CrowdSec 核心、数据、Bouncer 与本工具 WebUI？' || return 0
     require_commands systemctl || return 1
+    local native_installs
+    native_installs=$(web_tool list "$WEB_INSTALLS") || return 1
+    if [[ -n "$native_installs" ]]; then
+        log_err '仍有本工具的原生 Web Bouncer 安装/待清理记录；请先 --remove-web-bouncer 恢复网站配置，再卸载核心。'
+        return 1
+    fi
     if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then
         log_err '仍有本工具记录的容器 Web Bouncer 接入。请先停用 AppSec 接入并移除容器内 Web Bouncer，再卸载核心。'
         return 1
@@ -1308,6 +1331,8 @@ show_help() {
   --reset-webui-credentials 检查/轮换 WebUI 独立凭据
   --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
   --install-appsec     识别部署方式，配置引擎并接入已有宿主机/Docker Web Bouncer
+  --install-web-bouncer 首次安装 Web Bouncer（Docker/宿主机）
+  --remove-web-bouncer  撤销本工具原生容器 Web Bouncer，保留原 WAF
   --appsec-status      只读检查 AppSec 数据源、监听、容器组件与指标
   --verify-appsec      对用户指定网站执行官方 /.env 验证
   --disable-appsec     停用本工具 AppSec
@@ -1342,6 +1367,8 @@ main() {
         --reset-webui-credentials) reset_webui_credentials ;;
         --install-waf) install_web_rules ;;
         --install-appsec) setup_appsec ;;
+        --install-web-bouncer) install_web_bouncer ;;
+        --remove-web-bouncer) remove_docker_web_bouncer ;;
         --appsec-status) check_appsec_status ;;
         --verify-appsec) verify_appsec ;;
         --disable-appsec) disable_appsec ;;

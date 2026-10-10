@@ -29,9 +29,9 @@ class Workflows(unittest.TestCase):
         self.source = self.base / "manager.sh"
         self.source.write_text(source)
         (self.base / "lib").mkdir()
-        helper = ROOT / "lib/crowdsec_config.py"
-        if helper.exists():
-            (self.base / "lib/crowdsec_config.py").write_text(helper.read_text())
+        for helper in (ROOT/'lib').glob('*'):
+            if helper.is_file() and helper.suffix in ('.py', '.sh'):
+                (self.base/'lib'/helper.name).write_text(helper.read_text())
         self.trace = self.base / "trace"
         self.trace.touch()
         self.config = self.base / "etc/crowdsec"
