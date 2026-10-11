@@ -819,9 +819,12 @@ check_appsec_status() {
 verify_appsec() {
     require_core && require_commands curl || return 1
     local target=''
-    prompt target '输入你管理的网站根地址（如 http://localhost，留空取消）: ' || return 0
+    prompt target '输入你管理的网站根地址（如 https://example.com，留空取消）: ' || return 0
     [[ -z "$target" ]] && return 0
     [[ "$target" =~ ^https?://[^[:space:]]+$ ]] || { log_err '网站地址无效。'; return 1; }
+    log_warn '该操作从本机发送 /.env 验证请求；localhost、回环地址或经公网绕回本机的请求可能产生 Self-Report 告警。'
+    log_info '建议从另一台设备验证；健康检查使用正常页面或专用 /healthz，避免定时请求攻击路径。'
+    confirm '仍从当前主机发送这次 AppSec 验证请求？' || return 0
     log_info '先查看 AppSec 指标，再请求官方验证路径 /.env。'
     cscli metrics show appsec || return 1
     curl -sS --max-time 15 -I "${target%/}/.env" || return 1

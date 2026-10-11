@@ -107,6 +107,8 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
 
 2026-10-11 新增 Cloudflare 真实 IP 修复测试：覆盖持久化 HTTP include、拒绝过宽/私有网段与已有信任规则、拒绝单文件 bind、重复更新、撤销、取消、下载异常、重载失败恢复及卸载保护。SSH 离线样本改用 UTC 时间。
 
+同日增加 AppSec 验证的 Self-Report 提示与发送前确认：回归覆盖取消和 EOF 不发送请求，明确确认后仍读取请求前后指标。该提示不检测目标是否实际绕回本机，不声称自动消除 Console 历史问题。
+
 `tests/verify_real_ip.py` 使用隔离解包的官方 OpenResty 1.25.3.2 实际请求验证：生产生成的官方网段配置不接受 localhost 伪造的 `CF-Connecting-IP`；仅在隔离测试中额外信任 loopback 后，访问日志和 Lua access 阶段均使用 `CF-Connecting-IP`，而非伪造的 X-Forwarded-For。测试用 loopback 信任不会写入生产生成配置。
 
 ```bash

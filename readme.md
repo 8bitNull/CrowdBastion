@@ -160,6 +160,8 @@ sudo bash install-crowdsec-1panel.sh --repair-real-ip
 
 `tools/diagnose-detection.sh` 的 SSH 离线失败认证样本成功解析，只能证明该样本兼容；大量正常会话日志未解析不等于防护失效。AppSec 验证需同时检查 HTTP 响应与规则计数增量，经过 Cloudflare 返回 403 本身不能证明请求到达本机 AppSec。
 
+`--verify-appsec` 会在发送请求前提示 Self-Report 风险并要求确认；取消或 EOF 不发送验证请求。该命令从当前主机访问 `/.env`，即使使用公网域名，也可能绕回本机并产生针对本机地址的告警。推荐从另一台设备验证；定时健康检查使用正常页面或专用 `/healthz`。验证入口不删除历史告警、封禁决策或修改白名单。
+
 ## WebUI、Telegram 与更新
 
 WebUI 使用 `ghcr.io/theduffman85/crowdsec-web-ui:latest`，宿主机网络，端口默认 `3000`。LAPI 地址从宿主机凭据读取；指标配置为 `127.0.0.1:6060`。已有有效独立 Machine 会被复用；凭据检查真正验证 WebUI 账号，轮换成功后才注销旧账号。镜像拉取失败保留现有部署；更新失败会恢复配置并尝试用原镜像恢复旧容器。数据在 `/opt/crowdsec-web-ui`，应按镜像实际认证功能设置访问保护并使用 HTTPS 反向代理。
