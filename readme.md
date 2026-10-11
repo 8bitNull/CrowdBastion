@@ -124,6 +124,8 @@ NPM 根据[官方模板](https://github.com/NginxProxyManager/nginx-proxy-manage
 
 若只有 SSH journal 来源，且 `syslog-logs` 成功、`sshd-logs` 全部未解析，说明外层日志格式已识别，内部消息没有匹配已加载的 SSH 事件解析器。`Accepted password` 属于成功登录，不能用失败登录解析器是否匹配来判断 SSH 防护是否失效。核查时官方 `sshd-logs` 已支持 `sshd-session`，但 `sshd-success-logs` 的过滤器仍仅匹配 `sshd`；因此新版 OpenSSH 的成功登录和普通会话消息可能显示为未解析。应结合日志样本与 `cscli explain --file /path/to/sample.log --type syslog` 判断，不应把所有会话消息强行转换成失败登录事件。
 
+真实 IP 与低解析率的只读核查可执行 `sudo bash tools/diagnose-detection.sh`。脚本输出当前指标、白名单命中原因、宿主机/容器的 real-IP 配置和实际挂载访问日志首字段 IP，并用最近 SSH 失败样本执行离线 `cscli explain`；另提供明确标记的离线 `sshd-session` 兼容性样本。默认读取 loopback `6060` 指标端口及最近 24 小时内最多 1,000 条 SSH journal。没有失败样本不能证明 SSH 防护失效，日志首字段不是 IP 时需按实际 log_format 判断。该入口不修改采集、白名单或服务；AppSec 的真实网站请求验证仍使用 `--verify-appsec`。若来源列表只有 unknown 的白名单计数，应先查看原始指标的 name/reason，不应因此删掉日志采集。Cloudflare Tunnel 的信任范围应按实际代理来源设置，配置证据和日志首字段不能替代同一次访客请求的 IP 对照。
+
 防火墙执行 CAPI 社区名单、日志检测产生本机决策、AppSec 检查在线请求分别有独立指标；社区名单有阻断并不能证明本机 Web 日志已接入，日志解析率也不能单独证明 AppSec 是否生效。
 
 ### 修复日志采集路径
