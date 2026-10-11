@@ -43,8 +43,27 @@ def get(path, key):
     print(value if isinstance(value, str) else json.dumps(value))
 
 
-def merged_config(path):
+def read_mapping(path):
     data = read(path)
+    if data is None:
+        return {}
+    if not isinstance(data, dict):
+        raise ValueError('配置必须为 mapping: '+str(path))
+    return data
+
+
+def notification_locations(root):
+    config = merged_config(str(Path(root)/'config.yaml'))
+    profiles = config.get('api', {}).get('server', {}).get('profiles_path', str(Path(root)/'profiles.yaml'))
+    directory = config.get('config_paths', {}).get('notification_dir', str(Path(root)/'notifications'))
+    for path in [profiles, directory]:
+        if not isinstance(path, str) or not Path(path).is_absolute() or any(c in path for c in '\r\n\t'):
+            raise ValueError('profiles_path / notification_dir 必须为绝对路径')
+    return Path(profiles), Path(directory)/'crowdsec-1key-telegram.yaml'
+
+
+def merged_config(path):
+    data = read_mapping(path)
     def merge(left, right):
         for key, value in right.items():
             if isinstance(value, dict) and isinstance(left.get(key), dict):
@@ -53,7 +72,7 @@ def merged_config(path):
                 left[key] = value
     local = Path(str(path)+'.local')
     if local.exists():
-        merge(data, read(local))
+        merge(data, read_mapping(local))
     return data
 
 
@@ -291,8 +310,14 @@ def main(args):
     action, *args = args
     if action == 'get':
         get(*args)
+    elif action == 'notification-paths':
+        profiles, notification = notification_locations(args[0])
+        print(notification)
+        print(profiles)
     elif action == 'repair-log-acquis':
         stage_log_repair(*args)
+    elif action == 'log-acquis-file':
+        print(acquisition_locations(args[0], 'web-sites.yaml')[2])
     elif action == 'log-repair-file':
         print(acquisition_locations(args[0])[2])
     elif action == 'credentials-config':
@@ -324,7 +349,7 @@ def main(args):
         path, = args
         if Path(path+'.local').exists():
             path += '.local'
-        data = read(path)
+        data = read_mapping(path)
         data.setdefault('prometheus', {}).update(enabled=True, level='full', listen_addr='127.0.0.1', listen_port=6060)
         write(path, data)
     elif action == 'wal':
@@ -334,7 +359,7 @@ def main(args):
             raise ValueError('仅适用于 SQLite 数据库')
         if Path(path+'.local').exists():
             path += '.local'
-        data = read(path)
+        data = read_mapping(path)
         data.setdefault('db_config', {})['use_wal'] = True
         write(path, data)
     elif action == 'whitelist':
@@ -379,14 +404,40 @@ def main(args):
             data['iptables_v4_chains'] = chains
         # Package defaults remain untouched; local values override them.
         local = Path(path+'.local')
-        overrides = read(local) if local.exists() else {}
+        overrides = read_mapping(local) if local.exists() else {}
         overrides.update(api_url=url, api_key=key)
         if docker_chain == 'true' and data['mode'] == 'iptables':
             overrides['iptables_v4_chains'] = data['iptables_v4_chains']
         write(local, overrides)
     elif action == 'compose':
-        path, directory, url, machine, password, port = args
-        write(path, {'services': {'crowdsec-web-ui': {'image': 'ghcr.io/theduffman85/crowdsec-web-ui:latest', 'container_name': 'crowdsec-web-ui', 'restart': 'unless-stopped', 'network_mode': 'host', 'labels': {'io.crowdsec-1key.managed': 'true'}, 'environment': {'CONFIG_INSTANCE_LAPI_URL': url.rstrip('/'), 'CONFIG_INSTANCE_LAPI_AUTH_USERNAME': machine, 'CONFIG_INSTANCE_LAPI_AUTH_PASSWORD': password, 'CONFIG_INSTANCE_METRICS_URL': 'http://127.0.0.1:6060/metrics', 'CONFIG_SERVER_PORT': port, 'CONFIG_UI_TIME_ZONE': 'Asia/Shanghai', 'CONFIG_UPDATES_ENABLED': 'true'}, 'volumes': [directory+'/data:/app/data']}}})
+        path, directory, url, machine, password, port, *images = args
+        image = images[0] if images else 'ghcr.io/theduffman85/crowdsec-web-ui:latest'
+        health_script = ("require('http').get('http://127.0.0.1:"+port+
+                         "/api/health',r=>process.exit(r.statusCode===200?0:1))"
+                         ".on('error',()=>process.exit(1))")
+        write(path, {'services': {'crowdsec-web-ui': {
+            'image': image,
+            'container_name': 'crowdsec-web-ui',
+            'restart': 'unless-stopped',
+            'network_mode': 'host',
+            'labels': {'io.crowdsec-1key.managed': 'true'},
+            'environment': {
+                'CONFIG_INSTANCE_LAPI_URL': url.rstrip('/'),
+                'CONFIG_INSTANCE_LAPI_AUTH_USERNAME': machine,
+                'CONFIG_INSTANCE_LAPI_AUTH_PASSWORD': password,
+                'CONFIG_INSTANCE_METRICS_URL': 'http://127.0.0.1:6060/metrics',
+                'CONFIG_SERVER_PORT': port,
+                'CONFIG_AUTH_ENABLED': 'true',
+                'CONFIG_UI_TIME_ZONE': 'Asia/Shanghai',
+                'CONFIG_UPDATES_ENABLED': 'true',
+            },
+            'healthcheck': {
+                'test': ['CMD', 'node', '-e', health_script],
+                'interval': '10s', 'timeout': '5s', 'retries': 6,
+                'start_period': '30s',
+            },
+            'volumes': [directory+'/data:/app/data'],
+        }}})
     elif action == 'telegram':
         path, token, chat, endpoint = args
         if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+', token) or not re.fullmatch(r'-?\d+', chat):

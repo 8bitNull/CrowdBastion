@@ -89,7 +89,7 @@ Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://do
 
 未知 Lua 钩子、子级请求钩子覆盖、只读/非持久化挂载以及网络不满足前提时会停止安装。安装失败恢复原配置；确认原运行配置重载成功后才移除资源并注销新账号。恢复重载失败则保留资源和账号，记录 `recovery-required` 供后续恢复，避免删除仍被运行中 worker 使用的依赖。`--appsec-status` 同时检查数据源、监听、容器网络及请求处理组件。
 
-验证方式：菜单 `3 → 11` 或 `--verify-appsec` 输入自己管理的网站根地址，比较 `cscli metrics show appsec` 的前后计数，并检查 `/.env` 请求响应。预期是 HTTP 403、Processed/Blocked 增加，以及对应规则命中。单独一个 403 不能证明 AppSec 生效。
+验证方式：菜单 `3 → 11` 或 `--verify-appsec` 输入自己管理的网站根地址。明确确认后发送带唯一标识的 GET `/.env` 请求，读取 HTTP 状态及 AppSec 指标，输出通过（返回 0）、失败（1）或无法判断（2）。通过条件包括 403、Processed/Blocked 增量和 `crowdsecurity/vpatch-env-access` 命中；累计增量可能来自其他请求，仍需按唯一标识关联日志。优先从另一台设备验证，单独一个 403 不能证明 AppSec 生效。
 
 停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。管理的 Docker 接入按容器名称与实际持久化挂载核对，支持容器重建后安全恢复；手工改过地址、挂载或网络时先停止并要求核对。失败时恢复配置并重载已变更的服务/容器。未由本工具接入的容器和外部代理需要自行同步停用转发。
 
@@ -124,7 +124,7 @@ NPM 根据[官方模板](https://github.com/NginxProxyManager/nginx-proxy-manage
 
 若只有 SSH journal 来源，且 `syslog-logs` 成功、`sshd-logs` 全部未解析，说明外层日志格式已识别，内部消息没有匹配已加载的 SSH 事件解析器。`Accepted password` 属于成功登录，不能用失败登录解析器是否匹配来判断 SSH 防护是否失效。核查时官方 `sshd-logs` 已支持 `sshd-session`，但 `sshd-success-logs` 的过滤器仍仅匹配 `sshd`；因此新版 OpenSSH 的成功登录和普通会话消息可能显示为未解析。应结合日志样本与 `cscli explain --file /path/to/sample.log --type syslog` 判断，不应把所有会话消息强行转换成失败登录事件。
 
-真实 IP 与低解析率的只读核查可执行 `sudo bash tools/diagnose-detection.sh`。脚本输出当前指标、白名单命中原因、宿主机/容器的 real-IP 配置和实际挂载访问日志首字段 IP，并用最近 SSH 失败样本执行离线 `cscli explain`；另提供明确标记的离线 `sshd-session` 兼容性样本。默认读取 loopback `6060` 指标端口及最近 24 小时内最多 1,000 条 SSH journal。没有失败样本不能证明 SSH 防护失效，日志首字段不是 IP 时需按实际 log_format 判断。该入口不修改采集、白名单或服务；AppSec 的真实网站请求验证仍使用 `--verify-appsec`。若来源列表只有 unknown 的白名单计数，应先查看原始指标的 name/reason，不应因此删掉日志采集。Cloudflare Tunnel 的信任范围应按实际代理来源设置，配置证据和日志首字段不能替代同一次访客请求的 IP 对照。
+真实 IP 与低解析率的只读核查可执行 `sudo bash tools/diagnose-detection.sh`。追加 `--window 10` 可采样 10 秒 counter 指标增量（允许 1–60 秒）；重置、新增或消失的序列标记为无法判断，并发流量不能归因到某一次请求。脚本输出当前指标、白名单命中原因、宿主机/容器的 real-IP 配置和实际挂载 HTTP 日志客户端 IP（标准/NPM 格式），并用最近 SSH 失败样本执行离线 `cscli explain`；另提供明确标记的离线 `sshd-session` 兼容性样本。读取 `config.yaml` 与 `.local` 中实际启用的 Prometheus 端点；默认配置路径为 `/etc/crowdsec/config.yaml`，自定义可通过 `CROWDSEC_CONFIG` 指定。SSH 检查最近 24 小时内最多 1,000 条 journal。没有失败样本不能证明 SSH 防护失效，日志首字段不是 IP 时需按实际 log_format 判断。该入口不修改采集、白名单或服务；AppSec 的真实网站请求验证仍使用 `--verify-appsec`。若来源列表只有 unknown 的白名单计数，应先查看原始指标的 name/reason，不应因此删掉日志采集。Cloudflare Tunnel 的信任范围应按实际代理来源设置，配置证据和日志首字段不能替代同一次访客请求的 IP 对照。
 
 防火墙执行 CAPI 社区名单、日志检测产生本机决策、AppSec 检查在线请求分别有独立指标；社区名单有阻断并不能证明本机 Web 日志已接入，日志解析率也不能单独证明 AppSec 是否生效。
 
@@ -174,11 +174,19 @@ Cloudflare 模式仅信任官方公网节点，不自动信任 loopback 或内�
 
 ## WebUI、Telegram 与更新
 
-WebUI 使用 `ghcr.io/theduffman85/crowdsec-web-ui:latest`，宿主机网络，端口默认 `3000`。LAPI 地址从宿主机凭据读取；指标配置为 `127.0.0.1:6060`。已有有效独立 Machine 会被复用；凭据检查真正验证 WebUI 账号，轮换成功后才注销旧账号。镜像拉取失败保留现有部署；更新失败会恢复配置并尝试用原镜像恢复旧容器。数据在 `/opt/crowdsec-web-ui`，应按镜像实际认证功能设置访问保护并使用 HTTPS 反向代理。
+WebUI 从 `ghcr.io/theduffman85/crowdsec-web-ui:latest` 拉取后，以实际镜像 ID 固定本次部署。使用宿主机网络、端口默认 `3000`；上游不支持设置 loopback 监听，因此部署前须明确确认已通过现有防火墙限制端口并配置 HTTPS 反代。SSH 隧道本身不会隐藏公开端口。脚本显式启用认证，首次访问仍需创建管理员。HTTP `/api/health`、容器与独立 LAPI 凭据均就绪后，才报告部署就绪或注销轮换前账号；这些检查不能替代 WebUI 实际同步验证。拉取失败保留已有部署，应用检查失败尝试恢复原镜像和配置。数据在 `/opt/crowdsec-web-ui`。
 
-Telegram 使用独立通知名称 `crowdsec_1key_telegram` 和 `/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml`，保留既有通道。模板先转换模型字段为实际值，再使用 `toJson` 生成请求体，支持多条告警和没有决策的告警；测试走官方 `cscli notifications test`，会真实向所配置机器人发送消息。告警发送是出站请求，不添加 Telegram 来源网段白名单。旧脚本写入的 `http_default` 通道和白名单不会自动删除，升级后应人工确认是否继续保留，避免重复通知。
+Telegram 使用独立名称 `crowdsec_1key_telegram`，读取实际 `notification_dir`、`api.server.profiles_path` 及优先执行的 `.local` profiles。默认通知文件为 `/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml`。配置时显示将调整的 profile 文件，通知覆盖其中匹配的告警，保留既有通道；停用只移除本工具通道。官方 `cscli notifications test` 会向所配置机器人发送真实消息；确认测试失败会返回非零，并说明配置已加载但投递验证失败。出站请求不需 Telegram 来源白名单。旧 `http_default` 通道不会自动删除，需核对是否重复通知。
 
-默认规则更新使用服务器时区的每天 `03:30`，写入 `/etc/cron.d/crowdsec-autoupdate`，依次执行 Hub 更新、升级、配置校验和服务重载。自定义时分会验证范围。此任务更新 Hub 规则，CAPI 社区名单由 CrowdSec 引擎自身同步。
+默认规则更新使用服务器时区每天 `03:30`，写入 `/etc/cron.d/crowdsec-autoupdate`。需 `flock`、Python3/PyYAML 和运行中的 cron/crond。独立维护程序安装到 `/opt/crowdsec-1key-maintenance`，不依赖项目 checkout 一直存在；手动 Hub 更新、移除和集合安装共享 `/run/lock/crowdsec-1key-hub.lock`。更新/移除先快照，再执行、校验和重载，失败尝试恢复；命令输出与结果记录在 `/var/log/crowdsec-1key-hub.log`，未完整恢复的快照保留并打印路径。未知归属或软链接的维护目录不会覆盖；软链接形式的 Hub 根/祖先或 Hub 内部文件在修改前拒绝，需核对后配置真实目录路径。不会恢复 Hub 外的非托管自定义规则；外部工具在更新期间改动 Hub 文件无法准确归因，维护时请避免并发。集合首次安装仍由官方 Hub 管理，配置备份不等于安装事务回滚。CAPI 名单由引擎自身同步。
+
+AppSec 正文/故障策略可用 `--appsec-policy` 或菜单 `3 → 17` 检查并明确设置。支持标准宿主机 Bouncer，或输入 `docker` 选择持久化容器配置；不修改原 `APPSEC_URL`。`APPSEC_DROP_UNREADABLE_BODY=true` 会拒绝无法分析的正文，`APPSEC_FAILURE_ACTION=deny` 会按上游故障策略拒绝请求，需先评估业务。真实验证发现官方 OpenResty Bouncer 1.2.3 在连接失败时的 deny 页面可能返回 HTTP 200，需结合响应内容及后端是否收到请求确认阻断。保留默认值直到明确选择，修改前备份、校验重载，原生安装记录同步更新以保留撤销能力。
+
+已有 Web Bouncer 接入、停用和状态检查会检查 `.local` 覆盖、重复 AppSec 键以及非规范 `APPSEC_URL` 赋值，遇到未明确解释的覆盖会停止；容器内无法检查的 `.local` 也不会当成不存在。请先核对配置并规范为 `APPSEC_URL=...`，不要为了通过检查直接删掉已有覆盖。
+
+`--self-report-status`（菜单 `5 → 9`）只读核对回环、本机接口和明确记录的地址对应的告警/决策；不查询外部服务猜出口 IP，也不自动解封或加白。NAT 的自身公网地址可明确记录到 `/etc/crowdsec/crowdsec-1key-own-addresses.json`，格式为 IP 字符串列表，例如 `["203.0.113.10"]`，实际使用自己的地址。手动封禁拒绝回环、未指定地址、本机接口、管理员 parser 白名单地址及这些记录，包括 IPv4-mapped IPv6。
+
+`--admin-allowlist`（菜单 `5 → 8`）管理明确选择的单个管理员 IP。中央 AllowList 与 parser whitelist 不同，**会使来源跳过 AppSec**并影响决策过滤；不会自动迁移私网或代理网段。需要支持 AllowLists 的 CrowdSec 版本。自己的公网出口地址无法仅由本机接口推出，必须核对并明确记录。
 
 SQLite 优化使用官方 `db_config.use_wal: true`，通过 `--enable-wal` 在确认数据库位于本地磁盘后启用。网络共享盘不适合 WAL。本工具不直接对运行中的数据库执行临时 PRAGMA 或 VACUUM，不承诺固定性能倍数。
 
@@ -196,11 +204,14 @@ bash install-crowdsec-1panel.sh --help
 | `--install-waf` | 安装 Web 日志检测集合 |
 | `--install-appsec` | 配置 AppSec、检查部署方式并接入已有宿主机/Docker Web Bouncer |
 | `--appsec-status` | 只读检查 AppSec 数据源、监听、容器接入组件与指标 |
-| `--verify-appsec` | 对指定网站执行官方验证请求 |
+| `--verify-appsec` | 确认后以标记请求检查 HTTP/AppSec 指标，返回通过/失败/无法判断 |
+| `--appsec-policy` | 检查并明确设置宿主机/容器 AppSec 正文与故障策略 |
 | `--disable-appsec` | 停用本工具 AppSec |
 | `--enable-cron` | 每天 03:30 更新 Hub |
 | `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
+| `--self-report-status` | 只读核对已知自身地址的告警和决策 |
+| `--admin-allowlist` | 明确管理中央管理员 AllowList（旁路 AppSec） |
 | `--repair-logs` | 按实际日志与 Docker 挂载补齐 HTTP 采集，保留现有配置 |
 | `--repair-real-ip` | 按可信 CDN/代理、指定 Header 和网段修复 Docker Nginx/OpenResty/NPM 真实 IP |
 | `--diagnose-real-ip` | 上游不确定时只读检查配置、挂载日志并提供外部请求核对指引 |
@@ -224,7 +235,7 @@ bash install-crowdsec-1panel.sh --help
 
 配置校验失败不重启核心；服务启动失败会恢复配置并尝试恢复原服务。Hub 集合下载/安装不属于配置文件回滚范围；失败时保留诊断输出，修复后可重新执行。
 
-卸载需要明确确认，会停止服务、卸载检测到的软件包并删除 CrowdSec 数据和本工具 WebUI。若仍存在宿主机 Web Bouncer 集成，需先按上游文档移除集成并验证网站，否则核心卸载会中止。服务停止后仍有防火墙资源时会中止清理，保留配置供排查。备份、系统日志及软件源不自动删除；其他容器和不属于本工具的目录不进行广泛匹配清理。
+卸载需要明确确认，会停止服务、卸载检测到的软件包并删除 CrowdSec 数据和本工具 WebUI。若仍存在宿主机 Web Bouncer 集成，需先按上游文档移除集成并验证网站，否则核心卸载会中止。发行版、包管理器、配置与防火墙检查在停止服务前预检。防火墙状态分为存在、确认不存在、无法判断；无法检查时中止卸载，停止服务后仍有资源也保留配置。软件包移除前保留有效自定义资源名称用于复查，不能只检查默认表名。本工具的独立 Hub 维护程序会随明确卸载清理，备份、系统日志及软件源不自动删除；其他容器和不属于本工具的目录不进行广泛匹配清理。
 
 ## 验证与官方参考
 
@@ -238,6 +249,6 @@ python3 -m unittest discover -s tests -v
 python3 tests/verify_engine.py /path/to/crowdsec-v1.8.1
 ```
 
-测试覆盖与部署验证边界详见 [验证记录](docs/verification.md)。真实引擎检查会下载 Hub 集合，在临时目录和 loopback 端口运行，不安装系统服务、不修改防火墙、不向真实 Telegram 发送消息。
+全功能审查见 [审查报告](docs/feature-audit-2026-10-11.md)，该报告记录优化前基线；最新优化与部署验证边界详见 [验证记录](docs/verification.md)。真实引擎检查会下载 Hub 集合，在临时目录和 loopback 端口运行，不安装系统服务、不修改防火墙、不向真实 Telegram 发送消息。
 
 参考：[AppSec 数据源](https://docs.crowdsec.net/docs/next/log_processor/data_sources/appsec/)、[HTTP 通知插件](https://docs.crowdsec.net/docs/next/local_api/notification_plugins/http/)、[Profiles](https://docs.crowdsec.net/docs/next/local_api/profiles/intro/)、[CrowdSec 配置与 WAL](https://docs.crowdsec.net/docs/next/configuration/crowdsec_configuration/)、[Firewall Bouncer](https://docs.crowdsec.net/u/bouncers/firewall/)、[WebUI 上游](https://github.com/TheDuffman85/crowdsec-web-ui)。

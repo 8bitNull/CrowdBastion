@@ -21,8 +21,9 @@ class AppSecVerification(unittest.TestCase):
 
     def test_confirmed_probe_preserves_metrics_checks(self):
         result = self.run_shell('verify_appsec', 'https://example.com\ny\n')
-        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
-        self.assertIn('curl -sS --max-time 15 -I https://example.com/.env', self.commands())
+        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+        self.assertIn('inconclusive', result.stderr)
+        self.assertIn('curl -sS --max-time 15 -o /dev/null -w %{http_code} https://example.com/.env?crowdsec_1key_probe=', self.commands())
         self.assertEqual(self.commands().count('cscli metrics show appsec'), 2)
         self.assertIn('Self-Report', result.stdout+result.stderr)
 

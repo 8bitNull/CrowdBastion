@@ -132,12 +132,7 @@ install_host_web_bouncer() {
         log_err '无法确认 AppSec 在 127.0.0.1:7422 监听；请先安装并验证 AppSec，再接入宿主机 Web Bouncer。'
         return 1
     fi
-    # A .local override wins over the main file, so blindly changing APPSEC_URL
-    # in the latter would report an ineffective integration.
-    if [[ -f "${file}.local" ]] && grep -Eq '^[[:space:]]*APPSEC_URL[[:space:]]*=' "${file}.local"; then
-        log_err "${file}.local 覆盖 APPSEC_URL，请先手动评估；未覆盖配置。"
-        return 1
-    fi
+    appsec_guard_config "$file" || return 1
     if [[ -f "$file" ]]; then
         if [[ -n "${APPSEC_DOCKER_LINKS:-}" && -f "$APPSEC_DOCKER_LINKS" ]] && yaml_tool docker-link-owned "$file" "$APPSEC_DOCKER_LINKS" >/dev/null 2>&1; then
             log_err '该配置已有容器接入记录，请先停用原接入。'

@@ -255,6 +255,9 @@ init_worker_by_lua_file /usr/local/openresty/1pwaf/worker.lua;
     seen = []
 
     class Backend(http.server.BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.do_GET()
+
         def do_GET(self):
             seen.append((self.path, self.headers.get('X-Original-Waf')))
             self.send_response(200)
@@ -270,6 +273,7 @@ init_worker_by_lua_file /usr/local/openresty/1pwaf/worker.lua;
     prefix.mkdir()
     (prefix/'logs').mkdir()
     port = free_port()
+    h2_port = free_port()
     config_path = prefix/'nginx.conf'
     user_directive = f'user {pwd.getpwuid(os.getuid()).pw_name};\n' if os.getuid() == 0 else ''
     config_path.write_text(user_directive+f'''worker_processes 1;
@@ -282,6 +286,13 @@ http {{
     include {target};
     server {{
         listen 127.0.0.1:{port};
+        set_real_ip_from 127.0.0.1;
+        real_ip_header X-Test-Ip;
+        location / {{ proxy_pass http://127.0.0.1:{backend.server_port}; }}
+    }}
+    server {{
+        listen 127.0.0.1:{h2_port};
+        http2 on;
         set_real_ip_from 127.0.0.1;
         real_ip_header X-Test-Ip;
         location / {{ proxy_pass http://127.0.0.1:{backend.server_port}; }}
@@ -331,6 +342,47 @@ http {{
             print('Live HTTP: allowed / reached backend; original WAF /waf-block retained 403; AppSec /.env blocked before backend.', flush=True)
             print(f'Real AppSec processed counter: {before:g} -> {after:g}; vpatch-env-access rule matched.', flush=True)
             print('Original WAF init/access/worker/log executed; original resty.http module retained and unchanged.', flush=True)
+            # Exercise the explicit policies with real official Lua/OpenResty.
+            # Restart this isolated runtime to load policy changes deterministically.
+            audit = module('appsec_policy', ROOT/'lib/crowdsec_appsec.py')
+            before_raw = urllib.request.urlopen(engine['metrics_url'], timeout=5).read().decode()
+            measured = audit.counters(before_raw)
+            assert measured['processed'] >= 2 and measured['blocked'] >= 1 and measured['rules'] >= 1, measured
+            for body_policy in ('false', 'true'):
+                stop(process)
+                text = config.read_text()
+                key = 'APPSEC_DROP_UNREADABLE_BODY'
+                text = re.sub(r'^'+key+r'=.*$', key+'='+body_policy, text, flags=re.M)
+                config.write_text(text)
+                process = subprocess.Popen([str(nginx), '-p', str(prefix)+'/', '-c', str(config_path)], env=env, stdout=stream, stderr=subprocess.STDOUT)
+                wait_port(process, port, log)
+                marker = '/body-policy-'+body_policy
+                size = len(seen)
+                result = run(['curl', '--noproxy', '*', '--http2-prior-knowledge', '--max-time', '10', '-sS',
+                              '-X', 'POST', '--data-binary', 'normal-body', '-H', 'Content-Length:',
+                              '-H', 'X-Test-Ip: 203.0.113.21', '-o', '/dev/null', '-w', '%{http_code}',
+                              f'http://127.0.0.1:{h2_port}'+marker])
+                assert result == ('200' if body_policy == 'false' else '403'), result
+                assert len(seen) == size+(body_policy == 'false'), seen
+            for failure_policy in ('passthrough', 'deny'):
+                stop(process)
+                text = config.read_text()
+                text = re.sub(r'^APPSEC_URL=.*$', 'APPSEC_URL=http://127.0.0.1:'+str(free_port()), text, flags=re.M)
+                text = re.sub(r'^APPSEC_FAILURE_ACTION=.*$', 'APPSEC_FAILURE_ACTION='+failure_policy, text, flags=re.M)
+                config.write_text(text)
+                process = subprocess.Popen([str(nginx), '-p', str(prefix)+'/', '-c', str(config_path)], env=env, stdout=stream, stderr=subprocess.STDOUT)
+                wait_port(process, port, log)
+                size = len(seen)
+                status, response_body = request(url+'/failure-policy-'+failure_policy, '203.0.113.22')
+                if failure_policy == 'passthrough':
+                    assert (status, response_body) == (200, b'backend-reached'), (status, response_body)
+                else:
+                    # Official 1.2.3 returns its ban template with HTTP 200 on
+                    # connection failure. Backend isolation is the deny proof.
+                    assert b'backend-reached' not in response_body and b'CrowdSec' in response_body, (status, response_body)
+                assert len(seen) == size+(failure_policy == 'passthrough'), seen
+                print(f'Unavailable AppSec {failure_policy}: HTTP {status}, backend reached={len(seen) > size}.', flush=True)
+            print('Real HTTP2 POST without Content-Length: false allowed, true blocked; unavailable AppSec: passthrough allowed, deny blocked.', flush=True)
     except Exception as error:
         details = '\n'.join(p.read_text()[-8000:] for p in [prefix/'error.log', log] if p.exists())
         raise RuntimeError(str(error)+'\nOpenResty diagnostics:\n'+details) from error

@@ -2,6 +2,16 @@
 # Read-only evidence collection. Does not change acquisition, whitelists or services.
 set -o pipefail
 
+audit_window=0
+if [[ $# -ne 0 ]]; then
+    if [[ $# -eq 2 && $1 == --window && $2 =~ ^([1-9]|[1-5][0-9]|60)$ ]]; then
+        audit_window=$2
+    else
+        printf '用法：sudo bash tools/diagnose-detection.sh [--window 1..60（秒）]\n' >&2
+        exit 1
+    fi
+fi
+
 if [[ $EUID -ne 0 ]]; then
     printf '请使用 sudo bash tools/diagnose-detection.sh\n' >&2
     exit 1
@@ -14,73 +24,33 @@ trap 'rm -rf -- "$audit_tmp"' EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 audit_result=0
+audit_script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+audit_config="${CROWDSEC_CONFIG:-/etc/crowdsec/config.yaml}"
+audit_helper="${audit_script_dir}/lib/crowdsec_detection_diagnose.py"
 
 printf '\n采集、解析与 AppSec 指标（当前累计值）\n'
 cscli metrics || audit_result=1
 cscli metrics show appsec || audit_result=1
 printf '\n白名单命中来源；unknown 不代表解析失败\n'
-if curl -fsS --connect-timeout 3 --max-time 10 http://127.0.0.1:6060/metrics > "$audit_tmp/metrics"; then
+if audit_metrics_url=$(python3 "$audit_helper" metrics-url "$audit_config") &&
+   curl -fsS --connect-timeout 3 --max-time 10 "$audit_metrics_url" > "$audit_tmp/metrics"; then
     grep '^cs_node_wl_hits_ok_total' "$audit_tmp/metrics" || true
+    if (( audit_window > 0 )); then
+        printf '\n采样 %s 秒窗口增量；并发流量不能归因到单次请求。\n' "$audit_window"
+        sleep "$audit_window"
+        if curl -fsS --connect-timeout 3 --max-time 10 "$audit_metrics_url" > "$audit_tmp/metrics-after"; then
+            python3 "$audit_helper" metrics-delta "$audit_tmp/metrics" "$audit_tmp/metrics-after" || audit_result=1
+        else
+            printf '第二次指标读取失败，无法判断窗口增量。\n'; audit_result=1
+        fi
+    fi
 else
-    printf '无法读取默认 loopback 指标端口，请核对实际 prometheus 配置。\n'
+    printf '无法读取有效 Prometheus 端点，请核对配置、监听和权限。\n'
     audit_result=1
 fi
 
 audit_nginx() {
-    python3 - "$1" "$2" <<'PY'
-import collections
-import ipaddress
-import json
-from pathlib import Path
-import re
-import sys
-text = Path(sys.argv[1]).read_text()
-mounts = json.loads(Path(sys.argv[2]).read_text())
-print('真实 IP / 日志 / 请求钩子相关配置：')
-selected = re.compile(r'^\s*(?:server_name|set_real_ip_from|real_ip_header|real_ip_recursive|log_format|access_log|access_by_lua(?:_file|_block)?|proxy_set_header\s+(?:Host|X-Real-IP|X-Forwarded-For))\b')
-for line in text.splitlines():
-    if selected.search(line) or re.search(r'\b(?:cs|crowdsec)\.Allow\s*\(', line):
-        print(line.strip())
-if re.search(r'set_real_ip_from\s+["\']?(?:0\.0\.0\.0/0|::/0)["\']?\s*;', text):
-    print('需核查：信任范围包含所有地址，不能据此认定转发头可信。')
-seen = set()
-for raw in re.findall(r'^\s*access_log\s+("[^"]+"|\'[^\']+\'|[^\s;]+)', text, re.M):
-    remote = raw.strip('"\'')
-    if not remote.startswith('/') or '$' in remote or remote.startswith('/dev/'):
-        continue
-    matches = [m for m in mounts if remote == m['Destination'].rstrip('/') or remote.startswith(m['Destination'].rstrip('/')+'/')]
-    if mounts and not matches:
-        continue
-    if matches:
-        mount = max(matches, key=lambda m: len(m['Destination'].rstrip('/')))
-        local = Path(mount['Source'])/remote[len(mount['Destination'].rstrip('/')):].lstrip('/')
-    else:
-        local = Path(remote)
-    if str(local) in seen or not local.is_file():
-        continue
-    seen.add(str(local))
-    # Read only the tail, even when production logs are large.
-    with local.open('rb') as stream:
-        stream.seek(0, 2)
-        stream.seek(max(0, stream.tell()-65536))
-        lines = stream.read().decode(errors='replace').splitlines()[-20:]
-    ips = []
-    for line in lines:
-        candidate = line.split()[0] if line.split() else ''
-        try:
-            ipaddress.ip_address(candidate)
-            ips.append(candidate)
-        except ValueError:
-            pass
-    print('\n日志：'+str(local))
-    if not ips:
-        print('最近日志首字段不是可识别 IP；需结合自定义 log_format 判断，不能判定配置异常。')
-    for ip, count in collections.Counter(ips).most_common(5):
-        address = ipaddress.ip_address(ip)
-        kind = '公网' if address.is_global else '非公网/保留地址'
-        print(f'首字段 IP {ip}: {count} 条，{kind}')
-print('\n以上仅是配置和日志证据；实际访客 IP 与 Web Bouncer 使用的 IP 仍需关联同一次请求确认。')
-PY
+    python3 "$audit_helper" nginx "$1" "$2" "${3:-container}"
 }
 
 printf '\nWeb 运行配置与最近访问日志 IP\n'
@@ -89,7 +59,7 @@ for audit_runtime in nginx openresty; do
     if command -v "$audit_runtime" >/dev/null 2>&1; then
         printf '\n宿主机 %s\n' "$audit_runtime"
         if "$audit_runtime" -T > "$audit_tmp/nginx" 2>&1; then
-            audit_nginx "$audit_tmp/nginx" "$audit_tmp/host-mounts" || audit_result=1
+            audit_nginx "$audit_tmp/nginx" "$audit_tmp/host-mounts" host || audit_result=1
         else
             printf '运行配置读取失败。\n'; audit_result=1
         fi

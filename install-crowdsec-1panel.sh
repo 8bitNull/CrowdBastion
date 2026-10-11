@@ -8,6 +8,11 @@ CONFIG_HELPER="${SCRIPT_DIR}/lib/crowdsec_config.py"
 CS_DIR="/etc/crowdsec"
 WEBUI_DIR="/opt/crowdsec-web-ui"
 CRON_FILE="/etc/cron.d/crowdsec-autoupdate"
+HUB_RUNNER_DIR="/opt/crowdsec-1key-maintenance"
+HUB_LOCK_FILE="/run/lock/crowdsec-1key-hub.lock"
+HUB_LOG_FILE="/var/log/crowdsec-1key-hub.log"
+# shellcheck source=lib/hub_maintenance.sh
+source "${SCRIPT_DIR}/lib/hub_maintenance.sh"
 TG_NOTIF_FILE="${CS_DIR}/notifications/crowdsec-1key-telegram.yaml"
 PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
@@ -21,6 +26,8 @@ source "${SCRIPT_DIR}/lib/native_web_bouncer.sh"
 source "${SCRIPT_DIR}/lib/host_web_bouncer.sh"
 # shellcheck source=lib/real_ip.sh
 source "${SCRIPT_DIR}/lib/real_ip.sh"
+# shellcheck source=lib/appsec_audit.sh
+source "${SCRIPT_DIR}/lib/appsec_audit.sh"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
 LOG_REPAIR_STAGE=''
 LOG_REPAIR_COUNT=0
@@ -216,9 +223,11 @@ install_crowdsec_core() {
     install_packages crowdsec || return 1
     install_bouncer_package || return 1
     require_core || return 1
-    begin_config_change "${CS_DIR}/parsers/s02-enrich/99-admin-whitelist.yaml" "${CS_DIR}/acquis.d/web-sites.yaml" "${CS_DIR}/config.yaml" "${CS_DIR}/config.yaml.local" || return 1
-    yaml_tool whitelist "${CS_DIR}/parsers/s02-enrich/99-admin-whitelist.yaml" "$CURRENT_IP" || { restore_config_change; return 1; }
-    configure_log_acquis || { restore_config_change; return 1; }
+    prepare_log_repair || return 1
+    begin_config_change "${CS_DIR}/parsers/s02-enrich/99-admin-whitelist.yaml" "$LOG_REPAIR_FILE" "${CS_DIR}/config.yaml" "${CS_DIR}/config.yaml.local" || { cleanup_log_repair; return 1; }
+    yaml_tool whitelist "${CS_DIR}/parsers/s02-enrich/99-admin-whitelist.yaml" "$CURRENT_IP" || { restore_config_change; cleanup_log_repair; return 1; }
+    apply_staged_log_repair || { restore_config_change; cleanup_log_repair; return 1; }
+    cleanup_log_repair
     install_collections crowdsecurity/linux crowdsecurity/sshd crowdsecurity/nginx crowdsecurity/nginx-proxy-manager crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/whitelist-good-actors || { restore_config_change; return 1; }
     enable_prometheus_metrics || { restore_config_change; return 1; }
     systemctl enable crowdsec || return 1
@@ -234,7 +243,8 @@ install_crowdsec_core() {
 }
 
 configure_log_acquis() {
-    local target="${1:-${CS_DIR}/acquis.d/web-sites.yaml}"
+    local target="${1:-}"
+    if [[ -z "$target" ]]; then target=$(yaml_tool log-acquis-file "$CS_DIR") || return 1; fi
     mkdir -p "$(dirname "$target")" || return 1
     cat > "$target" <<'EOF'
 filenames:
@@ -370,11 +380,14 @@ enable_prometheus_metrics() {
     yaml_tool metrics "${CS_DIR}/config.yaml"
 }
 
-install_collections() {
-    require_core || return 1
+install_collections() (
+    require_core && require_commands flock || return 1
+    mkdir -p -- "$(dirname "$HUB_LOCK_FILE")" || return 1
+    exec 9>"$HUB_LOCK_FILE" || return 1
+    flock -n 9 || { log_err '已有 Hub 维护任务运行，集合安装未执行。'; return 1; }
     cscli hub update || return 1
     cscli collections install "$@"
-}
+)
 
 install_web_rules() {
     install_collections crowdsecurity/nginx crowdsecurity/nginx-proxy-manager crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/whitelist-good-actors || return 1
@@ -440,6 +453,13 @@ webui_lapi_status() {
     return "$result"
 }
 
+webui_http_ready() {
+    local port="$1" code
+    code=$(curl -sS --connect-timeout 2 --max-time 5 -o /dev/null -w '%{http_code}' "http://127.0.0.1:${port}/api/health") || return 1
+    [[ "$code" == 200 ]]
+}
+
+
 webui_compose_up() {
     local override='' result=0
     local compose_args=(-f "${WEBUI_DIR}/docker-compose.yml")
@@ -476,9 +496,9 @@ rollback_webui() {
 }
 
 deploy_web_ui() {
-    require_core && require_yaml && require_commands docker || return 1
+    require_core && require_yaml && require_commands docker curl || return 1
     if ! systemctl is-active --quiet crowdsec || ! cscli lapi status; then log_err 'CrowdSec/LAPI 尚未就绪。'; return 1; fi
-    local port=3000 url machine password host created=false creds compose previous=false previous_image='' old_machine='' rotation="${1:-}"
+    local port=3000 url machine password host created=false creds compose previous=false previous_image='' old_machine='' image='' rotation="${1:-}"
     prompt port 'WebUI 端口 [3000]: ' || return 1
     port="${port:-3000}"
     valid_port "$port" || { log_err '端口必须在 1–65535 之间。'; return 1; }
@@ -489,6 +509,9 @@ deploy_web_ui() {
         log_err '已有同名容器但缺少本工具凭据，请先检查其归属。'
         return 1
     fi
+    log_warn '此上游镜像的 host 网络监听所有接口，无法配置 loopback 绑定；首次管理员注册也会暴露。'
+    log_warn '请先用现有防火墙限制此端口，并配置 HTTPS 反向代理。SSH 隧道本身不会隐藏公网端口。'
+    confirm '已完成上述访问限制，继续启用此 WebUI 监听端口？' || return 0
     log_info '正在拉取 WebUI 镜像，失败时保留已有容器和凭据。'
     if [[ "$rotation" != rotate && -f "${WEBUI_DIR}/data/webui_api_credentials.yaml" ]] && ! webui_lapi_status; then
         log_err 'WebUI 独立凭据无法登录 LAPI，已保留现有部署。请检查后重新注册。'
@@ -497,6 +520,8 @@ deploy_web_ui() {
     previous_image=$(docker inspect --format '{{.Image}}' crowdsec-web-ui 2>/dev/null) || previous_image=''
     [[ "$previous_image" =~ ^sha256:[a-f0-9]{64}$ ]] || previous_image=''
     docker pull "$WEBUI_IMAGE" || return 1
+    image=$(docker image inspect --format '{{.Id}}' "$WEBUI_IMAGE") || return 1
+    [[ "$image" =~ ^sha256:[a-f0-9]{64}$ ]] || { log_err '无法确认已拉取镜像的不可变身份，未更新部署。'; return 1; }
     url=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" url) || return 1
     host=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" login) || return 1
     creds="${WEBUI_DIR}/data/webui_api_credentials.yaml"
@@ -522,7 +547,7 @@ deploy_web_ui() {
         password=$(yaml_tool get "$creds" password) || { cscli machines delete "$machine"; restore_config_change; return 1; }
     fi
     chmod 600 "$creds" || return 1
-    if ! enable_prometheus_metrics || ! yaml_tool compose "$compose" "$WEBUI_DIR" "$url" "$machine" "$password" "$port" || ! apply_core_config; then
+    if ! enable_prometheus_metrics || ! yaml_tool compose "$compose" "$WEBUI_DIR" "$url" "$machine" "$password" "$port" "$image" || ! apply_core_config; then
         [[ "$created" == true ]] && cscli machines delete "$machine"
         restore_config_change
         return 1
@@ -538,20 +563,26 @@ deploy_web_ui() {
     while ((attempt < 10)); do
         ((attempt+=1))
         running=$(docker inspect --format '{{.State.Running}}' crowdsec-web-ui 2>/dev/null) || running=false
-        [[ "$running" == true ]] && break
+        [[ "$running" == true ]] && webui_http_ready "$port" && break
+        running=false
         sleep 1
     done
     if [[ "$running" != true ]]; then
         rollback_webui "$created" "$machine" "$previous" "$previous_image"
-        log_err 'WebUI 容器未运行，请查看 docker logs crowdsec-web-ui。'
+        log_err 'WebUI 容器或 HTTP 应用未就绪，请查看 docker logs crowdsec-web-ui。'
+        return 1
+    fi
+    if ! webui_lapi_status; then
+        rollback_webui "$created" "$machine" "$previous" "$previous_image"
+        log_err 'WebUI 新配置的独立凭据无法登录 LAPI，已尝试恢复旧部署。'
         return 1
     fi
     touch "${WEBUI_DIR}/.crowdsec-1key-managed" || return 1
     if [[ "$rotation" == rotate && -n "$old_machine" && "$old_machine" != "$machine" ]]; then
         cscli machines delete "$old_machine" || log_warn "新 WebUI 已运行，但旧 Machine ${old_machine} 注销失败，请人工核验。"
     fi
-    log_succ "WebUI 容器已运行，访问 http://服务器地址:${port}。"
-    log_warn '按上游镜像实际认证功能配置访问保护；建议通过 HTTPS 反向代理访问。'
+    log_succ "WebUI HTTP 应用与独立 LAPI 凭据已就绪，访问 http://服务器地址:${port}。"
+    log_warn '已显式启用认证；首次访问请创建管理员账号，并通过 HTTPS 反向代理限制访问。'
 }
 
 uninstall_web_ui() {
@@ -617,8 +648,7 @@ uninstall_specific_waf_collection() {
         return 1
     fi
     confirm "卸载 ${target}（可能影响依赖集合）？" || return 0
-    cscli collections remove "$target" || return 1
-    crowdsec -t && systemctl reload crowdsec || return 1
+    hub_maintenance remove "$target" || return 1
     log_succ "已卸载 ${target}。"
 }
 
@@ -629,13 +659,11 @@ uninstall_all_waf_extensions() {
     installed=$(cscli collections list -o json) || return 1
     local collections
     collections=$(printf '%s' "$installed" | python3 -c 'import json,sys; d=json.load(sys.stdin); items=d.get("collections",[]) if isinstance(d,dict) else d; print("\n".join(x["name"] for x in items if x.get("status","enabled") != "disabled"))') || return 1
+    local removals=()
     for collection in crowdsecurity/nginx crowdsecurity/nginx-proxy-manager crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/wordpress crowdsecurity/iptables; do
-        if printf '%s\n' "$collections" | grep -Fxq "$collection"; then
-            cscli collections remove "$collection" || return 1
-        fi
+        if printf '%s\n' "$collections" | grep -Fxq "$collection"; then removals+=("$collection"); fi
     done
-    install_collections crowdsecurity/linux crowdsecurity/sshd || return 1
-    crowdsec -t && systemctl reload crowdsec || return 1
+    if ((${#removals[@]})); then hub_maintenance remove "${removals[@]}" || return 1; fi
     log_succ '已处理已知 Web 日志检测集合。'
 }
 
@@ -677,6 +705,18 @@ diagnose_appsec_containers() {
         fi
         [[ "$hooks" == *1pwaf* ]] && log_warn '检测到 1Panel WAF 的 Lua 接入；安装 CrowdSec 时需合并请求处理逻辑，保留现有 WAF。'
         if [[ "$hooks" == *crowdsec* ]]; then
+            local target file native_targets
+            local targets=()
+            mounts=$(docker inspect --format '{{json .Mounts}}' "$id") || return 1
+            native_targets=$(web_tool targets "$WEB_INSTALLS" "$name") || return 1
+            while IFS= read -r target; do [[ -z "$target" ]] || targets+=("$target"); done <<< "$native_targets"
+            targets+=("${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf")
+            for target in "${targets[@]}"; do
+                file=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target" 2>/dev/null) || continue
+                appsec_audit_tool show "$file" || return 1
+                appsec_guard_config "$file" "$id" "$target" || return 1
+                break
+            done
             log_info '配置中发现 CrowdSec 请求处理调用；仍需用实际网站请求确认路由和 AppSec 计数。'
         else
             log_warn '缺少 CrowdSec Web Bouncer 请求处理调用；仅配置 AppSec 引擎不会增加网站请求计数。'
@@ -718,6 +758,7 @@ link_docker_appsec() {
         log_err '该配置已有宿主机接入记录，请先停用原接入。'
         return 1
     fi
+    appsec_guard_config "$file" "$selected" "$target" || return 1
     confirm "将容器 ${name} 的已有 Web Bouncer 接入 AppSec，并校验、重载？" || return 0
     stage=$(mktemp) || return 1
     if ! yaml_tool stage-web-bouncer "$file" 'http://127.0.0.1:7422' "$stage"; then rm -f -- "$stage"; return 1; fi
@@ -781,6 +822,7 @@ setup_appsec() {
         log_err '该配置已有容器接入记录，请先停用原接入。'
         return 1
     fi
+    appsec_guard_config "$file" || return 1
     require_commands "$service" || return 1
     begin_config_change "$file" "$APPSEC_LINKS" || return 1
     yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" || { restore_config_change; return 1; }
@@ -812,24 +854,58 @@ check_appsec_status() {
     fi
     diagnose_appsec_containers || result=1
     cscli appsec-configs list && cscli metrics show appsec || return 1
+    local file
+    for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
+        [[ ! -f "$file" ]] || appsec_audit_tool show "$file" || result=1
+    done
     log_info '确认 Processed/Blocked 随测试请求变化，不能仅凭 HTTP 403 判断 WAF 生效。'
     return "$result"
 }
 
 verify_appsec() {
-    require_core && require_commands curl || return 1
-    local target=''
+    require_core && require_yaml && require_commands curl || return 1
+    local target='' marker probe metrics_url work http verdict result attempt
     prompt target '输入你管理的网站根地址（如 https://example.com，留空取消）: ' || return 0
     [[ -z "$target" ]] && return 0
-    [[ "$target" =~ ^https?://[^[:space:]]+$ ]] || { log_err '网站地址无效。'; return 1; }
+    appsec_audit_tool validate-url "$target" || return 1
+    marker=$(python3 -c 'import secrets; print(secrets.token_hex(12))') || return 1
+    probe="${target%/}/.env?crowdsec_1key_probe=${marker}"
     log_warn '该操作从本机发送 /.env 验证请求；localhost、回环地址或经公网绕回本机的请求可能产生 Self-Report 告警。'
-    log_info '建议从另一台设备验证；健康检查使用正常页面或专用 /healthz，避免定时请求攻击路径。'
+    log_info "优先从另一台设备 GET ${probe}；记录 HTTP 状态、访客 IP、时间和网站日志中的唯一标识 ${marker}。"
+    log_info '健康检查使用正常页面或专用 /healthz，避免定时请求攻击路径。'
     confirm '仍从当前主机发送这次 AppSec 验证请求？' || return 0
-    log_info '先查看 AppSec 指标，再请求官方验证路径 /.env。'
-    cscli metrics show appsec || return 1
-    curl -sS --max-time 15 -I "${target%/}/.env" || return 1
-    cscli metrics show appsec || return 1
-    log_info '预期 HTTP 403 且 AppSec Processed/Blocked 计数增加；请同时确认具体规则命中。'
+    work=$(mktemp -d) || return 1
+    metrics_url=$(python3 "${SCRIPT_DIR}/lib/crowdsec_detection_diagnose.py" metrics-url "${CS_DIR}/config.yaml" 2>/dev/null) || metrics_url=''
+    cscli metrics show appsec || { rm -rf -- "$work"; return 1; }
+    : > "$work/before"
+    : > "$work/after"
+    if [[ -n "$metrics_url" ]] && curl -fsS --max-time 5 "$metrics_url" > "$work/raw"; then
+        appsec_audit_tool snapshot "$work/raw" > "$work/before" || : > "$work/before"
+    fi
+    if ! http=$(curl -sS --max-time 15 -o /dev/null -w '%{http_code}' "$probe"); then
+        log_err 'failed / 失败：验证请求传输失败。'
+        rm -rf -- "$work"
+        return 1
+    fi
+    for attempt in 1 2 3; do
+        if [[ -n "$metrics_url" ]] && curl -fsS --max-time 5 "$metrics_url" > "$work/raw"; then
+            appsec_audit_tool snapshot "$work/raw" > "$work/after" || : > "$work/after"
+        fi
+        verdict=$(appsec_audit_tool verdict "$http" "$work/before" "$work/after")
+        result=$?
+        [[ "$verdict" == passed ]] && break
+        [[ "$attempt" == 3 ]] || sleep 1
+    done
+    cscli metrics show appsec || { rm -rf -- "$work"; return 1; }
+    log_info "HTTP=${http}；唯一请求标识=${marker}"
+    case "$verdict" in
+        passed) log_info 'passed / 通过（辅助证据）：HTTP 403，Processed、Blocked 与 crowdsecurity/vpatch-env-access 规则命中均增长。' ;;
+        failed) log_err 'failed / 失败：测试未阻断，且 AppSec 请求/阻断/规则计数没有增长。' ;;
+        *) log_warn 'inconclusive / 无法判断：HTTP 与 AppSec 请求/阻断/规则证据不足、指标不可读或发生重置。' ;;
+    esac
+    log_warn '累计指标可能包含同时发生的其他流量，不能单独证明这一次请求经过 AppSec；请在访问日志关联唯一标识、外部访客 IP，并核对具体规则日志。403 也可能来自原有 WAF。'
+    rm -rf -- "$work"
+    return "$result"
 }
 
 rollback_appsec_runtime() {
@@ -867,13 +943,14 @@ disable_appsec() {
             mounts=$(docker inspect --format '{{json .Mounts}}' "$container") || return 1
             resolved=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target") || return 1
             [[ "$resolved" == "$file" ]] || { log_err '容器配置挂载已变化，请先核对接入；未停用引擎。'; return 1; }
+            appsec_guard_config "$file" "$container" "$target" || return 1
             yaml_tool docker-link-current "$file" || return 1
             files+=("$file")
         done <<< "$docker_links"
         files+=("$APPSEC_DOCKER_LINKS")
     fi
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
-        if [[ -f "$file" && -f "$APPSEC_LINKS" ]] && yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then files+=("$file"); fi
+        if [[ -f "$file" && -f "$APPSEC_LINKS" ]] && yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then appsec_guard_config "$file" || return 1; files+=("$file"); fi
     done
     begin_config_change "${files[@]}" || return 1
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
@@ -913,14 +990,14 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n16. 只读上游链路与真实 IP 诊断\n0. 返回\n'
-        prompt choice '请选择 [0-16]: ' || return 0
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n16. 只读上游链路与真实 IP 诊断\n17. 检查/设置 AppSec 正文与故障策略\n0. 返回\n'
+        prompt choice '请选择 [0-17]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
             2) install_collections crowdsecurity/wordpress && crowdsec -t && systemctl reload crowdsec ;;
             3) install_collections crowdsecurity/iptables && crowdsec -t && systemctl reload crowdsec ;;
             4) cscli collections list ;;
-            5) cscli hub update && cscli hub upgrade && crowdsec -t && systemctl reload crowdsec ;;
+            5) hub_maintenance update ;;
             6) reset_waf_to_core_baseline ;;
             7) uninstall_specific_waf_collection ;;
             8) uninstall_all_waf_extensions ;;
@@ -932,6 +1009,7 @@ manage_waf_rules() {
             14) repair_cloudflare_real_ip ;;
             15) repair_cloudflare_real_ip remove ;;
             16) repair_cloudflare_real_ip diagnose ;;
+            17) configure_appsec_policy ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -940,7 +1018,7 @@ manage_waf_rules() {
 }
 
 enable_auto_update() {
-    require_core || return 1
+    require_core && require_yaml || return 1
     local minute="${1:-30}" hour="${2:-3}"
     if [[ ! "$minute" =~ ^[0-9]{1,2}$ || ! "$hour" =~ ^[0-9]{1,2}$ ]] || ! ((10#$minute <= 59 && 10#$hour <= 23)); then log_err '分钟应为 0–59，小时应为 0–23。'; return 1; fi
     local cron_service
@@ -948,13 +1026,24 @@ enable_auto_update() {
     [[ "$OS_ID" =~ ^(centos|rhel|almalinux|rocky|fedora)$ ]] && cron_service=crond
     systemctl is-active --quiet "$cron_service" || { log_err "${cron_service} 服务未运行，请先启用。"; return 1; }
     mkdir -p "$(dirname "$CRON_FILE")" || return 1
-    begin_config_change "$CRON_FILE" || return 1
-    local cscli_path crowdsec_path systemctl_path
-    cscli_path=$(type -P cscli) || cscli_path=/usr/bin/cscli
-    crowdsec_path=$(type -P crowdsec) || crowdsec_path=/usr/bin/crowdsec
-    systemctl_path=$(type -P systemctl) || systemctl_path=/bin/systemctl
-    printf '# CrowdSec Hub 更新；使用服务器时区。CAPI 名单由引擎自动同步。\n%s %s * * * root %s hub update && %s hub upgrade && %s -t && %s reload crowdsec\n' "$((10#$minute))" "$((10#$hour))" "$cscli_path" "$cscli_path" "$crowdsec_path" "$systemctl_path" > "$CRON_FILE" || return 1
-    chmod 644 "$CRON_FILE" || return 1
+    require_commands flock python3 || return 1
+    if [[ -L "$HUB_RUNNER_DIR" || ( -e "$HUB_RUNNER_DIR" && ( ! -d "$HUB_RUNNER_DIR" || ! -f "$HUB_RUNNER_DIR/.crowdsec-1key-owned" || -L "$HUB_RUNNER_DIR/.crowdsec-1key-owned" ) ) ]]; then
+        log_err '维护目录已存在但不属于本工具，未覆盖。'; return 1
+    fi
+    local file
+    for file in hub_maintenance.sh crowdsec_hub_snapshot.py crowdsec_safety.py; do
+        [[ ! -L "$HUB_RUNNER_DIR/$file" ]] || { log_err "维护文件是 symlink，未覆盖。"; return 1; }
+    done
+    begin_config_change "$CRON_FILE" "$HUB_RUNNER_DIR/hub_maintenance.sh" "$HUB_RUNNER_DIR/crowdsec_hub_snapshot.py" "$HUB_RUNNER_DIR/crowdsec_safety.py" "$HUB_RUNNER_DIR/.crowdsec-1key-owned" || return 1
+    mkdir -p "$HUB_RUNNER_DIR" || return 1
+    chmod 700 "$HUB_RUNNER_DIR" || return 1
+    for file in hub_maintenance.sh crowdsec_hub_snapshot.py crowdsec_safety.py; do
+        cp -- "${SCRIPT_DIR}/lib/$file" "$HUB_RUNNER_DIR/$file" || { restore_config_change; return 1; }
+        chmod 700 "$HUB_RUNNER_DIR/$file" || { restore_config_change; return 1; }
+    done
+    touch "$HUB_RUNNER_DIR/.crowdsec-1key-owned" || { restore_config_change; return 1; }
+    printf '# CrowdSec Hub 更新；独立维护程序含互斥、快照、校验、回滚及结果日志。\n%s %s * * * root /bin/bash %s/hub_maintenance.sh update\n' "$((10#$minute))" "$((10#$hour))" "$HUB_RUNNER_DIR" > "$CRON_FILE" || { restore_config_change; return 1; }
+    chmod 644 "$CRON_FILE" || { restore_config_change; return 1; }
     log_succ "已设置每天 ${hour}:${minute} 更新 Hub 规则。"
 }
 
@@ -979,25 +1068,98 @@ manage_auto_update() {
 }
 
 firewall_status() {
-    local found=false
-    if command -v nft >/dev/null 2>&1; then
-        local family
-        for family in ip ip6 inet; do
-            if nft list table "$family" crowdsec 2>/dev/null; then found=true; fi
-        done
-        if nft list table ip6 crowdsec6 2>/dev/null; then found=true; fi
-        local configured table
-        configured=$(yaml_tool firewall-tables "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" 2>/dev/null) || configured=''
-        while read -r family table; do
-            [[ -z "$family" || -z "$table" ]] && continue
-            if nft list table "$family" "$table" 2>/dev/null; then found=true; fi
-        done <<< "$configured"
+    # 0: present, 1: confirmed absent, 2: cannot determine. Never treat errors as absence.
+    local spec mode pattern output status found=false unknown=false checked=false tool
+    spec="${FIREWALL_SPEC_CACHE:-}"
+    if [[ -z "$spec" ]]; then spec=$(python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" firewall-spec "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml") || return 2; fi
+    mode=${spec%%$'\n'*}; pattern=${spec#*$'\n'}
+    case "$mode" in
+        nftables) command -v nft >/dev/null 2>&1 || unknown=true ;;
+        iptables) for tool in iptables ip6tables ipset; do command -v "$tool" >/dev/null 2>&1 || unknown=true; done ;;
+        ipset) command -v ipset >/dev/null 2>&1 || unknown=true ;;
+    esac
+    for tool in nft iptables ip6tables ipset; do
+        command -v "$tool" >/dev/null 2>&1 || continue
+        checked=true
+        case "$tool" in
+            nft) output=$(nft list tables 2>/dev/null); status=$? ;;
+            iptables) output=$(iptables -S 2>/dev/null); status=$? ;;
+            ip6tables) output=$(ip6tables -S 2>/dev/null); status=$? ;;
+            ipset) output=$(ipset list -name 2>/dev/null); status=$? ;;
+        esac
+        if [[ "$status" -ne 0 ]]; then unknown=true; continue; fi
+        if printf '%s\n' "$output" | grep -Ei -- "$pattern"; then found=true; fi
+    done
+    if [[ "$found" == true ]]; then log_info '检测到防火墙资源；存在规则不等于阻断已通过流量验证。'; return 0; fi
+    if [[ "$unknown" == true || "$checked" == false ]]; then log_err '无法判断防火墙残留：检查依赖、配置或枚举失败。'; return 2; fi
+    log_info '成功枚举的防火墙后端未发现默认或已配置的 CrowdSec 资源。'
+    return 1
+}
+
+safe_manual_ban() {
+    local interfaces='[]'
+    detect_admin_ip
+    if command -v ip >/dev/null 2>&1; then
+        interfaces=$(ip -j address show) || { log_err '读取本机接口失败，拒绝封禁。'; return 1; }
+    else
+        log_err '缺少 ip 命令，不能排除本机接口地址，拒绝封禁。'
+        return 1
     fi
-    if command -v iptables >/dev/null 2>&1 && iptables -S 2>/dev/null | grep -i crowdsec; then found=true; fi
-    if command -v ip6tables >/dev/null 2>&1 && ip6tables -S 2>/dev/null | grep -i crowdsec; then found=true; fi
-    if command -v ipset >/dev/null 2>&1 && ipset list -name 2>/dev/null | grep -i crowdsec; then found=true; fi
-    [[ "$found" == true ]] || { log_warn '未发现默认 CrowdSec 防火墙资源，自定义 table/chain 或 set-only 模式需人工核验。'; return 1; }
-    log_info '以上仅证明规则存在，需结合服务、LAPI 拉取及流量测试确认阻断。'
+    python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" guard-ban "$1" "$CS_DIR" "$CURRENT_IP" "$interfaces"
+}
+
+manage_admin_allowlist() {
+    require_core && require_yaml || return 1
+    local choice address
+    log_warn '中央 AllowList 会使这些来源跳过 AppSec，并影响中央决策过滤；parser whitelist 只保护日志处理。不会自动迁移代理网段。'
+    while true; do
+        printf '\n管理员中央 AllowList\n1. 查看\n2. 明确添加一个 IP\n3. 明确移除一个 IP\n0. 返回\n'
+        prompt choice '请选择 [0-3]: ' || return 0
+        case "$choice" in
+            1) cscli allowlists list && cscli allowlists inspect crowdsec-1key-admin ;;
+            2|3)
+                prompt address '管理员 IP（留空取消）: ' || return 0
+                [[ -n "$address" ]] || continue
+                address=$(yaml_tool normalize-ip "$address") || continue
+                confirm '确认此单个 IP 的中央 AllowList 变更（添加会跳过 AppSec）？' || continue
+                if [[ "$choice" == 2 ]]; then
+                    # Inspect before create: a server/CLI error is never an excuse to overwrite.
+                    cscli allowlists list || return 1
+                    if ! cscli allowlists inspect crowdsec-1key-admin >/dev/null 2>&1; then
+                        confirm '确认创建名为 crowdsec-1key-admin 的中央 AllowList？' || continue
+                        cscli allowlists create crowdsec-1key-admin -d 'Explicit administrator addresses managed by crowdsec-1key' || return 1
+                    fi
+                    cscli allowlists add crowdsec-1key-admin "$address" || return 1
+                    python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" record-admin "$CS_DIR" add "$address" || return 1
+                else
+                    cscli allowlists remove crowdsec-1key-admin "$address" || return 1
+                    python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" record-admin "$CS_DIR" remove "$address" || return 1
+                fi ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+    done
+}
+
+diagnose_self_report() {
+    require_core || return 1
+    log_info '只读 Self-Report 排查：按 loopback、本机接口和明确记录的地址查询警报与决策；不探测公网地址、不自动加白或解封。'
+    log_info '核对 source_ip、触发场景及原始日志；可用 cscli alerts inspect <ID> -d 查看详情。'
+    log_info "已知公网/NAT 地址只能来自明确记录 ${CS_DIR}/crowdsec-1key-own-addresses.json（JSON IP 字符串数组）；未知公网地址不能据此排除 Self-Report。"
+    local result=0 interfaces='[]' addresses address
+    if command -v ip >/dev/null 2>&1; then
+        interfaces=$(ip -j address show) || { log_warn '接口信息不可读取，诊断不完整。'; interfaces='[]'; result=1; }
+    else log_warn '缺少 ip，未核对接口地址。'; result=1; fi
+    addresses=$(python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" known-addresses "$CS_DIR" "$interfaces") || return 1
+    while IFS= read -r address; do
+        [[ -n "$address" ]] || continue
+        cscli decisions list --ip "$address" || result=1
+        cscli alerts list --ip "$address" --limit 20 || result=1
+    done <<< "$addresses"
+    cscli parsers inspect crowdsecurity/whitelists || result=1
+    cscli allowlists list || result=1
+    log_info 'parser whitelist 只保护日志处理；中央 AllowList 会影响中央决策及 AppSec。CAPI 认证可另行明确执行 cscli capi status（会访问官方 API）。'
+    return "$result"
 }
 
 repair_firewall_bouncer() {
@@ -1034,10 +1196,10 @@ repair_firewall_bouncer() {
 
 manage_firewall_ops() {
     require_core && require_yaml || return 1
-    local choice ip duration reason admin_ip
+    local choice ip duration reason
     while true; do
-        printf '\n黑名单与防火墙\n1. 活跃决策\n2. 最新警报\n3. 解封 IP\n4. 封禁 IP\n5. 查看防火墙规则\n6. 解析指标\n7. 修复 Bouncer 连接配置\n0. 返回\n'
-        prompt choice '请选择 [0-7]: ' || return 0
+        printf '\n黑名单与防火墙\n1. 活跃决策\n2. 最新警报\n3. 解封 IP\n4. 封禁 IP\n5. 查看防火墙规则\n6. 解析指标\n7. 修复 Bouncer 连接配置\n8. 管理员中央 AllowList\n9. 只读 Self-Report 排查\n0. 返回\n'
+        prompt choice '请选择 [0-9]: ' || return 0
         case "$choice" in
             1) cscli decisions list ;;
             2) cscli alerts list --limit 20 ;;
@@ -1054,16 +1216,15 @@ manage_firewall_ops() {
                 prompt duration '时长（Go duration，例如 4h、24h、168h）[24h]: ' && prompt reason '原因 [手动封禁]: ' || return 0
                 duration="${duration:-24h}"
                 if [[ ! "$duration" =~ ^([0-9]+(\.[0-9]+)?(h|m|s|ms|us|ns))+$ || "$duration" =~ ^0+(\.0+)?(h|m|s|ms|us|ns)$ ]]; then log_err '时长无效，请使用正数 h/m/s 格式；7 天请填写 168h。'; continue; fi
-                detect_admin_ip
-                admin_ip=''
-                if [[ -n "$CURRENT_IP" ]]; then admin_ip=$(yaml_tool normalize-ip "$CURRENT_IP") || admin_ip=''; fi
-                if [[ -n "$admin_ip" && "$ip" == "$admin_ip" ]]; then log_err '不能封禁当前 SSH 管理 IP。'; continue; fi
+                safe_manual_ban "$ip" || continue
                 if cscli decisions add --ip "$ip" --duration "$duration" --reason "${reason:-手动封禁}" --type ban; then
                     log_succ '封禁决策已提交；由 Bouncer 拉取执行。'
                 else log_err '添加封禁失败。'; fi ;;
             5) firewall_status ;;
             6) cscli metrics ;;
             7) repair_firewall_bouncer ;;
+            8) manage_admin_allowlist ;;
+            9) diagnose_self_report ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1082,29 +1243,52 @@ bind_crowdsec_console() {
     fi
     systemctl restart crowdsec && systemctl is-active --quiet crowdsec || return 1
     log_succ '注册请求已提交。请登录 https://app.crowdsec.net 接受注册，再核验实例。'
+    log_info '接受注册后运行 sudo cscli console status；请求提交不代表 Console 已完成接受或决策管理已启用。'
 }
+
+resolve_telegram_paths() {
+    local resolved
+    resolved=$(yaml_tool notification-paths "$CS_DIR") || return 1
+    TG_NOTIF_FILE="${resolved%%$'\n'*}"
+    PROFILES_FILE="${resolved#*$'\n'}"
+    TG_PROFILE_PATHS=("$PROFILES_FILE")
+    if [[ -f "${PROFILES_FILE}.local" ]]; then TG_PROFILE_PATHS=("${PROFILES_FILE}.local" "$PROFILES_FILE"); fi
+}
+
+update_telegram_profiles() {
+    local path
+    for path in "${TG_PROFILE_PATHS[@]}"; do
+        log_info "通知路由 ${1}: ${path}（按 local 优先顺序；只覆盖匹配该 profile 的告警）"
+        yaml_tool profiles "$path" "$1" || return 1
+    done
+}
+
 
 setup_telegram_notification() {
     require_core && require_yaml || return 1
+    resolve_telegram_paths || return 1
     local token chat endpoint
     prompt token 'Telegram Bot Token: ' && prompt chat 'Chat ID（个人或负数群组 ID）: ' && prompt endpoint 'HTTPS API 端点 [https://api.telegram.org]: ' || return 1
     endpoint="${endpoint:-https://api.telegram.org}"
     if [[ ! "$token" =~ ^[0-9]+:[A-Za-z0-9_-]+$ || ! "$chat" =~ ^-?[0-9]+$ ]] || ! yaml_tool url "$endpoint"; then log_err 'Token、Chat ID 或 API 端点格式无效。'; return 1; fi
     [[ -f "$PROFILES_FILE" ]] || { log_err 'profiles.yaml 不存在，无法启用告警。'; return 1; }
-    begin_config_change "$TG_NOTIF_FILE" "$PROFILES_FILE" || return 1
-    if ! yaml_tool telegram "$TG_NOTIF_FILE" "$token" "$chat" "$endpoint" || ! yaml_tool profiles "$PROFILES_FILE" enable; then
+    begin_config_change "$TG_NOTIF_FILE" "${TG_PROFILE_PATHS[@]}" || return 1
+    if ! yaml_tool telegram "$TG_NOTIF_FILE" "$token" "$chat" "$endpoint" || ! update_telegram_profiles enable; then
         restore_config_change
         return 1
     fi
     apply_core_config || return 1
     log_succ 'Telegram 配置已加载，原有通知通道保留。'
     log_info '发送告警是出站 HTTPS 请求，不需要额外放行 Telegram 来源网段。'
-    if confirm '现在使用官方通知插件发送测试消息？'; then test_telegram_notification; fi
+    if confirm '现在使用官方通知插件发送测试消息？'; then
+        test_telegram_notification || { log_err '配置已加载，投递验证失败。'; return 1; }
+    fi
     return 0
 }
 
 test_telegram_notification() {
-    require_core || return 1
+    require_core && require_yaml || return 1
+    resolve_telegram_paths || return 1
     [[ -f "$TG_NOTIF_FILE" ]] || { log_err '请先配置 Telegram。'; return 1; }
     if cscli notifications test crowdsec_1key_telegram; then
         log_info '通知插件测试已执行，请检查 Telegram 接收情况和返回结果。'
@@ -1115,7 +1299,8 @@ test_telegram_notification() {
 }
 
 check_telegram_settings() {
-    require_core || return 1
+    require_core && require_yaml || return 1
+    resolve_telegram_paths || return 1
     [[ -f "$TG_NOTIF_FILE" ]] || { log_warn '尚未配置本工具 Telegram 通道。'; return 1; }
     log_info "通知配置: ${TG_NOTIF_FILE}（不显示 Token）"
     crowdsec -t && cscli notifications list
@@ -1123,9 +1308,10 @@ check_telegram_settings() {
 
 disable_telegram_notification() {
     require_core && require_yaml || return 1
+    resolve_telegram_paths || return 1
     confirm '停用本工具 Telegram 通知？其他通知通道保留。' || return 0
-    begin_config_change "$TG_NOTIF_FILE" "$PROFILES_FILE" || return 1
-    yaml_tool profiles "$PROFILES_FILE" disable || { restore_config_change; return 1; }
+    begin_config_change "$TG_NOTIF_FILE" "${TG_PROFILE_PATHS[@]}" || return 1
+    update_telegram_profiles disable || { restore_config_change; return 1; }
     rm -f "$TG_NOTIF_FILE" || return 1
     apply_core_config || return 1
     log_succ '本工具 Telegram 通道已停用。'
@@ -1151,10 +1337,23 @@ manage_telegram() {
 
 check_health_status() {
     require_core || return 1
-    local result=0
+    local result=0 firewall_deployed=false units addresses
     printf '\n核心服务:\n'
     systemctl is-active crowdsec || result=1
-    systemctl is-active crowdsec-firewall-bouncer || result=1
+    if [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" || -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.local" ]]; then
+        firewall_deployed=true
+    elif units=$(systemctl list-unit-files --no-legend --no-pager crowdsec-firewall-bouncer.service); then
+        if grep -q '^crowdsec-firewall-bouncer\.service[[:space:]]' <<< "$units"; then firewall_deployed=true; fi
+    else
+        log_err '无法确认 Firewall Bouncer 是否已部署。'
+        firewall_deployed=unknown
+        result=1
+    fi
+    if [[ "$firewall_deployed" == true ]]; then
+        systemctl is-active crowdsec-firewall-bouncer || result=1
+    elif [[ "$firewall_deployed" == false ]]; then
+        log_info 'Firewall Bouncer: 未部署（可选）。'
+    fi
     printf '\nLAPI 登录:\n'
     cscli lapi status || result=1
     printf '\n配置校验:\n'
@@ -1164,11 +1363,33 @@ check_health_status() {
     cscli machines list || result=1
     printf '\n日志采集与解析指标:\n'
     cscli metrics || result=1
-    printf '\n防火墙规则:\n'
-    firewall_status || result=1
-    if [[ -f "$APPSEC_FILE" ]]; then check_appsec_status || result=1; fi
-    if command -v docker >/dev/null 2>&1; then
-        docker ps -a --filter 'name=^/crowdsec-web-ui$' --format 'table {{.Names}}\t{{.Status}}' || result=1
+    if [[ "$firewall_deployed" == true ]]; then
+        printf '\n防火墙规则:\n'
+        firewall_status || result=1
+    fi
+    if addresses=$(yaml_tool appsec-listeners "$CS_DIR"); then
+        if [[ -n "$addresses" ]]; then
+            check_appsec_status || result=1
+        else
+            log_info 'AppSec: 未部署（可选）。'
+        fi
+    else
+        log_err '无法读取有效 AppSec 数据源，健康状态无法确认。'
+        result=1
+    fi
+    if webui_owned; then
+        local running port
+        if ! command -v docker >/dev/null 2>&1; then
+            log_err 'WebUI 已部署但 Docker 不可用。'; result=1
+        else
+            running=$(docker inspect --format '{{.State.Running}}' crowdsec-web-ui 2>/dev/null) || running=false
+            if [[ "$running" != true ]]; then log_err 'WebUI 已部署但容器未运行。'; result=1; fi
+            port=$(yaml_tool get "${WEBUI_DIR}/docker-compose.yml" services.crowdsec-web-ui.environment.CONFIG_SERVER_PORT) || port=''
+            if ! valid_port "$port" || ! webui_http_ready "$port"; then log_err 'WebUI HTTP 应用未就绪。'; result=1; fi
+            webui_lapi_status || result=1
+        fi
+    else
+        log_info 'WebUI: 未部署（可选）。'
     fi
     log_info '检查完成，未修改服务、账号或配置。'
     return "$result"
@@ -1223,14 +1444,29 @@ audit_crowdsec_residuals() {
     fi
     if command -v cscli >/dev/null 2>&1; then log_info 'cscli 仍在 PATH 中。'; found=true; fi
     if command -v docker >/dev/null 2>&1; then docker ps -a --filter 'name=^/crowdsec-web-ui$' --format '{{.Names}} {{.Status}}'; fi
-    firewall_status && found=true
+    local firewall_result
+    firewall_status; firewall_result=$?
+    [[ "$firewall_result" == 0 ]] && found=true
+    [[ "$firewall_result" == 2 ]] && return 2
     if [[ "$found" == true ]]; then log_warn '检测到安装组件或残留；需要卸载时请选择明确的卸载入口。'; return 1; fi
     log_info '上述检查未发现残留；自定义服务、规则和软件源需按实际部署另行核验。'
 }
 
 deep_purge_residuals() {
     confirm '永久删除 CrowdSec 核心、数据、Bouncer 与本工具 WebUI？' || return 0
-    require_commands systemctl || return 1
+    require_commands systemctl python3 || return 1
+    case "$OS_ID" in
+        debian|ubuntu) require_commands dpkg-query apt-get || return 1 ;;
+        centos|rhel|almalinux|rocky|fedora)
+            require_commands rpm || return 1
+            command -v dnf >/dev/null 2>&1 || require_commands yum || return 1 ;;
+        *) log_err '未知系统，未停止服务或修改安装。'; return 1 ;;
+    esac
+    require_yaml || return 1
+    local firewall_result FIREWALL_SPEC_CACHE
+    FIREWALL_SPEC_CACHE=$(python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" firewall-spec "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml") || return 1
+    firewall_status >/dev/null 2>&1; firewall_result=$?
+    if [[ "$firewall_result" == 2 ]]; then log_err '无法确定防火墙状态，停止卸载。'; return 1; fi
     local real_ip_installs
     real_ip_installs=$(real_ip_tool list "$REALIP_STATE") || return 1
     if [[ -n "$real_ip_installs" ]]; then
@@ -1254,6 +1490,27 @@ deep_purge_residuals() {
             return 1
         fi
     done
+    local packages=() package package_status query_status
+    case "$OS_ID" in
+        debian|ubuntu)
+            for package in crowdsec crowdsec-firewall-bouncer crowdsec-firewall-bouncer-nftables crowdsec-firewall-bouncer-iptables; do
+                package_status=$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null); query_status=$?
+                [[ "$query_status" -le 1 ]] || { log_err '软件包查询失败，未停止服务。'; return 1; }
+                [[ "$package_status" == 'install ok installed' ]] && packages+=("$package")
+            done ;;
+        *)
+            for package in crowdsec crowdsec-firewall-bouncer crowdsec-firewall-bouncer-nftables crowdsec-firewall-bouncer-iptables; do
+                rpm -q "$package" >/dev/null 2>&1; query_status=$?
+                [[ "$query_status" -le 1 ]] || { log_err '软件包查询失败，未停止服务。'; return 1; }
+                [[ "$query_status" == 0 ]] && packages+=("$package")
+            done ;;
+    esac
+    for package in "${packages[@]}"; do
+        if [[ "$package" == crowdsec-firewall-bouncer* && ! -s "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" && ! -s "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.local" ]]; then
+            log_err 'Bouncer 软件包存在但配置不可读取，无法核对自定义防火墙资源；未停止服务。'
+            return 1
+        fi
+    done
     local service
     for service in crowdsec-firewall-bouncer crowdsec; do
         if systemctl is-active --quiet "$service" 2>/dev/null; then systemctl stop "$service" || return 1; fi
@@ -1264,34 +1521,27 @@ deep_purge_residuals() {
         docker rm -f crowdsec-web-ui || return 1
     fi
     # Read custom table names while package-owned configuration still exists.
-    if firewall_status >/dev/null 2>&1; then
+    firewall_status >/dev/null 2>&1; firewall_result=$?
+    if [[ "$firewall_result" != 1 ]]; then
         log_err '服务停止后仍有防火墙资源。请根据 Bouncer 配置人工释放；未删除软件包、配置或数据。'
         return 1
     fi
-    local packages=() package
-    case "$OS_ID" in
-        debian|ubuntu)
-            for package in crowdsec crowdsec-firewall-bouncer crowdsec-firewall-bouncer-nftables crowdsec-firewall-bouncer-iptables; do
-                [[ "$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null)" == 'install ok installed' ]] && packages+=("$package")
-            done
-            if ((${#packages[@]})); then apt-get purge -y "${packages[@]}" || return 1; fi ;;
-        centos|rhel|almalinux|rocky|fedora)
-            for package in crowdsec crowdsec-firewall-bouncer crowdsec-firewall-bouncer-nftables crowdsec-firewall-bouncer-iptables; do
-                rpm -q "$package" >/dev/null 2>&1 && packages+=("$package")
-            done
-            if ((${#packages[@]})); then
-                if command -v dnf >/dev/null 2>&1; then dnf remove -y "${packages[@]}" || return 1; else yum remove -y "${packages[@]}" || return 1; fi
-            fi ;;
-        *) log_err '未知系统，未自动删除软件包和数据。'; return 1 ;;
-    esac
+    if ((${#packages[@]})); then
+        case "$OS_ID" in
+            debian|ubuntu) apt-get purge -y "${packages[@]}" || return 1 ;;
+            *) if command -v dnf >/dev/null 2>&1; then dnf remove -y "${packages[@]}" || return 1; else yum remove -y "${packages[@]}" || return 1; fi ;;
+        esac
+    fi
     # The official service removes managed chains on shutdown; verify before deleting data.
-    if firewall_status >/dev/null 2>&1; then
+    firewall_status >/dev/null 2>&1; firewall_result=$?
+    if [[ "$firewall_result" != 1 ]]; then
         log_err '默认防火墙资源仍存在。请根据原 Bouncer 配置人工释放，配置和数据已保留。'
         return 1
     fi
     rm -rf -- "$CS_DIR" /var/lib/crowdsec || return 1
     if webui_owned; then rm -rf -- "$WEBUI_DIR" || return 1; fi
     rm -f -- "$CRON_FILE" || return 1
+    if [[ -f "$HUB_RUNNER_DIR/.crowdsec-1key-owned" ]]; then rm -rf -- "$HUB_RUNNER_DIR" || return 1; fi
     systemctl daemon-reload || return 1
     log_succ '已卸载检测到的软件包并清理数据。备份、系统日志和软件源保留供恢复/排查。'
     log_info '若已注册 Console，请在控制台移除离线实例。'
@@ -1350,11 +1600,14 @@ show_help() {
   --install-web-bouncer 首次安装 Web Bouncer（Docker/宿主机）
   --remove-web-bouncer  撤销本工具原生容器 Web Bouncer，保留原 WAF
   --appsec-status      只读检查 AppSec 数据源、监听、容器组件与指标
-  --verify-appsec      对用户指定网站执行官方 /.env 验证
+  --verify-appsec      确认后发起标记请求，判定 HTTP 与 AppSec 指标证据
+  --appsec-policy      检查/设置 AppSec 正文不可读与故障时策略
   --disable-appsec     停用本工具 AppSec
   --enable-cron        每天 03:30 更新 Hub
   --clean-redundant    查看节点并选择注销（不自动批量删除）
   --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
+  --admin-allowlist    明确管理单个管理员 IP 的中央 AllowList（旁路 AppSec）
+  --self-report-status 只读查看 Self-Report 相关告警、决策与 AllowLists
   --repair-logs        按现有日志及 Docker 挂载补齐 HTTP 采集，保留原配置
   --repair-real-ip     按可信 CDN/代理和 Header 修复 Docker Nginx/OpenResty/NPM 真实 IP
   --diagnose-real-ip   上游不确定时只读检查配置、挂载日志及外部请求核对指引
@@ -1390,9 +1643,12 @@ main() {
         --remove-web-bouncer) remove_docker_web_bouncer ;;
         --appsec-status) check_appsec_status ;;
         --verify-appsec) verify_appsec ;;
+        --appsec-policy) configure_appsec_policy ;;
         --disable-appsec) disable_appsec ;;
         --clean-redundant) check_and_clean_redundant_instances ;;
         --repair-bouncer) repair_firewall_bouncer ;;
+        --admin-allowlist) manage_admin_allowlist ;;
+        --self-report-status) diagnose_self_report ;;
         --repair-logs) repair_log_acquis ;;
         --repair-real-ip) repair_cloudflare_real_ip ;;
         --diagnose-real-ip) repair_cloudflare_real_ip diagnose ;;

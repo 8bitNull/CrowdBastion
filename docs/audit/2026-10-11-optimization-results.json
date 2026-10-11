@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-11",
+  "branch": "fix/audit-optimizations-20261011",
+  "tests": 245,
+  "static_checks": [
+    "bash -n",
+    "ShellCheck",
+    "git diff --check"
+  ],
+  "checks": {
+    "unittest": {
+      "status": "passed",
+      "output": [
+        "----------------------------------------------------------------------",
+        "Ran 245 tests in 50.227s",
+        "",
+        "OK"
+      ]
+    },
+    "official_engine": {
+      "status": "passed",
+      "output": [
+        "Updating official Hub and installing collections...",
+        "All manager collection names accepted by official Hub.",
+        "[INFO] 待补齐日志采集（nginx）：/tmp/codeg-acp/8-c8529dbb/crowdsec-real-engine-bkrydk1f/host web[qa]\\logs/sites/bob.example.com/log/access.log",
+        "1",
+        "Official HTTP notification plugin rendered template and delivered valid JSON.",
+        "crowdsec -t: PASS (log repair, AppSec, profiles, notification, administrator whitelist).",
+        "Live repaired HTTP file with spaces, brackets and backslash: acquisition metrics present.",
+        "Live AppSec /.env request: HTTP 403, action=ban.",
+        "Live AppSec ordinary / request: HTTP 200, action=allow.",
+        "Independent WebUI credentials: valid account accepted; deleted account rejected.",
+        "LAPI login, manual ban/unban and AppSec rule metrics: PASS.",
+        "Official Firewall Bouncer -T: nftables/iptables local overrides accepted; defaults preserved."
+      ]
+    },
+    "official_web_and_policies": {
+      "status": "passed",
+      "output": [
+        "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.",
+        "Installing official AppSec virtual-patching and generic rules in temporary engine...",
+        "Real OpenResty nginx -t: PASS with generated hooks and namespaced official Lua modules.",
+        "Live HTTP: allowed / reached backend; original WAF /waf-block retained 403; AppSec /.env blocked before backend.",
+        "Real AppSec processed counter: 0 -> 2; vpatch-env-access rule matched.",
+        "Original WAF init/access/worker/log executed; original resty.http module retained and unchanged.",
+        "Unavailable AppSec passthrough: HTTP 200, backend reached=True.",
+        "Unavailable AppSec deny: HTTP 200, backend reached=False.",
+        "Real HTTP2 POST without Content-Length: false allowed, true blocked; unavailable AppSec: passthrough allowed, deny blocked."
+      ]
+    },
+    "official_real_ip": {
+      "status": "passed",
+      "output": [
+        "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.",
+        "Production ranges: untrusted localhost cannot spoof CF-Connecting-IP.",
+        "Trusted fixture: log and Lua access handler use visitor IP, original peer preserved.",
+        "Missing-invalid-header-keeps-peer",
+        "NPM-child-trust-replaces-parent",
+        "NPM-generated-server-merge",
+        "XFF-right-to-left-trusted-chain",
+        "Real OpenResty real-IP runtime verification: PASS"
+      ]
+    }
+  },
+  "limits": [
+    "No production VPS deployment or push",
+    "No kernel packet blocking verification",
+    "No real Telegram receipt or Console acceptance",
+    "No real WebUI image authentication test",
+    "HTTP3 and slow timeout behavior require deployment tests"
+  ]
+}

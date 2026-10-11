@@ -124,7 +124,7 @@ cscli() {
         env = {**os.environ, 'BASE':str(self.base), 'TRACE':str(self.trace),
                'HELPER':str(ROOT/'lib/crowdsec_config.py'), 'CONF':str(conf),
                'SNIPPET':str(snippet), 'RUNTIME':runtime}
-        command = (f'source {shlex.quote(str(copied))}\n'+prelude+
+        command = (f'SCRIPT_DIR={shlex.quote(str(ROOT))}\nsource {shlex.quote(str(ROOT/"lib/appsec_audit.sh"))}\nsource {shlex.quote(str(copied))}\n'+prelude+
                    f'\nCS_DIR={shlex.quote(str(self.config))}\nAPPSEC_LINKS="$CS_DIR/links.yaml"\nOS_ID=debian\n'+overrides+
                    f'\ninstall_host_web_bouncer {runtime}')
         return subprocess.run(['bash','-c',command], env=env, capture_output=True, text=True, timeout=10)

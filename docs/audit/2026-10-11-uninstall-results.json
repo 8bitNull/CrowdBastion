@@ -1,0 +1,62 @@
+[
+  {
+    "name": "uninstall_normal",
+    "exit": 0,
+    "config_exists": false,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_cancel",
+    "exit": 0,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_eof",
+    "exit": 0,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_menu_all",
+    "exit": 0,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_menu_eof",
+    "exit": 0,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "residual_read_only",
+    "exit": 1,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_unknown_os_mutates_first",
+    "exit": 1,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_unknown_firewall_config",
+    "exit": 0,
+    "config_exists": false,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_stop_failure",
+    "exit": 1,
+    "config_exists": true,
+    "mocked": true
+  },
+  {
+    "name": "uninstall_package_failure",
+    "exit": 1,
+    "config_exists": true,
+    "mocked": true
+  }
+]

@@ -27,7 +27,7 @@ install_docker_web_bouncer() (
     selection=$?
     [[ $selection == 2 ]] && return 0
     [[ $selection == 0 ]] || return 1
-    local work network target assets account='' registered=false changed=false committed=false entry_status
+    local work network target assets account='' registered=false changed=false committed=false entry_status remote_assets config
     work=$(mktemp -d) || return 1
     chmod 700 "$work" || { rm -rf -- "$work"; return 1; }
     # shellcheck disable=SC2329 # invoked through EXIT trap
@@ -66,6 +66,9 @@ install_docker_web_bouncer() (
     if [[ -f "$WEB_INSTALLS" ]] && web_tool check "$WEB_INSTALLS" "$NATIVE_NAME" "$work/mounts" "$work/existing" 2>/dev/null; then
         entry_status=$(web_tool get "$work/existing" status) || return 1
         [[ "$entry_status" == installed ]] || { log_err '旧安装清理未完成，请先运行撤销 Web Bouncer。'; return 1; }
+        assets=$(web_tool get "$work/existing" host_assets) || return 1
+        remote_assets=$(web_tool get "$work/existing" container_assets) || return 1
+        appsec_guard_config "${assets}/bouncer.conf" "$NATIVE_ID" "${remote_assets}/bouncer.conf" || return 1
         log_info '已有本工具 Web Bouncer，复用原账号；可用接入已有 Docker Web Bouncer 恢复 AppSec 地址。'
         return 0
     fi
@@ -74,6 +77,8 @@ install_docker_web_bouncer() (
     web_tool plan "$work/effective" "$work/mounts" "$NATIVE_IMAGE" "$network" "$work/version" "$work/plan" || return 1
     target=$(web_tool get "$work/plan" host_target) || return 1
     assets=$(web_tool get "$work/plan" host_assets) || return 1
+    remote_assets=$(web_tool get "$work/plan" container_assets) || return 1
+    appsec_guard_config "${assets}/bouncer.conf" "$NATIVE_ID" "${remote_assets}/bouncer.conf" || return 1
     log_info "持久化配置：${target}；资源：${assets}"
     log_info '安装官方固定版本 Bouncer；原 WAF 先执行，保留原日志钩子。'
     confirm "为 ${NATIVE_NAME} 首次安装 Web Bouncer、接入 AppSec 并重载？" || return 0
@@ -97,7 +102,6 @@ install_docker_web_bouncer() (
     begin_config_change "$target" "$WEB_INSTALLS" "$APPSEC_DOCKER_LINKS" || return 1
     changed=true
     web_tool apply "$work/plan" "$work/assets" "$WEB_INSTALLS" "$NATIVE_NAME" "$account" || return 1
-    local remote_assets config
     remote_assets=$(web_tool get "$work/plan" container_assets) || return 1
     config="${assets}/bouncer.conf"
     yaml_tool link-docker-bouncer "$config" "$APPSEC_DOCKER_LINKS" "$NATIVE_ID" "${remote_assets}/bouncer.conf" "$NATIVE_NAME" || return 1

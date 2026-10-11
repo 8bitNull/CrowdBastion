@@ -1,5 +1,33 @@
 # 使用流程与官方配置验证记录
 
+## 当前优化基线（2026-10-11）
+
+本节记录审查建议实施后的结果；后续章节保留历史验证，不代表当前测试数量。实施分支为 `fix/audit-optimizations-20261011`，未部署到用户 VPS。
+
+本轮组件版本、结果摘要与运行输出保存于 [优化验证结果](audit/2026-10-11-optimization-results.json)。
+
+- 完整 unittest：**245 项**，涵盖正常、失败、取消、重复执行，以及有效配置、`.local` 冲突、卸载未知状态、自封地址、Hub 快照/互斥/回滚和凭据保护。
+- Bash 语法、全量 ShellCheck、`git diff --check`。
+- 官方 CrowdSec 1.8.1：Hub 集合、配置校验、实际采集文件、独立 LAPI 凭据、决策增删、HTTP 通知插件向本地接收器投递合法 JSON。
+- 官方 Firewall Bouncer 0.0.36：`-T` 配置校验，验证 nftables/iptables 覆盖保留默认值。
+- 官方 OpenResty 1.25.3.2 + Lua Bouncer 1.2.3：正常请求到达后端；原 WAF 与 AppSec 分别阻断；原 Lua 依赖和钩子保留；指标读取匹配真实规则。
+- 实际 HTTP2 POST 无 Content-Length：`APPSEC_DROP_UNREADABLE_BODY=false` 放行，`true` 返回 403，后端未收到请求。AppSec 连接拒绝：passthrough 放行，deny 阻止后端请求；该版本 deny 拒绝模板实际返回 **HTTP 200**，不能只用状态码判断故障阻断。
+- 真实 IP 运行时：不可信来源不能伪造 CF Header，可信来源改写日志和 Lua 访客 IP；缺失/非法 Header 保留原连接地址；NPM 子级信任覆盖及可信 XFF 链验证通过。
+- 诊断窗口：只比较明确声明为 counter 的 CrowdSec 序列，重置或序列变化报告无法判断；默认只读诊断不等待。流量归因仍须关联唯一请求标识。
+
+关键审查修正已复验：隐藏 `.local` 冲突、原生策略变更后的撤销记录哈希、Hub 符号链接边界及失败恢复证据保留。
+
+| 环境/功能 | 本轮证据 | 仍需实际部署确认 |
+| --- | --- | --- |
+| Debian/Ubuntu、RHEL 安装/卸载 | 模拟包管理器和服务流程、失败边界 | 真实系统升级、systemd、重启/卸载 |
+| 1Panel、NPM、宿主机 Web | 配置/挂载回归及真实 OpenResty 请求 | 目标 Docker 镜像、网络、重建与原 WAF |
+| Firewall | 官方配置校验、残留检查回归 | 内核 IPv4/IPv6、Docker 转发与规则释放 |
+| Telegram、Console | 本地通知投递、注册流程与错误传播 | 真实 Telegram 收件、Console 接受及同步 |
+| WebUI | 认证环境配置、镜像 ID 固定、readiness/凭据流程 | 真实镜像未登录保护、端口防火墙及 HTTPS |
+| AppSec | URI、HTTP2 无长度正文、连接故障策略 | HTTP3、慢响应/超时、业务正文兼容 |
+
+WebUI 的 host 网络监听范围由上游决定，脚本要求明确确认已限制入口，不承诺自动将端口绑定到 loopback。管理员 AllowList 会旁路 AppSec，只允许明确选择单个管理员地址。Hub 维护不归因并行外部工具对 Hub 文件的写入；基础集合首次安装使用同一互斥锁，但不承诺软件包安装全流程事务回滚。
+
 验证日期：2026-10-10。依据用户指定的 CrowdSec Next AppSec 文档，使用官方稳定发布 CrowdSec **1.8.1** 和 Firewall Bouncer **0.0.36** 进行核查。
 
 ## 已发现并处理的问题

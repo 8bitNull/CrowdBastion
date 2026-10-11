@@ -59,16 +59,17 @@ cscli() {
 }
 crowdsec() { record crowdsec "$@"; return 0; }
 systemctl() { record systemctl "$@"; return 0; }
-docker() { record docker "$@"; case "$*" in inspect*) echo false;; esac; return 0; }
+docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; case "$*" in inspect*) echo false;; esac; return 0; }
 apt-get() { record apt-get "$@"; return 0; }
 yum() { record yum "$@"; return 0; }
 dnf() { record dnf "$@"; return 0; }
-nft() { record nft "$@"; return 1; }
-iptables() { record iptables "$@"; return 1; }
-ip6tables() { record ip6tables "$@"; return 1; }
-ipset() { record ipset "$@"; return 1; }
+nft() { record nft "$@"; [[ "$*" == "list tables" ]]; }
+iptables() { record iptables "$@"; [[ "$*" == "-S" ]]; }
+ip6tables() { record ip6tables "$@"; [[ "$*" == "-S" ]]; }
+ipset() { record ipset "$@"; return 0; }
+ip() { record ip "$@"; echo "[]"; }
 modprobe() { return 0; }
-curl() { record curl "$@"; return 0; }
+curl() { record curl "$@"; [[ "$*" == *"/api/health"* ]] && printf 200; return 0; }
 pkill() { record pkill "$@"; return 0; }
 pgrep() { return 1; }
 dpkg-query() { return 1; }
@@ -232,7 +233,7 @@ journalctl() { record journalctl "$@"; }
         ui = self.base/'opt/crowdsec-web-ui/data'
         ui.mkdir(parents=True)
         (ui/'webui_api_credentials.yaml').write_text('url: http://127.0.0.1:8080/\nlogin: webui-owned\npassword: abcdefghijklmnopqrst\n')
-        self.run_shell('deploy_web_ui', '3000\n\n', 'docker() { record docker "$@"; [[ "$1" != pull ]]; }')
+        self.run_shell('deploy_web_ui', '3000\ny\n\n', 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; [[ "$1" != pull ]]; }')
         self.assertNotIn('machines delete', self.commands())
         self.assertNotIn('docker rm', self.commands())
 
@@ -519,7 +520,7 @@ journalctl() { record journalctl "$@"; }
         self.assertNotIn('reload nginx', self.commands())
 
     def test_ipv6_default_table_is_detected(self):
-        p = self.run_shell('firewall_status', overrides="nft() { record nft \"$@\"; [[ \"$*\" == 'list table ip6 crowdsec6' ]]; }")
+        p = self.run_shell('firewall_status', overrides="nft() { record nft \"$@\"; [[ \"$*\" == 'list tables' ]] && echo 'table ip6 crowdsec6'; }")
         self.assertEqual(p.returncode, 0)
 
     def test_webui_credential_check_uses_webui_credentials(self):
@@ -530,14 +531,14 @@ journalctl() { record journalctl "$@"; }
 
     def test_webui_invalid_credentials_stop_update(self):
         self.make_webui()
-        p = self.run_shell('deploy_web_ui', '3000\n', 'cscli() { record cscli "$@"; [[ "$1" != -c ]]; }')
+        p = self.run_shell('deploy_web_ui', '3000\ny\n', 'cscli() { record cscli "$@"; [[ "$1" != -c ]]; }')
         self.assertNotEqual(p.returncode, 0)
         self.assertNotIn('compose -f', self.commands())
 
     def test_webui_running_failure_restores_previous_compose_and_container(self):
         ui = self.make_webui()
         original = (ui/'docker-compose.yml').read_text()
-        p = self.run_shell('deploy_web_ui', '3000\n')
+        p = self.run_shell('deploy_web_ui', '3000\ny\n')
         self.assertNotEqual(p.returncode, 0)
         self.assertEqual((ui/'docker-compose.yml').read_text(), original)
         self.assertGreaterEqual(self.commands().count(' up -d'), 2)
@@ -894,7 +895,7 @@ journalctl() { record journalctl "$@"; }
     def test_webui_success_reuses_credentials(self):
         ui = self.make_webui()
         old = (ui/'data/webui_api_credentials.yaml').read_text()
-        p = self.run_shell('deploy_web_ui', '3000\n', 'docker() { record docker "$@"; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }')
+        p = self.run_shell('deploy_web_ui', '3000\ny\n', 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual((ui/'data/webui_api_credentials.yaml').read_text(), old)
         compose = yaml.safe_load((ui/'docker-compose.yml').read_text())
@@ -941,15 +942,15 @@ journalctl() { record journalctl "$@"; }
     def test_webui_rollback_pins_previous_image(self):
         self.make_webui()
         image = 'sha256:'+'a'*64
-        stub = 'docker() { record docker "$@"; if [[ "$*" == *"{{.Image}}"* ]]; then echo '+image+'; elif [[ "$*" == *"State.Running"* ]]; then echo false; fi; return 0; }'
-        self.run_shell('deploy_web_ui', '3000\n', stub)
+        stub = 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *"{{.Image}}"* ]]; then echo '+image+'; elif [[ "$*" == *"State.Running"* ]]; then echo false; fi; return 0; }'
+        self.run_shell('deploy_web_ui', '3000\ny\n', stub)
         self.assertIn('--pull never', self.commands())
 
     def test_custom_nft_table_is_detected(self):
         cfg = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
         cfg.parent.mkdir()
         cfg.write_text('mode: nftables\nnftables:\n  ipv4:\n    table: my_custom_table\n')
-        p = self.run_shell('firewall_status', overrides="nft() { record nft \"$@\"; [[ \"$*\" == 'list table ip my_custom_table' ]]; }")
+        p = self.run_shell('firewall_status', overrides="nft() { record nft \"$@\"; [[ \"$*\" == 'list tables' ]] && echo 'table ip my_custom_table'; }")
         self.assertEqual(p.returncode, 0)
 
     def test_web_bouncer_missing_does_not_claim_full_waf_ready(self):
@@ -975,7 +976,7 @@ journalctl() { record journalctl "$@"; }
 
     def test_webui_new_deployment_creates_only_one_dedicated_machine(self):
         stub = r'''
-docker() { record docker "$@"; if [[ "$*" == 'container inspect crowdsec-web-ui' ]]; then return 1; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
+docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == 'container inspect crowdsec-web-ui' ]]; then return 1; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
 cscli() {
  record cscli "$@"
  if [[ "$1 $2" == 'machines add' ]]; then
@@ -987,7 +988,7 @@ cscli() {
  return 0
 }
 '''
-        p = self.run_shell('deploy_web_ui', '3000\n', stub)
+        p = self.run_shell('deploy_web_ui', '3000\ny\n', stub)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual(self.commands().count('machines add'), 1)
         creds = yaml.safe_load((self.base/'opt/crowdsec-web-ui/data/webui_api_credentials.yaml').read_text())
@@ -997,7 +998,7 @@ cscli() {
     def test_webui_rotation_deletes_old_machine_only_after_success(self):
         self.make_webui()
         stub = r'''
-docker() { record docker "$@"; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
+docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
 cscli() {
  record cscli "$@"
  if [[ "$1 $2" == 'machines add' ]]; then
@@ -1009,7 +1010,7 @@ cscli() {
  return 0
 }
 '''
-        p = self.run_shell('deploy_web_ui rotate', '3000\n', stub)
+        p = self.run_shell('deploy_web_ui rotate', '3000\ny\n', stub)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         trace = self.commands()
         self.assertIn('machines add', trace)
@@ -1033,7 +1034,7 @@ cscli() {
         cfg = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
         cfg.parent.mkdir()
         cfg.write_text('mode: nftables\nnftables:\n  ipv4:\n    table: lingering_custom_table\n')
-        stub = 'dpkg-query() { echo "install ok installed"; }; apt-get() { record apt-get "$@"; rm -f '+shlex.quote(str(cfg))+'; }; nft() { record nft "$@"; [[ "$*" == "list table ip lingering_custom_table" ]]; }'
+        stub = 'dpkg-query() { echo "install ok installed"; }; apt-get() { record apt-get "$@"; rm -f '+shlex.quote(str(cfg))+'; }; nft() { record nft "$@"; [[ "$*" == "list tables" ]] && echo "table ip lingering_custom_table"; }'
         p = self.run_shell('deep_purge_residuals', 'y\n', stub)
         self.assertNotEqual(p.returncode, 0)
         self.assertTrue(cfg.exists())

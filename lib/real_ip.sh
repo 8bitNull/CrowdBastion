@@ -85,6 +85,8 @@ repair_cloudflare_real_ip() (
         ranges=$(web_tool get "$work/plan" ranges) || return 1
         scope=$(web_tool get "$work/plan" scope) || return 1
         log_info "选定 Header：${header}；可信来源：${ranges}"
+        python3 "${SCRIPT_DIR}/lib/crowdsec_detection_diagnose.py" range-diff "$work/plan" "$REALIP_STATE" "$NATIVE_NAME" || return 1
+        log_info "来源核对时间（UTC）：$(date -u '+%Y-%m-%d %H:%M:%S')；Cloudflare 模式本次从官方 HTTPS 获取，后续网段变更可重新运行更新。"
         log_info '仅使用选定 Header，不尝试其他候选；缺失或无法提取有效 IP 时保留连接来源 IP。X-Forwarded-For 按可信代理从右向左处理。'
         if [[ "$scope" == npm-proxy-hosts ]]; then
             log_warn '作用于加载 server_proxy.conf 的全部 NPM Proxy Host；在站点层使用上述网段，保留原自定义内容及 HTTP 层配置。'

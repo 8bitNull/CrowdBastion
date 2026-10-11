@@ -1,0 +1,595 @@
+[
+  {
+    "name": "core_success",
+    "feature": "core",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "core_eof",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_invalid_ip",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_package_failure",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_source_download_failure",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_config_validation_failure",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_bouncer_start_failure",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_nft_package_failure_no_fallback",
+    "feature": "core",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "core_custom_acquisition_inactive",
+    "feature": "core",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": null
+  },
+  {
+    "name": "rules_entry_1",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_2",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_3",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_4",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_5",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_6",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_7",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_entry_8",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_eof",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_cancel_specific",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_invalid_collection",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_protected_appsec",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_install_failure",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "rules_reload_failure",
+    "feature": "rules",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_default",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_custom",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_invalid",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_disable_show",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_eof",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "cron_inactive_service",
+    "feature": "cron",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_all_entries",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_cancel_unban",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_cancel_ban",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_invalid_ip",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_invalid_duration",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_ban_failure",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_unban_failure",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_eof",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_invalid_key",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "firewall_restart_failure",
+    "feature": "firewall",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "console_normal",
+    "feature": "console",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "console_cancel",
+    "feature": "console",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "console_eof",
+    "feature": "console",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "console_failed_enroll",
+    "feature": "console",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "console_failed_restart",
+    "feature": "console",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_normal",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_eof",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_invalid",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_validation_fail",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_test_fail_is_swallowed",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_local_break_profile_ignored",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_test_success",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_test_failure",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_check",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_disable_cancel",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_disable_confirm",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_disable_validation_failure",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "telegram_menu_eof",
+    "feature": "telegram",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_normal",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_cancel",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_eof",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_non_sqlite",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_validation_failure",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_restart_failure",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "wal_comment_only_local",
+    "feature": "wal",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "health_normal",
+    "feature": "health",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "health_service_failure",
+    "feature": "health",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "health_stopped_webui_returns_zero",
+    "feature": "health",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "optimize_normal",
+    "feature": "optimize",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "optimize_cancel",
+    "feature": "optimize",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "optimize_eof",
+    "feature": "optimize",
+    "mocked": true,
+    "exit": 0,
+    "expected_exit": 0,
+    "matched_expected": true
+  },
+  {
+    "name": "optimize_hub_failure",
+    "feature": "optimize",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "optimize_validation_failure",
+    "feature": "optimize",
+    "mocked": true,
+    "exit": 1,
+    "expected_exit": 1,
+    "matched_expected": true
+  },
+  {
+    "name": "evidence_custom_acquisition",
+    "feature": "evidence",
+    "mocked": true,
+    "exit": 0
+  },
+  {
+    "name": "evidence_local_profiles",
+    "feature": "evidence",
+    "mocked": true,
+    "exit": 0
+  },
+  {
+    "name": "evidence_empty_local_metrics",
+    "feature": "evidence",
+    "mocked": true,
+    "exit": 1
+  }
+]

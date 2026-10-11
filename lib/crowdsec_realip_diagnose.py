@@ -58,7 +58,7 @@ def client_address(line):
     return None
 
 
-def log_evidence(effective, mounts, limit=12):
+def log_evidence(effective, mounts, limit=12, host=False):
     reports, seen = [], set()
     for context, words, _ in http_directives(effective):
         if len(words) < 2 or words[0] != 'access_log':
@@ -69,7 +69,13 @@ def log_evidence(effective, mounts, limit=12):
             continue
         try:
             # Read-only mounts are valid evidence sources; never write through them.
-            local, _ = mount_path(remote, [{**mount, 'RW': True} for mount in mounts])
+            if host:
+                path = Path(remote)
+                if any(ancestor.is_symlink() for ancestor in [path, *path.parents]):
+                    continue
+                local = str(path)
+            else:
+                local, _ = mount_path(remote, [{**mount, 'RW': True} for mount in mounts])
             path = Path(local)
             if local in seen or not path.is_file():
                 continue
