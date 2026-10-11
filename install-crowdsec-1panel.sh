@@ -913,7 +913,7 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 修复 Docker Cloudflare 真实 IP\n15. 撤销本工具真实 IP 配置\n0. 返回\n'
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n0. 返回\n'
         prompt choice '请选择 [0-15]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
@@ -1355,8 +1355,8 @@ show_help() {
   --clean-redundant    查看节点并选择注销（不自动批量删除）
   --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
   --repair-logs        按现有日志及 Docker 挂载补齐 HTTP 采集，保留原配置
-  --repair-real-ip     修复 Docker Nginx/OpenResty 的 Cloudflare 真实 IP（官方可信网段）
-  --restore-real-ip    移除本工具的 Cloudflare 真实 IP 配置
+  --repair-real-ip     按可信 CDN/代理和 Header 修复 Docker Nginx/OpenResty/NPM 真实 IP
+  --restore-real-ip    撤销本工具的真实 IP 配置并恢复原内容
   --reset-baseline     补齐基础集合，保留自定义与 AppSec
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      选择确认后移除已知 Web 日志规则

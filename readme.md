@@ -146,7 +146,7 @@ sudo bash install-crowdsec-1panel.sh --repair-logs
 
 Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方软件包配置及其他凭据，在 `.yaml.local` 中更新 LAPI 地址和密钥；iptables 模式检测到 `DOCKER-USER` 时加入对应链。核验会检查 IPv4、IPv6、配置中的 nftables 表及默认 IPSet 资源，但仍需在实际主机上确认 Bouncer 拉取和流量阻断。
 
-### Cloudflare 真实访客 IP
+### 按可信 CDN/代理还原真实访客 IP
 
 若访问日志首字段是 Cloudflare 节点 IP，且 `nginx -T` 没有真实 IP 配置，单独设置 `proxy_set_header X-Real-IP` 不能改变日志和 Web Bouncer 使用的 `$remote_addr`。Docker 部署可运行以下入口，或选择菜单 `3 → 14`：
 
@@ -154,9 +154,15 @@ Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方
 sudo bash install-crowdsec-1panel.sh --repair-real-ip
 ```
 
-入口从 Cloudflare 官方 HTTPS 地址读取 IPv4/IPv6 网段，在实际挂载的 HTTP include 目录生成独立配置，使用 `CF-Connecting-IP`。它要求 HTTP real-IP 模块、已加载的 HTTP include 和可写持久化目录挂载；拒绝单文件 bind、已有自定义真实 IP 规则及手工修改过的管理文件。确认后备份、校验并重载，失败恢复。重复执行可更新官方网段；`--restore-real-ip` 或菜单 `3 → 15` 撤销本工具配置。核心卸载会要求先撤销，保留管理记录。
+入口先列出现有 `real_ip_header`、可信来源条目数和候选 Header，再要求选择实际接入方式。Cloudflare 公网节点直接接入使用官方 HTTPS IPv4/IPv6 网段和固定 `CF-Connecting-IP`；配置线索仅用于提示，不等于自动确认网络拓扑。其他 CDN/反向代理需明确输入上游约定的 Header 和可信 IP/CIDR。不会从请求头内容或 Header 出现顺序推断可信来源。
 
-该入口仅信任 Cloudflare 公网节点，不自动信任 loopback 或内网代理。Cloudflare Tunnel、其他代理链及宿主机 Nginx 需要按实际来源单独核对。修复后从外部访问当前 `server_name` 对应站点，核对新日志与 Web Bouncer 的访客 IP；旧日志和累计计数不会改写。保留 CDN 白名单、SSH 采集和现有 WAF。
+支持作为 IP Header 的候选：`X-Forwarded-For`、`X-Real-IP`、`X-Forwarded`、`Forwarded-For`、`True-Client-IP`、`Client-IP`、`Ali-CDN-Real-IP`、`CDN-Src-IP`、`CDN-Real-IP`、`CF-Connecting-IP`、`X-Cluster-Client-IP`、`WL-Proxy-Client-IP`、`Proxy-Client-IP`。非标准字段必须由上游明确保证内容为客户端 IP 或约定的地址链；支持其名称不代表认可来源。`Forwarded` 的 RFC 格式不能直接交给 Nginx real-IP 模块，应在可信上游规范化成 IP Header。
+
+修复要求 HTTP real-IP 模块、已加载入口和可写持久化目录挂载。一般 Nginx/OpenResty 在 HTTP include 目录创建管理文件；NPM 则保留并合并 `/data/nginx/custom/server_proxy.conf`，作用于加载该入口的全部 Proxy Host。在 NPM 站点层明确设置可信网段，替代继承的 HTTP 层信任列表；保留原 HTTP 配置、`http_top.conf` 及 Web Bouncer。已有站点/自定义真实 IP 指令、同名未管理文件、单文件 bind 或手工修改过的管理文件会导致停止并要求核对，不自动覆盖。
+
+确认前显示 Header、全部可信网段和作用范围。自定义模式拒绝空网段、全网信任和过宽的内网网段；内网需 IPv4 `/24` 或更窄、IPv6 `/64` 或更窄，loopback 需单个地址。Header 缺失、无法提取有效 IP 或连接来源不可信时，Nginx 保留连接来源 IP，不尝试其他 Header；`X-Forwarded-For` 从右向左跳过可信代理。确认后备份、校验并重载，失败恢复。重复执行可更新配置；`--restore-real-ip` 或菜单 `3 → 15` 恢复原自定义文件内容及权限，原文件不存在时移除生成文件。旧版 Cloudflare 管理记录兼容，核心卸载要求先撤销。
+
+Cloudflare 模式仅信任官方公网节点，不自动信任 loopback 或内网代理。Cloudflare Tunnel 需核对其连接来源和 Header 后再选择自定义模式；宿主机 Nginx 尚无此自动修复适配器。修复后从外部访问当前 `server_name` 对应站点，用独特查询参数关联该次请求的新访问日志，核对访问设备公网 IP。日志中的 IP 与 Web Bouncer 使用的 IP 仍需在实际部署中核验；旧日志和累计计数不会改写。保留 CDN 白名单、SSH 采集和现有 WAF。
 
 `tools/diagnose-detection.sh` 的 SSH 离线失败认证样本成功解析，只能证明该样本兼容；大量正常会话日志未解析不等于防护失效。AppSec 验证需同时检查 HTTP 响应与规则计数增量，经过 Cloudflare 返回 403 本身不能证明请求到达本机 AppSec。
 
@@ -192,7 +198,7 @@ bash install-crowdsec-1panel.sh --help
 | `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
 | `--repair-logs` | 按实际日志与 Docker 挂载补齐 HTTP 采集，保留现有配置 |
-| `--repair-real-ip` | 按 Cloudflare 官方可信网段修复 Docker HTTP 真实 IP |
+| `--repair-real-ip` | 按可信 CDN/代理、指定 Header 和网段修复 Docker Nginx/OpenResty/NPM 真实 IP |
 | `--restore-real-ip` | 撤销本工具的真实 IP 配置 |
 | `--reset-baseline`、`--reset-56` | 补齐基础集合；兼容旧参数，保留自定义/AppSec，不保证固定场景数 |
 | `--uninstall-waf` | 确认后移除已知 Web 日志扩展 |

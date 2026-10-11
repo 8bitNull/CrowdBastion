@@ -77,6 +77,65 @@ class RealIP(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.plan(effective=effective, owned=owned)
 
+    def npm_fixture(self):
+        mounts = [{'Type': 'bind', 'RW': True, 'Source': str(self.root), 'Destination': '/data'}]
+        effective = '''# configuration file /etc/nginx/nginx.conf:
+http {
+set_real_ip_from 10.0.0.0/8;
+real_ip_header X-Real-IP;
+real_ip_recursive on;
+include /data/nginx/custom/http_top[.]conf;
+}
+# configuration file /etc/nginx/conf.d/include/ip_ranges.conf:
+set_real_ip_from 104.16.0.0/13;
+# configuration file /data/nginx/proxy_host/10.conf:
+server { include /data/nginx/custom/server_proxy[.]conf; }
+'''
+        return effective, mounts
+
+    def test_npm_merge_update_and_remove_preserve_custom_file(self):
+        import json
+        effective, mounts = self.npm_fixture()
+        target = self.root/'nginx/custom/server_proxy.conf'
+        target.parent.mkdir(parents=True)
+        original = '# user setting\nadd_header X-Test preserved;\n'
+        target.write_text(original)
+        target.chmod(0o640)
+        plan = self.plan(effective=effective, mounts=mounts)
+        self.assertEqual(plan['scope'], 'npm-proxy-hosts')
+        self.assertTrue(plan['text'].startswith(original))
+        self.assertIn('real_ip_header CF-Connecting-IP;', plan['text'])
+        self.assertNotIn('set_real_ip_from 10.0.0.0/8;', plan['text'])
+        staged, state = self.root/'plan.json', self.root/'state.json'
+        staged.write_text(json.dumps(plan))
+        self.helper.main(['apply', str(staged), str(state), 'npm'])
+        owned = json.loads(state.read_text())['npm']
+        updated = self.plan(effective=effective+'# configuration file /data/nginx/custom/server_proxy.conf:\n'+plan['text'], mounts=mounts, owned=owned)
+        self.assertEqual(updated['text'], plan['text'])
+        self.helper.main(['remove', str(state), 'npm'])
+        self.assertEqual(target.read_text(), original)
+        self.assertEqual(target.stat().st_mode & 0o777, 0o640)
+
+    def test_npm_refuses_per_host_header_override(self):
+        effective, mounts = self.npm_fixture()
+        with self.assertRaises(ValueError):
+            self.plan(effective=effective+'server { real_ip_header X-Forwarded-For; }', mounts=mounts)
+
+    def test_custom_policy_has_one_explicit_header_and_trust_list(self):
+        plan = self.plan(provider='custom', header='x-forwarded-for', ranges=['192.0.2.0/24'])
+        self.assertIn('real_ip_header X-Forwarded-For;', plan['text'])
+        self.assertNotIn('CF-Connecting-IP', plan['text'])
+        for value in ['Forwarded', 'unknown-header', 'X-Real-IP; include /tmp/x']:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.plan(provider='custom', header=value, ranges=['192.0.2.0/24'])
+        for value in ['0.0.0.0/0', '::/0', '10.0.0.0/8', '127.0.0.0/8']:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.plan(provider='custom', header='X-Real-IP', ranges=[value])
+
+    def test_custom_loopback_trust_requires_exact_address(self):
+        plan = self.plan(provider='custom', header='X-Real-IP', ranges=['127.0.0.1/32'])
+        self.assertIn('set_real_ip_from 127.0.0.1/32;', plan['text'])
+
 
 if __name__ == '__main__':
     unittest.main()

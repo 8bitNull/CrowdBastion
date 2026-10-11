@@ -10,16 +10,24 @@ class RealIPWorkflows(unittest.TestCase):
     run_shell = test_workflows.Workflows.run_shell
     commands = test_workflows.Workflows.commands
 
-    def fixture(self):
-        directory = self.base/'http.d'
+    def fixture(self, npm=False):
+        directory = self.base/('data' if npm else 'http.d')
         directory.mkdir()
-        self.target = directory/'crowdsec-1key-cloudflare-real-ip.conf'
+        remote = '/data/nginx/custom/server_proxy.conf' if npm else '/usr/local/openresty/nginx/conf/http.d/crowdsec-1key-cloudflare-real-ip.conf'
+        self.target = directory/('nginx/custom/server_proxy.conf' if npm else 'crowdsec-1key-cloudflare-real-ip.conf')
+        self.target.parent.mkdir(parents=True, exist_ok=True)
         self.state = self.config/'crowdsec-1key-real-ip.json'
         effective = self.base/'effective'
         effective.write_text('# configuration file /usr/local/openresty/nginx/conf/nginx.conf:\nhttp { include /usr/local/openresty/nginx/conf/http.d/*.conf; }\n')
+        if npm:
+            effective.write_text('''# configuration file /etc/nginx/nginx.conf:
+http { set_real_ip_from 10.0.0.0/8; real_ip_header X-Real-IP; real_ip_recursive on; include /data/nginx/custom/http_top[.]conf; }
+# configuration file /data/nginx/proxy_host/10.conf:
+server { include /data/nginx/custom/server_proxy[.]conf; }
+''')
         mounts = self.base/'mounts'
         mounts.write_text(json.dumps([{'Type':'bind','RW':True,'Source':str(directory),
-                                     'Destination':'/usr/local/openresty/nginx/conf/http.d'}]))
+                                     'Destination':'/data' if npm else '/usr/local/openresty/nginx/conf/http.d'}]))
         return '''docker() {
 record docker "$@"
 case "$*" in
@@ -27,7 +35,7 @@ case "$*" in
  'inspect --format {{json .Mounts}} '*) cat '''+shlex.quote(str(mounts))+''';;
  'exec '*' nginx -T') cat '''+shlex.quote(str(effective))+'''
  if [[ -f '''+shlex.quote(str(self.target))+''' ]]; then
-  echo '# configuration file /usr/local/openresty/nginx/conf/http.d/crowdsec-1key-cloudflare-real-ip.conf:'
+  echo '# configuration file '''+remote+''':'
   cat '''+shlex.quote(str(self.target))+'''
  fi;;
  'exec '*' nginx -V') echo 'nginx version: openresty/1.31 --with-http_realip_module';;
@@ -64,12 +72,12 @@ fi
     def test_apply_repeat_and_restore_preserve_other_configuration(self):
         overrides = self.fixture()
         config_before = (self.config/'config.yaml').read_text()
-        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\ny\n', overrides)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides)
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertIn('real_ip_header CF-Connecting-IP;', self.target.read_text())
         self.assertNotIn('127.0.0.1', self.target.read_text())
         original = self.target.read_text()
-        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\ny\n', overrides)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides)
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(self.target.read_text(), original)
         result = self.run_shell('repair_cloudflare_real_ip remove', 'openresty\ny\n', overrides)
@@ -80,7 +88,7 @@ fi
         self.assertNotIn('bouncers add', self.commands())
 
     def test_cancel_does_not_write_configuration(self):
-        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\nn\n', self.fixture())
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\nn\n', self.fixture())
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertFalse(self.target.exists())
         self.assertFalse(self.state.exists())
@@ -89,7 +97,7 @@ fi
         overrides = self.fixture()+'''\neval "$(declare -f docker | sed '1s/docker/docker_base/')"
 docker() { if [[ "$*" == 'exec '*' nginx -s reload' && ! -f "$TRACE.failed" ]]; then touch "$TRACE.failed"; return 1; fi; docker_base "$@"; }
 '''
-        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\ny\n', overrides)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides)
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(self.target.exists())
         self.assertFalse(self.state.exists())
@@ -98,7 +106,7 @@ docker() { if [[ "$*" == 'exec '*' nginx -s reload' && ! -f "$TRACE.failed" ]]; 
     def test_bad_range_response_stops_before_changes(self):
         overrides = self.fixture()+'''\ncurl() { while (($#)); do if [[ "$1" == -o ]]; then echo '<html>error</html>' > "$2"; return 0; fi; shift; done; }
 '''
-        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\ny\n', overrides)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides)
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(self.target.exists())
         self.assertNotIn('nginx -s reload', self.commands())
@@ -111,6 +119,26 @@ docker() { if [[ "$*" == 'exec '*' nginx -s reload' && ! -f "$TRACE.failed" ]]; 
         self.assertTrue(self.state.exists())
         self.assertIn('--restore-real-ip', result.stdout+result.stderr)
         self.assertNotIn('systemctl stop', self.commands())
+
+    def test_custom_proxy_does_not_fetch_or_guess_cdn_ranges(self):
+        overrides = self.fixture()
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n2\nX-Forwarded-For\n192.0.2.0/24\ny\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('real_ip_header X-Forwarded-For;', self.target.read_text())
+        self.assertNotIn('CF-Connecting-IP', self.target.read_text())
+        self.assertNotIn('curl ', self.commands())
+
+    def test_npm_preserves_custom_settings_on_apply_and_restore(self):
+        overrides = self.fixture(npm=True)
+        original = '# existing settings\nadd_header X-Test intact;\n'
+        self.target.write_text(original)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertTrue(self.target.read_text().startswith(original))
+        self.assertIn('real_ip_header CF-Connecting-IP;', self.target.read_text())
+        result = self.run_shell('repair_cloudflare_real_ip remove', 'openresty\ny\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(self.target.read_text(), original)
 
 
 if __name__ == '__main__':

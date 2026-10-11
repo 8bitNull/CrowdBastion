@@ -109,6 +109,10 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
 
 同日增加 AppSec 验证的 Self-Report 提示与发送前确认：回归覆盖取消和 EOF 不发送请求，明确确认后仍读取请求前后指标。该提示不检测目标是否实际绕回本机，不声称自动消除 Console 历史问题。
 
+可信代理扩展增加 NPM server_proxy.conf 合并、更新与撤销，保留原自定义内容和文件模式；拒绝站点已有真实 IP 覆盖。自定义模式验证明确 Header/CIDR、拒绝 RFC Forwarded/未知字段/过宽网段，并确认不下载或猜测 CDN 来源。Cloudflare 继续使用固定官方 HTTPS 来源和固定 Header，兼容原管理记录。
+
+真实 OpenResty 请求还验证了：选定 Header 缺失或无效时不尝试其他候选；IPv6 客户端地址传入日志及 Lua；NPM 站点层信任列表替代 HTTP 层继承，未受信任的 loopback 即使被父层信任也无法伪造 IP；X-Forwarded-For 从右向左跳过可信代理，保留遇到的首个不可信地址。该测试验证 Nginx 机制，不替代目标 NPM 镜像、具体代理链路的生产核验。
+
 `tests/verify_real_ip.py` 使用隔离解包的官方 OpenResty 1.25.3.2 实际请求验证：生产生成的官方网段配置不接受 localhost 伪造的 `CF-Connecting-IP`；仅在隔离测试中额外信任 loopback 后，访问日志和 Lua access 阶段均使用 `CF-Connecting-IP`，而非伪造的 X-Forwarded-For。测试用 loopback 信任不会写入生产生成配置。
 
 ```bash
