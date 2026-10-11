@@ -156,6 +156,10 @@ sudo bash install-crowdsec-1panel.sh --repair-real-ip
 
 入口先列出现有 `real_ip_header`、可信来源条目数和候选 Header，再要求选择实际接入方式。Cloudflare 公网节点直接接入使用官方 HTTPS IPv4/IPv6 网段和固定 `CF-Connecting-IP`；配置线索仅用于提示，不等于自动确认网络拓扑。其他 CDN/反向代理需明确输入上游约定的 Header 和可信 IP/CIDR。不会从请求头内容或 Header 出现顺序推断可信来源。
 
+上游不确定时，选择接入菜单 `3`，或单独执行 `sudo bash install-crowdsec-1panel.sh --diagnose-real-ip`（管理菜单 `3 → 16`）。独立诊断不要求 CrowdSec 核心、curl 或 HTTP real-IP 模块，只读取当前容器配置、挂载和近期日志；支持标准 Nginx 首字段与 NPM `[Client …]`，显示最近日志时间，排除 stream 日志。每份日志只读取最后最多 64KiB / 20 行，最多检查 12 份，无法识别的格式明确标记为待核对。它不输出完整请求或 Header 值，也不会访问站点、下载 CDN 网段、写配置或重载。
+
+诊断给出唯一查询参数和按实际日志路径生成的关联命令。请从另一台设备访问实际站点正常页面，将该次日志 IP 与设备公网 IP 对照，再检查 CDN 面板和代理部署。已有 real-IP 可能改写日志中的客户端字段，它不等于原始 TCP 对端；配置默认信任列表、DNS 与 Header 名称不能单独证明正在使用某 CDN。确认后重新选择修复方式；未确认时保持只读。选择 `4：已确认客户端直连` 时不新增或自动删除真实 IP 配置，已有规则保留，必要时单独使用撤销入口。
+
 支持作为 IP Header 的候选：`X-Forwarded-For`、`X-Real-IP`、`X-Forwarded`、`Forwarded-For`、`True-Client-IP`、`Client-IP`、`Ali-CDN-Real-IP`、`CDN-Src-IP`、`CDN-Real-IP`、`CF-Connecting-IP`、`X-Cluster-Client-IP`、`WL-Proxy-Client-IP`、`Proxy-Client-IP`。非标准字段必须由上游明确保证内容为客户端 IP 或约定的地址链；支持其名称不代表认可来源。`Forwarded` 的 RFC 格式不能直接交给 Nginx real-IP 模块，应在可信上游规范化成 IP Header。
 
 修复要求 HTTP real-IP 模块、已加载入口和可写持久化目录挂载。一般 Nginx/OpenResty 在 HTTP include 目录创建管理文件；NPM 则保留并合并 `/data/nginx/custom/server_proxy.conf`，作用于加载该入口的全部 Proxy Host。在 NPM 站点层明确设置可信网段，替代继承的 HTTP 层信任列表；保留原 HTTP 配置、`http_top.conf` 及 Web Bouncer。已有站点/自定义真实 IP 指令、同名未管理文件、单文件 bind 或手工修改过的管理文件会导致停止并要求核对，不自动覆盖。
@@ -199,6 +203,7 @@ bash install-crowdsec-1panel.sh --help
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
 | `--repair-logs` | 按实际日志与 Docker 挂载补齐 HTTP 采集，保留现有配置 |
 | `--repair-real-ip` | 按可信 CDN/代理、指定 Header 和网段修复 Docker Nginx/OpenResty/NPM 真实 IP |
+| `--diagnose-real-ip` | 上游不确定时只读检查配置、挂载日志并提供外部请求核对指引 |
 | `--restore-real-ip` | 撤销本工具的真实 IP 配置 |
 | `--reset-baseline`、`--reset-56` | 补齐基础集合；兼容旧参数，保留自定义/AppSec，不保证固定场景数 |
 | `--uninstall-waf` | 确认后移除已知 Web 日志扩展 |

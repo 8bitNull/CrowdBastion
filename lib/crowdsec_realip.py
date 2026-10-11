@@ -132,6 +132,10 @@ def main(args):
     if action == 'list':
         for name in read_state(args[0]):
             print(name)
+    elif action == 'evidence':
+        from crowdsec_realip_diagnose import report_evidence
+        effective, mounts, state, name = args
+        report_evidence(Path(effective).read_text(), json.loads(Path(mounts).read_text()), read_state(state).get(name))
     elif action == 'discover':
         effective = Path(args[0]).read_text()
         headers = sorted({words[1] for _, words, _ in directives(effective)

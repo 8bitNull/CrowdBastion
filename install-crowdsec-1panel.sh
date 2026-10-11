@@ -913,8 +913,8 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n0. 返回\n'
-        prompt choice '请选择 [0-15]: ' || return 0
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n16. 只读上游链路与真实 IP 诊断\n0. 返回\n'
+        prompt choice '请选择 [0-16]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
             2) install_collections crowdsecurity/wordpress && crowdsec -t && systemctl reload crowdsec ;;
@@ -931,6 +931,7 @@ manage_waf_rules() {
             13) remove_docker_web_bouncer ;;
             14) repair_cloudflare_real_ip ;;
             15) repair_cloudflare_real_ip remove ;;
+            16) repair_cloudflare_real_ip diagnose ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1194,7 +1195,7 @@ smart_audit_and_optimize() {
     cleanup_log_repair
     log_succ '已完成基础修复并校验配置；日志采集请通过新增访问与 cscli metrics 核验。'
     log_info 'SQLite WAL 可使用 --enable-wal，在确认数据库位于本地磁盘后启用官方 db_config.use_wal。'
-    log_info '站点日志仍记录 Cloudflare 节点 IP 时，可用 --repair-real-ip 或菜单 [3] → [14] 核对并修复可信代理配置。'
+    log_info '上游不确定时先用 --diagnose-real-ip 或菜单 [3] → [16] 只读核对；确认代理后再用 --repair-real-ip 修复。'
 }
 
 enable_sqlite_wal() {
@@ -1356,6 +1357,7 @@ show_help() {
   --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
   --repair-logs        按现有日志及 Docker 挂载补齐 HTTP 采集，保留原配置
   --repair-real-ip     按可信 CDN/代理和 Header 修复 Docker Nginx/OpenResty/NPM 真实 IP
+  --diagnose-real-ip   上游不确定时只读检查配置、挂载日志及外部请求核对指引
   --restore-real-ip    撤销本工具的真实 IP 配置并恢复原内容
   --reset-baseline     补齐基础集合，保留自定义与 AppSec
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
@@ -1393,6 +1395,7 @@ main() {
         --repair-bouncer) repair_firewall_bouncer ;;
         --repair-logs) repair_log_acquis ;;
         --repair-real-ip) repair_cloudflare_real_ip ;;
+        --diagnose-real-ip) repair_cloudflare_real_ip diagnose ;;
         --restore-real-ip) repair_cloudflare_real_ip remove ;;
         --reset-baseline|--reset-56) reset_waf_to_core_baseline ;;
         --uninstall-waf) uninstall_all_waf_extensions ;;

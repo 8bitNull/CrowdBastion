@@ -140,6 +140,60 @@ docker() { if [[ "$*" == 'exec '*' nginx -s reload' && ! -f "$TRACE.failed" ]]; 
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(self.target.read_text(), original)
 
+    def test_unknown_upstream_is_read_only_and_does_not_require_module(self):
+        overrides = self.fixture()+'''\neval "$(declare -f docker | sed '1s/docker/docker_base/')"
+require_core() { return 1; }
+docker() { if [[ "$*" == 'exec '*' nginx -V' ]]; then return 1; fi; docker_base "$@"; }
+'''
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n3\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('上游仍未确认', result.stdout+result.stderr)
+        self.assertIn('crowdsec_ip_check=', result.stdout+result.stderr)
+        self.assertFalse(self.target.exists())
+        self.assertFalse(self.state.exists())
+        self.assertNotIn('curl ', self.commands())
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_confirmed_direct_keeps_existing_trust_untouched(self):
+        overrides = self.fixture()
+        original = '# existing configuration\n'
+        self.target.write_text(original)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n4\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('无需新增真实 IP 配置', result.stdout+result.stderr)
+        self.assertEqual(self.target.read_text(), original)
+        self.assertFalse(self.state.exists())
+        self.assertNotIn('curl ', self.commands())
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_diagnosis_needs_neither_core_nor_curl_nor_module(self):
+        overrides = self.fixture()+'''\nrequire_core() { return 1; }
+require_commands() { [[ "$*" != *curl* ]]; }
+eval "$(declare -f docker | sed '1s/docker/docker_base/')"
+docker() { if [[ "$*" == 'exec '*' nginx -V' ]]; then return 1; fi; docker_base "$@"; }
+'''
+        result = self.run_shell('main --diagnose-real-ip', 'openresty\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('上游仍未确认', result.stdout+result.stderr)
+        self.assertFalse(self.target.exists())
+        self.assertFalse(self.state.exists())
+        self.assertNotIn('curl ', self.commands())
+        self.assertNotIn('nginx -s reload', self.commands())
+
+    def test_unknown_keeps_existing_managed_files_and_registry(self):
+        overrides = self.fixture()
+        original = '# managed real IP\nreal_ip_header CF-Connecting-IP;\n'
+        state = '{"openresty": {"header": "CF-Connecting-IP"}}\n'
+        self.target.write_text(original)
+        self.state.write_text(state)
+        result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n3\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(self.target.read_text(), original)
+        self.assertEqual(self.state.read_text(), state)
+        self.assertIn('--restore-real-ip', result.stdout+result.stderr)
+        self.assertNotIn('curl ', self.commands())
+        self.assertNotIn('nginx -s reload', self.commands())
+
 
 if __name__ == '__main__':
     unittest.main()

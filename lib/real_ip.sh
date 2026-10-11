@@ -4,7 +4,8 @@ real_ip_tool() { python3 "${SCRIPT_DIR}/lib/crowdsec_realip.py" "$@"; }
 
 repair_cloudflare_real_ip() (
     local operation="${1:-apply}"
-    require_core && require_commands docker python3 curl || return 1
+    if [[ "$operation" == remove ]]; then require_core || return 1; fi
+    require_commands docker python3 || return 1
     local NATIVE_ID NATIVE_NAME selected work target provider header ranges scope changed=false committed=false
     select_native_container
     selected=$?
@@ -35,16 +36,34 @@ repair_cloudflare_real_ip() (
         real_ip_tool restore-plan "$REALIP_STATE" "$NATIVE_NAME" "$work/mounts" "$work/plan" || return 1
     else
         docker exec "$NATIVE_ID" nginx -T > "$work/effective" 2>&1 || return 1
+        real_ip_tool discover "$work/effective" || return 1
+        if [[ "$operation" == diagnose ]]; then
+            real_ip_tool evidence "$work/effective" "$work/mounts" "$REALIP_STATE" "$NATIVE_NAME"
+            return $?
+        fi
+        printf '1. Cloudflare 公网节点直接接入（官方网段 + CF-Connecting-IP）\n2. 已核对的其他 CDN/反向代理（明确 Header 和可信网段）\n3. 上游不确定：只读诊断与外部请求核对指引\n4. 已确认客户端直连：无需新增配置\n0. 取消\n'
+        prompt provider '请选择实际接入类型 [0-4]: ' || return 0
+        case "$provider" in
+            3)
+                real_ip_tool evidence "$work/effective" "$work/mounts" "$REALIP_STATE" "$NATIVE_NAME" || return 1
+                return 0 ;;
+            4)
+                log_info '已确认客户端直连，无需新增真实 IP 配置；已有信任规则保留，需撤销本工具配置时使用 --restore-real-ip。'
+                log_info '仍应从另一台设备正常访问并核对新日志 IP；本次未修改配置、管理记录或运行服务。'
+                return 0 ;;
+            0|'') return 0 ;;
+            1|2) ;;
+            *) log_err '接入类型无效，未修改配置。'; return 1 ;;
+        esac
+        require_core || return 1
         docker exec "$NATIVE_ID" nginx -V > "$work/version" 2>&1 || return 1
         if ! grep -q -- '--with-http_realip_module' "$work/version" && ! grep -Eq 'load_module[^;]*ngx_http_realip_module' "$work/effective"; then
             log_err '运行时未发现 HTTP real-IP 模块，未修改配置。'
             return 1
         fi
-        real_ip_tool discover "$work/effective" || return 1
-        printf '1. Cloudflare 公网节点直接接入（官方网段 + CF-Connecting-IP）\n2. 已核对的其他 CDN/反向代理（明确 Header 和可信网段）\n0. 取消\n'
-        prompt provider '请选择实际接入类型 [0-2]: ' || return 0
         case "$provider" in
             1)
+                require_commands curl || return 1
                 curl -fsSL --proto '=https' --proto-redir '=https' --connect-timeout 10 --max-time 30 https://www.cloudflare.com/ips-v4 -o "$work/ipv4" || return 1
                 curl -fsSL --proto '=https' --proto-redir '=https' --connect-timeout 10 --max-time 30 https://www.cloudflare.com/ips-v6 -o "$work/ipv6" || return 1
                 real_ip_tool plan "$work/effective" "$work/mounts" "$work/ipv4" "$work/ipv6" "$REALIP_STATE" "$NATIVE_NAME" "$work/plan" || return 1 ;;
@@ -55,8 +74,6 @@ repair_cloudflare_real_ip() (
                 prompt ranges '可信代理 IP/CIDR（空格分隔，留空取消）: ' || return 0
                 [[ -n "$ranges" ]] || return 0
                 real_ip_tool plan-custom "$work/effective" "$work/mounts" "$header" "$ranges" "$REALIP_STATE" "$NATIVE_NAME" "$work/plan" || return 1 ;;
-            0|'') return 0 ;;
-            *) log_err '接入类型无效，未修改配置。'; return 1 ;;
         esac
     fi
     target=$(web_tool get "$work/plan" host_target) || return 1

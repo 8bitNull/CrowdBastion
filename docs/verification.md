@@ -111,6 +111,10 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
 
 可信代理扩展增加 NPM server_proxy.conf 合并、更新与撤销，保留原自定义内容和文件模式；拒绝站点已有真实 IP 覆盖。自定义模式验证明确 Header/CIDR、拒绝 RFC Forwarded/未知字段/过宽网段，并确认不下载或猜测 CDN 来源。Cloudflare 继续使用固定官方 HTTPS 来源和固定 Header，兼容原管理记录。
 
+未知上游扩展覆盖只读诊断和确认直连分支：没有核心/curl/real-IP 模块时仍能诊断，已有管理文件和记录保持原样，不发送请求、下载网段或重载。日志证据测试覆盖 Nginx/NPM 格式、时间、空/自定义格式、读取上限和去重，跳过 stream、变量路径、未挂载路径和符号链接。诊断的外部请求标识用于人工关联证据，不自动推断可信 CDN 或完整代理链路。
+
+独立审查发现并复现了请求内容伪造 `[Client …]` 干扰诊断和 include 文件丢失 stream 父级上下文的问题。修复后优先解析标准首字段 IP，仅在固定 NPM 日志布局中读取 Client 字段；按绝对/相对/glob include 传播 stream 上下文，跳过跨 HTTP/stream 共用或上下文不明的文件。相关伪造文本、嵌套及共享 include 回归通过。
+
 真实 OpenResty 请求还验证了：选定 Header 缺失或无效时不尝试其他候选；IPv6 客户端地址传入日志及 Lua；NPM 站点层信任列表替代 HTTP 层继承，未受信任的 loopback 即使被父层信任也无法伪造 IP；X-Forwarded-For 从右向左跳过可信代理，保留遇到的首个不可信地址。该测试验证 Nginx 机制，不替代目标 NPM 镜像、具体代理链路的生产核验。
 
 `tests/verify_real_ip.py` 使用隔离解包的官方 OpenResty 1.25.3.2 实际请求验证：生产生成的官方网段配置不接受 localhost 伪造的 `CF-Connecting-IP`；仅在隔离测试中额外信任 loopback 后，访问日志和 Lua access 阶段均使用 `CF-Connecting-IP`，而非伪造的 X-Forwarded-For。测试用 loopback 信任不会写入生产生成配置。
