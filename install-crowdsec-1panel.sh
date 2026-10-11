@@ -990,7 +990,8 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n16. 只读上游链路与真实 IP 诊断\n17. 检查/设置 AppSec 正文与故障策略\n0. 返回\n'
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 按可信 CDN/代理修复 Docker 真实 IP\n15. 撤销本工具真实 IP 配置\n16. 只读上游链路与真实 IP 诊断\n17. 检查/设置 AppSec 正文与故障策略\n'
+        printf '0. 返回\n'
         prompt choice '请选择 [0-17]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
