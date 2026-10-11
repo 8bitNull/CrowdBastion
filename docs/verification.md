@@ -105,6 +105,14 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
 
 ## 真实部署验证边界
 
+2026-10-11 新增 Cloudflare 真实 IP 修复测试：覆盖持久化 HTTP include、拒绝过宽/私有网段与已有信任规则、拒绝单文件 bind、重复更新、撤销、取消、下载异常、重载失败恢复及卸载保护。SSH 离线样本改用 UTC 时间。
+
+`tests/verify_real_ip.py` 使用隔离解包的官方 OpenResty 1.25.3.2 实际请求验证：生产生成的官方网段配置不接受 localhost 伪造的 `CF-Connecting-IP`；仅在隔离测试中额外信任 loopback 后，访问日志和 Lua access 阶段均使用 `CF-Connecting-IP`，而非伪造的 X-Forwarded-For。测试用 loopback 信任不会写入生产生成配置。
+
+```bash
+python3 tests/verify_real_ip.py --metadata /path/to/openresty-packages-metadata
+```
+
 当前环境没有可用于部署测试的 Docker/systemd 服务，也缺少 netlink 管理权限和真实 Telegram/Console 凭据。以下需要在目标服务器上核验：
 
 1. 各发行版软件源、安装/升级、服务启动及 cron 实际执行。

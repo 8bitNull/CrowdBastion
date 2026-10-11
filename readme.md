@@ -146,6 +146,20 @@ sudo bash install-crowdsec-1panel.sh --repair-logs
 
 Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方软件包配置及其他凭据，在 `.yaml.local` 中更新 LAPI 地址和密钥；iptables 模式检测到 `DOCKER-USER` 时加入对应链。核验会检查 IPv4、IPv6、配置中的 nftables 表及默认 IPSet 资源，但仍需在实际主机上确认 Bouncer 拉取和流量阻断。
 
+### Cloudflare 真实访客 IP
+
+若访问日志首字段是 Cloudflare 节点 IP，且 `nginx -T` 没有真实 IP 配置，单独设置 `proxy_set_header X-Real-IP` 不能改变日志和 Web Bouncer 使用的 `$remote_addr`。Docker 部署可运行以下入口，或选择菜单 `3 → 14`：
+
+```bash
+sudo bash install-crowdsec-1panel.sh --repair-real-ip
+```
+
+入口从 Cloudflare 官方 HTTPS 地址读取 IPv4/IPv6 网段，在实际挂载的 HTTP include 目录生成独立配置，使用 `CF-Connecting-IP`。它要求 HTTP real-IP 模块、已加载的 HTTP include 和可写持久化目录挂载；拒绝单文件 bind、已有自定义真实 IP 规则及手工修改过的管理文件。确认后备份、校验并重载，失败恢复。重复执行可更新官方网段；`--restore-real-ip` 或菜单 `3 → 15` 撤销本工具配置。核心卸载会要求先撤销，保留管理记录。
+
+该入口仅信任 Cloudflare 公网节点，不自动信任 loopback 或内网代理。Cloudflare Tunnel、其他代理链及宿主机 Nginx 需要按实际来源单独核对。修复后从外部访问当前 `server_name` 对应站点，核对新日志与 Web Bouncer 的访客 IP；旧日志和累计计数不会改写。保留 CDN 白名单、SSH 采集和现有 WAF。
+
+`tools/diagnose-detection.sh` 的 SSH 离线失败认证样本成功解析，只能证明该样本兼容；大量正常会话日志未解析不等于防护失效。AppSec 验证需同时检查 HTTP 响应与规则计数增量，经过 Cloudflare 返回 403 本身不能证明请求到达本机 AppSec。
+
 ## WebUI、Telegram 与更新
 
 WebUI 使用 `ghcr.io/theduffman85/crowdsec-web-ui:latest`，宿主机网络，端口默认 `3000`。LAPI 地址从宿主机凭据读取；指标配置为 `127.0.0.1:6060`。已有有效独立 Machine 会被复用；凭据检查真正验证 WebUI 账号，轮换成功后才注销旧账号。镜像拉取失败保留现有部署；更新失败会恢复配置并尝试用原镜像恢复旧容器。数据在 `/opt/crowdsec-web-ui`，应按镜像实际认证功能设置访问保护并使用 HTTPS 反向代理。
@@ -176,6 +190,8 @@ bash install-crowdsec-1panel.sh --help
 | `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
 | `--repair-logs` | 按实际日志与 Docker 挂载补齐 HTTP 采集，保留现有配置 |
+| `--repair-real-ip` | 按 Cloudflare 官方可信网段修复 Docker HTTP 真实 IP |
+| `--restore-real-ip` | 撤销本工具的真实 IP 配置 |
 | `--reset-baseline`、`--reset-56` | 补齐基础集合；兼容旧参数，保留自定义/AppSec，不保证固定场景数 |
 | `--uninstall-waf` | 确认后移除已知 Web 日志扩展 |
 | `--check-clean` | 只读残留检查 |

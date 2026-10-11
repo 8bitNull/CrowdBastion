@@ -14,10 +14,13 @@ APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
 APPSEC_DOCKER_LINKS="${CS_DIR}/crowdsec-1key-appsec-docker-links.yaml"
 WEB_INSTALLS="${CS_DIR}/crowdsec-1key-web-installs.json"
+REALIP_STATE="${CS_DIR}/crowdsec-1key-real-ip.json"
 # shellcheck source=lib/native_web_bouncer.sh
 source "${SCRIPT_DIR}/lib/native_web_bouncer.sh"
 # shellcheck source=lib/host_web_bouncer.sh
 source "${SCRIPT_DIR}/lib/host_web_bouncer.sh"
+# shellcheck source=lib/real_ip.sh
+source "${SCRIPT_DIR}/lib/real_ip.sh"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
 LOG_REPAIR_STAGE=''
 LOG_REPAIR_COUNT=0
@@ -907,8 +910,8 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n0. 返回\n'
-        prompt choice '请选择 [0-13]: ' || return 0
+        printf '\n日志检测规则与 AppSec WAF\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. 配置 AppSec 与 Web Bouncer\n10. AppSec 状态\n11. 验证网站 AppSec\n12. 停用本工具 AppSec\n13. 撤销本工具原生容器 Web Bouncer\n14. 修复 Docker Cloudflare 真实 IP\n15. 撤销本工具真实 IP 配置\n0. 返回\n'
+        prompt choice '请选择 [0-15]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
             2) install_collections crowdsecurity/wordpress && crowdsec -t && systemctl reload crowdsec ;;
@@ -923,6 +926,8 @@ manage_waf_rules() {
             11) verify_appsec ;;
             12) disable_appsec ;;
             13) remove_docker_web_bouncer ;;
+            14) repair_cloudflare_real_ip ;;
+            15) repair_cloudflare_real_ip remove ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1186,6 +1191,7 @@ smart_audit_and_optimize() {
     cleanup_log_repair
     log_succ '已完成基础修复并校验配置；日志采集请通过新增访问与 cscli metrics 核验。'
     log_info 'SQLite WAL 可使用 --enable-wal，在确认数据库位于本地磁盘后启用官方 db_config.use_wal。'
+    log_info '站点日志仍记录 Cloudflare 节点 IP 时，可用 --repair-real-ip 或菜单 [3] → [14] 核对并修复可信代理配置。'
 }
 
 enable_sqlite_wal() {
@@ -1221,6 +1227,12 @@ audit_crowdsec_residuals() {
 deep_purge_residuals() {
     confirm '永久删除 CrowdSec 核心、数据、Bouncer 与本工具 WebUI？' || return 0
     require_commands systemctl || return 1
+    local real_ip_installs
+    real_ip_installs=$(real_ip_tool list "$REALIP_STATE") || return 1
+    if [[ -n "$real_ip_installs" ]]; then
+        log_err '仍有本工具的真实 IP 配置；请先 --restore-real-ip 撤销网站配置，再卸载核心。'
+        return 1
+    fi
     local native_installs
     native_installs=$(web_tool list "$WEB_INSTALLS") || return 1
     if [[ -n "$native_installs" ]]; then
@@ -1340,6 +1352,8 @@ show_help() {
   --clean-redundant    查看节点并选择注销（不自动批量删除）
   --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
   --repair-logs        按现有日志及 Docker 挂载补齐 HTTP 采集，保留原配置
+  --repair-real-ip     修复 Docker Nginx/OpenResty 的 Cloudflare 真实 IP（官方可信网段）
+  --restore-real-ip    移除本工具的 Cloudflare 真实 IP 配置
   --reset-baseline     补齐基础集合，保留自定义与 AppSec
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      选择确认后移除已知 Web 日志规则
@@ -1375,6 +1389,8 @@ main() {
         --clean-redundant) check_and_clean_redundant_instances ;;
         --repair-bouncer) repair_firewall_bouncer ;;
         --repair-logs) repair_log_acquis ;;
+        --repair-real-ip) repair_cloudflare_real_ip ;;
+        --restore-real-ip) repair_cloudflare_real_ip remove ;;
         --reset-baseline|--reset-56) reset_waf_to_core_baseline ;;
         --uninstall-waf) uninstall_all_waf_extensions ;;
         --check-clean) audit_crowdsec_residuals ;;
