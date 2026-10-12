@@ -66,12 +66,12 @@ def directives(text):
             words.append(token.strip('"\''))
 
 
-def plan_install(effective, mounts, image, network, version):
-    if network != 'host':
-        raise ValueError('自动安装仅支持 host 网络；bridge 需私有可达的 LAPI/AppSec 地址')
+def plan_install(effective, mounts, image, network, version, transport=None):
     if not ('openresty/' in version.lower() or 'ngx_http_lua' in version
             or re.search(r'load_module\s+[^;]*ngx_http_lua[^;]*;', effective)):
         raise ValueError('缺少 Lua 模块；科技lion 默认 nginx:alpine 不能直接加载 OpenResty Bouncer，请先部署兼容 Lua 的 Web 服务')
+    if network != 'host' and not transport:
+        raise ValueError('bridge 需先用 --configure-docker-endpoints 核验私有 LAPI/AppSec；不会更换镜像或网络')
     parsed = list(directives(effective))
     if any(words == ['satisfy', 'any'] for _, words, _ in parsed):
         raise ValueError('satisfy any 可能绕过 Lua 请求检查；请先核对并调整访问控制')
@@ -117,9 +117,15 @@ def plan_install(effective, mounts, image, network, version):
         raise ValueError('资源目录已经存在，请先核对或撤销旧安装')
     if re.search(r'\bcrowdsec_cache\b', effective):
         raise ValueError('已有 CrowdSec 字典，请使用已有 Bouncer 接入')
-    return dict(mode=mode, image=image, host_target=host, container_target=target,
+    result = dict(mode=mode, image=image, host_target=host, container_target=target,
                 host_assets=host_assets, container_assets=assets, original=original,
                 original_mode=Path(host).stat().st_mode & 0o777 if Path(host).exists() else 0o644)
+    if network != 'host':
+        from crowdsec_transport import endpoint
+        if endpoint(transport['api_url'])[1] != transport['gateway'] or endpoint(transport['appsec_url'])[1] != transport['gateway']:
+            raise ValueError('私有接入计划无效')
+        result['transport'] = transport
+    return result
 
 
 def render_hooks(plan):
@@ -164,7 +170,8 @@ def stage_assets(plan, bouncer_archive, http_archive, stage, key, api_url):
     verify_archive(http_archive, HTTP_SHA)
     if not re.fullmatch(r'[a-zA-Z0-9_+/=-]{16,}', key.strip()):
         raise ValueError('Bouncer API Key 无效')
-    if not re.fullmatch(r'http://(?:127\.0\.0\.1|localhost):[0-9]+/?', api_url):
+    if ((plan.get('transport') and api_url.rstrip('/') != plan['transport']['api_url'])
+            or (not plan.get('transport') and not re.fullmatch(r'http://(?:127\.0\.0\.1|localhost):[0-9]+/?', api_url))):
         raise ValueError('自动安装仅使用 loopback LAPI；请核对 local_api_credentials.yaml')
     stage = Path(stage)
     stage.mkdir(parents=True, exist_ok=True)
@@ -302,8 +309,9 @@ def restore_install(entry):
 def main(args):
     action, *args = args
     if action == 'plan':
-        effective, mounts, image, network, version, destination = args
-        plan = plan_install(Path(effective).read_text(), json.loads(Path(mounts).read_text()), image, network, Path(version).read_text())
+        effective, mounts, image, network, version, destination, *transport = args
+        plan = plan_install(Path(effective).read_text(), json.loads(Path(mounts).read_text()), image, network, Path(version).read_text(),
+                            read_state(transport[0]) if transport else None)
         save_state(destination, plan)
     elif action == 'verify':
         verify_archive(args[0], BOUNCER_SHA)

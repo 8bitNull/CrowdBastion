@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-12",
+  "base_commit": "b123a33acfb42b255fd4f8f97debb52c35923b9f",
+  "unittest_count": 326,
+  "unittest_result": "passed, no skips",
+  "static_checks": [
+    "all Bash syntax",
+    "all Python compilation",
+    "ShellCheck excluding documented SC2317/SC2329/SC2119/SC2120",
+    "git diff --check"
+  ],
+  "code_review": "no remaining critical or important findings",
+  "runtime_results": {
+    "engine": "passed",
+    "firewall_config": "passed",
+    "web_and_body_failure_policy": "passed",
+    "real_ip": "passed",
+    "npm_nginx_openresty_adapters": "passed",
+    "actual_docker_bridge": "skipped, no cached bridge image selected"
+  },
+  "production_deployment": false,
+  "logs": {
+    "unittest": "......................................................................................................................................................................................................................................................................................................................................\n----------------------------------------------------------------------\nRan 326 tests in 71.647s\n\nOK\n",
+    "engine": "Updating official Hub and installing collections...\nAll manager collection names accepted by official Hub.\n[INFO] 待补齐日志采集（nginx）：/tmp/codeg-acp/344248-4ee25275/crowdsec-real-engine-pkgk5o_z/host web[qa]\\logs/sites/bob.example.com/log/access.log\n1\nOfficial HTTP notification plugin rendered template and delivered valid JSON.\ncrowdsec -t: PASS (log repair, AppSec, profiles, notification, administrator whitelist).\nLive repaired HTTP file with spaces, brackets and backslash: acquisition metrics present.\nLive AppSec /.env request: HTTP 403, action=ban.\nLive AppSec ordinary / request: HTTP 200, action=allow.\nIndependent WebUI credentials: valid account accepted; deleted account rejected.\nLAPI login, manual ban/unban and AppSec rule metrics: PASS.\nOfficial Firewall Bouncer -T: nftables/iptables local overrides accepted; defaults preserved.\n",
+    "web": "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.\nInstalling official AppSec virtual-patching and generic rules in temporary engine...\nReal OpenResty nginx -t: PASS with generated hooks and namespaced official Lua modules.\nLive HTTP: allowed / reached backend; original WAF /waf-block retained 403; AppSec /.env blocked before backend.\nReal AppSec processed counter: 0 -> 2; vpatch-env-access rule matched.\nOriginal WAF init/access/worker/log executed; original resty.http module retained and unchanged.\nUnavailable AppSec passthrough: HTTP 200, backend reached=True.\nUnavailable AppSec deny: HTTP 200, backend reached=False.\nReal HTTP2 POST without Content-Length: false allowed, true blocked; unavailable AppSec: passthrough allowed, deny blocked.\n",
+    "real_ip": "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.\nProduction ranges: untrusted localhost cannot spoof CF-Connecting-IP.\nTrusted fixture: log and Lua access handler use visitor IP, original peer preserved.\nCloudflare-XFF-untrusted-peer-cannot-spoof\nCloudflare-XFF-ignores-spoofed-leftmost\nMissing-invalid-header-keeps-peer\nNPM-child-trust-replaces-parent\nNPM-generated-server-merge\nXFF-right-to-left-trusted-chain\nReal OpenResty real-IP runtime verification: PASS\n",
+    "adapters": "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.\nInstalling official AppSec virtual-patching and generic rules in temporary engine...\ncrowdsec\nnpm / isolated Lua runtime: normal=200, AppSec=403, backend protected, buffered log and actual Bouncer IP=8.8.8.8: PASS\nnginx / isolated Lua runtime: normal=200, AppSec=403, backend protected, buffered log and actual Bouncer IP=8.8.8.8: PASS\nopenresty / isolated Lua runtime: normal=200, AppSec=403, backend protected, buffered log and actual Bouncer IP=8.8.8.8: PASS\nDocker bridge: SKIP (pass an already cached Lua-compatible --bridge-image).\n"
+  }
+}

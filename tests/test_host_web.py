@@ -48,6 +48,14 @@ log_succ() { echo "[SUCCESS] $*"; }
 require_core() { :; }
 require_yaml() { :; }
 require_commands() { for x in "$@"; do command -v "$x" >/dev/null || return 1; done; }
+config_change_needed() {
+ local index
+ for index in "${!BACKUP_PATHS[@]}"; do
+  if [[ -f "${BACKUP_COPIES[$index]}.absent" ]]; then [[ ! -e "${BACKUP_PATHS[$index]}" ]] || return 0;
+  else cmp -s "${BACKUP_COPIES[$index]}" "${BACKUP_PATHS[$index]}" || return 0; fi
+ done
+ return 1
+}
 ss() { echo 'LISTEN 0 128 127.0.0.1:7422 0.0.0.0:*'; }
 appsec_default_listener_ready() { record appsec-listener-check; return 0; }
 confirm() { return 0; }
@@ -56,7 +64,7 @@ begin_config_change() {
  mkdir -p "$BASE/backup"
  for p in "$@"; do
   BACKUP_COPIES+=("$BASE/backup/$i")
-  if [[ -e "$p" ]]; then cp -a "$p" "$BASE/backup/$i"; else touch "$BASE/backup/$i.absent"; fi
+  if [[ -e "$p" ]]; then cp -a "$p" "$BASE/backup/$i"; rm -f "$BASE/backup/$i.absent"; else touch "$BASE/backup/$i.absent"; fi
   ((i+=1))
  done
 }
@@ -168,6 +176,33 @@ cscli() {
         self.assertIn('include '+str(self.openresty.parent/'conf.d/crowdsec_openresty.conf')+';', text)
         self.assertLess(text.index('http {'), text.index('include '))
         self.assertLess(text.index('include '), text.index('server {'))
+
+    def test_repeated_existing_host_link_does_not_reload_or_replace_file(self):
+        self.assertEqual(self.run_install().returncode, 0)
+        before = self.file.stat().st_ino
+        reloads = self.commands().count('systemctl reload nginx')
+        result = self.run_install()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(self.file.stat().st_ino, before)
+        self.assertEqual(self.commands().count('systemctl reload nginx'), reloads)
+
+    def test_terminated_existing_link_restores_url_and_reloads_original(self):
+        original = 'API_KEY=keep-secret\nAPPSEC_URL=http://old.example:7422\n'
+        self.file.write_text(original)
+        result = self.run_install(overrides='yaml_tool() { python3 "$HELPER" "$@" || return; kill -TERM "$BASHPID"; }')
+        self.assertEqual(result.returncode, 143, result.stdout+result.stderr)
+        self.assertEqual(self.file.read_text(), original)
+        self.assertIn('systemctl reload nginx', self.commands())
+
+    def test_terminated_package_install_restores_config_and_revokes_only_new_account(self):
+        original = self.openresty.read_text()
+        overrides = 'eval "$(declare -f apt-get | sed \'1s/apt-get/apt_base/\')"\napt-get() { apt_base "$@"; if [[ "$*" != *--simulate* ]]; then kill -TERM "$BASHPID"; fi; }'
+        result = self.run_install('openresty', overrides)
+        self.assertEqual(result.returncode, 143, result.stdout+result.stderr)
+        self.assertEqual(self.openresty.read_text(), original)
+        self.assertFalse((self.config/'bouncers/crowdsec-openresty-bouncer.conf').exists())
+        self.assertIn('bouncers delete crowdsec-openresty-bouncer-1234567890', self.commands())
+        self.assertNotIn('bouncers delete existing-firewall', self.commands())
 
     def test_failed_reload_restores_new_configs_and_only_new_account(self):
         before = self.openresty.read_text()

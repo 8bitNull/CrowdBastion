@@ -1,9 +1,12 @@
 """Read-only upstream evidence uses actual mounted logs, never infers trust."""
 import importlib
+import io
+from contextlib import redirect_stdout
 import sys
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'lib'))
 
@@ -15,6 +18,14 @@ class RealIPDiagnosis(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.mounts = [{'Type':'bind', 'RW':False, 'Source':str(self.root), 'Destination':'/data'}]
+
+    def test_request_lookup_uses_available_search_command(self):
+        (self.root/'access.log').write_text('8.8.8.8 - - [11/Oct/2026:10:00:00 +0000] "GET / HTTP/1.1" 200 2\n')
+        for available, command in [('/usr/bin/rg', 'rg'), (None, 'grep')]:
+            output = io.StringIO()
+            with patch.object(self.helper.shutil, 'which', return_value=available), redirect_stdout(output):
+                self.helper.report_evidence('access_log /data/access.log;', self.mounts)
+            self.assertIn('关联请求：'+command+' -F -- ', output.getvalue())
 
     def test_standard_and_npm_logs_include_timestamp_and_client_field(self):
         (self.root/'standard.log').write_text('198.51.100.17 - - [11/Oct/2026:10:00:00 +0000] "GET /?secret=private HTTP/1.1" 200 2\n')
