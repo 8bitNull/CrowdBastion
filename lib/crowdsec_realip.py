@@ -56,11 +56,13 @@ def sections(effective):
 def atomic_text(target, text, mode):
     target = Path(target)
     target.parent.mkdir(parents=True, exist_ok=True)
+    metadata = target.stat() if target.exists() else target.parent.stat()
     fd, temporary = tempfile.mkstemp(dir=target.parent)
     try:
         with os.fdopen(fd, 'w') as stream:
             stream.write(text)
         os.chmod(temporary, mode)
+        os.chown(temporary, metadata.st_uid, metadata.st_gid)
         os.replace(temporary, target)
     finally:
         if os.path.exists(temporary):
@@ -72,8 +74,8 @@ def plan_real_ip(effective, mounts, ranges, owned=None, provider='cloudflare', h
     header = next((value for value in HEADERS if value.lower() == header.lower()), None)
     if not header:
         raise ValueError('Header 不支持；Forwarded 是 RFC 格式，请由可信上游规范化为 IP Header')
-    if provider == 'cloudflare' and header != 'CF-Connecting-IP':
-        raise ValueError('Cloudflare 固定使用 CF-Connecting-IP，不尝试其他 Header')
+    if provider == 'cloudflare' and header not in ('CF-Connecting-IP', 'X-Forwarded-For'):
+        raise ValueError('Cloudflare 只支持明确选择 CF-Connecting-IP 或 X-Forwarded-For')
     candidates = [words[1] for context, words, block in directives(effective)
                   if context == ('http',) and not block and len(words) == 2 and words[0] == 'include']
     npm = any(value in candidates for value in ['/data/nginx/custom/http_top[.]conf', '/data/nginx/custom/http_top.conf'])
@@ -154,7 +156,7 @@ def main(args):
         plan = plan_real_ip(Path(effective).read_text(), json.loads(Path(mounts).read_text()),
                             ranges.split(), read_state(state).get(name), provider='custom', header=header)
         save_state(destination, plan)
-    elif action == 'plan':
+    elif action in ('plan', 'plan-cloudflare-xff'):
         effective, mounts, ipv4, ipv6, state, name, destination = args
         v4 = Path(ipv4).read_text().split()
         v6 = Path(ipv6).read_text().split()
@@ -164,7 +166,8 @@ def main(args):
                for values, version in [(v4, 4), (v6, 6)] for value in values):
             raise ValueError('官方 IPv4/IPv6 来源类型不符')
         plan = plan_real_ip(Path(effective).read_text(), json.loads(Path(mounts).read_text()),
-                            v4+v6, read_state(state).get(name))
+                            v4+v6, read_state(state).get(name),
+                            header='X-Forwarded-For' if action == 'plan-cloudflare-xff' else 'CF-Connecting-IP')
         save_state(destination, plan)
     elif action == 'apply':
         plan_file, state_file, name = args
@@ -176,7 +179,8 @@ def main(args):
                 raise ValueError('配置在预检后变化，未覆盖')
         elif (hashlib.sha256(target.read_bytes()).hexdigest() if target.exists() else None) != plan.get('before_sha'):
             raise ValueError('配置在预检后出现，未覆盖')
-        atomic_text(target, plan['text'], plan.get('original_mode', 0o644))
+        if not target.exists() or target.read_text() != plan['text']:
+            atomic_text(target, plan['text'], plan.get('original_mode', 0o644))
         state[name] = {key: plan[key] for key in ['host_target', 'container_target', 'sha', 'provider', 'header', 'ranges', 'scope', 'original', 'original_mode']}
         save_state(state_file, state)
     elif action == 'restore-plan':

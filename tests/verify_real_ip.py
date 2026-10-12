@@ -82,6 +82,15 @@ def main():
         assert '127.0.0.1' not in plan['text']
         check_case(base, binary, install, environment, plan['text'], False)
         check_case(base, binary, install, environment, plan['text'], True)
+        cloudflare_xff = plan_real_ip('http { include /etc/nginx/conf.d/*.conf; }',
+                            [{'Type':'bind','RW':True,'Source':str(base),'Destination':'/etc/nginx/conf.d'}],
+                            ['104.16.0.0/13', '172.64.0.0/13', '2606:4700::/32'], header='X-Forwarded-For')
+        check_case(base, binary, install, environment, cloudflare_xff['text'], False,
+                   name='Cloudflare-XFF-untrusted-peer-cannot-spoof', requests=[
+                       ({'X-Forwarded-For': '8.8.8.8'}, '127.0.0.1')])
+        check_case(base, binary, install, environment, cloudflare_xff['text'], True,
+                   name='Cloudflare-XFF-ignores-spoofed-leftmost', requests=[
+                       ({'X-Forwarded-For': '1.1.1.1, 8.8.8.8'}, '8.8.8.8')])
         check_case(base, binary, install, environment, plan['text'], True, name='Missing-invalid-header-keeps-peer', requests=[
             ({'X-Forwarded-For': '9.9.9.9'}, '127.0.0.1'),
             ({'CF-Connecting-IP': 'invalid', 'X-Real-IP': '1.1.1.1'}, '127.0.0.1'),

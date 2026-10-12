@@ -44,6 +44,15 @@ class RealIP(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 self.plan(ranges=[*RANGES, value])
 
+    def test_explicit_cloudflare_xff_keeps_the_same_trusted_ranges(self):
+        plan = self.plan(header='X-Forwarded-For')
+        self.assertEqual(plan['ranges'], RANGES)
+        self.assertEqual(plan['provider'], 'cloudflare')
+        self.assertIn('real_ip_header X-Forwarded-For;', plan['text'])
+        self.assertNotIn('CF-Connecting-IP', plan['text'])
+        with self.assertRaises(ValueError):
+            self.plan(header='X-Real-IP')
+
     def test_existing_real_ip_rules_or_target_are_not_overwritten(self):
         with self.assertRaisesRegex(ValueError, '已有'):
             self.plan(effective=self.effective+'real_ip_header X-Forwarded-For;')

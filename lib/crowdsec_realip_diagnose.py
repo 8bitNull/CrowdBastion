@@ -7,6 +7,7 @@ import posixpath
 import re
 import secrets
 import shlex
+import shutil
 
 from crowdsec_web import directives, mount_path
 
@@ -128,7 +129,8 @@ def report_evidence(effective, mounts, owned=None):
         for address, count in entry['ips']:
             kind = '公网' if ipaddress.ip_address(address).is_global else '非公网/保留地址'
             print('日志客户端 IP '+address+'：'+str(count)+' 条，'+kind)
-        print('在新增访问后关联请求：rg -F -- '+shlex.quote(token)+' '+shlex.quote(entry['path']))
+        search_command = 'rg' if shutil.which('rg') else 'grep'
+        print('在新增访问后关联请求：'+search_command+' -F -- '+shlex.quote(token)+' '+shlex.quote(entry['path']))
     if not reports:
         print('未找到可读取的持久化 HTTP 访问日志；请核对 access_log、挂载、权限和实际日志格式。')
     print('\n上述客户端字段可能已被 real-IP 配置改写，不能当作原始 TCP 对端；配置默认网段、DNS 或 Header 名称不能单独证明 CDN 接入。')

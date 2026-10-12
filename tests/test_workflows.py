@@ -24,7 +24,7 @@ class Workflows(unittest.TestCase):
         source = SCRIPT.read_text()
         source = re.sub(r'^main "\$@"\s*$', '', source, flags=re.M)
         # Rewrite absolute paths once; /data/logs inside an NPM mount is a suffix.
-        source = re.sub(r'(?<![\w./-])(?:/(?:etc|var|opt|run|home)/|/data/logs)',
+        source = re.sub(r'(?<![\w./-])(?:/(?:etc|var|opt|run|home|usr/local)/|/data/logs)',
                         lambda match: str(self.base) + match.group(0), source)
         self.source = self.base / "manager.sh"
         self.source.write_text(source)
@@ -53,13 +53,22 @@ cscli() {
  case "$*" in
   'machines list -o json') echo '[{"machineId":"webui-legitimate-host"},{"machineId":"webui-other-owner"}]' ;;
   'collections list -o json') echo '[]' ;;
+  'metrics show acquisition -o json') echo '{"acquisition":{}}' ;;
+  'metrics show appsec -o json') echo '{"appsec":{}}' ;;
   'bouncers add '*'-o raw') echo '0123456789abcdef0123456789abcdef' ;;
  esac
  return 0
 }
 crowdsec() { record crowdsec "$@"; return 0; }
 systemctl() { record systemctl "$@"; return 0; }
-docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; case "$*" in inspect*) echo false;; esac; return 0; }
+docker() {
+ record docker "$@"
+ case "$*" in
+  'image inspect --format {{json .RepoDigests}} '*) echo '["ghcr.io/theduffman85/crowdsec-web-ui@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]' ;;
+  inspect*) echo false ;;
+ esac
+ return 0
+}
 apt-get() { record apt-get "$@"; return 0; }
 yum() { record yum "$@"; return 0; }
 dnf() { record dnf "$@"; return 0; }
@@ -69,7 +78,7 @@ ip6tables() { record ip6tables "$@"; [[ "$*" == "-S" ]]; }
 ipset() { record ipset "$@"; return 0; }
 ip() { record ip "$@"; echo "[]"; }
 modprobe() { return 0; }
-curl() { record curl "$@"; [[ "$*" == *"/api/health"* ]] && printf 200; return 0; }
+curl() { record curl "$@"; [[ "$*" != *'/api/health'* ]] || echo '{"status":"ok"}'; return 0; }
 pkill() { record pkill "$@"; return 0; }
 pgrep() { return 1; }
 dpkg-query() { return 1; }
@@ -79,12 +88,19 @@ sleep() { :; }
 clear() { :; }
 journalctl() { record journalctl "$@"; }
 '''
-        env = {**os.environ, 'TRACE': str(self.trace), 'TERM': 'dumb'}
+        env = {**os.environ, 'TRACE': str(self.trace), 'TERM': 'dumb', 'SSH_CLIENT': '', 'SSH_CONNECTION': ''}
         cmd = f'source {shlex.quote(str(self.source))}\n' + stub + '\nOS_ID=debian\n' + overrides + '\n' + action
         return subprocess.run(['bash', '-c', cmd], input=user_input, text=True, capture_output=True, env=env, timeout=timeout)
 
     def commands(self):
         return self.trace.read_text()
+
+    def webui_docker(self, running='true healthy', previous='', existing=True):
+        return ('docker() { record docker "$@"; case "$*" in '
+                "'container inspect crowdsec-web-ui') return "+('0' if existing else '1')+';; '
+                "'image inspect '* ) echo '[\"ghcr.io/theduffman85/crowdsec-web-ui@sha256:"+'a'*64+"\"]';; "
+                '*State.Running*) echo '+shlex.quote(running)+';; '
+                "*'{{.Image}}'*) echo "+shlex.quote(previous)+";; esac; return 0; }")
 
     def test_help_is_successful_and_read_only(self):
         p = self.run_shell('main --help')
@@ -347,7 +363,7 @@ journalctl() { record journalctl "$@"; }
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
         self.assertNotIn('nginx -s reload', self.commands())
-        self.assertIn('仅支持 host 网络', p.stdout+p.stderr)
+        self.assertIn('--configure-docker-endpoints', p.stdout+p.stderr)
 
     def test_appsec_container_bouncer_without_hook_is_not_modified(self):
         p = self.run_shell('setup_appsec', '3\nweb123\ny\n', self.appsec_docker_stub(mounted=True, hook=False))
@@ -895,7 +911,7 @@ journalctl() { record journalctl "$@"; }
     def test_webui_success_reuses_credentials(self):
         ui = self.make_webui()
         old = (ui/'data/webui_api_credentials.yaml').read_text()
-        p = self.run_shell('deploy_web_ui', '3000\ny\n', 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }')
+        p = self.run_shell('deploy_web_ui', '3000\ny\n', self.webui_docker())
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual((ui/'data/webui_api_credentials.yaml').read_text(), old)
         compose = yaml.safe_load((ui/'docker-compose.yml').read_text())
@@ -942,7 +958,7 @@ journalctl() { record journalctl "$@"; }
     def test_webui_rollback_pins_previous_image(self):
         self.make_webui()
         image = 'sha256:'+'a'*64
-        stub = 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *"{{.Image}}"* ]]; then echo '+image+'; elif [[ "$*" == *"State.Running"* ]]; then echo false; fi; return 0; }'
+        stub = self.webui_docker('false none', image)
         self.run_shell('deploy_web_ui', '3000\ny\n', stub)
         self.assertIn('--pull never', self.commands())
 
@@ -976,7 +992,6 @@ journalctl() { record journalctl "$@"; }
 
     def test_webui_new_deployment_creates_only_one_dedicated_machine(self):
         stub = r'''
-docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == 'container inspect crowdsec-web-ui' ]]; then return 1; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
 cscli() {
  record cscli "$@"
  if [[ "$1 $2" == 'machines add' ]]; then
@@ -988,7 +1003,7 @@ cscli() {
  return 0
 }
 '''
-        p = self.run_shell('deploy_web_ui', '3000\ny\n', stub)
+        p = self.run_shell('deploy_web_ui', '3000\ny\n', self.webui_docker(existing=False)+stub)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual(self.commands().count('machines add'), 1)
         creds = yaml.safe_load((self.base/'opt/crowdsec-web-ui/data/webui_api_credentials.yaml').read_text())
@@ -998,7 +1013,6 @@ cscli() {
     def test_webui_rotation_deletes_old_machine_only_after_success(self):
         self.make_webui()
         stub = r'''
-docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; if [[ "$*" == *State.Running* ]]; then echo true; fi; return 0; }
 cscli() {
  record cscli "$@"
  if [[ "$1 $2" == 'machines add' ]]; then
@@ -1010,7 +1024,7 @@ cscli() {
  return 0
 }
 '''
-        p = self.run_shell('deploy_web_ui rotate', '3000\ny\n', stub)
+        p = self.run_shell('deploy_web_ui rotate', '3000\ny\n', self.webui_docker()+stub)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         trace = self.commands()
         self.assertIn('machines add', trace)

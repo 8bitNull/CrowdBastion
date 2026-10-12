@@ -61,11 +61,23 @@ install_docker_web_bouncer() (
     trap 'exit 130' INT
     trap 'exit 143' TERM
     network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$NATIVE_ID") || return 1
-    [[ "$network" == host ]] || { log_err '首次自动安装只支持 host 网络；bridge 需私有网络接入，不会自动更换网络或镜像。'; return 1; }
+    local appsec_url='http://127.0.0.1:7422' transport_args=()
+    if [[ "$network" != host ]]; then
+        transport_current "$NATIVE_ID" "$NATIVE_NAME" "$work" || return 1
+        appsec_url=$(web_tool get "$work/transport" appsec_url) || return 1
+        transport_args=("$work/transport")
+    fi
     docker inspect --format '{{json .Mounts}}' "$NATIVE_ID" > "$work/mounts" || return 1
     if [[ -f "$WEB_INSTALLS" ]] && web_tool check "$WEB_INSTALLS" "$NATIVE_NAME" "$work/mounts" "$work/existing" 2>/dev/null; then
         entry_status=$(web_tool get "$work/existing" status) || return 1
         [[ "$entry_status" == installed ]] || { log_err '旧安装清理未完成，请先运行撤销 Web Bouncer。'; return 1; }
+        if [[ "$network" != host ]]; then
+            transport_tool installed-current "$work/existing" "$work/transport" || return 1
+        elif web_tool get "$work/existing" transport >/dev/null 2>&1; then
+            log_err '原 bridge 安装网络已变化，请先人工核对。'; return 1
+        fi
+        docker exec "$NATIVE_ID" nginx -T > "$work/effective" 2>&1 &&
+            web_tool active-hooks "$WEB_INSTALLS" "$NATIVE_NAME" "$work/mounts" "$work/effective" || return 1
         assets=$(web_tool get "$work/existing" host_assets) || return 1
         remote_assets=$(web_tool get "$work/existing" container_assets) || return 1
         appsec_guard_config "${assets}/bouncer.conf" "$NATIVE_ID" "${remote_assets}/bouncer.conf" || return 1
@@ -74,7 +86,7 @@ install_docker_web_bouncer() (
     fi
     docker exec "$NATIVE_ID" nginx -T > "$work/effective" 2>&1 || { log_err 'nginx -T 失败，未修改。'; return 1; }
     docker exec "$NATIVE_ID" nginx -V > "$work/version" 2>&1 || return 1
-    web_tool plan "$work/effective" "$work/mounts" "$NATIVE_IMAGE" "$network" "$work/version" "$work/plan" || return 1
+    web_tool plan "$work/effective" "$work/mounts" "$NATIVE_IMAGE" "$network" "$work/version" "$work/plan" "${transport_args[@]}" || return 1
     target=$(web_tool get "$work/plan" host_target) || return 1
     assets=$(web_tool get "$work/plan" host_assets) || return 1
     remote_assets=$(web_tool get "$work/plan" container_assets) || return 1
@@ -91,12 +103,18 @@ install_docker_web_bouncer() (
     credentials=$(web_tool credentials "${CS_DIR}/config.yaml") || return 1
     api_url=$(yaml_tool get "$credentials" url) || return 1
     [[ "$api_url" =~ ^http://(127\.0\.0\.1|localhost):[0-9]+/?$ ]] || { log_err '自动安装需要 loopback LAPI 地址，未注册账号。'; return 1; }
+    if [[ "$network" != host ]]; then api_url=$(web_tool get "$work/transport" api_url) || return 1; fi
     account="cs-web-1key-$(python3 -c 'import secrets; print(secrets.token_hex(8))')" || return 1
     if ! cscli bouncers add "$account" -o raw > "$work/key" 2> "$work/key-error"; then
         log_err 'Bouncer 注册失败，未修改网站配置。'
         return 1
     fi
     registered=true
+    if [[ "$network" != host ]]; then
+        transport_tool probe-config "$work/key" "$work/transport" "$work/probe" || return 1
+        if ! docker exec -i "$NATIVE_ID" curl -fsS --noproxy '*' --connect-timeout 3 --max-time 8 --config - < "$work/probe" > "$work/response" 2>/dev/null ||
+            ! transport_tool probe-response "$work/response"; then log_err '私有 LAPI 无法用本次账号认证，已中止接入。'; return 1; fi
+    fi
     web_tool stage "$work/plan" "$work/bouncer.tgz" "$work/http.tgz" "$work/assets" "$work/key" "$api_url" || return 1
     [[ ! -e "$assets" ]] || { log_err '资源目录已变化，未覆盖。'; return 1; }
     begin_config_change "$target" "$WEB_INSTALLS" "$APPSEC_DOCKER_LINKS" || return 1
@@ -104,8 +122,8 @@ install_docker_web_bouncer() (
     web_tool apply "$work/plan" "$work/assets" "$WEB_INSTALLS" "$NATIVE_NAME" "$account" || return 1
     remote_assets=$(web_tool get "$work/plan" container_assets) || return 1
     config="${assets}/bouncer.conf"
-    yaml_tool link-docker-bouncer "$config" "$APPSEC_DOCKER_LINKS" "$NATIVE_ID" "${remote_assets}/bouncer.conf" "$NATIVE_NAME" || return 1
-    yaml_tool web-bouncer "$config" 'http://127.0.0.1:7422' || return 1
+    yaml_tool link-docker-bouncer "$config" "$APPSEC_DOCKER_LINKS" "$NATIVE_ID" "${remote_assets}/bouncer.conf" "$NATIVE_NAME" "$appsec_url" "${transport_args[@]}" || return 1
+    yaml_tool web-bouncer "$config" "$appsec_url" || return 1
     chmod 600 "$config" || return 1
     docker exec "$NATIVE_ID" nginx -t && docker exec "$NATIVE_ID" nginx -s reload || return 1
     committed=true
@@ -145,7 +163,12 @@ remove_docker_web_bouncer() (
     confirm "撤销 ${selected} 的本工具 Web Bouncer 安装（保留原 WAF）？" || return 0
     if [[ "$status" != cleanup-pending ]]; then
         network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$selected") || return 1
-        [[ "$network" == host ]] || { log_err '容器网络已变化，未撤销配置。'; return 1; }
+        if [[ "$network" != host ]]; then
+            transport_inspect "$selected" "$work" &&
+                transport_tool check-install "$work/entry" "$work/inspection" "$work/networks" || return 1
+        elif web_tool get "$work/entry" transport >/dev/null 2>&1; then
+            log_err '原 bridge 容器网络已变化，未撤销配置。'; return 1
+        fi
         begin_config_change "$target" "$WEB_INSTALLS" "$APPSEC_DOCKER_LINKS" || return 1
         changed=true
         web_tool restore "$work/entry" || return 1

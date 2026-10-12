@@ -54,6 +54,7 @@ else cp /tmp/crowdsec-official-openresty.tgz "$out"; fi
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertIn('crowdsec_cache', self.waf.read_text())
         before = self.commands().count('bouncers add ')
+        (self.base/'effective').write_text('# configuration file '+REMOTE_WAF+':\n'+self.waf.read_text())
         result = self.run_shell('install_docker_web_bouncer', 'openresty\n', overrides)
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(before, self.commands().count('bouncers add '))
