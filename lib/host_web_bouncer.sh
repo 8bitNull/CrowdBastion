@@ -114,8 +114,26 @@ PY
     return "$result"
 }
 
-install_host_web_bouncer() {
+install_host_web_bouncer() (
     local service="${1:-}" package file main snippet effective version candidate plan snapshot install_log status start_command
+    local changed=false package_started=false
+    host_install_exit() {
+        local result=$?
+        trap - EXIT INT TERM
+        if [[ "$changed" == true && "$result" != 0 ]]; then
+            if [[ "$package_started" == true ]]; then
+                host_web_rollback_package "$service" "$snapshot" "$package" || log_err '宿主机安装中断后的恢复未完成，请检查安装日志和修改前备份。'
+            elif ! restore_config_change || ! "$service" -t || ! systemctl reload "$service"; then
+                log_err '宿主机接入中断后的恢复/重载未完成，请检查修改前备份。'
+            fi
+        fi
+        [[ -z "${effective:-}" ]] || rm -f -- "$effective"
+        [[ -z "${snapshot:-}" ]] || rm -f -- "$snapshot"
+        exit "$result"
+    }
+    trap host_install_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     case "$service" in
         nginx)
             main=/etc/nginx/nginx.conf
@@ -138,12 +156,24 @@ install_host_web_bouncer() {
             log_err '该配置已有容器接入记录，请先停用原接入。'
             return 1
         fi
-        confirm "接入已有宿主机 ${service} Web Bouncer？" || return 0
+        if [[ "${2:-}" != selected ]]; then confirm "接入已有宿主机 ${service} Web Bouncer？" || return 0; fi
         begin_config_change "$file" "$APPSEC_LINKS" || return 1
-        if ! yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" || ! "$service" -t || ! systemctl reload "$service"; then
+        changed=true
+        if ! yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" || ! "$service" -t; then
             restore_config_change || return 1
             if "$service" -t; then systemctl reload "$service" || true; fi
+            changed=false
             log_err 'Web Bouncer 接入失败，已恢复修改前配置。'
+            return 1
+        fi
+        if ! config_change_needed; then
+            log_info '已有宿主机接入未变化，跳过 Web 服务重载。'
+            return 0
+        fi
+        if ! systemctl reload "$service"; then
+            restore_config_change || return 1
+            if "$service" -t; then systemctl reload "$service" || true; fi
+            changed=false
             return 1
         fi
         log_succ '已有 Web Bouncer 已配置 APPSEC_URL；请运行 AppSec 验证确认真实请求。'
@@ -222,9 +252,11 @@ PY
         rm -f -- "$effective" "$snapshot"
         return 1
     fi
+    changed=true
     install_log=$(mktemp /var/backups/crowdsec-1key/host-install.XXXXXXXX.log) || { rm -f -- "$effective" "$snapshot"; return 1; }
     chmod 600 "$install_log" || { rm -f -- "$effective" "$snapshot" "$install_log"; return 1; }
     log_info "软件包安装日志（可能含密钥，仅 root 可读）: ${install_log}"
+    package_started=true
     if ! DEBIAN_FRONTEND=noninteractive apt-get -y --no-upgrade --no-remove --no-install-recommends install "${package}=${candidate}" > "$install_log" 2>&1 ||
        [[ ! -f "$file" || ! -f "$snippet" ]] ||
        ! grep -Eq '^API_KEY=[^<[:space:]][^[:space:]]*$' "$file" ||
@@ -234,10 +266,11 @@ PY
        ! host_web_config loaded "$effective" "$main" "$snippet" ||
        ! "$service" -t || ! systemctl reload "$service"; then
         host_web_rollback_package "$service" "$snapshot" "$package" || log_err '部分回滚操作失败，请立即检查 Web 服务与安装日志。'
+        changed=false
         rm -f -- "$effective" "$snapshot"
         log_err '宿主机 Web Bouncer 安装或接入失败；网站尚未验证。'
         return 1
     fi
     rm -f -- "$effective" "$snapshot"
     log_succ "${package} 已安装并配置 APPSEC_URL；请运行 AppSec 验证确认真实网站请求被处理。"
-}
+)

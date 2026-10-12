@@ -1,6 +1,18 @@
 # 使用流程与官方配置验证记录
 
-## 当前优化基线（2026-10-11）
+## 分支整合验证（2026-10-12）
+
+整合宿主机检查、真实 IP 请求关联、维护副本及私有 bridge 适配，并保留主分支已有的 AppSec 策略/证据判定、Telegram 有效配置路径、WebUI 认证、自封保护和卸载三态预检。修复维护目录归属/权限、共享 Hub 锁、Hub 根/祖先/内部符号链接快照边界，以及已有宽权限密钥文件的写入权限。独立代码复审无剩余 Critical/Important 问题。
+
+- 完整 unittest **326 项全部通过，无跳过**；全量 Bash 语法、Python 编译、ShellCheck（沿用已说明的排除项）及 `git diff --check` 通过。
+- 官方 CrowdSec 1.8.1 / Firewall Bouncer 0.0.36：隔离引擎、采集、通知 JSON、独立凭据、AppSec 请求/指标和防火墙配置检查通过。
+- 官方 OpenResty 1.25.3.2 / Lua Bouncer 1.2.3：正常请求、原 WAF、AppSec 阻断、HTTP2 无长度正文、连接失败策略和真实 IP 继承通过。
+- NPM、宿主机 Nginx/OpenResty 隔离适配器：正常请求 200、AppSec 403、攻击未到后端、缓冲日志与 Bouncer IP 关联通过。
+- 本轮没有执行真实 Docker bridge 运行时测试，自动回归覆盖其接入/登记/漂移/诊断边界；2026-10-11 真实部署记录作为历史证据保留。本轮没有部署或重载生产服务。
+
+输出与检查摘要见 [整合验证结果](audit/2026-10-12-integration-results.json)。下列测试数量、主机状态及部署观察均为各自日期的历史记录。
+
+## 审查优化验证（2026-10-11，历史记录）
 
 本节记录审查建议实施后的结果；后续章节保留历史验证，不代表当前测试数量。实施分支为 `fix/audit-optimizations-20261011`，未部署到用户 VPS。
 
@@ -29,6 +41,12 @@
 WebUI 的 host 网络监听范围由上游决定，脚本要求明确确认已限制入口，不承诺自动将端口绑定到 loopback。管理员 AllowList 会旁路 AppSec，只允许明确选择单个管理员地址。Hub 维护不归因并行外部工具对 Hub 文件的写入；基础集合首次安装使用同一互斥锁，但不承诺软件包安装全流程事务回滚。
 
 验证日期：2026-10-10。依据用户指定的 CrowdSec Next AppSec 文档，使用官方稳定发布 CrowdSec **1.8.1** 和 Firewall Bouncer **0.0.36** 进行核查。
+
+2026-10-11 后续本机优化：完整回归扩展至 **221 项**，新增 Hub 快照/回滚/互斥、WebUI 实际健康和镜像摘要、只读日志盘点、重复操作及真实请求 IP 关联。实际部署和最新验证结果见 [本机优化记录](2026-10-11-host-audit.md)。以下保留 2026-10-10 初次验证范围。
+
+同日第二轮适配后完整回归 **241 项全部通过**，补齐宿主机动态日志与真实 IP/官方 inline Bouncer 核验、重复接入和中断回滚，NPM 配置重建/新站点继承，以及 LDNMP/NPM 的私有 IPv4 bridge 端点接入。最终支持前提与维护验收线见 [最终优化边界](optimization-boundary.md)。最新实际运行时结果记录在本机检查文档末尾，以下历史数字不作为当前总数。
+
+同日 Bridge 缺陷修复后完整回归 **251 项全部通过**。新增只读诊断覆盖已登记/未登记端点、网络重建、监听丢失/通配监听、损坏登记及 host 网络不受影响；失败传递至 AppSec 状态检查。实际 Docker internal bridge 的容器 `Gateway` 为空，修正为在 NetworkID、IPAM 网关与容器子网均匹配时接受；普通 bridge 不使用此回退。真实临时 Docker bridge 验证登记有效、未登记、网络记录失效和监听停止的诊断结果与只读性，并复查正常请求 200、AppSec 阻断 403、攻击未到业务后端。测试资源及临时规则均已清理。
 
 ## 已发现并处理的问题
 
@@ -151,7 +169,7 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
 python3 tests/verify_real_ip.py --metadata /path/to/openresty-packages-metadata
 ```
 
-当前环境没有可用于部署测试的 Docker/systemd 服务，也缺少 netlink 管理权限和真实 Telegram/Console 凭据。以下需要在目标服务器上核验：
+2026-10-10 初次验证环境没有可用于部署测试的 Docker/systemd 服务，也缺少 netlink 管理权限和真实 Telegram/Console 凭据。2026-10-11 已在本机执行真实服务检查、1Panel 普通请求关联和临时 Docker bridge 验证；最新覆盖范围见本机检查记录。以下未覆盖的目标部署仍需分别核验：
 
 1. 各发行版软件源、安装/升级、服务启动及 cron 实际执行。
 2. Docker 镜像运行、反向代理认证、1Panel/NPM 容器网络与真实访问日志路径。

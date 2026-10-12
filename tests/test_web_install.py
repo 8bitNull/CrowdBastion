@@ -66,8 +66,8 @@ class WebInstall(unittest.TestCase):
             self.plan(image='nginx:alpine', version='nginx version: nginx/1.29')
         self.assertEqual(self.waf.read_text(), WAF)
 
-    def test_bridge_is_rejected_before_mutation(self):
-        with self.assertRaisesRegex(ValueError, 'host'):
+    def test_bridge_without_verified_endpoints_is_rejected_before_mutation(self):
+        with self.assertRaisesRegex(ValueError, 'configure-docker-endpoints'):
             self.plan(network='bridge')
 
     def test_readonly_and_shadowed_mounts_are_rejected(self):
