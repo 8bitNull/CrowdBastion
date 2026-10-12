@@ -80,6 +80,25 @@ class AuditOps(unittest.TestCase):
         self.assertEqual(service['environment'].get('CONFIG_AUTH_ENABLED'), 'true')
         self.assertIn('3100/api/health', str(service['healthcheck']))
 
+    def test_secret_outputs_replace_permissive_modes(self):
+        compose = self.base/'compose.yml'
+        notification = self.base/'telegram.yaml'
+        bouncer = self.base/'firewall.yaml'
+        bouncer.write_text('mode: nftables\n')
+        local = self.base/'firewall.yaml.local'
+        cases = [
+            (compose, ('compose', compose, self.base, 'http://127.0.0.1:8080', 'user', 'secret', '3100')),
+            (notification, ('telegram', notification, '123:ABC', '-123', 'https://api.telegram.org')),
+            (local, ('bouncer', bouncer, 'http://127.0.0.1:8080', 'new-secret-key', 'false')),
+        ]
+        for path, args in cases:
+            with self.subTest(path=path.name):
+                path.write_text('{}\n')
+                path.chmod(0o644)
+                result = self.helper(*args)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
     def test_webui_running_without_http_readiness_fails(self):
         self.make_webui()
         p = self.run_shell('deploy_web_ui', '3000\ny\n', 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; [[ "$*" == *State.Running* ]] && echo true; return 0; }; curl() { record curl "$@"; echo 503; }')
@@ -125,7 +144,7 @@ cscli() {
     def test_health_core_only_does_not_require_optional_firewall(self):
         p = self.run_shell('check_health_status', overrides='''systemctl() { record systemctl "$@"; [[ "$*" != 'is-active crowdsec-firewall-bouncer' ]]; }
 firewall_status() { record firewall-status; return 1; }''')
-        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertIn('Firewall Bouncer: 未部署', p.stdout)
         self.assertNotIn('firewall-status', self.commands())
         self.assertNotIn('is-active crowdsec-firewall-bouncer', self.commands())

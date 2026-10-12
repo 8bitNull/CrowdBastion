@@ -78,11 +78,13 @@ class HubMaintenance(Workflows):
     def test_cron_installs_independent_owned_runner(self):
         p=self.run_shell('enable_auto_update')
         self.assertEqual(p.returncode,0,p.stdout+p.stderr)
-        runner=self.base/'opt/crowdsec-1key-maintenance/hub_maintenance.sh'
+        runner=self.base/'usr/local/lib/crowdsec-1key/current/manager.sh'
         self.assertTrue(runner.exists())
         cron=(self.base/'etc/cron.d/crowdsec-autoupdate').read_text()
-        self.assertIn(str(runner),cron)
+        self.assertIn('/usr/local/lib/crowdsec-1key/current/manager.sh --update-hub',cron)
         self.assertNotIn(str(self.source),cron)
+        self.assertTrue((runner.parent/'lib/hub_maintenance.sh').exists())
+        self.assertTrue((runner.parent/'lib/crowdsec_hub_snapshot.py').exists())
 
 for name in list(vars(Workflows)):
     if name.startswith('test_') and name not in HubMaintenance.__dict__:
