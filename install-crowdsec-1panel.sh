@@ -1972,6 +1972,9 @@ show_help() {
   --install-v2bx-observer 安装落地常驻仅观察服务（需私有 JSON 配置）
   --v2bx-observer-status 只读检查落地观察服务、心跳与采集指标
   --disable-v2bx-observer 停用落地观察服务，保留配置与数据库
+  --enable-v2bx-alerts   接入 CrowdSec 仅观察告警（需已有健康采集器）
+  --v2bx-alerts-status   只读检查观察告警接入、profiles guard 与发布状态
+  --disable-v2bx-alerts  停用观察告警接入，保留发布账本与事件证据
   --install-webui      部署/更新 WebUI
   --reset-webui-credentials 检查/轮换 WebUI 独立凭据
   --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
@@ -2036,6 +2039,9 @@ main_operation() {
         --install-v2bx-observer) v2bx_observer_service install ;;
         --v2bx-observer-status) v2bx_observer_service status ;;
         --disable-v2bx-observer) v2bx_observer_service disable ;;
+        --enable-v2bx-alerts) v2bx_alert_service enable ;;
+        --v2bx-alerts-status) v2bx_alert_service status ;;
+        --disable-v2bx-alerts) v2bx_alert_service disable ;;
         --install-webui) deploy_web_ui ;;
         --reset-webui-credentials) reset_webui_credentials ;;
         --install-waf) install_web_rules ;;
@@ -2080,7 +2086,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
+        ''|--help|-h|--status|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

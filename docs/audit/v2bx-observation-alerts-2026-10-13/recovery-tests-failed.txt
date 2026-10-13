@@ -1,0 +1,61 @@
+======================================================================
+ERROR: test_failed_mkdir_never_removes_concurrently_created_directory (test_v2bx_alerts.AlertManagement.test_failed_mkdir_never_removes_concurrently_created_directory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_alerts.py", line 122, in test_failed_mkdir_never_removes_concurrently_created_directory
+    self.assertEqual((self.manager.code/'external-evidence').read_text(), 'KEEP')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/pathlib.py", line 1059, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/pathlib.py", line 1045, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/codeg-acp/344248-08934a9d/tmp6jfiz6ou/usr/local/lib/crowdsec-v2bx-alerts/external-evidence'
+
+======================================================================
+ERROR: test_run_recovers_stale_metrics_file_before_reporting_failure (test_v2bx_alerts.AlertManagement.test_run_recovers_stale_metrics_file_before_reporting_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_alerts.py", line 266, in run
+    publisher = Publisher(manager.state, databases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_stream.py", line 49, in __init__
+    fd = safe_regular(source, private=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_service.py", line 31, in safe_regular
+    fd = regular_open(path)
+         ^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_observe.py", line 29, in regular_open
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/codeg-acp/344248-08934a9d/tmpi1xyb2jz/collector/sing.sqlite'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_alerts.py", line 109, in test_run_recovers_stale_metrics_file_before_reporting_failure
+    self.assertEqual(self.mod.run(self.manager), 1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_alerts.py", line 294, in run
+    write_status(manager.state, dict(status='failed', reason='publication_requires_review', heartbeat=time.time(), observation_only=True))
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_service.py", line 105, in write_status
+    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileExistsError: [Errno 17] File exists: '/tmp/codeg-acp/344248-08934a9d/tmpi1xyb2jz/var/lib/crowdsec-v2bx-alerts/status.json.new'
+
+======================================================================
+FAIL: test_duplicate_run_never_clobbers_status (test_v2bx_alerts.AlertManagement.test_duplicate_run_never_clobbers_status)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_alerts.py", line 103, in test_duplicate_run_never_clobbers_status
+    self.assertEqual(json.loads(target.read_text())['status'], 'publishing')
+AssertionError: 'failed' != 'publishing'
+- failed
++ publishing
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.183s
+
+FAILED (failures=1, errors=2)

@@ -1,0 +1,10 @@
+Official crowdsec -t: PASS
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_alert_pipeline.py", line 119, in <module>
+    main(*sys.argv[1:])
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_alert_pipeline.py", line 108, in main
+    result = verify(release, live_producer=pipeline, profile_documents=profiles, control_scenario=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_observation.py", line 192, in verify
+    raise RuntimeError('Independent control remediation was not preserved: '+json.dumps(decisions))
+RuntimeError: Independent control remediation was not preserved: [{"capacity": 0, "created_at": "2026-10-13T15:08:28Z", "decisions": [{"duration": "59s", "id": 1, "origin": "crowdsec", "scenario": "crowdsec-1key/qa-control", "scope": "Ip", "simulated": false, "type": "ban", "value": "198.51.100.250"}], "events": [{"meta": [{"key": "log_type", "value": "v2bx_failure_observation"}, {"key": "source_ip", "value": "198.51.100.250"}, {"key": "v2bx_core", "value": "sing"}, {"key": "v2bx_event_type", "value": "auth_failure"}, {"key": "v2bx_protocol", "value": "anytls"}, {"key": "v2bx_source_status", "value": "unverified"}], "timestamp": "2026-10-13 15:08:28.322758852 +0000 UTC"}], "events_count": 1, "id": 10, "kind": "crowdsec", "labels": null, "leakspeed": "0s", "machine_id": "v2bx-observation-qa", "message": "Ip 198.51.100.250 performed 'crowdsec-1key/qa-control' (1 events over 0s) at 2026-10-13 15:08:28.322976262 +0000 UTC", "remediation": true, "scenario": "crowdsec-1key/qa-control", "scenario_hash": "", "scenario_version": "", "simulated": false, "source": {"ip": "198.51.100.250", "scope": "Ip", "value": "198.51.100.250"}, "start_at": "2026-10-13T15:08:28Z", "stop_at": "2026-10-13T15:08:28Z", "uuid": "b8985707-3459-496a-afea-c9c243101aef"}]

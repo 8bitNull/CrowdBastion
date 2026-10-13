@@ -197,3 +197,25 @@ sudo bash install-crowdsec-1panel.sh --disable-v2bx-observer
 每源默认最多 100000 个事件，最大 1000000；达到容量后本轮不提交，服务停止并记录 `observation_capacity_reached`，不丢弃旧数据。此时勿仅重启：先停用、备份数据库与配置，再制定新观察窗口或调整容量。修改已安装配置会被完整性检查标记，当前入口不支持自动迁移或滚动删除；需要保留备份后人工维护，并重新核对安装与采集契约。数据库及备份保持本机私有，不提交到 Git。
 
 轮询间隔 0.5–60 秒；systemd 限制内存 256 MiB、CPU 20%，这是服务资源上限而非吞吐保证。首次从文件开头读取，历史积压可能很快耗尽容量；试点应使用经核对的有界当前日志，避免全量 debug。数据库游标随事件提交，正常停用／重启不会重复已提交事件；旧文件迟写、copytruncate、轮转后旧 inode 无法找回仍可能丢失或重采，风险指标不表示恰好一次交付。
+
+## 常驻仅观察告警接入
+
+菜单 `4 → 14` 的 `4/5/6` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
+
+```bash
+sudo bash install-crowdsec-1panel.sh --enable-v2bx-alerts
+sudo bash install-crowdsec-1panel.sh --v2bx-alerts-status
+sudo bash install-crowdsec-1panel.sh --disable-v2bx-alerts
+```
+
+接入会安装独占 parser、仅观察场景及 acquisition；在 profiles 最前增加该场景专用的空 decisions／`on_success: break` guard，再校验并重启 CrowdSec，启动 `crowdsec-v2bx-alerts.service`。**该操作会重启核心**，须选择维护窗口。原 SSH／Web 等场景仍走后续原 profiles；本工具不创建观察场景决策。存在同名资产、重复文件采集或配置漂移时拒绝自动修改。
+
+增量发布只读已有 SQLite，每源每批最多 256 条；私有目录 `/var/lib/crowdsec-v2bx-alerts/` 保存 `events.ndjson`、发布账本与状态，helper／原 profiles 备份位于 `/usr/local/lib/crowdsec-v2bx-alerts/`。输出默认上限 128 MiB，不自动轮转。每条投影携带稳定 `observation_id`，用于本机证据核对，不是 CrowdSec 端去重保证；不要另建重叠 acquisition。
+
+首次发布先用不匹配业务 parser 的 `{}` 探针确认 acquisition 读取量增加，再排空采集积压。正常发布进程重启复用游标；完整待提交批次经内容核对、fsync 后推进游标而不重发。部分写入、输出替换／截断、源库／契约变更、容量耗尽或 CrowdSec InvocationID 改变时停止，状态为 `needs_attention`／`publication_requires_review`，保留证据。观察原始日志的 copytruncate、迟写和找回旧 inode 的限制仍然存在，不以稳定发布 ID 消除原始采集丢失／重采风险。
+
+CrowdSec 文件 tail 没有逐条持久确认，本方案**不保证消费端恰好一次**。核心重启后，已发布但未持久保存的告警可能缺失；发布服务会拒绝自动续发和重放。不能仅重启发布器或删除账本解除阻塞：先停用接入、私有备份配置／账本／NDJSON，按来源、事件 ID、时间和实际告警对照，制定新观察窗口。本阶段不提供自动迁移、自动补发或停用后一键重新接入，保留目录会阻止盲目覆盖。
+
+停用先停止发布端，再移除仅本工具 acquisition／规则和 profiles guard，校验并重启核心；保留原 profiles 后续外部更新、原场景与发布证据。受管资产被外部修改时停止操作，不覆盖这些改动。接入失败会恢复旧配置；若发布已尝试启动或核心恢复重启失败，保留私有备份与状态，需人工核对。中断／恢复不完整时也须据备份与实际服务状态处理，不能据单个退出码宣称全部已恢复。
+
+状态返回 `2` 表示观察接入报告成功但真实业务防护仍未验证；关键错误返回 `1`。健康要求发布服务和核心活跃、心跳新鲜、源采集器健康及受管规则／guard 完整。观察告警数量受 trigger 的 1 秒 blackhole 及分组影响，不等于逐行事件数；核查本场景增量决策为零，不能要求生产已有其他场景的全局决策清空。

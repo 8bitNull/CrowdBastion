@@ -33,6 +33,9 @@ bash install-crowdsec-1panel.sh --help
 | `--install-v2bx-observer` | 安装落地常驻仅观察服务，需 `V2BX_OBSERVER_CONFIG` 私有 JSON；菜单 `4 → 14` |
 | `--v2bx-observer-status` | 只读服务、心跳及指标，业务保护未验证返回 2 |
 | `--disable-v2bx-observer` | 停止并禁用本工具观察服务，保留配置、数据库与游标 |
+| `--enable-v2bx-alerts` | 接入仅观察规则／采集与 profiles guard，重启核心并启动增量发布；菜单 `4 → 14 → 4` |
+| `--v2bx-alerts-status` | 只读核查规则／guard、核心、源采集器及发布状态；未验证业务保护返回 2 |
+| `--disable-v2bx-alerts` | 停止发布并撤销本工具接入，保留证据；会重启核心 |
 | `--install-webui` | 部署/更新 WebUI |
 | `--reset-webui-credentials` | 检查并选择轮换 WebUI 凭据 |
 | `--install-waf` | 安装 Web 日志检测集合 |

@@ -1,0 +1,10 @@
+Official crowdsec -t: PASS
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_alert_pipeline.py", line 119, in <module>
+    main(*sys.argv[1:])
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_alert_pipeline.py", line 108, in main
+    result = verify(release, live_producer=pipeline, profile_documents=profiles, control_scenario=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_observation.py", line 192, in verify
+    raise RuntimeError('Independent control remediation was not preserved')
+RuntimeError: Independent control remediation was not preserved

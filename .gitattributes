@@ -5,3 +5,5 @@ experimental/**/*.patch -text -whitespace
 docs/audit/**/buildinfo.txt -text -whitespace
 # Preserve the original failed regression transcript, including traceback spacing.
 docs/audit/v2bx-landing-observer-2026-10-13/initial-unittest-failed.txt -text -diff
+# Preserve failed observation-pipeline transcripts and traceback spacing.
+docs/audit/v2bx-observation-alerts-2026-10-13/*-failed.txt -text -diff
