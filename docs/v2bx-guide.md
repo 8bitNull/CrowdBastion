@@ -163,3 +163,37 @@ bash install-crowdsec-1panel.sh --v2bx-observe
 后续已补齐 [sing TUIC/Hysteria1/2实验补丁](../experimental/v2bx-sing-quic/README.md)，在固定版本明确认证拒绝分支输出安全前缀和固定事件。初版继承的面板URL日志标签已修正；需配套应用sing-box安全logger和sing-quic补丁。官方未打补丁包的缺口仍存在；未知logger实现不回退到敏感标签，需独立验收。专项36项、QUIC边界5项和三内核66项及10组观察告警／0决策见 [最新报告](audit/2026-10-13-v2bx-sing-quic-events.md)。仍未部署生产。
 
 最新 [混合入口验收](audit/2026-10-13-v2bx-mixed-ingress.md) 补充双账号同时直连／中转、真实 IPv6 与 UDP 应用载荷。需注意 hysteria2 core 的 `::` 在固定依赖下是 IPv6 UDP 专用监听，以及 Shadowsocks 的原生 UDP 中转配置；模拟通过不替代实际 VPS 的监听、来源及观察采集验收。
+
+## 落地常驻仅观察服务
+
+菜单 `4 → 14`，或使用以下三个命令。它将每个内核的独立文件日志接入持久 Observer；不安装 CrowdSec acquisition、场景或 profiles，也不创建告警、封禁或限速规则。真实 VPS 部署仍须按[部署验收](v2bx-deployment-acceptance.md)核实。
+
+先在本机建立 root 所有、权限 `0600` 的 JSON 配置，路径按真实日志修改。中转 CIDR 示例必须换成实际出口；三个内核需要三个不同文件，xray 文件日志必须指定实际时区偏移：
+
+```json
+{
+  "poll_interval": 1,
+  "sources": [
+    {"name": "xray", "core": "xray", "file": "/var/log/V2bX/xray-error.log", "timezone": "+08:00", "relay_cidrs": "198.51.100.10/32,2001:db8::10/128", "max_events": 100000},
+    {"name": "sing", "core": "sing", "file": "/var/log/V2bX/sing.log", "relay_cidrs": "198.51.100.10/32,2001:db8::10/128", "max_events": 100000},
+    {"name": "hy2", "core": "hysteria2", "file": "/var/log/V2bX/hysteria2.log", "relay_cidrs": "198.51.100.10/32,2001:db8::10/128", "max_events": 100000}
+  ]
+}
+```
+
+日志文件必须已存在且为非符号链接普通文件。不修改 V2bX 日志设置；只有 journal 或混合 core 共用同一日志文件时，先保留现有离线采样流程，不能复制配置条目重复采集。服务启用 PrivateTmp，不支持 `/tmp`、`/var/tmp` 内日志。源名称只允许小写字母开头的字母、数字、下划线或短横线，最长 32 字符；最多 16 个独立源。
+
+```bash
+sudo chmod 600 /root/v2bx-observer.json
+sudo env V2BX_OBSERVER_CONFIG=/root/v2bx-observer.json bash install-crowdsec-1panel.sh --install-v2bx-observer
+sudo bash install-crowdsec-1panel.sh --v2bx-observer-status
+sudo bash install-crowdsec-1panel.sh --disable-v2bx-observer
+```
+
+安装检查 `/usr/bin/python3` 的 PyYAML，不借用当前 shell 的临时 PYTHONPATH。首次安装复制 helper 和配置到 `/usr/local/lib/crowdsec-v2bx-observer/`，创建 `crowdsec-v2bx-observer.service`，数据位于 `/var/lib/crowdsec-v2bx-observer/`。拒绝覆盖现有目录或同名 unit；安装失败且服务能停下时撤销新文件，若无法停下则保留文件用于排查。停用保留全部数据，不影响 V2bX 和其他防护服务。确认配置无变化且源可用后，可用 `systemctl enable --now crowdsec-v2bx-observer.service` 恢复观察。
+
+状态返回 `2` 表示业务防护仍未验证，`1` 表示关键查询或输入失败。检查 `service_active`、`heartbeat_age_seconds` 和每源 `source_present`；active 不等于观察健康。指标含事件数、中转排除后的合格失败数、忽略原因、轮转和连续性风险，不含原始日志／UUID／密码。
+
+每源默认最多 100000 个事件，最大 1000000；达到容量后本轮不提交，服务停止并记录 `observation_capacity_reached`，不丢弃旧数据。此时勿仅重启：先停用、备份数据库与配置，再制定新观察窗口或调整容量。修改已安装配置会被完整性检查标记，当前入口不支持自动迁移或滚动删除；需要保留备份后人工维护，并重新核对安装与采集契约。数据库及备份保持本机私有，不提交到 Git。
+
+轮询间隔 0.5–60 秒；systemd 限制内存 256 MiB、CPU 20%，这是服务资源上限而非吞吐保证。首次从文件开头读取，历史积压可能很快耗尽容量；试点应使用经核对的有界当前日志，避免全量 debug。数据库游标随事件提交，正常停用／重启不会重复已提交事件；旧文件迟写、copytruncate、轮转后旧 inode 无法找回仍可能丢失或重采，风险指标不表示恰好一次交付。

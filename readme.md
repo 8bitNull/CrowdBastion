@@ -52,7 +52,7 @@ sudo bash install-crowdsec-1panel.sh
 - 共享中转 peer 不能代替用户 IP 作为业务封禁对象；连接限速和带宽清洗不属于当前中转管理功能，链路耗尽需要上游防护。
 - 配置修改提供备份与恢复；系统软件包、实时数据库和网站数据不属于完整事务备份。卸载前先核对 [恢复与卸载流程](docs/usage-guide.md#备份与失败恢复)。
 
-V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IPv4/IPv6 和 TCP/UDP 应用载荷的隔离证据。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。V2bX 入口不自动安装业务规则、生产常驻采集、自动封禁或限速。
+V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IPv4/IPv6 和 TCP/UDP 应用载荷的隔离证据。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。新增 `4 → 14` / `--install-v2bx-observer` 可安装独立文件日志的常驻仅观察服务；不自动接入业务规则、告警、封禁或限速。
 
 真实 VPS 的仅观察试点仍待 [部署验收](docs/v2bx-deployment-acceptance.md)。系统长测、恢复及部分架构／资源组合尚未关闭；源码回归和 QEMU 结果不代表公网吞吐或生产放行。具体测试数量、配置对照与失败记录见 [验证记录](docs/verification.md)、[验收索引](docs/audit/README.md)和 [修复进度](docs/audit/2026-10-12-vps-repair-progress.md)。
 

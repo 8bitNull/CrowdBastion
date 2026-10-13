@@ -30,6 +30,9 @@ bash install-crowdsec-1panel.sh --help
 | `--diagnose-v2bx` | 只读核查 V2bX 三内核配置、日志、混合入口声明和本地 Bouncer；详见 [V2bX 指南](v2bx-guide.md)，未验证端到端保护返回 2 |
 | `--v2bx-log-check` | 只读检查三内核日志样本；菜单 `4 → 13`，用 `V2BX_LOG_FILE/CORE/TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT` 指定输入；返回 2 表示生产未验证，见 [V2bX 指南](v2bx-guide.md) |
 | `--v2bx-observe` | 持久保存固定观察投影、恢复游标与采集指标，可导出一次性快照；仅命令行，不安装常驻服务或规则；参数见下方说明及 [V2bX 指南](v2bx-guide.md) |
+| `--install-v2bx-observer` | 安装落地常驻仅观察服务，需 `V2BX_OBSERVER_CONFIG` 私有 JSON；菜单 `4 → 14` |
+| `--v2bx-observer-status` | 只读服务、心跳及指标，业务保护未验证返回 2 |
+| `--disable-v2bx-observer` | 停止并禁用本工具观察服务，保留配置、数据库与游标 |
 | `--install-webui` | 部署/更新 WebUI |
 | `--reset-webui-credentials` | 检查并选择轮换 WebUI 凭据 |
 | `--install-waf` | 安装 Web 日志检测集合 |

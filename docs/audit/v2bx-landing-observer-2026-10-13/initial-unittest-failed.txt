@@ -1,0 +1,28 @@
+======================================================================
+ERROR: test_install_and_disable_preserve_state (test_v2bx_service.LandingService.test_install_and_disable_preserve_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_service.py", line 107, in test_install_and_disable_preserve_state
+    target.chmod(0o600)
+                        
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_service.py", line 298, in install
+    if not ready:raise RuntimeError('collector_not_ready')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: collector_not_ready
+
+======================================================================
+ERROR: test_status_detects_stale_heartbeat_and_changed_installation (test_v2bx_service.LandingService.test_status_detects_stale_heartbeat_and_changed_installation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_service.py", line 169, in test_status_detects_stale_heartbeat_and_changed_installation
+    (state/'status.json.new').write_text('partial');(state/'status.json.new').chmod(0o600)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/lib/crowdsec_v2bx_service.py", line 298, in install
+    if not ready:raise RuntimeError('collector_not_ready')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: collector_not_ready
+
+----------------------------------------------------------------------
+Ran 702 tests in 187.797s
+
+FAILED (errors=2, skipped=20)
