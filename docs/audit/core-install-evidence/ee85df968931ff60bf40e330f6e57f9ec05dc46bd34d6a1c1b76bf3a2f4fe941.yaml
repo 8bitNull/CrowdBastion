@@ -1,0 +1,15 @@
+#cloud-config
+write_files:
+  - path: /etc/systemd/system/core-fixed-first.service
+    content: |
+      [Unit]
+      After=network-online.target
+      Wants=network-online.target
+      [Service]
+      Type=simple
+      Environment=TERM=vt220
+      ExecStart=/usr/bin/python3 /opt/test/guest.py
+      StandardOutput=journal+console
+      StandardError=journal+console
+runcmd:
+  - [ bash, -c, 'mkdir -p /mnt/lab; mount LABEL=cidata /mnt/lab; tar -xzf /mnt/lab/payload.tgz -C /; systemctl daemon-reload; systemctl start core-fixed-first.service' ]

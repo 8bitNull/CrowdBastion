@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-12",
+  "scope": "isolated simulated VPS acceptance; temporary configs and loopback processes, not a VM or production installation",
+  "kernel": "7.2.9-x64v3-xanmod1",
+  "versions": {
+    "crowdsec": "1.8.1",
+    "openresty": "1.25.3.2",
+    "openresty_bouncer": "1.2.3",
+    "lua_resty_http": "0.17.1",
+    "firewall_bouncer_config_only": "0.0.36"
+  },
+  "completed_runs": {
+    "telegram_tests": {
+      "exit_code": 0,
+      "stdout_stderr": "test_cli_exit_zero_without_delivery_is_not_success (test_telegram.TelegramReceipts.test_cli_exit_zero_without_delivery_is_not_success) ... ok\ntest_http_rejection_fails_even_if_official_cli_exits_successfully (test_telegram.TelegramReceipts.test_http_rejection_fails_even_if_official_cli_exits_successfully) ... ok\ntest_official_plugin_single_message_has_verified_api_receipt (test_telegram.TelegramReceipts.test_official_plugin_single_message_has_verified_api_receipt) ... ok\ntest_ok_false_overrides_http_200_and_clears_prior_success (test_telegram.TelegramReceipts.test_ok_false_overrides_http_200_and_clears_prior_success) ... ok\ntest_successful_receipt_expires_on_configuration_change_or_after_24_hours (test_telegram.TelegramReceipts.test_successful_receipt_expires_on_configuration_change_or_after_24_hours) ... ok\ntest_alert_context_is_fallback_when_events_are_absent (test_telegram.TelegramRendering.test_alert_context_is_fallback_when_events_are_absent) ... ok\ntest_context_from_different_path_is_not_paired_with_event (test_telegram.TelegramRendering.test_context_from_different_path_is_not_paired_with_event) ... ok\ntest_decision_is_not_reported_as_verified_bouncer_enforcement (test_telegram.TelegramRendering.test_decision_is_not_reported_as_verified_bouncer_enforcement) ... ok\ntest_empty_first_event_does_not_hide_later_evidence (test_telegram.TelegramRendering.test_empty_first_event_does_not_hide_later_evidence) ... ok\ntest_false_simulation_flag_is_not_treated_as_a_truthy_pointer (test_telegram.TelegramRendering.test_false_simulation_flag_is_not_treated_as_a_truthy_pointer) ... ok\ntest_missing_data_and_empty_ua_are_distinguished (test_telegram.TelegramRendering.test_missing_data_and_empty_ua_are_distinguished) ... ok\ntest_missing_decision_and_simulation_are_explicit (test_telegram.TelegramRendering.test_missing_decision_and_simulation_are_explicit) ... ok\ntest_real_appsec_context_completes_matching_event_evidence (test_telegram.TelegramRendering.test_real_appsec_context_completes_matching_event_evidence) ... ok\ntest_real_event_meta_paths_and_ua_are_rendered_and_json_escaped (test_telegram.TelegramRendering.test_real_event_meta_paths_and_ua_are_rendered_and_json_escaped) ... ok\ntest_request_samples_keep_path_ua_pairs_and_bound_message_size (test_telegram.TelegramRendering.test_request_samples_keep_path_ua_pairs_and_bound_message_size) ... ok\ntest_zero_id_is_not_presented_as_persistent_alert_id (test_telegram.TelegramRendering.test_zero_id_is_not_presented_as_persistent_alert_id) ... ok\ntest_delivery_mode_defaults_to_immediate_and_preserves_batch_on_update (test_telegram.TelegramRoutes.test_delivery_mode_defaults_to_immediate_and_preserves_batch_on_update) ... ok\ntest_invalid_delivery_mode_leaves_notification_unchanged (test_telegram.TelegramRoutes.test_invalid_delivery_mode_leaves_notification_unchanged) ... ok\ntest_legacy_proxy_endpoint_and_go_dict_chat_are_migrated (test_telegram.TelegramRoutes.test_legacy_proxy_endpoint_and_go_dict_chat_are_migrated) ... ok\ntest_migration_rolls_back_all_routes_on_validation_failure (test_telegram.TelegramRoutes.test_migration_rolls_back_all_routes_on_validation_failure) ... ok\ntest_mixed_literal_and_dynamic_chat_route_is_preserved (test_telegram.TelegramRoutes.test_mixed_literal_and_dynamic_chat_route_is_preserved) ... ok\ntest_setup_replaces_only_same_bot_chat_routes_and_deduplicates (test_telegram.TelegramRoutes.test_setup_replaces_only_same_bot_chat_routes_and_deduplicates) ... ok\ntest_check_menu_is_read_only_and_does_not_send_messages (test_telegram_status.TelegramStatus.test_check_menu_is_read_only_and_does_not_send_messages) ... ok\ntest_external_service_and_cron_are_candidates_without_exposing_commands (test_telegram_status.TelegramStatus.test_external_service_and_cron_are_candidates_without_exposing_commands) ... ok\ntest_local_profiles_are_first_and_continue_is_only_a_possible_duplicate (test_telegram_status.TelegramStatus.test_local_profiles_are_first_and_continue_is_only_a_possible_duplicate) ... ok\ntest_same_destination_legacy_routes_and_repeated_entries_are_reported (test_telegram_status.TelegramStatus.test_same_destination_legacy_routes_and_repeated_entries_are_reported) ... ok\ntest_stale_or_malformed_evidence_does_not_claim_success (test_telegram_status.TelegramStatus.test_stale_or_malformed_evidence_does_not_claim_success) ... ok\ntest_unconfigured_is_distinguished_from_missing_route (test_telegram_status.TelegramStatus.test_unconfigured_is_distinguished_from_missing_route) ... ok\ntest_valid_config_does_not_claim_delivery_or_real_traffic_validation (test_telegram_status.TelegramStatus.test_valid_config_does_not_claim_delivery_or_real_traffic_validation) ... ok\n\n----------------------------------------------------------------------\nRan 29 tests in 45.013s\n\nOK\n"
+    },
+    "disable_workflows": {
+      "exit_code": 0,
+      "stdout_stderr": "test_telegram_setup_is_idempotent_and_disable_preserves_other_routes (test_workflows.Workflows.test_telegram_setup_is_idempotent_and_disable_preserves_other_routes) ... ok\ntest_telegram_disable_deletion_failure_restores_routes (test_workflows.Workflows.test_telegram_disable_deletion_failure_restores_routes) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 6.199s\n\nOK\n"
+    },
+    "immediate_engine": {
+      "exit_code": 0,
+      "stdout_stderr": "Updating official Hub and installing collections...\nAll manager collection names accepted by official Hub.\n[INFO] 待补齐日志采集（nginx）：/tmp/codeg-acp/344248-c2559a6b/crowdsec-real-engine-kmbdfh0a/host web[qa]\\logs/sites/bob.example.com/log/access.log\n1\nOfficial HTTP notification plugin rendered template and delivered valid JSON.\ncrowdsec -t: PASS (log repair, AppSec, profiles, notification, administrator whitelist).\nLive repaired HTTP file with spaces, brackets and backslash: acquisition metrics present.\nLive AppSec /.env request: HTTP 403, action=ban.\nLive AppSec notification: request path and UA delivered by official HTTP plugin.\nLive AppSec ordinary / request: HTTP 200, action=allow.\nIndependent WebUI credentials: valid account accepted; deleted account rejected.\nLAPI login, manual ban/unban and AppSec rule metrics: PASS.\nOfficial Firewall Bouncer -T: nftables/iptables local overrides accepted; defaults preserved.\n"
+    },
+    "batch_engine": {
+      "exit_code": 0,
+      "stdout_stderr": "Updating official Hub and installing collections...\nAll manager collection names accepted by official Hub.\n[INFO] 待补齐日志采集（nginx）：/tmp/codeg-acp/344248-c2559a6b/crowdsec-real-engine-z9y1v38g/host web[qa]\\logs/sites/bob.example.com/log/access.log\n1\nOfficial HTTP notification plugin rendered template and delivered valid JSON.\ncrowdsec -t: PASS (log repair, AppSec, profiles, notification, administrator whitelist).\nLive repaired HTTP file with spaces, brackets and backslash: acquisition metrics present.\nLive AppSec /.env request: HTTP 403, action=ban.\nLive AppSec notification: request path and UA delivered by official HTTP plugin.\nLive batch notifications: 10 alerts, all rule counts, simulation count and 3 bounded evidence samples: PASS.\nLive AppSec ordinary / request: HTTP 200, action=allow.\nIndependent WebUI credentials: valid account accepted; deleted account rejected.\nLAPI login, manual ban/unban and AppSec rule metrics: PASS.\n"
+    },
+    "web_bouncer": {
+      "exit_code": 0,
+      "stdout_stderr": "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.\nInstalling official AppSec virtual-patching and generic rules in temporary engine...\nReal OpenResty nginx -t: PASS with generated hooks and namespaced official Lua modules.\nLive HTTP: allowed / reached backend; original WAF /waf-block retained 403; AppSec /.env blocked before backend.\nReal AppSec processed counter: 0 -> 2; vpatch-env-access rule matched.\nOriginal WAF init/access/worker/log executed; original resty.http module retained and unchanged.\nUnavailable AppSec passthrough: HTTP 200, backend reached=True.\nUnavailable AppSec deny: HTTP 200, backend reached=False.\nReal HTTP2 POST without Content-Length: false allowed, true blocked; unavailable AppSec: passthrough allowed, deny blocked.\n"
+    },
+    "coupled_web_to_telegram": {
+      "exit_code": 0,
+      "stdout_stderr": "Official OpenResty 1.25.3.2 packages: SHA256 verified, extracted without install.\nInstalling official AppSec virtual-patching and generic rules in temporary engine...\nAPI 已接受测试消息\n插件测试不验证实际攻击取证或 Bouncer 拦截；API 接受不代表使用者已读。\nOfficial test API receipt accepted; status keeps production traffic unverified: PASS.\nReal OpenResty nginx -t: PASS with generated hooks and namespaced official Lua modules.\nLive HTTP: allowed / reached backend; original WAF /waf-block retained 403; AppSec /.env blocked before backend.\nReal AppSec processed counter: 0 -> 2; vpatch-env-access rule matched.\nOriginal WAF init/access/worker/log executed; original resty.http module retained and unchanged.\nUnavailable AppSec passthrough: HTTP 200, backend reached=True.\nUnavailable AppSec deny: HTTP 200, backend reached=False.\nReal HTTP2 POST without Content-Length: false allowed, true blocked; unavailable AppSec: passthrough allowed, deny blocked.\nClient -> OpenResty/Bouncer -> AppSec -> official HTTP plugin -> mock TG: PASS.\nExactly one /.env card; actual UA and source IP; no unknown path/UA; backend not reached: PASS.\n"
+    }
+  },
+  "card": "CrowdSec 告警\n执行状态: 本通知未验证 Bouncer 实际拦截\n\n【实时告警】\n场景: crowdsecurity/vpatch-env-access\n决策: 本告警未附带处置决策\n来源: 203.0.113.20\n归属地:  | \n告警时间: 2026-10-12T05:29:48Z\n请求样本 1\n刺探目标: GET /.env\n客户端指纹: CrowdSec OpenResty integration\n",
+  "evidence": {
+    "focused_tests": 29,
+    "disable_workflow_tests": 2,
+    "test_skips": 0,
+    "attack_path": "/.env",
+    "request_method": "GET",
+    "source_ip": "203.0.113.20",
+    "user_agent": "CrowdSec OpenResty integration",
+    "matching_cards": 1,
+    "blocked_http_status": 403,
+    "attack_reached_backend": false,
+    "normal_request_http_status": 200,
+    "normal_request_reached_backend": true,
+    "mixed_batch": {
+      "total": 10,
+      "first_rule": 5,
+      "second_rule": 5,
+      "simulated": 2,
+      "detailed_samples": 3
+    }
+  },
+  "harness_correction": "Initial coupled driver asserted a target without method; actual sample was GET /.env. Corrected matcher and waited while engine remained alive; final fresh run passed.",
+  "not_verified": [
+    "real Telegram service/chat receipt",
+    "real VPS package/systemd installation",
+    "unknown independent button bot runtime",
+    "production firewall/Docker/IPv6 topology",
+    "24-48 hour observation or load capacity"
+  ]
+}

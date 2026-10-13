@@ -32,7 +32,7 @@ def port():
         return s.getsockname()[1]
 
 
-def verify(release):
+def verify(release, telegram_delivery='immediate'):
     release = Path(release).resolve()
     cscli = release/'cmd/crowdsec-cli/cscli'
     engine = release/'cmd/crowdsec/crowdsec'
@@ -105,10 +105,16 @@ def verify(release):
         server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Receiver)
         threading.Thread(target=server.serve_forever, daemon=True).start()
         notification = cfg/'notifications/crowdsec-1key-telegram.yaml'
-        helper.main(['telegram', str(notification), '123456:TEST', '-123', 'https://telegram.example/proxy'])
+        helper.main(['telegram', str(notification), '123456:TEST', '-123', 'https://telegram.example/proxy', telegram_delivery])
         notif = helper.read(notification)
         notif['url'] = f'http://127.0.0.1:{server.server_port}/test'
         helper.write(notification, notif)
+        # AppSec virtual patches can emit non-remediation alerts. Keep the
+        # release's ban policy intact and add a test-only notification profile.
+        profiles = helper.read(cfg/'profiles.yaml', True)
+        profiles.append({'name': 'qa_appsec_notification',
+                         'filters': ["Alert.GetScope() == 'Ip'"], 'on_success': 'break'})
+        helper.write(cfg/'profiles.yaml', profiles, True)
         helper.main(['profiles', str(cfg/'profiles.yaml'), 'enable'])
         try:
             cli('notifications', 'test', 'crowdsec_1key_telegram')
@@ -157,6 +163,61 @@ def verify(release):
                         status, body = e.code, e.read()
                     assert status == 403 and json.loads(body)['action'] == 'ban', (status, body)
                     print('Live AppSec /.env request: HTTP 403, action=ban.', flush=True)
+                    if telegram_delivery == 'batch':
+                        for _ in range(9):
+                            try:
+                                with urllib.request.urlopen(request, timeout=10) as response:
+                                    assert response.status == 403
+                            except urllib.error.HTTPError as error:
+                                assert error.code == 403
+                    for _ in range(150):
+                        if any('/.env' in item.get('text', '') and 'CrowdSec integration test' in item.get('text', '') for item in received):
+                            break
+                        time.sleep(.2)
+                    else:
+                        raise AssertionError('Live AppSec notification missing request path / UA: '+str(received)+'\nAlerts: '+cli('alerts', 'list', '-o', 'json')+'\nEngine: '+log.read_text()[-6000:])
+                    print('Live AppSec notification: request path and UA delivered by official HTTP plugin.', flush=True)
+                    if telegram_delivery == 'batch':
+                        actual = next(item['text'] for item in received if '/.env' in item.get('text', '') and '本批告警: 10 条' in item.get('text', ''))
+                        assert 'crowdsecurity/vpatch-env-access: 10 条' in actual, actual
+                        assert actual.count('【实时告警】') == 3, actual
+                        assert len(actual) <= 4096, actual
+                        # Feed a multi-rule batch through the real LAPI and
+                        # plugin scheduler, not a duplicated template renderer.
+                        credentials = helper.read(cfg/'local_api_credentials.yaml')
+                        login = urllib.request.Request(f'http://127.0.0.1:{api_port}/v1/watchers/login',
+                            data=json.dumps({'machine_id': credentials['login'], 'password': credentials['password']}).encode(),
+                            headers={'Content-Type': 'application/json'})
+                        with urllib.request.urlopen(login, timeout=10) as response:
+                            token = json.load(response)['token']
+                        timestamp = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                        alerts = [{'capacity': 1, 'events_count': 1, 'leakspeed': '0', 'message': 'batch QA',
+                                   'scenario': 'qa/first' if i < 5 else 'qa/second', 'scenario_hash': 'qa',
+                                   'scenario_version': '1', 'simulated': i < 2, 'remediation': False,
+                                   'source': {'scope': 'Ip', 'value': '203.0.113.12', 'ip': '203.0.113.12'},
+                                   'start_at': timestamp, 'stop_at': timestamp,
+                                   'events': [{'timestamp': timestamp, 'meta': [
+                                       {'key': 'http_path', 'value': '/batch/'+str(i)+'中'*1000},
+                                       {'key': 'http_user_agent', 'value': 'Batch-UA-'+'测'*1000}]}]}
+                                  for i in range(10)]
+                        posting = urllib.request.Request(f'http://127.0.0.1:{api_port}/v1/alerts',
+                            data=json.dumps(alerts).encode(),
+                            headers={'Content-Type': 'application/json', 'Authorization': 'Bearer '+token})
+                        with urllib.request.urlopen(posting, timeout=10) as response:
+                            assert response.status == 201
+                        for _ in range(150):
+                            matches = [item['text'] for item in received if 'qa/second: 5 条' in item.get('text', '')]
+                            if matches:
+                                break
+                            time.sleep(.2)
+                        else:
+                            raise AssertionError('Missing mixed-rule batch: '+str(received))
+                        mixed = matches[-1]
+                        assert '本批告警: 10 条（模拟: 2 条）' in mixed, mixed
+                        assert 'qa/first: 5 条' in mixed and 'qa/second: 5 条' in mixed, mixed
+                        assert mixed.count('刺探目标:') == 3 and 'Batch-UA-' in mixed, mixed
+                        assert '前 3 条告警' in mixed and len(mixed) <= 4096, mixed
+                        print('Live batch notifications: 10 alerts, all rule counts, simulation count and 3 bounded evidence samples: PASS.', flush=True)
                     headers['X-Crowdsec-Appsec-Uri'] = '/'
                     with urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{appsec_port}/', headers=headers), timeout=10) as response:
                         assert response.status == 200 and json.load(response)['action'] == 'allow'

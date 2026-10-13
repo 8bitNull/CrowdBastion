@@ -1,0 +1,868 @@
+{
+  "execution_state": "completed",
+  "generated_at": "2026-10-12T09:54:41.526497+00:00",
+  "required_fixed_cases": {
+    "fixed_fresh_core_relay_install": [
+      "core_active",
+      "bouncer_active"
+    ],
+    "fixed_core_repeat": [
+      "main_config_preserved",
+      "core_active",
+      "bouncer_active"
+    ],
+    "fixed_core_reboot": [
+      "core_active",
+      "bouncer_active",
+      "bouncer_enabled"
+    ],
+    "fixed_core_decision_add": [
+      "ban_present"
+    ],
+    "fixed_core_decision_delete": [
+      "ban_removed"
+    ]
+  },
+  "results": [
+    {
+      "attempt": "cold",
+      "evidence": "docs/audit/core-install-evidence/cold.log",
+      "evidence_sha256": "382c5969c4fdd0c97145b5707b7eae9fa6acf57c5eb98aab8d7fac77b70adce3",
+      "archive_utc": "2026-10-12T09:54:35.752940+00:00",
+      "scope": "diagnostic root-cause investigation",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "diagnostics": [
+        {
+          "case": "installer_exit",
+          "data": "1"
+        },
+        {
+          "case": "installer_output",
+          "data": "Get:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 file:<opaque-redacted>.list Mirrorlist [39 B]\nGet:3 https://deb.debian.org/debian trixie InRelease [140 kB]\nGet:4 https://deb.debian.org/debian trixie-updates InRelease [47.3 kB]\nGet:5 https://deb.debian.org/debian trixie-backports InRelease [54.0 kB]\nGet:6 https://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]\nGet:7 https://deb.debian.org/debian trixie/main Sources [10.5 MB]\nGet:8 https://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]\nGet:9 https://deb.debian.org/debian trixie/main Translation-en [6486 kB]\nGet:10 https://deb.debian.org/debian trixie-updates/main Sources [1840 B]\nGet:11 https://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]\nGet:12 https://deb.debian.org/debian trixie-updates/main Translation-en [2496 B]\nGet:13 https://deb.debian.org/debian trixie-backports/main Sources [323 kB]\nGet:14 https://deb.debian.org/debian trixie-backports/main amd64 Packages [287 kB]\nGet:15 https://deb.debian.org/debian trixie-backports/main Translation-en [223 kB]\nGet:16 https://deb.debian.org/debian-security trixie-security/main Sources [240 kB]\nGet:17 https://deb.debian.org/debian-security trixie-security/main amd64 Packages [266 kB]\nGet:18 https://deb.debian.org/debian-security trixie-security/main Translation-en [163 kB]\nFetched 28.5 MB in 13s (2146 kB/s)\nReading package lists...\n[INFO] 所需软件包已安装，跳过安装/升级。\nDetected operating system as debian/13.\nDetected apt version as 3.0.3\nChecking for gpg...\nInstalling gnupg for GPG verification...\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  dirmngr gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf gpgsm\n  gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\nSuggested packages:\n  dbus-user-session pinentry-gnome3 tor gpg-wks-server parcimonie xloadimage\n  scdaemon tpm2daemon rng-tools pinentry-doc\nThe following NEW packages will be installed:\n  dirmngr gnupg gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf\n  gpgsm gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\n0 upgraded, 17 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 4751 kB of archives.\nAfter this operation, 15.4 MB of additional disk space will be used.\nGet:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 https://deb.debian.org/debian trixie/main amd64 libgpg-error0 amd64 1.51-4 [82.1 kB]\nGet:3 https://deb.debian.org/debian trixie/main amd64 libassuan9 amd64 3.0.2-2 [61.5 kB]\nGet:4 https://deb.debian.org/debian trixie/main amd64 libgcrypt20 amd64 1.11.0-7+deb13u1 [843 kB]\nGet:5 https://deb.debian.org/debian trixie/main amd64 gpgconf amd64 2.4.7-21+deb13u1+b5 [129 kB]\nGet:6 https://deb.debian.org/debian trixie/main amd64 libksba8 amd64 1.6.7-2+b1 [136 kB]\nGet:7 https://deb.debian.org/debian trixie/main amd64 libnpth0t64 amd64 1.8-3 [23.2 kB]\nGet:8 https://deb.debian.org/debian trixie/main amd64 dirmngr amd64 2.4.7-21+deb13u1+b5 [384 kB]\nGet:9 https://deb.debian.org/debian trixie/main amd64 gnupg-l10n all 2.4.7-21+deb13u1 [749 kB]\nGet:10 https://deb.debian.org/debian trixie/main amd64 gpg amd64 2.4.7-21+deb13u1+b5 [636 kB]\nGet:11 https://deb.debian.org/debian trixie/main amd64 pinentry-curses amd64 1.3.1-2 [86.4 kB]\nGet:12 https://deb.debian.org/debian trixie/main amd64 gpg-agent amd64 2.4.7-21+deb13u1+b5 [271 kB]\nGet:13 https://deb.debian.org/debian trixie/main amd64 gpgsm amd64 2.4.7-21+deb13u1+b5 [276 kB]\nGet:14 https://deb.debian.org/debian trixie/main amd64 gnupg all 2.4.7-21+deb13u1 [417 kB]\nGet:15 https://deb.debian.org/debian trixie/main amd64 gpg-wks-client amd64 2.4.7-21+deb13u1+b5 [109 kB]\nGet:16 https://deb.debian.org/debian trixie/main amd64 gpgv amd64 2.4.7-21+deb13u1+b5 [241 kB]\nGet:17 https://deb.debian.org/debian trixie/main amd64 libgpg-error-l10n all 1.51-4 [114 kB]\nGet:18 https://deb.debian.org/debian trixie/main amd64 gnupg-utils amd64 2.4.7-21+deb13u1+b5 [194 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 4751 kB in 1s (3535 kB/s)\nSelecting previously unselected package libgpg-error0:amd64.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 20633 files and directories currently installed.)\nPreparing to unpack .../00-libgpg-error0_1.51-4_amd64.deb ...\nUnpacking libgpg-error0:amd64 (1.51-4) ...\nSelecting previously unselected package libassuan9:amd64.\nPreparing to unpack .../01-libassuan9_3.0.2-2_amd64.deb ...\nUnpacking libassuan9:amd64 (3.0.2-2) ...\nSelecting previously unselected package libgcrypt20:amd64.\nPreparing to unpack .../02-libgcrypt20_1.11.0-7+deb13u1_amd64.deb ...\nUnpacking libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSelecting previously unselected package gpgconf.\nPreparing to unpack .../03-gpgconf_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgconf (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libksba8:amd64.\nPreparing to unpack .../04-libksba8_1.6.7-2+b1_amd64.deb ...\nUnpacking libksba8:amd64 (1.6.7-2+b1) ...\nSelecting previously unselected package libnpth0t64:amd64.\nPreparing to unpack .../05-libnpth0t64_1.8-3_amd64.deb ...\nUnpacking libnpth0t64:amd64 (1.8-3) ...\nSelecting previously unselected package dirmngr.\nPreparing to unpack .../06-dirmngr_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking dirmngr (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg-l10n.\nPreparing to unpack .../07-gnupg-l10n_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg-l10n (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg.\nPreparing to unpack .../08-gpg_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package pinentry-curses.\nPreparing to unpack .../09-pinentry-curses_1.3.1-2_amd64.deb ...\nUnpacking pinentry-curses (1.3.1-2) ...\nSelecting previously unselected package gpg-agent.\nPreparing to unpack .../10-gpg-agent_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-agent (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgsm.\nPreparing to unpack .../11-gpgsm_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgsm (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg.\nPreparing to unpack .../12-gnupg_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg-wks-client.\nPreparing to unpack .../13-gpg-wks-client_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgv.\nPreparing to unpack .../14-gpgv_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgv (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libgpg-error-l10n.\nPreparing to unpack .../15-libgpg-error-l10n_1.51-4_all.deb ...\nUnpacking libgpg-error-l10n (1.51-4) ...\nSelecting previously unselected package gnupg-utils.\nPreparing to unpack .../16-gnupg-utils_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up libnpth0t64:amd64 (1.8-3) ...\nSetting up libgpg-error0:amd64 (1.51-4) ...\nSetting up libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSetting up gnupg-l10n (2.4.7-21+deb13u1) ...\nSetting up gpgv (2.4.7-21+deb13u1+b5) ...\nSetting up libassuan9:amd64 (3.0.2-2) ...\nSetting up gpgconf (2.4.7-21+deb13u1+b5) ...\nSetting up libgpg-error-l10n (1.51-4) ...\nSetting up libksba8:amd64 (1.6.7-2+b1) ...\nSetting up pinentry-curses (1.3.1-2) ...\nSetting up gpg-agent (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-browser.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-extra.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-ssh.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent.socket' → '/usr/lib/systemd/user/gpg-agent.socket'.\n\nSetting up gpgsm (2.4.7-21+deb13u1+b5) ...\nSetting up dirmngr (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/dirmngr.socket' → '/usr/lib/systemd/user/dirmngr.socket'.\n\nSetting up gpg (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/keyboxd.socket' → '/usr/lib/systemd/user/keyboxd.socket'.\n\nSetting up gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSetting up gnupg (2.4.7-21+deb13u1) ...\nProcessing triggers for man-db (2.13.1-1) ...\nProcessing triggers for libc-bin (2.41-12+deb13u4) ...\nChecking for curl...\nDetected curl...\n\nImporting packagecloud gpg key... \n\nPackagecloud gpg key imported to <opaque-redacted>.gpg\n\nInstalling /etc/apt/sources.list.d/crowdsec_crowdsec.list...\n\n\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following NEW packages will be installed:\n  crowdsec\n0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 83.0 MB of archives.\nAfter this operation, 330 MB of additional disk space will be used.\nGet:1 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 crowdsec amd64 1.8.1 [83.0 MB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 83.0 MB in 8s (10.4 MB/s)\nSelecting previously unselected package crowdsec.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 20945 files and directories currently installed.)\nPreparing to unpack .../crowdsec_1.8.1_amd64.deb ...\nUnpacking crowdsec (1.8.1) ...\nSetting up crowdsec (1.8.1) ...\nMachine '<opaque-redacted>' successfully added to the local API.\nAPI credentials written to '<opaque-redacted>.yaml'.\nUpdating hub\nDownloading /etc/crowdsec/hub/.index.json\nAction plan:\n🔄 check & update data files\n\nCreating acquisition configuration\n\nThe following services will be configured:\n- linux\n- openssh-journal-ssh\n- whitelists\n\ndownloading parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-City.mmdb\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-ASN.mmdb\ndownloading parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\ndownloading contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1msshd\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.regex\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1mlinux\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\nenabling contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\nenabling collections:crowdsecurity/\u001b[1msshd\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mlinux\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\n\n\ncreating /etc/crowdsec/acquis.d/setup.linux.yaml\ncreating /etc/crowdsec/acquis.d/setup.sshd.yaml\n\u001b[33m\nCrowdSec alone will not block any IP address. If you want to block them, you must use a remediation component.\nYou can find them on\u001b[0m \u001b[33;1mhttps://app.crowdsec.net/hub/remediation-components\u001b[0;22m\n\nRun 'sudo systemctl reload crowdsec' for the new configuration to be effective.\nCreated symlink '/etc/systemd/system/multi-user.target.wants/crowdsec.service' → '<opaque-redacted>.service'.\n\n\u001b[1mGet started with CrowdSec:\u001b[0m\n * Go further by following our \u001b[1mpost installation steps\u001b[0m : \u001b[0;32m\u001b[1mhttps://docs.crowdsec.<opaque-redacted>\u001b[0m\n<opaque-redacted>\n * Install a \u001b[1mremediation component\u001b[0m to block attackers: \u001b[0;32m\u001b[1mhttps://docs.crowdsec.net/u/bouncers/intro\u001b[0m\n<opaque-redacted>\n * Find more \u001b[1mcollections\u001b[0m, \u001b[1mparsers\u001b[0m and \u001b[1mscenarios\u001b[0m created by the community with the Hub: \u001b[0;32m\u001b[1mhttps://hub.crowdsec.net\u001b[0m\n<opaque-redacted>\n * Subscribe to \u001b[1madditional blocklists\u001b[0m, \u001b[1mvisualize\u001b[0m your alerts and more with the console: \u001b[0;32m\u001b[1mhttps://app.crowdsec.net\u001b[0m\nYou can always run the configuration again interactively by using 'cscli setup'\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  libjansson4 libnftables1\nSuggested packages:\n  firewalld\nThe following NEW packages will be installed:\n  <opaque-redacted> libjansson4 libnftables1 nftables\n0 upgraded, 4 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 5040 kB of archives.\nAfter this operation, 17.3 MB of additional disk space will be used.\nGet:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 https://deb.debian.org/debian trixie/main amd64 libjansson4 amd64 2.14-2+b3 [39.8 kB]\nGet:3 https://deb.debian.org/debian trixie/main amd64 libnftables1 amd64 1.1.3-1 [332 kB]\nGet:4 https://deb.debian.org/debian trixie/main amd64 nftables amd64 1.1.3-1 [75.9 kB]\nGet:5 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 <opaque-redacted> amd64 0.0.36 [4592 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 5040 kB in 2s (2171 kB/s)\nSelecting previously unselected package libjansson4:amd64.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 21009 files and directories currently installed.)\nPreparing to unpack .../libjansson4_2.14-2+b3_amd64.deb ...\nUnpacking libjansson4:amd64 (2.14-2+b3) ...\nSelecting previously unselected package libnftables1:amd64.\nPreparing to unpack .../libnftables1_1.1.3-1_amd64.deb ...\nUnpacking libnftables1:amd64 (1.1.3-1) ...\nSelecting previously unselected package nftables.\nPreparing to unpack .../nftables_1.1.3-1_amd64.deb ...\nUnpacking nftables (1.1.3-1) ...\nSelecting previously unselected package <opaque-redacted>.\nPreparing to unpack ...<opaque-redacted>.0.36_amd64.deb ...\npre-inst (nftables)\nUnpacking <opaque-redacted> (0.0.36) ...\nSetting up libjansson4:amd64 (2.14-2+b3) ...\nSetting up libnftables1:amd64 (1.1.3-1) ...\nSetting up nftables (1.1.3-1) ...\nSetting up <opaque-redacted> (0.0.36) ...\ndpkg: error processing package <opaque-redacted> (--configure):\n installed <opaque-redacted> package post-installation script subprocess returned error exit status 1\nProcessing triggers for man-db (2.13.1-1) ...\nProcessing triggers for libc-bin (2.41-12+deb13u4) ...\nErrors were encountered while processing:\n <opaque-redacted>\nE: Sub-process /usr/bin/dpkg returned an error code (1)\n"
+        },
+        {
+          "case": "crowdsec_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=active\nSubState=running\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec_journal",
+          "data": "Starting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_journal",
+          "data": ""
+        },
+        {
+          "case": "packages",
+          "data": "crowdsec 1.8.1 install ok installed\n<opaque-redacted> 0.0.36 install ok half-configured\n"
+        },
+        {
+          "case": "/var/log/crowdsec.log",
+          "data": "time=\"2026-10-12T09:16:08Z\" level=info msg=\"Loading CAPI manager\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"CAPI manager configured successfully\"\ntime=\"2026-10-12T09:16:08Z\" level=error msg=\"Machine is not enrolled in the console, can't synchronize with the console\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"Start push to CrowdSec Central API (interval: 5s once, then 10s)\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"Start sending metrics to CrowdSec Central API (interval: 17m26s once, then 30m0s)\"\ntime=\"2026-10-12T09:16:08Z\" level=warning msg=\"scenario list is empty, will not pull yet\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"CrowdSec Local API listening on 127.0.0.1:8080\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"capi metrics: sending\"\ntime=\"2026-10-12T09:16:08Z\" level=info msg=\"Loading grok library /etc/crowdsec/patterns\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loading enrich plugins\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'GeoIpCity'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'GeoIpASN'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'IpToRange'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'reverse_dns'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'ParseDate'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Successfully registered enricher 'UnmarshalJSON'\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loading parsers from 7 files\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 2 parser nodes\" <opaque-redacted>.yaml stage=s00-raw\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:16:18Z\" level=warning msg=\"grok 'IPv4_WORKAROUND' already registred\" id=silent-shape module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:16:18Z\" level=warning msg=\"grok 'IP_WORKAROUND' already registred\" id=silent-shape module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 8 nodes from 3 stages\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loading postoverflow parsers\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s00-enrich\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 4 nodes from 2 stages\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loading 6 scenario files\"\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding conditional bucket\" cfg=cold-bird <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding conditional bucket\" cfg=bitter-mountain <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding trigger bucket\" cfg=black-paper <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding trigger bucket\" cfg=blue-dawn <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding leaky bucket\" cfg=broken-flower name=crowdsecurity/ssh-slow-bf\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding leaky bucket\" cfg=restless-meadow <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding leaky bucket\" cfg=delicate-breeze <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding leaky bucket\" cfg=polished-feather name=crowdsecurity/ssh-bf\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Adding leaky bucket\" cfg=quiet-butterfly <opaque-redacted>\ntime=\"2026-10-12T09:16:18Z\" level=info msg=\"Loaded 9 scenarios\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.linux.yaml\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Configuring datasource\" module=acquisition.file type=file\ntime=\"2026-10-12T09:16:19Z\" level=warning msg=\"No matching files for pattern /var/log/messages\" module=acquisition.file type=file\ntime=\"2026-10-12T09:16:19Z\" level=warning msg=\"No matching files for pattern /var/log/syslog\" module=acquisition.file type=file\ntime=\"2026-10-12T09:16:19Z\" level=warning msg=\"No matching files for pattern /var/log/kern.log\" module=acquisition.file type=file\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.sshd.yaml\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Configuring datasource\" module=acquisition.journalctl type=journalctl\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Starting parser routine\" idx=0\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Starting bucket routine\" idx=0\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Starting output routine\" idx=0\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Starting community-blocklist update\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"capi/community-blocklist : 0 explicit deletions\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"capi/community-blocklist : received 0 new entries (expected if you just installed crowdsec)\"\ntime=\"2026-10-12T09:16:19Z\" level=info msg=\"Start pull from CrowdSec Central API (interval: 1h58m22s once, then 2h0m0s)\"\ntime=\"2026-10-12T09:16:20Z\" level=info msg=\"Starting processing data\"\ntime=\"2026-10-12T09:16:20Z\" level=info msg=\"Spawning process\" command=\"journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl"
+        },
+        {
+          "case": "official_bouncer_postinst",
+          "data": "#!/bin/sh\n\nsystemctl daemon-reload\n\n#shellcheck source=./scripts/_bouncer.sh\n. \"/usr/lib/$<opaque-redacted>.sh\"\nSTART=1\n\nif [ \"$1\" = \"configure\" ]; then\n    if need_api_key; then\n        if ! set_api_key; then\n            START=0\n        fi\n    fi\nfi\n\nsystemctl --quiet is-enabled \"$SERVICE\" || systemctl unmask \"$SERVICE\" && systemctl enable \"$SERVICE\"\n\nset_local_port\n\nif [ \"$START\" -eq 0 ]; then\n    echo \"no api key <redacted> generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'\" >&2\nelse\n    systemctl start \"$SERVICE\"\nfi\n"
+        },
+        {
+          "case": "artifact_presence",
+          "data": "{'<opaque-redacted>.yaml': True, '<opaque-redacted>.yaml.local': False, '<opaque-redacted>.service': True}"
+        }
+      ],
+      "complete": true,
+      "status": "diagnostic_completed"
+    },
+    {
+      "attempt": "after-remote",
+      "evidence": "docs/audit/core-install-evidence/after-remote.log",
+      "evidence_sha256": "fd9b508fe0d10ab74fc7d579a37a02c7e3ea6849a18a64834a7470decc085853",
+      "archive_utc": "2026-10-12T09:54:35.755793+00:00",
+      "scope": "diagnostic root-cause investigation",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "diagnostics": [
+        {
+          "case": "installer_exit",
+          "data": "1"
+        },
+        {
+          "case": "installer_output",
+          "data": "Get:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 file:<opaque-redacted>.list Mirrorlist [39 B]\nHit:3 https://deb.debian.org/debian trixie InRelease\nHit:4 https://deb.debian.org/debian trixie-updates InRelease\nHit:5 https://deb.debian.org/debian trixie-backports InRelease\nHit:6 https://deb.debian.org/debian-security trixie-security InRelease\nReading package lists...\n[INFO] 所需软件包已安装，跳过安装/升级。\nDetected operating system as debian/13.\nDetected apt version as 3.0.3\nChecking for gpg...\nInstalling gnupg for GPG verification...\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  dirmngr gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf gpgsm\n  gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\nSuggested packages:\n  dbus-user-session pinentry-gnome3 tor gpg-wks-server parcimonie xloadimage\n  scdaemon tpm2daemon rng-tools pinentry-doc\nThe following NEW packages will be installed:\n  dirmngr gnupg gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf\n  gpgsm gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\n0 upgraded, 17 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 4751 kB of archives.\nAfter this operation, 15.4 MB of additional disk space will be used.\nGet:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 https://deb.debian.org/debian trixie/main amd64 libgpg-error0 amd64 1.51-4 [82.1 kB]\nGet:3 https://deb.debian.org/debian trixie/main amd64 libassuan9 amd64 3.0.2-2 [61.5 kB]\nGet:4 https://deb.debian.org/debian trixie/main amd64 libgcrypt20 amd64 1.11.0-7+deb13u1 [843 kB]\nGet:5 https://deb.debian.org/debian trixie/main amd64 gpgconf amd64 2.4.7-21+deb13u1+b5 [129 kB]\nGet:6 https://deb.debian.org/debian trixie/main amd64 libksba8 amd64 1.6.7-2+b1 [136 kB]\nGet:7 https://deb.debian.org/debian trixie/main amd64 libnpth0t64 amd64 1.8-3 [23.2 kB]\nGet:8 https://deb.debian.org/debian trixie/main amd64 dirmngr amd64 2.4.7-21+deb13u1+b5 [384 kB]\nGet:9 https://deb.debian.org/debian trixie/main amd64 gnupg-l10n all 2.4.7-21+deb13u1 [749 kB]\nGet:10 https://deb.debian.org/debian trixie/main amd64 gpg amd64 2.4.7-21+deb13u1+b5 [636 kB]\nGet:11 https://deb.debian.org/debian trixie/main amd64 pinentry-curses amd64 1.3.1-2 [86.4 kB]\nGet:12 https://deb.debian.org/debian trixie/main amd64 gpg-agent amd64 2.4.7-21+deb13u1+b5 [271 kB]\nGet:13 https://deb.debian.org/debian trixie/main amd64 gpgsm amd64 2.4.7-21+deb13u1+b5 [276 kB]\nGet:14 https://deb.debian.org/debian trixie/main amd64 gnupg all 2.4.7-21+deb13u1 [417 kB]\nGet:15 https://deb.debian.org/debian trixie/main amd64 gpg-wks-client amd64 2.4.7-21+deb13u1+b5 [109 kB]\nGet:16 https://deb.debian.org/debian trixie/main amd64 gpgv amd64 2.4.7-21+deb13u1+b5 [241 kB]\nGet:17 https://deb.debian.org/debian trixie/main amd64 libgpg-error-l10n all 1.51-4 [114 kB]\nGet:18 https://deb.debian.org/debian trixie/main amd64 gnupg-utils amd64 2.4.7-21+deb13u1+b5 [194 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 4751 kB in 1s (3546 kB/s)\nSelecting previously unselected package libgpg-error0:amd64.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 20688 files and directories currently installed.)\nPreparing to unpack .../00-libgpg-error0_1.51-4_amd64.deb ...\nUnpacking libgpg-error0:amd64 (1.51-4) ...\nSelecting previously unselected package libassuan9:amd64.\nPreparing to unpack .../01-libassuan9_3.0.2-2_amd64.deb ...\nUnpacking libassuan9:amd64 (3.0.2-2) ...\nSelecting previously unselected package libgcrypt20:amd64.\nPreparing to unpack .../02-libgcrypt20_1.11.0-7+deb13u1_amd64.deb ...\nUnpacking libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSelecting previously unselected package gpgconf.\nPreparing to unpack .../03-gpgconf_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgconf (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libksba8:amd64.\nPreparing to unpack .../04-libksba8_1.6.7-2+b1_amd64.deb ...\nUnpacking libksba8:amd64 (1.6.7-2+b1) ...\nSelecting previously unselected package libnpth0t64:amd64.\nPreparing to unpack .../05-libnpth0t64_1.8-3_amd64.deb ...\nUnpacking libnpth0t64:amd64 (1.8-3) ...\nSelecting previously unselected package dirmngr.\nPreparing to unpack .../06-dirmngr_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking dirmngr (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg-l10n.\nPreparing to unpack .../07-gnupg-l10n_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg-l10n (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg.\nPreparing to unpack .../08-gpg_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package pinentry-curses.\nPreparing to unpack .../09-pinentry-curses_1.3.1-2_amd64.deb ...\nUnpacking pinentry-curses (1.3.1-2) ...\nSelecting previously unselected package gpg-agent.\nPreparing to unpack .../10-gpg-agent_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-agent (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgsm.\nPreparing to unpack .../11-gpgsm_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgsm (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg.\nPreparing to unpack .../12-gnupg_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg-wks-client.\nPreparing to unpack .../13-gpg-wks-client_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgv.\nPreparing to unpack .../14-gpgv_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgv (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libgpg-error-l10n.\nPreparing to unpack .../15-libgpg-error-l10n_1.51-4_all.deb ...\nUnpacking libgpg-error-l10n (1.51-4) ...\nSelecting previously unselected package gnupg-utils.\nPreparing to unpack .../16-gnupg-utils_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up libnpth0t64:amd64 (1.8-3) ...\nSetting up libgpg-error0:amd64 (1.51-4) ...\nSetting up libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSetting up gnupg-l10n (2.4.7-21+deb13u1) ...\nSetting up gpgv (2.4.7-21+deb13u1+b5) ...\nSetting up libassuan9:amd64 (3.0.2-2) ...\nSetting up gpgconf (2.4.7-21+deb13u1+b5) ...\nSetting up libgpg-error-l10n (1.51-4) ...\nSetting up libksba8:amd64 (1.6.7-2+b1) ...\nSetting up pinentry-curses (1.3.1-2) ...\nSetting up gpg-agent (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-browser.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-extra.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-ssh.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent.socket' → '/usr/lib/systemd/user/gpg-agent.socket'.\n\nSetting up gpgsm (2.4.7-21+deb13u1+b5) ...\nSetting up dirmngr (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/dirmngr.socket' → '/usr/lib/systemd/user/dirmngr.socket'.\n\nSetting up gpg (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/keyboxd.socket' → '/usr/lib/systemd/user/keyboxd.socket'.\n\nSetting up gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSetting up gnupg (2.4.7-21+deb13u1) ...\nProcessing triggers for man-db (2.13.1-1) ...\nProcessing triggers for libc-bin (2.41-12+deb13u4) ...\nChecking for curl...\nDetected curl...\n\nImporting packagecloud gpg key... \n\nPackagecloud gpg key imported to <opaque-redacted>.gpg\n\nInstalling /etc/apt/sources.list.d/crowdsec_crowdsec.list...\n\n\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following NEW packages will be installed:\n  crowdsec\n0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 83.0 MB of archives.\nAfter this operation, 330 MB of additional disk space will be used.\nGet:1 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 crowdsec amd64 1.8.1 [83.0 MB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 83.0 MB in 9s (9710 kB/s)\nSelecting previously unselected package crowdsec.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 21000 files and directories currently installed.)\nPreparing to unpack .../crowdsec_1.8.1_amd64.deb ...\nUnpacking crowdsec (1.8.1) ...\nSetting up crowdsec (1.8.1) ...\nMachine '<opaque-redacted>' successfully added to the local API.\nAPI credentials written to '<opaque-redacted>.yaml'.\nUpdating hub\nDownloading /etc/crowdsec/hub/.index.json\nAction plan:\n🔄 check & update data files\n\nCreating acquisition configuration\n\nThe following services will be configured:\n- linux\n- openssh-journal-ssh\n- whitelists\n\ndownloading parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-City.mmdb\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-ASN.mmdb\ndownloading parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\ndownloading contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1msshd\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.regex\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1mlinux\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\nenabling contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\nenabling collections:crowdsecurity/\u001b[1msshd\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mlinux\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\n\n\ncreating /etc/crowdsec/acquis.d/setup.linux.yaml\ncreating /etc/crowdsec/acquis.d/setup.sshd.yaml\n\u001b[33m\nCrowdSec alone will not block any IP address. If you want to block them, you must use a remediation component.\nYou can find them on\u001b[0m \u001b[33;1mhttps://app.crowdsec.net/hub/remediation-components\u001b[0;22m\n\nRun 'sudo systemctl reload crowdsec' for the new configuration to be effective.\nCreated symlink '/etc/systemd/system/multi-user.target.wants/crowdsec.service' → '<opaque-redacted>.service'.\n\n\u001b[1mGet started with CrowdSec:\u001b[0m\n * Go further by following our \u001b[1mpost installation steps\u001b[0m : \u001b[0;32m\u001b[1mhttps://docs.crowdsec.<opaque-redacted>\u001b[0m\n<opaque-redacted>\n * Install a \u001b[1mremediation component\u001b[0m to block attackers: \u001b[0;32m\u001b[1mhttps://docs.crowdsec.net/u/bouncers/intro\u001b[0m\n<opaque-redacted>\n * Find more \u001b[1mcollections\u001b[0m, \u001b[1mparsers\u001b[0m and \u001b[1mscenarios\u001b[0m created by the community with the Hub: \u001b[0;32m\u001b[1mhttps://hub.crowdsec.net\u001b[0m\n<opaque-redacted>\n * Subscribe to \u001b[1madditional blocklists\u001b[0m, \u001b[1mvisualize\u001b[0m your alerts and more with the console: \u001b[0;32m\u001b[1mhttps://app.crowdsec.net\u001b[0m\nYou can always run the configuration again interactively by using 'cscli setup'\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following NEW packages will be installed:\n  <opaque-redacted>\n0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 4592 kB of archives.\nAfter this operation, 16.0 MB of additional disk space will be used.\nGet:1 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 <opaque-redacted> amd64 0.0.36 [4592 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 4592 kB in 2s (2191 kB/s)\nSelecting previously unselected package <opaque-redacted>.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 21064 files and directories currently installed.)\nPreparing to unpack ...<opaque-redacted>.0.36_amd64.deb ...\npre-inst (nftables)\nUnpacking <opaque-redacted> (0.0.36) ...\nSetting up <opaque-redacted> (0.0.36) ...\ndpkg: error processing package <opaque-redacted> (--configure):\n installed <opaque-redacted> package post-installation script subprocess returned error exit status 1\nErrors were encountered while processing:\n <opaque-redacted>\nE: Sub-process /usr/bin/dpkg returned an error code (1)\n"
+        },
+        {
+          "case": "crowdsec_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=active\nSubState=running\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec_journal",
+          "data": "Starting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_journal",
+          "data": "Starting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T09:13:59Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T09:14:00Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStopping crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ncrowdsec-firewall-bouncer.service: Deactivated successfully.\nStopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ncrowdsec-firewall-bouncer.service: Consumed 1.376s CPU time, 10.7M memory peak.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T09:14:09Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T09:14:09Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStopping crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ncrowdsec-firewall-bouncer.service: Deactivated successfully.\nStopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStopping crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ncrowdsec-firewall-bouncer.service: Deactivated successfully.\nStopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ncrowdsec-firewall-bouncer.service: Consumed 1.020s CPU time, 10.3M memory peak.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T09:16:03Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T09:16:11Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T09:16:12Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 2.448s CPU time, 22.7M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 1.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStopping crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ncrowdsec-firewall-bouncer.service: Deactivated successfully.\nStopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\n"
+        },
+        {
+          "case": "packages",
+          "data": "crowdsec 1.8.1 install ok installed\n<opaque-redacted> 0.0.36 install ok half-configured\n"
+        },
+        {
+          "case": "/var/log/crowdsec-firewall-bouncer.log",
+          "data": "time=\"2026-10-12T09:14:17Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:14:17Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:14:18Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T09:14:27Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-input\"\ntime=\"2026-10-12T09:14:27Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-forward\"\ntime=\"2026-10-12T09:14:27Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T09:14:38Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T09:14:48Z\" level=info msg=\"Received shutdown signal, exiting gracefully\"\ntime=\"2026-10-12T09:14:48Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:14:48Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:14:48Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:16:04Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:16:04Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:16:05Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:16:10Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:16:10Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T09:16:10Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:16:10Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:16:10Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:16:11Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:16:11Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:16:11Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:16:11Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:16:11Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T09:16:12Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T09:16:12Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:16:12Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:16:12Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:16:12Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:16:23Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:16:24Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T09:16:24Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T09:16:28Z\" level=info msg=\"Received shutdown signal, exiting gracefully\"\ntime=\"2026-10-12T09:16:28Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:16:28Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:16:28Z\" level=info msg=\"removing 'crowdsec6' table\""
+        },
+        {
+          "case": "/var/log/crowdsec.log",
+          "data": "time=\"2026-10-12T09:19:38Z\" level=info msg=\"Loading CAPI manager\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"CAPI manager configured successfully\"\ntime=\"2026-10-12T09:19:38Z\" level=error msg=\"Machine is not enrolled in the console, can't synchronize with the console\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"Start push to CrowdSec Central API (interval: 14s once, then 10s)\"\ntime=\"2026-10-12T09:19:38Z\" level=warning msg=\"scenario list is empty, will not pull yet\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"Start sending metrics to CrowdSec Central API (interval: 19m13s once, then 30m0s)\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"CrowdSec Local API listening on 127.0.0.1:8080\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"capi metrics: sending\"\ntime=\"2026-10-12T09:19:38Z\" level=info msg=\"Loading grok library /etc/crowdsec/patterns\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Loading enrich plugins\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'GeoIpCity'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'GeoIpASN'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'IpToRange'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'reverse_dns'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'ParseDate'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Successfully registered enricher 'UnmarshalJSON'\"\ntime=\"2026-10-12T09:19:48Z\" level=info msg=\"Loading parsers from 7 files\"\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 2 parser nodes\" <opaque-redacted>.yaml stage=s00-raw\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:19:49Z\" level=warning msg=\"grok 'IPv4_WORKAROUND' already registred\" id=damp-frog module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:19:49Z\" level=warning msg=\"grok 'IP_WORKAROUND' already registred\" id=damp-frog module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 8 nodes from 3 stages\"\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loading postoverflow parsers\"\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s00-enrich\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 4 nodes from 2 stages\"\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loading 6 scenario files\"\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding trigger bucket\" cfg=late-leaf <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding conditional bucket\" cfg=bold-cherry <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding conditional bucket\" cfg=delicate-dew <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding leaky bucket\" cfg=hidden-wave name=crowdsecurity/ssh-bf\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding leaky bucket\" cfg=hidden-rain <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding leaky bucket\" cfg=falling-resonance <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding leaky bucket\" cfg=wispy-sun name=crowdsecurity/ssh-slow-bf\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding leaky bucket\" cfg=ancient-water <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Adding trigger bucket\" cfg=silent-moon <opaque-redacted>\ntime=\"2026-10-12T09:19:49Z\" level=info msg=\"Loaded 9 scenarios\"\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.linux.yaml\"\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Configuring datasource\" module=acquisition.file type=file\ntime=\"2026-10-12T09:19:50Z\" level=warning msg=\"No matching files for pattern /var/log/messages\" module=acquisition.file type=file\ntime=\"2026-10-12T09:19:50Z\" level=warning msg=\"No matching files for pattern /var/log/syslog\" module=acquisition.file type=file\ntime=\"2026-10-12T09:19:50Z\" level=warning msg=\"No matching files for pattern /var/log/kern.log\" module=acquisition.file type=file\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.sshd.yaml\"\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Configuring datasource\" module=acquisition.journalctl type=journalctl\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Starting parser routine\" idx=0\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Starting bucket routine\" idx=0\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Starting output routine\" idx=0\ntime=\"2026-10-12T09:19:50Z\" level=info msg=\"Starting community-blocklist update\"\ntime=\"2026-10-12T09:19:51Z\" level=info msg=\"capi/community-blocklist : 0 explicit deletions\"\ntime=\"2026-10-12T09:19:51Z\" level=info msg=\"capi/community-blocklist : received 0 new entries (expected if you just installed crowdsec)\"\ntime=\"2026-10-12T09:19:51Z\" level=info msg=\"Start pull from CrowdSec Central API (interval: 2h2m28s once, then 2h0m0s)\"\ntime=\"2026-10-12T09:19:51Z\" level=info msg=\"Starting processing data\"\ntime=\"2026-10-12T09:19:51Z\" level=info msg=\"Spawning process\" command=\"journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl"
+        },
+        {
+          "case": "official_bouncer_postinst",
+          "data": "#!/bin/sh\n\nsystemctl daemon-reload\n\n#shellcheck source=./scripts/_bouncer.sh\n. \"/usr/lib/$<opaque-redacted>.sh\"\nSTART=1\n\nif [ \"$1\" = \"configure\" ]; then\n    if need_api_key; then\n        if ! set_api_key; then\n            START=0\n        fi\n    fi\nfi\n\nsystemctl --quiet is-enabled \"$SERVICE\" || systemctl unmask \"$SERVICE\" && systemctl enable \"$SERVICE\"\n\nset_local_port\n\nif [ \"$START\" -eq 0 ]; then\n    echo \"no api key <redacted> generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'\" >&2\nelse\n    systemctl start \"$SERVICE\"\nfi\n"
+        },
+        {
+          "case": "artifact_presence",
+          "data": "{'<opaque-redacted>.yaml': True, '<opaque-redacted>.yaml.local': False, '<opaque-redacted>.service': True}"
+        }
+      ],
+      "complete": true,
+      "status": "diagnostic_completed"
+    },
+    {
+      "attempt": "verify-color",
+      "evidence": "docs/audit/core-install-evidence/verify-color.log",
+      "evidence_sha256": "69f24666ae54342cfef143877f5b007b869a06dbc118ab918c7d37f84b976acd",
+      "archive_utc": "2026-10-12T09:54:35.757253+00:00",
+      "scope": "diagnostic root-cause investigation",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "diagnostics": [
+        {
+          "case": "terminal_environment",
+          "data": "{'TERM': 'vt220', 'NO_COLOR': None}"
+        },
+        {
+          "case": "baseline_installer_exit",
+          "data": "1"
+        },
+        {
+          "case": "baseline_installer_output",
+          "data": "Get:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 file:<opaque-redacted>.list Mirrorlist [39 B]\nGet:3 https://deb.debian.org/debian trixie InRelease [140 kB]\nGet:4 https://deb.debian.org/debian trixie-updates InRelease [47.3 kB]\nGet:5 https://deb.debian.org/debian trixie-backports InRelease [54.0 kB]\nGet:6 https://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]\nGet:7 https://deb.debian.org/debian trixie/main Sources [10.5 MB]\nGet:8 https://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]\nGet:9 https://deb.debian.org/debian trixie/main Translation-en [6486 kB]\nGet:10 https://deb.debian.org/debian trixie-updates/main Sources [1840 B]\nGet:11 https://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]\nGet:12 https://deb.debian.org/debian trixie-updates/main Translation-en [2496 B]\nGet:13 https://deb.debian.org/debian trixie-backports/main Sources [323 kB]\nGet:14 https://deb.debian.org/debian trixie-backports/main amd64 Packages [287 kB]\nGet:15 https://deb.debian.org/debian trixie-backports/main Translation-en [223 kB]\nGet:16 https://deb.debian.org/debian-security trixie-security/main Sources [240 kB]\nGet:17 https://deb.debian.org/debian-security trixie-security/main amd64 Packages [266 kB]\nGet:18 https://deb.debian.org/debian-security trixie-security/main Translation-en [163 kB]\nFetched 28.5 MB in 14s (2084 kB/s)\nReading package lists...\n[INFO] 所需软件包已安装，跳过安装/升级。\nDetected operating system as debian/13.\nDetected apt version as 3.0.3\nChecking for gpg...\nInstalling gnupg for GPG verification...\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  dirmngr gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf gpgsm\n  gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\nSuggested packages:\n  dbus-user-session pinentry-gnome3 tor gpg-wks-server parcimonie xloadimage\n  scdaemon tpm2daemon rng-tools pinentry-doc\nThe following NEW packages will be installed:\n  dirmngr gnupg gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpgconf\n  gpgsm gpgv libassuan9 libgcrypt20 libgpg-error-l10n libgpg-error0 libksba8\n  libnpth0t64 pinentry-curses\n0 upgraded, 17 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 4751 kB of archives.\nAfter this operation, 15.4 MB of additional disk space will be used.\nGet:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 https://deb.debian.org/debian trixie/main amd64 libgpg-error0 amd64 1.51-4 [82.1 kB]\nGet:3 https://deb.debian.org/debian trixie/main amd64 libassuan9 amd64 3.0.2-2 [61.5 kB]\nGet:4 https://deb.debian.org/debian trixie/main amd64 libgcrypt20 amd64 1.11.0-7+deb13u1 [843 kB]\nGet:5 https://deb.debian.org/debian trixie/main amd64 gpgconf amd64 2.4.7-21+deb13u1+b5 [129 kB]\nGet:6 https://deb.debian.org/debian trixie/main amd64 libksba8 amd64 1.6.7-2+b1 [136 kB]\nGet:7 https://deb.debian.org/debian trixie/main amd64 libnpth0t64 amd64 1.8-3 [23.2 kB]\nGet:8 https://deb.debian.org/debian trixie/main amd64 dirmngr amd64 2.4.7-21+deb13u1+b5 [384 kB]\nGet:9 https://deb.debian.org/debian trixie/main amd64 gnupg-l10n all 2.4.7-21+deb13u1 [749 kB]\nGet:10 https://deb.debian.org/debian trixie/main amd64 gpg amd64 2.4.7-21+deb13u1+b5 [636 kB]\nGet:11 https://deb.debian.org/debian trixie/main amd64 pinentry-curses amd64 1.3.1-2 [86.4 kB]\nGet:12 https://deb.debian.org/debian trixie/main amd64 gpg-agent amd64 2.4.7-21+deb13u1+b5 [271 kB]\nGet:13 https://deb.debian.org/debian trixie/main amd64 gpgsm amd64 2.4.7-21+deb13u1+b5 [276 kB]\nGet:14 https://deb.debian.org/debian trixie/main amd64 gnupg all 2.4.7-21+deb13u1 [417 kB]\nGet:15 https://deb.debian.org/debian trixie/main amd64 gpg-wks-client amd64 2.4.7-21+deb13u1+b5 [109 kB]\nGet:16 https://deb.debian.org/debian trixie/main amd64 gpgv amd64 2.4.7-21+deb13u1+b5 [241 kB]\nGet:17 https://deb.debian.org/debian trixie/main amd64 libgpg-error-l10n all 1.51-4 [114 kB]\nGet:18 https://deb.debian.org/debian trixie/main amd64 gnupg-utils amd64 2.4.7-21+deb13u1+b5 [194 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 4751 kB in 1s (3546 kB/s)\nSelecting previously unselected package libgpg-error0:amd64.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 20633 files and directories currently installed.)\nPreparing to unpack .../00-libgpg-error0_1.51-4_amd64.deb ...\nUnpacking libgpg-error0:amd64 (1.51-4) ...\nSelecting previously unselected package libassuan9:amd64.\nPreparing to unpack .../01-libassuan9_3.0.2-2_amd64.deb ...\nUnpacking libassuan9:amd64 (3.0.2-2) ...\nSelecting previously unselected package libgcrypt20:amd64.\nPreparing to unpack .../02-libgcrypt20_1.11.0-7+deb13u1_amd64.deb ...\nUnpacking libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSelecting previously unselected package gpgconf.\nPreparing to unpack .../03-gpgconf_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgconf (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libksba8:amd64.\nPreparing to unpack .../04-libksba8_1.6.7-2+b1_amd64.deb ...\nUnpacking libksba8:amd64 (1.6.7-2+b1) ...\nSelecting previously unselected package libnpth0t64:amd64.\nPreparing to unpack .../05-libnpth0t64_1.8-3_amd64.deb ...\nUnpacking libnpth0t64:amd64 (1.8-3) ...\nSelecting previously unselected package dirmngr.\nPreparing to unpack .../06-dirmngr_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking dirmngr (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg-l10n.\nPreparing to unpack .../07-gnupg-l10n_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg-l10n (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg.\nPreparing to unpack .../08-gpg_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package pinentry-curses.\nPreparing to unpack .../09-pinentry-curses_1.3.1-2_amd64.deb ...\nUnpacking pinentry-curses (1.3.1-2) ...\nSelecting previously unselected package gpg-agent.\nPreparing to unpack .../10-gpg-agent_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-agent (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgsm.\nPreparing to unpack .../11-gpgsm_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgsm (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gnupg.\nPreparing to unpack .../12-gnupg_2.4.7-21+deb13u1_all.deb ...\nUnpacking gnupg (2.4.7-21+deb13u1) ...\nSelecting previously unselected package gpg-wks-client.\nPreparing to unpack .../13-gpg-wks-client_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package gpgv.\nPreparing to unpack .../14-gpgv_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gpgv (2.4.7-21+deb13u1+b5) ...\nSelecting previously unselected package libgpg-error-l10n.\nPreparing to unpack .../15-libgpg-error-l10n_1.51-4_all.deb ...\nUnpacking libgpg-error-l10n (1.51-4) ...\nSelecting previously unselected package gnupg-utils.\nPreparing to unpack .../16-gnupg-utils_2.4.7-21+deb13u1+b5_amd64.deb ...\nUnpacking gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up libnpth0t64:amd64 (1.8-3) ...\nSetting up libgpg-error0:amd64 (1.51-4) ...\nSetting up libgcrypt20:amd64 (1.11.0-7+deb13u1) ...\nSetting up gnupg-l10n (2.4.7-21+deb13u1) ...\nSetting up gpgv (2.4.7-21+deb13u1+b5) ...\nSetting up libassuan9:amd64 (3.0.2-2) ...\nSetting up gpgconf (2.4.7-21+deb13u1+b5) ...\nSetting up libgpg-error-l10n (1.51-4) ...\nSetting up libksba8:amd64 (1.6.7-2+b1) ...\nSetting up pinentry-curses (1.3.1-2) ...\nSetting up gpg-agent (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-browser.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-extra.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent-ssh.socket' → '<opaque-redacted>.socket'.\n\nCreated symlink '/etc/systemd/user/sockets.target.wants/gpg-agent.socket' → '/usr/lib/systemd/user/gpg-agent.socket'.\n\nSetting up gpgsm (2.4.7-21+deb13u1+b5) ...\nSetting up dirmngr (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/dirmngr.socket' → '/usr/lib/systemd/user/dirmngr.socket'.\n\nSetting up gpg (2.4.7-21+deb13u1+b5) ...\nCreated symlink '/etc/systemd/user/sockets.target.wants/keyboxd.socket' → '/usr/lib/systemd/user/keyboxd.socket'.\n\nSetting up gnupg-utils (2.4.7-21+deb13u1+b5) ...\nSetting up gpg-wks-client (2.4.7-21+deb13u1+b5) ...\nSetting up gnupg (2.4.7-21+deb13u1) ...\nProcessing triggers for man-db (2.13.1-1) ...\nProcessing triggers for libc-bin (2.41-12+deb13u4) ...\nChecking for curl...\nDetected curl...\n\nImporting packagecloud gpg key... \n\nPackagecloud gpg key imported to <opaque-redacted>.gpg\n\nInstalling /etc/apt/sources.list.d/crowdsec_crowdsec.list...\n\n\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following NEW packages will be installed:\n  crowdsec\n0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 83.0 MB of archives.\nAfter this operation, 330 MB of additional disk space will be used.\nGet:1 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 crowdsec amd64 1.8.1 [83.0 MB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 83.0 MB in 8s (10.3 MB/s)\nSelecting previously unselected package crowdsec.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 20945 files and directories currently installed.)\nPreparing to unpack .../crowdsec_1.8.1_amd64.deb ...\nUnpacking crowdsec (1.8.1) ...\nSetting up crowdsec (1.8.1) ...\nMachine '<opaque-redacted>' successfully added to the local API.\nAPI credentials written to '<opaque-redacted>.yaml'.\nUpdating hub\nDownloading /etc/crowdsec/hub/.index.json\nAction plan:\n🔄 check & update data files\n\nCreating acquisition configuration\n\nThe following services will be configured:\n- linux\n- openssh-journal-ssh\n- whitelists\n\ndownloading parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-City.mmdb\ndownloading https://hub-data.crowdsec.net/mmdb_update/GeoLite2-ASN.mmdb\ndownloading parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\ndownloading scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\ndownloading contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1msshd\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.regex\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\ndownloading postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading https://hub-data.crowdsec.<opaque-redacted>.txt\ndownloading collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\ndownloading collections:crowdsecurity/\u001b[1mlinux\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msyslog-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mgeoip-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mdateparse-enrich\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-logs\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1msshd-success-logs\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-slow-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-time-based-bf\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-cve-2024-6387\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-refused-conn\u001b[22m\nenabling scenarios:crowdsecurity/\u001b[1mssh-generic-test\u001b[22m\nenabling contexts:crowdsecurity/\u001b[1mbf_base\u001b[22m\nenabling collections:crowdsecurity/\u001b[1msshd\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mpublic-dns-allowlist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mseo-bots-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mcdn-whitelist\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[1mrdns\u001b[22m\nenabling postoverflows:crowdsecurity/\u001b[<opaque-redacted>\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mwhitelist-good-actors\u001b[22m\nenabling collections:crowdsecurity/\u001b[1mlinux\u001b[22m\ndownloading parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\nenabling parsers:crowdsecurity/\u001b[1mwhitelists\u001b[22m\n\n\ncreating /etc/crowdsec/acquis.d/setup.linux.yaml\ncreating /etc/crowdsec/acquis.d/setup.sshd.yaml\n\u001b[33m\nCrowdSec alone will not block any IP address. If you want to block them, you must use a remediation component.\nYou can find them on\u001b[0m \u001b[33;1mhttps://app.crowdsec.net/hub/remediation-components\u001b[0;22m\n\nRun 'sudo systemctl reload crowdsec' for the new configuration to be effective.\nCreated symlink '/etc/systemd/system/multi-user.target.wants/crowdsec.service' → '<opaque-redacted>.service'.\n\n\u001b[1mGet started with CrowdSec:\u001b[0m\n * Go further by following our \u001b[1mpost installation steps\u001b[0m : \u001b[0;32m\u001b[1mhttps://docs.crowdsec.<opaque-redacted>\u001b[0m\n<opaque-redacted>\n * Install a \u001b[1mremediation component\u001b[0m to block attackers: \u001b[0;32m\u001b[1mhttps://docs.crowdsec.net/u/bouncers/intro\u001b[0m\n<opaque-redacted>\n * Find more \u001b[1mcollections\u001b[0m, \u001b[1mparsers\u001b[0m and \u001b[1mscenarios\u001b[0m created by the community with the Hub: \u001b[0;32m\u001b[1mhttps://hub.crowdsec.net\u001b[0m\n<opaque-redacted>\n * Subscribe to \u001b[1madditional blocklists\u001b[0m, \u001b[1mvisualize\u001b[0m your alerts and more with the console: \u001b[0;32m\u001b[1mhttps://app.crowdsec.net\u001b[0m\nYou can always run the configuration again interactively by using 'cscli setup'\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  libjansson4 libnftables1\nSuggested packages:\n  firewalld\nThe following NEW packages will be installed:\n  <opaque-redacted> libjansson4 libnftables1 nftables\n0 upgraded, 4 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 5040 kB of archives.\nAfter this operation, 17.3 MB of additional disk space will be used.\nGet:1 file:/etc/apt/mirrors/debian.list Mirrorlist [30 B]\nGet:2 https://deb.debian.org/debian trixie/main amd64 libjansson4 amd64 2.14-2+b3 [39.8 kB]\nGet:3 https://deb.debian.org/debian trixie/main amd64 libnftables1 amd64 1.1.3-1 [332 kB]\nGet:4 https://deb.debian.org/debian trixie/main amd64 nftables amd64 1.1.3-1 [75.9 kB]\nGet:5 https://packagecloud.io/crowdsec/crowdsec/any any/main amd64 <opaque-redacted> amd64 0.0.36 [4592 kB]\ndpkg-preconfigure: unable to re-open stdin: No such file or directory\nFetched 5040 kB in 2s (2314 kB/s)\nSelecting previously unselected package libjansson4:amd64.\n(Reading database ... \n(Reading database ... 5%\n(Reading database ... 10%\n(Reading database ... 15%\n(Reading database ... 20%\n(Reading database ... 25%\n(Reading database ... 30%\n(Reading database ... 35%\n(Reading database ... 40%\n(Reading database ... 45%\n(Reading database ... 50%\n(Reading database ... 55%\n(Reading database ... 60%\n(Reading database ... 65%\n(Reading database ... 70%\n(Reading database ... 75%\n(Reading database ... 80%\n(Reading database ... 85%\n(Reading database ... 90%\n(Reading database ... 95%\n(Reading database ... 100%\n(Reading database ... 21009 files and directories currently installed.)\nPreparing to unpack .../libjansson4_2.14-2+b3_amd64.deb ...\nUnpacking libjansson4:amd64 (2.14-2+b3) ...\nSelecting previously unselected package libnftables1:amd64.\nPreparing to unpack .../libnftables1_1.1.3-1_amd64.deb ...\nUnpacking libnftables1:amd64 (1.1.3-1) ...\nSelecting previously unselected package nftables.\nPreparing to unpack .../nftables_1.1.3-1_amd64.deb ...\nUnpacking nftables (1.1.3-1) ...\nSelecting previously unselected package <opaque-redacted>.\nPreparing to unpack ...<opaque-redacted>.0.36_amd64.deb ...\npre-inst (nftables)\nUnpacking <opaque-redacted> (0.0.36) ...\nSetting up libjansson4:amd64 (2.14-2+b3) ...\nSetting up libnftables1:amd64 (1.1.3-1) ...\nSetting up nftables (1.1.3-1) ...\nSetting up <opaque-redacted> (0.0.36) ...\ndpkg: error processing package <opaque-redacted> (--configure):\n installed <opaque-redacted> package post-installation script subprocess returned error exit status 1\nProcessing triggers for man-db (2.13.1-1) ...\nProcessing triggers for libc-bin (2.41-12+deb13u4) ...\nErrors were encountered while processing:\n <opaque-redacted>\nE: Sub-process /usr/bin/dpkg returned an error code (1)\n"
+        },
+        {
+          "case": "crowdsec_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=active\nSubState=running\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec_journal",
+          "data": "Starting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_journal",
+          "data": ""
+        },
+        {
+          "case": "packages",
+          "data": "crowdsec 1.8.1 install ok installed\n<opaque-redacted> 0.0.36 install ok half-configured\n"
+        },
+        {
+          "case": "/var/log/crowdsec.log",
+          "data": "time=\"2026-10-12T09:27:06Z\" level=info msg=\"Loading CAPI manager\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"CAPI manager configured successfully\"\ntime=\"2026-10-12T09:27:06Z\" level=error msg=\"Machine is not enrolled in the console, can't synchronize with the console\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"Start push to CrowdSec Central API (interval: 6s once, then 10s)\"\ntime=\"2026-10-12T09:27:06Z\" level=warning msg=\"scenario list is empty, will not pull yet\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"Start sending metrics to CrowdSec Central API (interval: 33m24s once, then 30m0s)\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"CrowdSec Local API listening on 127.0.0.1:8080\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"capi metrics: sending\"\ntime=\"2026-10-12T09:27:06Z\" level=info msg=\"Loading grok library /etc/crowdsec/patterns\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Loading enrich plugins\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'GeoIpCity'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'GeoIpASN'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'IpToRange'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'reverse_dns'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'ParseDate'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Successfully registered enricher 'UnmarshalJSON'\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Loading parsers from 7 files\"\ntime=\"2026-10-12T09:27:15Z\" level=info msg=\"Loaded 2 parser nodes\" <opaque-redacted>.yaml stage=s00-raw\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:27:16Z\" level=warning msg=\"grok 'IPv4_WORKAROUND' already registred\" id=young-field module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:27:16Z\" level=warning msg=\"grok 'IP_WORKAROUND' already registred\" id=young-field module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 8 nodes from 3 stages\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loading postoverflow parsers\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s00-enrich\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 4 nodes from 2 stages\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loading 6 scenario files\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding trigger bucket\" cfg=wandering-wood <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding leaky bucket\" cfg=holy-bush name=crowdsecurity/ssh-bf\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding leaky bucket\" cfg=spring-thunder <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding leaky bucket\" cfg=nameless-snowflake name=crowdsecurity/ssh-slow-bf\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding leaky bucket\" cfg=late-forest <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding trigger bucket\" cfg=bitter-firefly <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding conditional bucket\" cfg=falling-wood <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding conditional bucket\" cfg=misty-wind <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Adding leaky bucket\" cfg=nameless-leaf <opaque-redacted>\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Loaded 9 scenarios\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.linux.yaml\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Configuring datasource\" module=acquisition.file type=file\ntime=\"2026-10-12T09:27:16Z\" level=warning msg=\"No matching files for pattern /var/log/messages\" module=acquisition.file type=file\ntime=\"2026-10-12T09:27:16Z\" level=warning msg=\"No matching files for pattern /var/log/syslog\" module=acquisition.file type=file\ntime=\"2026-10-12T09:27:16Z\" level=warning msg=\"No matching files for pattern /var/log/kern.log\" module=acquisition.file type=file\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.sshd.yaml\"\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Configuring datasource\" module=acquisition.journalctl type=journalctl\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Starting parser routine\" idx=0\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Starting bucket routine\" idx=0\ntime=\"2026-10-12T09:27:16Z\" level=info msg=\"Starting output routine\" idx=0\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"Starting processing data\"\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"Spawning process\" command=\"journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"Starting community-blocklist update\"\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"capi/community-blocklist : 0 explicit deletions\"\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"capi/community-blocklist : received 0 new entries (expected if you just installed crowdsec)\"\ntime=\"2026-10-12T09:27:17Z\" level=info msg=\"Start pull from CrowdSec Central API (interval: 2h4m3s once, then 2h0m0s)\""
+        },
+        {
+          "case": "official_bouncer_postinst",
+          "data": "#!/bin/sh\n\nsystemctl daemon-reload\n\n#shellcheck source=./scripts/_bouncer.sh\n. \"/usr/lib/$<opaque-redacted>.sh\"\nSTART=1\n\nif [ \"$1\" = \"configure\" ]; then\n    if need_api_key; then\n        if ! set_api_key; then\n            START=0\n        fi\n    fi\nfi\n\nsystemctl --quiet is-enabled \"$SERVICE\" || systemctl unmask \"$SERVICE\" && systemctl enable \"$SERVICE\"\n\nset_local_port\n\nif [ \"$START\" -eq 0 ]; then\n    echo \"no api key <redacted> generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'\" >&2\nelse\n    systemctl start \"$SERVICE\"\nfi\n"
+        },
+        {
+          "case": "artifact_presence",
+          "data": "{'<opaque-redacted>.yaml': True, '<opaque-redacted>.yaml.local': False, '<opaque-redacted>.service': True}"
+        },
+        {
+          "case": "actual_helper_pty_probe_exit",
+          "data": "1"
+        },
+        {
+          "case": "actual_helper_pty_probe_trace",
+          "data": "+ . <opaque-redacted>.sh\r\n+ set -eu\r\n+ <opaque-redacted>\r\n+ + echo crowdsec-firewall-bouncer\r\nsed s/crowdsec-/cs-/g\r\n+ <opaque-redacted>\r\n+ [ -n  ]\r\n+ [ ! -t 1 ]\r\n+ [ -n vt220 ]\r\n+ tput sgr0\r\n+ tput setaf 1\r\n+ FG_RED=\r\n"
+        },
+        {
+          "case": "no_color_retry_installer_exit",
+          "data": "0"
+        },
+        {
+          "case": "no_color_retry_installer_output",
+          "data": "[INFO] 所需软件包已安装，跳过安装/升级。\n[INFO] 已有核心安装，保留软件源及现有版本。\n[INFO] 所需软件包已安装，跳过安装/升级。\nReading package lists...\nBuilding dependency tree...\nReading state information...\nSkipping <opaque-redacted>, it is already installed and upgrade is not set.\n0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.\n1 not fully installed or removed.\nAfter this operation, 0 B of additional disk space will be used.\nSetting up <opaque-redacted> (0.0.36) ...\ncscli/crowdsec is present, generating API key\n<redacted> Key successfully created\nCreated symlink '/etc/systemd/system/multi-user.target.wants/crowdsec-firewall-bouncer.service' → '<opaque-redacted>.service'.\n\n[INFO] 纯中转节点精简模式：仅补齐系统/SSH 规则与采集；已有 Web/AppSec 配置保留。\n[INFO] Hub install 开始；规则备份：/var/backups/crowdsec-1key/hub.tRe3Wv4m\n[INFO] 所需规则集合已启用，跳过重复安装。\n[INFO] 系统/SSH 日志检查完成，待新增 0 项采集。\n[INFO] 修改前备份: <opaque-redacted>.utcu43ht\n[SUCCESS] CrowdSec 和 Firewall Bouncer 服务已启动。\n[INFO] 请用菜单 [4] → [1] 检查日志采集和 Bouncer 注册；Docker 转发流量需要对应防火墙链。\n[INFO] 请用 cscli metrics 核验 SSH 日志读取与解析；自定义 SSH unit/日志路径需人工核对。\n[INFO] 使用 --relay-status 检查 INPUT/FORWARD 和 IPv4/IPv6 规则；实际中转业务阻断尚未验证。\n[INFO] 此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。\n"
+        },
+        {
+          "case": "crowdsec_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=active\nSubState=running\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec_journal",
+          "data": "Starting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\nStopping crowdsec.service - Crowdsec agent...\ncrowdsec.service: Deactivated successfully.\nStopped crowdsec.service - Crowdsec agent.\ncrowdsec.service: Consumed 24.942s CPU time, 121.8M memory peak.\nStarting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_state",
+          "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=active\nSubState=running\n<opaque-redacted>.service\n"
+        },
+        {
+          "case": "crowdsec-firewall-bouncer_journal",
+          "data": "Starting crowdsec-firewall-bouncer.service - The firewall bouncer for CrowdSec...\nStarted crowdsec-firewall-bouncer.service - The firewall bouncer for CrowdSec.\n"
+        },
+        {
+          "case": "packages",
+          "data": "crowdsec 1.8.1 install ok installed\n<opaque-redacted> 0.0.36 install ok installed\n"
+        },
+        {
+          "case": "/var/log/crowdsec-firewall-bouncer.log",
+          "data": "time=\"2026-10-12T09:28:14Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T09:28:14Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T09:28:15Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T09:30:05Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.1:8080: connect: connection refused\"\ntime=\"2026-10-12T09:30:05Z\" level=error msg=\"Get \\\"http://127.0.0.1:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 127.0.0.1:8080: connect: connection refused\"\ntime=\"2026-10-12T09:30:15Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.1:8080: connect: connection refused\"\ntime=\"2026-10-12T09:30:15Z\" level=error msg=\"Get \\\"http://127.0.0.1:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 127.0.0.1:8080: connect: connection refused\""
+        },
+        {
+          "case": "/var/log/crowdsec.log",
+          "data": "time=\"2026-10-12T09:30:22Z\" level=info msg=\"Loading CAPI manager\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"CAPI manager configured successfully\"\ntime=\"2026-10-12T09:30:22Z\" level=error msg=\"Machine is not enrolled in the console, can't synchronize with the console\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"Start push to CrowdSec Central API (interval: 16s once, then 10s)\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"Start sending metrics to CrowdSec Central API (interval: 24m21s once, then 30m0s)\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"capi metrics: sending\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"CrowdSec Local API listening on 127.0.0.1:8080\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"Starting community-blocklist update\"\ntime=\"2026-10-12T09:30:22Z\" level=info msg=\"Loading grok library /etc/crowdsec/patterns\"\ntime=\"2026-10-12T09:30:24Z\" level=info msg=\"capi/community-blocklist : 0 explicit deletions\"\ntime=\"2026-10-12T09:30:24Z\" level=info msg=\"capi/community-blocklist : received 0 new entries (expected if you just installed crowdsec)\"\ntime=\"2026-10-12T09:30:24Z\" level=info msg=\"Start pull from CrowdSec Central API (interval: 1h58m56s once, then 2h0m0s)\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loading enrich plugins\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'GeoIpCity'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'GeoIpASN'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'IpToRange'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'reverse_dns'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'ParseDate'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Successfully registered enricher 'UnmarshalJSON'\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loading parsers from 8 files\"\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loaded 2 parser nodes\" <opaque-redacted>.yaml stage=s00-raw\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:30:36Z\" level=warning msg=\"grok 'IPv4_WORKAROUND' already registred\" id=still-sea module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:30:36Z\" level=warning msg=\"grok 'IP_WORKAROUND' already registred\" id=still-sea module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T09:30:36Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 9 nodes from 3 stages\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loading postoverflow parsers\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s00-enrich\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 4 nodes from 2 stages\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loading 6 scenario files\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding trigger bucket\" cfg=dawn-shadow <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding leaky bucket\" cfg=lively-breeze <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding leaky bucket\" cfg=broken-flower name=crowdsecurity/ssh-slow-bf\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding leaky bucket\" cfg=floral-sound <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding conditional bucket\" cfg=small-forest <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding conditional bucket\" cfg=throbbing-river <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding leaky bucket\" cfg=cool-feather name=crowdsecurity/ssh-bf\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding leaky bucket\" cfg=lingering-thunder <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Adding trigger bucket\" cfg=muddy-shadow <opaque-redacted>\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Loaded 9 scenarios\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.linux.yaml\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Configuring datasource\" module=acquisition.file type=file\ntime=\"2026-10-12T09:30:37Z\" level=warning msg=\"No matching files for pattern /var/log/messages\" module=acquisition.file type=file\ntime=\"2026-10-12T09:30:37Z\" level=warning msg=\"No matching files for pattern /var/log/syslog\" module=acquisition.file type=file\ntime=\"2026-10-12T09:30:37Z\" level=warning msg=\"No matching files for pattern /var/log/kern.log\" module=acquisition.file type=file\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.sshd.yaml\"\ntime=\"2026-10-12T09:30:37Z\" level=info msg=\"Configuring datasource\" module=acquisition.journalctl type=journalctl\ntime=\"2026-10-12T09:30:38Z\" level=info msg=\"Starting parser routine\" idx=0\ntime=\"2026-10-12T09:30:38Z\" level=info msg=\"Starting bucket routine\" idx=0\ntime=\"2026-10-12T09:30:38Z\" level=info msg=\"Starting output routine\" idx=0\ntime=\"2026-10-12T09:30:39Z\" level=info msg=\"Starting processing data\"\ntime=\"2026-10-12T09:30:39Z\" level=info msg=\"Spawning process\" command=\"journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl"
+        },
+        {
+          "case": "official_bouncer_postinst",
+          "data": "#!/bin/sh\n\nsystemctl daemon-reload\n\n#shellcheck source=./scripts/_bouncer.sh\n. \"/usr/lib/$<opaque-redacted>.sh\"\nSTART=1\n\nif [ \"$1\" = \"configure\" ]; then\n    if need_api_key; then\n        if ! set_api_key; then\n            START=0\n        fi\n    fi\nfi\n\nsystemctl --quiet is-enabled \"$SERVICE\" || systemctl unmask \"$SERVICE\" && systemctl enable \"$SERVICE\"\n\nset_local_port\n\nif [ \"$START\" -eq 0 ]; then\n    echo \"no api key <redacted> generated, you can generate one on your LAPI server by running 'cscli bouncers add <bouncer_name>' and add it to '$CONFIG'\" >&2\nelse\n    systemctl start \"$SERVICE\"\nfi\n"
+        },
+        {
+          "case": "artifact_presence",
+          "data": "{'<opaque-redacted>.yaml': True, '<opaque-redacted>.yaml.local': False, '<opaque-redacted>.service': True}"
+        }
+      ],
+      "complete": true,
+      "status": "diagnostic_completed"
+    },
+    {
+      "attempt": "fixed-debian13",
+      "evidence": "docs/audit/core-install-evidence/fixed-debian13.log",
+      "evidence_sha256": "c7dce33fe1f55e159901526b32ab222e050425d4b4188711b568825684f9c64a",
+      "archive_utc": "2026-10-12T09:54:35.758498+00:00",
+      "scope": "fresh native core, repeat, reboot and decision synchronization",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "environment": {
+        "distro": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.7\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+        "kernel": "6.12.111+deb13-cloud-amd64",
+        "arch": "x86_64",
+        "init": "systemd",
+        "mem_total_kib": 990136,
+        "TERM": "vt220",
+        "NO_COLOR": null,
+        "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "cases": [],
+      "complete": false,
+      "expected_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "source_matches": true,
+      "status": "incomplete_or_failed",
+      "failure_cause": "Guest powered off but case output was not captured; no core acceptance claim."
+    },
+    {
+      "attempt": "fixed-jammy",
+      "evidence": "docs/audit/core-install-evidence/fixed-jammy.log",
+      "evidence_sha256": "a4b278124f31dfa1246e6cf3db48fb1300c998d370aa9e9e239e38d76193bf50",
+      "archive_utc": "2026-10-12T09:54:35.761058+00:00",
+      "scope": "fresh native core, repeat, reboot and decision synchronization",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "environment": {
+        "distro": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n",
+        "kernel": "5.15.0-198-generic",
+        "arch": "x86_64",
+        "init": "systemd",
+        "mem_total_kib": 979280,
+        "TERM": "vt220",
+        "NO_COLOR": null,
+        "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "cases": [
+        {
+          "case": "fixed_fresh_core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_repeat",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "main_config_preserved": true,
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_reboot",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true,
+            "bouncer_enabled": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          }
+        }
+      ],
+      "complete": true,
+      "expected_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "source_matches": true,
+      "status": "passed"
+    },
+    {
+      "attempt": "fixed-noble",
+      "evidence": "docs/audit/core-install-evidence/fixed-noble.log",
+      "evidence_sha256": "5574e259837d9f4d04fe7c2e1bbc72cc0a2d2ba1d5748babdfb3c93c36d8c79c",
+      "archive_utc": "2026-10-12T09:54:35.764645+00:00",
+      "scope": "fresh native core, repeat, reboot and decision synchronization",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "environment": {
+        "distro": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+        "kernel": "6.8.0-142-generic",
+        "arch": "x86_64",
+        "init": "systemd",
+        "mem_total_kib": 983536,
+        "TERM": "vt220",
+        "NO_COLOR": null,
+        "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "cases": [
+        {
+          "case": "fixed_fresh_core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_repeat",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "main_config_preserved": true,
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_reboot",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true,
+            "bouncer_enabled": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          }
+        }
+      ],
+      "complete": true,
+      "expected_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "source_matches": true,
+      "status": "passed"
+    },
+    {
+      "attempt": "fixed-debian13-observer",
+      "evidence": "docs/audit/core-install-evidence/fixed-debian13-observer.log",
+      "evidence_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "archive_utc": "2026-10-12T09:54:35.765184+00:00",
+      "scope": "fresh native core, repeat, reboot and decision synchronization",
+      "validation_level": "not_tested",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 1,
+      "timed_out": false,
+      "environment": null,
+      "cases": [],
+      "complete": false,
+      "expected_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "source_matches": false,
+      "status": "incomplete_or_failed",
+      "failure_cause": "QEMU could not open the task disk after disk creation failed from a missing portable library; no guest test executed."
+    },
+    {
+      "attempt": "fixed-debian13-observer-v2",
+      "evidence": "docs/audit/core-install-evidence/fixed-debian13-observer-v2.log",
+      "evidence_sha256": "93eab37eb7c6a0678980f6245076a0e5e2b21c5f8f63233c11f4208b108985bd",
+      "archive_utc": "2026-10-12T09:54:35.767881+00:00",
+      "scope": "fresh native core, repeat, reboot and decision synchronization",
+      "validation_level": "actual_systemd",
+      "requested_ram_mib": 1024,
+      "vcpus": 1,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "environment": {
+        "distro": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.7\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+        "kernel": "6.12.111+deb13-cloud-amd64",
+        "arch": "x86_64",
+        "init": "systemd",
+        "mem_total_kib": 990136,
+        "TERM": "vt220",
+        "NO_COLOR": null,
+        "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "cases": [
+        {
+          "case": "fixed_fresh_core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_repeat",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "main_config_preserved": true,
+            "core_active": true,
+            "bouncer_active": true
+          }
+        },
+        {
+          "case": "fixed_core_reboot",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true,
+            "bouncer_enabled": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          }
+        },
+        {
+          "case": "fixed_core_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          }
+        }
+      ],
+      "complete": true,
+      "expected_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "source_matches": true,
+      "status": "passed"
+    }
+  ],
+  "source_artifacts": {
+    "/tmp/crowdsec-core-diagnostic/fixed-guest.py": {
+      "evidence": "docs/audit/core-install-evidence/18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de.py",
+      "sha256": "18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de"
+    },
+    "/tmp/crowdsec-core-diagnostic/verify-color-guest.py": {
+      "evidence": "docs/audit/core-install-evidence/be19d1b73b7417a28e8617b25de048f4b9481be7610e9d3ddd14adf68a3d792d.py",
+      "sha256": "be19d1b73b7417a28e8617b25de048f4b9481be7610e9d3ddd14adf68a3d792d"
+    },
+    "/tmp/crowdsec-core-diagnostic/cold-guest.py": {
+      "evidence": "docs/audit/core-install-evidence/5074217bf4d0030cfb2d9191ec18d93fd663a1c3483fd193252c33456e72a290.py",
+      "sha256": "5074217bf4d0030cfb2d9191ec18d93fd663a1c3483fd193252c33456e72a290"
+    },
+    "/tmp/crowdsec-core-diagnostic/after-remote-phase2.py": {
+      "evidence": "docs/audit/core-install-evidence/3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738.py",
+      "sha256": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738"
+    },
+    "/tmp/crowdsec-core-diag-build.py": {
+      "evidence": "docs/audit/core-install-evidence/da2a24273f81f22728b02784a0cb10b5c8fd236ec3f9a2616927cb407b343ac2.py",
+      "sha256": "da2a24273f81f22728b02784a0cb10b5c8fd236ec3f9a2616927cb407b343ac2"
+    },
+    "/tmp/crowdsec-core-diag-verify-build.py": {
+      "evidence": "docs/audit/core-install-evidence/2f1ff1b87420c32bf8aaa823f0ff91defc118c7953c7f519db1eb80d8d168d24.py",
+      "sha256": "2f1ff1b87420c32bf8aaa823f0ff91defc118c7953c7f519db1eb80d8d168d24"
+    },
+    "/tmp/crowdsec-core-fixed-build.py": {
+      "evidence": "docs/audit/core-install-evidence/327fee97b7464c8ec1fb2bcb566300fd934516d3a160e3795c475ea978c749b4.py",
+      "sha256": "327fee97b7464c8ec1fb2bcb566300fd934516d3a160e3795c475ea978c749b4"
+    },
+    "/tmp/crowdsec-core-fixed-observer-build.py": {
+      "evidence": "docs/audit/core-install-evidence/3fa253a06af23fff2b33ef915ffd3b104ad7b787200b7fc29fab040409136a66.py",
+      "sha256": "3fa253a06af23fff2b33ef915ffd3b104ad7b787200b7fc29fab040409136a66"
+    },
+    "/tmp/crowdsec-core-preserved-run.py": {
+      "evidence": "docs/audit/core-install-evidence/2da090d38bc9d8bfe06fe5dbd8c6fb76090c370af84fc192f612aaa9afd509bb.py",
+      "sha256": "2da090d38bc9d8bfe06fe5dbd8c6fb76090c370af84fc192f612aaa9afd509bb"
+    },
+    "/tmp/crowdsec-core-diag-archive.py": {
+      "evidence": "docs/audit/core-install-evidence/455db5aabd1688b19b136d2a949655ea7b95e5f76fcf10767dcb24fe92eca733.py",
+      "sha256": "455db5aabd1688b19b136d2a949655ea7b95e5f76fcf10767dcb24fe92eca733"
+    },
+    "/data/project/script/crowdsec-1key/install-crowdsec-1panel.sh": {
+      "evidence": "docs/audit/core-install-evidence/222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5.sh",
+      "sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+    },
+    "/tmp/crowdsec-core-diagnostic/official-bouncer-extracted/usr/lib/crowdsec-firewall-bouncer-nftables/_bouncer.sh": {
+      "evidence": "docs/audit/core-install-evidence/d02a9b82fa9d948d1e66323823927a299d85fe8f8834497f776a4a278e3e5def.sh",
+      "sha256": "d02a9b82fa9d948d1e66323823927a299d85fe8f8834497f776a4a278e3e5def"
+    },
+    "/tmp/crowdsec-core-diagnostic/official-bouncer-control/postinst": {
+      "evidence": "docs/audit/core-install-evidence/257105ffd977346be5fcd1df7d191ee2beea0fc4d5f0b3687f42fe8918e56267",
+      "sha256": "257105ffd977346be5fcd1df7d191ee2beea0fc4d5f0b3687f42fe8918e56267"
+    }
+  },
+  "seed_sources": {
+    "cold": {
+      "opt/test/guest.py": {
+        "evidence": "docs/audit/core-install-evidence/5074217bf4d0030cfb2d9191ec18d93fd663a1c3483fd193252c33456e72a290.py",
+        "sha256": "5074217bf4d0030cfb2d9191ec18d93fd663a1c3483fd193252c33456e72a290"
+      },
+      "opt/test/phase2.py": {
+        "evidence": "docs/audit/core-install-evidence/3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738.py",
+        "sha256": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738"
+      },
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "evidence": "docs/audit/core-install-evidence/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh",
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "evidence": "docs/audit/core-install-evidence/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh",
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "evidence": "docs/audit/core-install-evidence/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py",
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd"
+      },
+      "user-data": {
+        "evidence": "docs/audit/core-install-evidence/48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f.yaml",
+        "sha256": "48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f"
+      }
+    },
+    "after-remote": {
+      "opt/test/guest.py": {
+        "evidence": "docs/audit/core-install-evidence/4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0.py",
+        "sha256": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0"
+      },
+      "opt/test/phase2.py": {
+        "evidence": "docs/audit/core-install-evidence/3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738.py",
+        "sha256": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738"
+      },
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "evidence": "docs/audit/core-install-evidence/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh",
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "evidence": "docs/audit/core-install-evidence/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh",
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "evidence": "docs/audit/core-install-evidence/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py",
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd"
+      },
+      "user-data": {
+        "evidence": "docs/audit/core-install-evidence/48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f.yaml",
+        "sha256": "48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f"
+      }
+    },
+    "verify-color": {
+      "opt/test/guest.py": {
+        "evidence": "docs/audit/core-install-evidence/be19d1b73b7417a28e8617b25de048f4b9481be7610e9d3ddd14adf68a3d792d.py",
+        "sha256": "be19d1b73b7417a28e8617b25de048f4b9481be7610e9d3ddd14adf68a3d792d"
+      },
+      "opt/test/phase2.py": {
+        "evidence": "docs/audit/core-install-evidence/3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738.py",
+        "sha256": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738"
+      },
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "evidence": "docs/audit/core-install-evidence/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh",
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "evidence": "docs/audit/core-install-evidence/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh",
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "evidence": "docs/audit/core-install-evidence/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py",
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd"
+      },
+      "user-data": {
+        "evidence": "docs/audit/core-install-evidence/48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f.yaml",
+        "sha256": "48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f"
+      }
+    },
+    "fixed": {
+      "opt/test/guest.py": {
+        "evidence": "docs/audit/core-install-evidence/18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de.py",
+        "sha256": "18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de"
+      },
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "evidence": "docs/audit/core-install-evidence/222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5.sh",
+        "sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "evidence": "docs/audit/core-install-evidence/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh",
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "evidence": "docs/audit/core-install-evidence/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py",
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd"
+      },
+      "user-data": {
+        "evidence": "docs/audit/core-install-evidence/48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f.yaml",
+        "sha256": "48129d7116f11cfb18b0b24c278e13341af81ec52c5f31c705044cc8ea579d3f"
+      }
+    },
+    "fixed-observer": {
+      "opt/test/guest.py": {
+        "evidence": "docs/audit/core-install-evidence/18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de.py",
+        "sha256": "18cb5c7e924c0762bc5a44028cb3ce81b67106043b46da5653fb09513cac27de"
+      },
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "evidence": "docs/audit/core-install-evidence/222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5.sh",
+        "sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "evidence": "docs/audit/core-install-evidence/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh",
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "evidence": "docs/audit/core-install-evidence/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py",
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd"
+      },
+      "user-data": {
+        "evidence": "docs/audit/core-install-evidence/ee85df968931ff60bf40e330f6e57f9ec05dc46bd34d6a1c1b76bf3a2f4fe941.yaml",
+        "sha256": "ee85df968931ff60bf40e330f6e57f9ec05dc46bd34d6a1c1b76bf3a2f4fe941"
+      }
+    }
+  },
+  "fresh_overlay_provenance": {
+    "attempt": "fixed-debian13-observer-v2",
+    "creation": "new task-owned qcow2 overlay created with qemu-img create -f qcow2 -F qcow2 -b debian13-8g.qcow2; no previous guest state reused",
+    "backing_chain": [
+      {
+        "backing-filename-format": "qcow2",
+        "virtual-size": 8589934592,
+        "filename": "/tmp/crowdsec-core-diagnostic/fixed-debian13-observer-v2.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 1507536896,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "full-backing-filename": "/tmp/crowdsec-vps-deb-lab/debian13-8g.qcow2",
+        "backing-filename": "/tmp/crowdsec-vps-deb-lab/debian13-8g.qcow2",
+        "dirty-flag": false
+      },
+      {
+        "backing-filename-format": "qcow2",
+        "virtual-size": 8589934592,
+        "filename": "/tmp/crowdsec-vps-deb-lab/debian13-8g.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 204800,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "full-backing-filename": "/tmp/crowdsec-vps-deb-lab/debian13.qcow2",
+        "backing-filename": "/tmp/crowdsec-vps-deb-lab/debian13.qcow2",
+        "dirty-flag": false
+      },
+      {
+        "virtual-size": 3221225472,
+        "filename": "/tmp/crowdsec-vps-deb-lab/debian13.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 341512192,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "dirty-flag": false
+      }
+    ],
+    "immutable_parent_sha256": "8bb07c94cd8c0aea73fd87305181c6d4072fa5e17bc60b6105c38ebe3a074d77"
+  },
+  "seed_sha256": {
+    "cold": "a6b6939289d9100d7bbe9b67465f1411066bee2f37936f296334f0964a1e2792",
+    "after-remote": "6c6c491e3ef60f515b1ef6d042179eab0d8391671f8d1c232360444ca0be1bfb",
+    "verify-color": "527f1f043df78ae14715c5571c37b6e38455ecc3b706f6f5cc5ec60c25a01cca",
+    "fixed": "307902971836d98c4df231fdcf75852dba948289fa25d6340528472681fe912e",
+    "fixed-observer": "3990612da17065ece2e9084e6cd8960bb8caa05816566377d22478f98c299825"
+  },
+  "official_package": {
+    "Package": "crowdsec-firewall-bouncer-nftables",
+    "Priority": "optional",
+    "Section": "admin",
+    "Installed-Size": "15589",
+    "Maintainer": "Crowdsec Team <debian@crowdsec.net>",
+    "Architecture": "amd64",
+    "Source": "crowdsec-firewall-bouncer",
+    "Version": "0.0.36",
+    "Conflicts": "crowdsec-firewall-bouncer-iptables",
+    "Depends": "gettext-base, nftables",
+    "Replaces": "crowdsec-firewall-bouncer",
+    "Filename": "pool/any/main/c/crowdsec-firewall-bouncer/crowdsec-firewall-bouncer-nftables_0.0.36_amd64.deb",
+    "Size": "4591828",
+    "MD5sum": "efd522ad9c2f522f110bb66f8c6eb7ba",
+    "SHA1": "7161b71b173a06087f181c7304e0b802c2cca430",
+    "SHA256": "fb3f38d222793cd031dac7e2b33076033a05c5bb476f323129d431cdc8b69b78",
+    "SHA512": "b32b03d983aa138d171355a705cc0a7ee3a188e1d89ce9eb095e1dda24dca79d209fbc5cb85d3d25ea7835c2d200a56d8296043f287c7733f25fe0ab16f0182a",
+    "Description": "Firewall bouncer for Crowdsec (nftables)"
+  },
+  "initial_provenance": {
+    "created_at": "2026-10-12T09:14:24.037498+00:00",
+    "qemu_guest_memory_mib": 1024,
+    "vcpus": 1,
+    "timeout_seconds": 1500,
+    "core_command_timeout_seconds": 900,
+    "source_installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+    "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+    "base_image": {
+      "path": "/tmp/crowdsec-vps-deb-lab/debian13.qcow2",
+      "sha256": "b2aca2bee42c7082fd6aba4a5bb1a89612087a405e99896920f3346f7b23b9d1"
+    },
+    "artifacts": {
+      "cold-guest.py": "5074217bf4d0030cfb2d9191ec18d93fd663a1c3483fd193252c33456e72a290",
+      "after-remote.iso": "6c6c491e3ef60f515b1ef6d042179eab0d8391671f8d1c232360444ca0be1bfb",
+      "after-remote-phase2.py": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738",
+      "after-remote-guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+      "cold.iso": "a6b6939289d9100d7bbe9b67465f1411066bee2f37936f296334f0964a1e2792",
+      "cold-phase2.py": "3a79868889289406778e11cfabce021e5c7ea73a6ea202d717affae1a3fd7738"
+    },
+    "builder_sha256": "da2a24273f81f22728b02784a0cb10b5c8fd236ec3f9a2616927cb407b343ac2"
+  },
+  "limitations": [
+    "QEMU TCG validates functionality, not performance",
+    "Historical compatibility matrix and original failures remain untouched",
+    "ARM64 original failures are not retested by this amd64 followup",
+    "Diagnostics redact configuration secrets and some long identifiers; no raw configuration dumps",
+    "Generic remote-suite runner acceptance is not reused for this independently scoped core test"
+  ],
+  "verification": {
+    "final_unittest": {
+      "total": 522,
+      "passed": 505,
+      "skipped": 17,
+      "failed": 0,
+      "seconds": 129.679,
+      "exit_code": 0,
+      "conditions": "No QEMU guests remained"
+    },
+    "first_parallel_unittest": {
+      "total": 522,
+      "failed": 1,
+      "skipped": 17,
+      "seconds": 171.527,
+      "failed_test": "test_actual_workload_roundtrip",
+      "failure": "ok transactions was 0 in 0.2-second workload window; QEMU guests running concurrently"
+    },
+    "isolated_workload_recheck": {
+      "tests": 1,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "shellcheck_exit_code": 0,
+    "bash_syntax_exit_code": 0,
+    "git_diff_check_exit_code": 0
+  }
+}

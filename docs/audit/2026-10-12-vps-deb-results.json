@@ -1,0 +1,3467 @@
+{
+  "evidence_parser_sha256": "ff543a647ffe8f977e6a4b93b70a92645634fee1b5b0bd4dd2ef8ca135c2f956",
+  "schema": 1,
+  "generated_at": "2026-10-12T08:38:12.472325+00:00",
+  "scope": "Actual QEMU systemd remote lifecycle and separately attempted package-core relay; no Web/Docker/AppSec/business traffic acceptance implied. Guest prerequisites prepared first.",
+  "required_remote_cases": {
+    "help_entry": [
+      "documented_option",
+      "core_unchanged"
+    ],
+    "remote_readonly_status": [
+      "config_unchanged"
+    ],
+    "fresh_remote_install": [
+      "active",
+      "enabled",
+      "local_exists"
+    ],
+    "repeat_remote_install": [
+      "active"
+    ],
+    "change_url_and_key": [
+      "changed",
+      "active"
+    ],
+    "bad_key_preserves_state": [
+      "rejected",
+      "local_unchanged",
+      "active"
+    ],
+    "foreign_local_ownership": [
+      "rejected",
+      "local_unchanged",
+      "active"
+    ],
+    "boot_auto_start": [
+      "active",
+      "enabled"
+    ],
+    "remove_managed_remote": [
+      "inactive",
+      "disabled",
+      "local_removed"
+    ],
+    "existing_core_preserved": [
+      "unchanged"
+    ],
+    "official_decision_nft_ban_sync": [
+      "ban_present"
+    ],
+    "official_decision_nft_unban_sync": [
+      "ban_removed"
+    ]
+  },
+  "required_core_cases": {
+    "fresh_core_relay_install": [
+      "core_active",
+      "bouncer_active"
+    ]
+  },
+  "results": [
+    {
+      "distro": "debian12",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+        "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+      },
+      "actual_distro": "Debian GNU/Linux 12 (bookworm)",
+      "disk_size_bytes": 8242348032,
+      "disk_free_bytes": 6836658176,
+      "ram_total_kib": 995588,
+      "arch": "x86_64",
+      "kernel": "6.1.0-53-cloud-amd64",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+      "validation_level": "actual_systemd",
+      "status": "passed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_initial_active_observation",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "active": false
+          },
+          "assertions": {
+            "sample_recorded": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "initial_active": false,
+            "attempts": 4,
+            "wait_seconds": 8.54,
+            "lapi_core_active": true,
+            "lapi_authenticated_ready": true
+          },
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_relay_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_web_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_status",
+          "exit_code": 2,
+          "command_exit_code": 2,
+          "observations": null,
+          "assertions": {
+            "operation_completed": false
+          },
+          "status": "unverified",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Read-only diagnostic exit 2 denotes pending/unverified evidence, not installation incompatibility.",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log"
+        },
+        {
+          "case": "core_log_check",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "operation_completed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_relay_status",
+          "exit_code": 2,
+          "command_exit_code": 2,
+          "observations": null,
+          "assertions": {
+            "operation_completed": false
+          },
+          "status": "unverified",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Read-only diagnostic exit 2 denotes pending/unverified evidence, not installation incompatibility.",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log"
+        },
+        {
+          "case": "core_update_hub",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "operation_completed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_relay_repeat",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "main_config_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "passed",
+      "core_status": "passed",
+      "missing_required_cases": [],
+      "complete": true,
+      "remote_complete": true,
+      "missing_core_cases": [],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": null,
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian12-evidence.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "a09170d17e13af43da61774666f520e3bbec0f8bd96b4db37c15f3426fb327ccad950b80dbe78c09aa5ca90ce5015e99334b0ba5188fd4018736bc3fb5f0882c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {
+        "core_relay_failure_markers": []
+      },
+      "evidence_sha256": "2571698850047376a5840b7f5ebd64cc57d5641659928609aa643d35623889c4",
+      "evidence_archive_created_at": "2026-10-12T08:38:11.859098+00:00",
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "run_state": "completed",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+          "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+        }
+      },
+      "seed_sha256": "670ec24f25d3e0bcabfee8887f5e7b3fdf295911be16aa4ac39f7c81515dcd83",
+      "seed_artifact_name": "seed-concurrent-final.iso"
+    },
+    {
+      "distro": "debian13",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+        "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+      },
+      "actual_distro": "Debian GNU/Linux 13 (trixie)",
+      "disk_size_bytes": 8242348032,
+      "disk_free_bytes": 6940246016,
+      "ram_total_kib": 990136,
+      "arch": "x86_64",
+      "kernel": "6.12.111+deb13-cloud-amd64",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_initial_active_observation",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "active": false
+          },
+          "assertions": {
+            "sample_recorded": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "initial_active": false,
+            "attempts": 7,
+            "wait_seconds": 15.38,
+            "lapi_core_active": true,
+            "lapi_authenticated_ready": true
+          },
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_relay_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_web_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_core_relay_install",
+          "exit_code": 1,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 1; missing/false assertions: bouncer_active",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log"
+        }
+      ],
+      "remote_status": "passed",
+      "core_status": "failed",
+      "missing_required_cases": [],
+      "complete": true,
+      "remote_complete": true,
+      "missing_core_cases": [],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian13-evidence.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "f46f0671a6e5bdec5291ab8972bae2f10e5408c2f64a74078f11efc2f06a436a9d0313ed50e0472542eeabf780e9f7c792ac0a314c6c20507fcd9fd81b468c3d",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {
+        "core_relay_failure_markers": [
+          "Selecting previously unselected package libgpg-error0:amd64.",
+          "Preparing to unpack .../00-libgpg-error0_1.51-4_amd64.deb ...",
+          "Unpacking libgpg-error0:amd64 (1.51-4) ...",
+          "Selecting previously unselected package libgpg-error-l10n.",
+          "Preparing to unpack .../15-libgpg-error-l10n_1.51-4_all.deb ...",
+          "Unpacking libgpg-error-l10n (1.51-4) ...",
+          "Setting up libgpg-error0:amd64 (1.51-4) ...",
+          "Setting up libgpg-error-l10n (1.51-4) ...",
+          "dpkg: error processing package crowdsec-firewall-bouncer-nftables (--configure):",
+          " installed crowdsec-firewall-bouncer-nftables package post-installation script subprocess returned error exit status 1",
+          "Errors were encountered while processing:",
+          "E: Sub-process /usr/bin/dpkg returned an error code (1)"
+        ]
+      },
+      "evidence_sha256": "4e0e4277056dc466ac56c77d6d7e6dd8b84b20bfad800ca8d495656fdf01442d",
+      "evidence_archive_created_at": "2026-10-12T08:38:11.863718+00:00",
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "run_state": "completed",
+      "failure_classification": "official_nft_bouncer_package_postinst_exit_1_underlying_cause_not_captured",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+          "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+        }
+      },
+      "seed_sha256": "abb5a516778a06d4b1eb1699e39599480d55c8521bf2a908c1517ddc21f3186d",
+      "seed_artifact_name": "seed-consoleobserver.iso"
+    },
+    {
+      "distro": "jammy",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+        "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+      },
+      "actual_distro": "Ubuntu 22.04.5 LTS",
+      "disk_size_bytes": 8132173824,
+      "disk_free_bytes": 6095380480,
+      "ram_total_kib": 979280,
+      "arch": "x86_64",
+      "kernel": "5.15.0-198-generic",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_initial_active_observation",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "active": false
+          },
+          "assertions": {
+            "sample_recorded": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "initial_active": false,
+            "attempts": 11,
+            "wait_seconds": 37.46,
+            "lapi_core_active": true,
+            "lapi_authenticated_ready": true
+          },
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_relay_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_web_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_core_relay_install",
+          "exit_code": 1,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 1; missing/false assertions: bouncer_active",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log"
+        }
+      ],
+      "remote_status": "passed",
+      "core_status": "failed",
+      "missing_required_cases": [],
+      "complete": true,
+      "remote_complete": true,
+      "missing_core_cases": [],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-jammy-evidence.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "012d81fade7e8ff4428fc35dfeee711d66d1f47d5ea9c5c8ced96a85b959835c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {
+        "core_relay_failure_markers": [
+          "dpkg: error processing package crowdsec-firewall-bouncer-nftables (--configure):",
+          " installed crowdsec-firewall-bouncer-nftables package post-installation script subprocess returned error exit status 1",
+          "Errors were encountered while processing:",
+          "needrestart is being skipped since dpkg has failed",
+          "E: Sub-process /usr/bin/dpkg returned an error code (1)"
+        ]
+      },
+      "evidence_sha256": "134e626a81cd94f2dd27d7053875f716d71625beea6883c0177405922059bd0c",
+      "evidence_archive_created_at": "2026-10-12T08:38:11.867919+00:00",
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "run_state": "completed",
+      "failure_classification": "official_nft_bouncer_package_postinst_exit_1_underlying_cause_not_captured",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+          "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+        }
+      },
+      "seed_sha256": "abb5a516778a06d4b1eb1699e39599480d55c8521bf2a908c1517ddc21f3186d",
+      "seed_artifact_name": "seed-consoleobserver.iso"
+    },
+    {
+      "distro": "noble",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+        "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+      },
+      "actual_distro": "Ubuntu 24.04.5 LTS",
+      "disk_size_bytes": 7203201024,
+      "disk_free_bytes": 5172776960,
+      "ram_total_kib": 983536,
+      "arch": "x86_64",
+      "kernel": "6.8.0-142-generic",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_initial_active_observation",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "active": false
+          },
+          "assertions": {
+            "sample_recorded": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": {
+            "initial_active": false,
+            "attempts": 7,
+            "wait_seconds": 26.52,
+            "lapi_core_active": true,
+            "lapi_authenticated_ready": true
+          },
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_relay_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "local_web_transition_guard",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "files_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_core_relay_install",
+          "exit_code": 1,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 1; missing/false assertions: bouncer_active",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log"
+        }
+      ],
+      "remote_status": "passed",
+      "core_status": "failed",
+      "missing_required_cases": [],
+      "complete": true,
+      "remote_complete": true,
+      "missing_core_cases": [],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-noble-evidence.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "6a81c37564db9b1ee84e141922625e1d7c5b389b99bb3c572e0243607d5bb4d2",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {
+        "core_relay_failure_markers": [
+          "dpkg: error processing package crowdsec-firewall-bouncer-nftables (--configure):",
+          " installed crowdsec-firewall-bouncer-nftables package post-installation script subprocess returned error exit status 1",
+          "Errors were encountered while processing:",
+          "needrestart is being skipped since dpkg has failed",
+          "E: Sub-process /usr/bin/dpkg returned an error code (1)"
+        ]
+      },
+      "evidence_sha256": "3ca526bb91aaca9d5d48fd30abb2d7ffeb597f6f989f01404aa5bb36e4cc8c7a",
+      "evidence_archive_created_at": "2026-10-12T08:38:11.872727+00:00",
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "run_state": "completed",
+      "failure_classification": "official_nft_bouncer_package_postinst_exit_1_underlying_cause_not_captured",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "4b8bd57e0fea826fef278dbab4bc501b72bed57e38c37c6ae876f40e380f65d0",
+          "vps_deb_phase2.py": "afb7d27d2b5852e750e8ea1d31a01387896ed2c4c8a69e057ac29f02f078a1ef"
+        }
+      },
+      "seed_sha256": "abb5a516778a06d4b1eb1699e39599480d55c8521bf2a908c1517ddc21f3186d",
+      "seed_artifact_name": "seed-consoleobserver.iso"
+    }
+  ],
+  "historical_runs": [
+    {
+      "distro": "debian12",
+      "actual_distro": "Debian GNU/Linux 12 (bookworm)",
+      "arch": "x86_64",
+      "kernel": "6.1.0-53-cloud-amd64",
+      "init": "systemd",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_key_only",
+          "exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "boot_auto_start",
+        "change_url_and_key",
+        "existing_core_preserved",
+        "help_entry",
+        "official_decision_nft_ban_sync",
+        "official_decision_nft_unban_sync",
+        "remote_readonly_status",
+        "remove_managed_remote"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v1.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "a09170d17e13af43da61774666f520e3bbec0f8bd96b4db37c15f3426fb327ccad950b80dbe78c09aa5ca90ce5015e99334b0ba5188fd4018736bc3fb5f0882c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": null,
+      "safe_diagnostics": {},
+      "evidence_sha256": "ba7776eccd4ae33572f93805811b1c953bad951c3cf200b3e9c2fdae89ce94f9",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.255490+00:00",
+      "run_state": "historical_incomplete",
+      "source_provenance": {
+        "installer_sha256": null,
+        "library_tree_sha256": null,
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "incomplete_harness_run"
+    },
+    {
+      "distro": "debian12",
+      "actual_distro": "Debian GNU/Linux 12 (bookworm)",
+      "arch": "x86_64",
+      "kernel": "6.1.0-53-cloud-amd64",
+      "init": "systemd",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_key_only",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 12 (bookworm)",
+          "arch": "x86_64",
+          "kernel": "6.1.0-53-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "boot_auto_start",
+        "change_url_and_key",
+        "existing_core_preserved",
+        "help_entry",
+        "official_decision_nft_ban_sync",
+        "official_decision_nft_unban_sync",
+        "remote_readonly_status",
+        "remove_managed_remote"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian12-incomplete-v4.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "a09170d17e13af43da61774666f520e3bbec0f8bd96b4db37c15f3426fb327ccad950b80dbe78c09aa5ca90ce5015e99334b0ba5188fd4018736bc3fb5f0882c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": null,
+      "safe_diagnostics": {},
+      "evidence_sha256": "a37251823258a0a6b83713ee540c5ca1e463cf9dcfe9a39f7d97087121aea57c",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.260218+00:00",
+      "run_state": "historical_incomplete",
+      "source_provenance": {
+        "installer_sha256": null,
+        "library_tree_sha256": null,
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "incomplete_harness_run"
+    },
+    {
+      "distro": "debian13",
+      "actual_distro": "Debian GNU/Linux 13 (trixie)",
+      "arch": "x86_64",
+      "kernel": "6.12.111+deb13-cloud-amd64",
+      "init": "systemd",
+      "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+      "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "boot_auto_start",
+        "existing_core_preserved",
+        "help_entry",
+        "remote_readonly_status",
+        "remove_managed_remote"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian13-incomplete-smp2.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "f46f0671a6e5bdec5291ab8972bae2f10e5408c2f64a74078f11efc2f06a436a9d0313ed50e0472542eeabf780e9f7c792ac0a314c6c20507fcd9fd81b468c3d",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": null,
+      "safe_diagnostics": {},
+      "evidence_sha256": "fbb05952ef625fbaf48585b42039e100e8b481653905cbaf90f5a0dc4f8549c7",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.265264+00:00",
+      "run_state": "historical_incomplete",
+      "source_provenance": {
+        "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+        "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376",
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "incomplete_harness_run"
+    },
+    {
+      "distro": "jammy",
+      "actual_distro": "Ubuntu 22.04.5 LTS",
+      "arch": "x86_64",
+      "kernel": "5.15.0-198-generic",
+      "init": "systemd",
+      "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+      "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 100,
+          "command_exit_code": 100,
+          "assertions": {
+            "index_ready": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 100; missing/false assertions: index_ready",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-insufficient-disk.log"
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 100,
+          "command_exit_code": 100,
+          "assertions": {
+            "packages_ready": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 100; missing/false assertions: packages_ready",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-insufficient-disk.log"
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "bad_key_preserves_state",
+        "boot_auto_start",
+        "change_url_and_key",
+        "existing_core_preserved",
+        "foreign_local_ownership",
+        "fresh_remote_install",
+        "help_entry",
+        "official_decision_nft_ban_sync",
+        "official_decision_nft_unban_sync",
+        "remote_readonly_status",
+        "remove_managed_remote",
+        "repeat_remote_install"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-jammy-insufficient-disk.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "012d81fade7e8ff4428fc35dfeee711d66d1f47d5ea9c5c8ced96a85b959835c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": null,
+      "safe_diagnostics": {},
+      "evidence_sha256": "b47b4b39396d0f9b21b687d9b5bccc2822d6e9f838dc9eec369e25f46f8652ad",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.267811+00:00",
+      "run_state": "historical_incomplete",
+      "source_provenance": {
+        "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+        "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376",
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "lab_disk_capacity_ENOSPC"
+    },
+    {
+      "distro": "noble",
+      "validation_level": "not_tested",
+      "status": "not_tested",
+      "cases": [],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "bad_key_preserves_state",
+        "boot_auto_start",
+        "change_url_and_key",
+        "existing_core_preserved",
+        "foreign_local_ownership",
+        "fresh_remote_install",
+        "help_entry",
+        "official_decision_nft_ban_sync",
+        "official_decision_nft_unban_sync",
+        "remote_readonly_status",
+        "remove_managed_remote",
+        "repeat_remote_install"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-noble-stopped-small-disk.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "6a81c37564db9b1ee84e141922625e1d7c5b389b99bb3c572e0243607d5bb4d2",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": null,
+      "safe_diagnostics": {},
+      "evidence_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.269404+00:00",
+      "run_state": "historical_incomplete",
+      "source_provenance": {
+        "installer_sha256": null,
+        "library_tree_sha256": null,
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "incomplete_harness_run"
+    },
+    {
+      "distro": "jammy",
+      "actual_distro": "Ubuntu 22.04.5 LTS",
+      "disk_size_bytes": 8132173824,
+      "disk_free_bytes": 6095392768,
+      "ram_total_kib": 979280,
+      "arch": "x86_64",
+      "kernel": "5.15.0-198-generic",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "3a3a7f8126a660f0de08128957084551c810feece2cd36754820920a837c36ec",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": false,
+            "enabled": true
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Command exit 0; missing/false assertions: active",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_status",
+          "exit_code": 2,
+          "command_exit_code": 2,
+          "assertions": {
+            "operation_completed": false
+          },
+          "status": "unverified",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Read-only diagnostic exit 2 denotes pending/unverified evidence, not installation incompatibility.",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log"
+        },
+        {
+          "case": "core_log_check",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "operation_completed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_relay_status",
+          "exit_code": 2,
+          "command_exit_code": 2,
+          "assertions": {
+            "operation_completed": false
+          },
+          "status": "unverified",
+          "validation_level": "actual_systemd",
+          "failure_cause": "Read-only diagnostic exit 2 denotes pending/unverified evidence, not installation incompatibility.",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log"
+        },
+        {
+          "case": "core_update_hub",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "operation_completed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        },
+        {
+          "case": "core_relay_repeat",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "main_config_preserved": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 22.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "5.15.0-198-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "failed",
+      "core_status": "passed",
+      "missing_required_cases": [
+        "help_entry",
+        "remote_readonly_status"
+      ],
+      "complete": true,
+      "remote_complete": true,
+      "missing_core_cases": [],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-jammy-early-boot-fullcore.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "012d81fade7e8ff4428fc35dfeee711d66d1f47d5ea9c5c8ced96a85b959835c",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {
+        "core_relay_failure_markers": []
+      },
+      "evidence_sha256": "092c72d2cdbc4025e81f20d7b91f5dd529ff389625a9b1d1fa4e55d95e0cbdbe",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.273396+00:00",
+      "run_state": "historical_completed",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "3a3a7f8126a660f0de08128957084551c810feece2cd36754820920a837c36ec",
+        "payload_provenance": null
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "early_boot_sample_without_bounded_poll",
+      "observation": "Actual fresh and repeated core relay installation passed; initial three-second boot sample was inactive."
+    },
+    {
+      "distro": "noble",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "7627b5e2813a3e8cd951adc6fe0d23e4eda935600aa90132a045f3f50f1eaea0",
+        "vps_deb_phase2.py": "5a691c2f1352108748cfff7ed9f1810230ac9c903f35f69a1ab8901086eac0f5"
+      },
+      "actual_distro": "Ubuntu 24.04.5 LTS",
+      "disk_size_bytes": 7203201024,
+      "disk_free_bytes": 5172768768,
+      "ram_total_kib": 983536,
+      "arch": "x86_64",
+      "kernel": "6.8.0-142-generic",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+      "validation_level": "not_tested",
+      "status": "not_tested",
+      "cases": [],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "bad_key_preserves_state",
+        "boot_auto_start",
+        "change_url_and_key",
+        "existing_core_preserved",
+        "foreign_local_ownership",
+        "fresh_remote_install",
+        "help_entry",
+        "official_decision_nft_ban_sync",
+        "official_decision_nft_unban_sync",
+        "remote_readonly_status",
+        "remove_managed_remote",
+        "repeat_remote_install"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-noble-controller-stopped-source-upgrade.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "6a81c37564db9b1ee84e141922625e1d7c5b389b99bb3c572e0243607d5bb4d2",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {},
+      "evidence_sha256": "58b22a6cabca18c83d73cc2ea3d4082decb30671f1c9e1d3228b29d3eb0840f1",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.275933+00:00",
+      "run_state": "controller_stopped",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "7627b5e2813a3e8cd951adc6fe0d23e4eda935600aa90132a045f3f50f1eaea0",
+          "vps_deb_phase2.py": "5a691c2f1352108748cfff7ed9f1810230ac9c903f35f69a1ab8901086eac0f5"
+        }
+      },
+      "seed_sha256": null,
+      "seed_provenance_note": "Original historical seed hash was not archived at run time; guest source hashes retained when available.",
+      "failure_classification": "controller_seed_upgrade"
+    },
+    {
+      "distro": "noble",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+        "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+      },
+      "actual_distro": "Ubuntu 24.04.5 LTS",
+      "disk_size_bytes": 7203201024,
+      "disk_free_bytes": 5172756480,
+      "ram_total_kib": 983536,
+      "arch": "x86_64",
+      "kernel": "6.8.0-142-generic",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Ubuntu 24.04.5 LTS",
+          "arch": "x86_64",
+          "kernel": "6.8.0-142-generic",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "boot_auto_start",
+        "existing_core_preserved",
+        "remove_managed_remote"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-noble-bounded-fileobserver.log",
+      "image": {
+        "source_url": "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img",
+        "checksum_algorithm": "sha256",
+        "verified_checksum": "6a81c37564db9b1ee84e141922625e1d7c5b389b99bb3c572e0243607d5bb4d2",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {},
+      "evidence_sha256": "05ec0312e76261c9921df8cf4962cab56f4db33b683d08206a386bd81d5bcb6d",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.280621+00:00",
+      "run_state": "bounded_timeout",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "0d28dea2cb38ce5651b1524db543e091be0e3dcc98320aa481a6da09509f3591",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+          "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+        }
+      },
+      "seed_sha256": "670ec24f25d3e0bcabfee8887f5e7b3fdf295911be16aa4ac39f7c81515dcd83",
+      "seed_provenance_note": "Seed hash recorded when archiving retained run; source hashes retained from guest.",
+      "failure_classification": "observer_no_output_after_reboot_cause_unproven"
+    },
+    {
+      "distro": "debian13",
+      "payload_provenance": {
+        "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+        "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+        "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+        "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+        "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+      },
+      "actual_distro": "Debian GNU/Linux 13 (trixie)",
+      "disk_size_bytes": 8242348032,
+      "disk_free_bytes": 6940246016,
+      "ram_total_kib": 990136,
+      "arch": "x86_64",
+      "kernel": "6.12.111+deb13-cloud-amd64",
+      "init": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "cases": [
+        {
+          "case": "help_entry",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "documented_option": true,
+            "core_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "index_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "remote_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "config_unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "observations": null,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_ban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        },
+        {
+          "case": "official_decision_nft_unban_sync",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "observations": null,
+          "assertions": {
+            "ban_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "distro": "Debian GNU/Linux 13 (trixie)",
+          "arch": "x86_64",
+          "kernel": "6.12.111+deb13-cloud-amd64",
+          "ram_mib": 1024,
+          "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+          "failure_cause": null
+        }
+      ],
+      "remote_status": "incomplete",
+      "core_status": "not_tested",
+      "missing_required_cases": [
+        "boot_auto_start",
+        "existing_core_preserved",
+        "remove_managed_remote"
+      ],
+      "complete": false,
+      "remote_complete": false,
+      "missing_core_cases": [
+        "fresh_core_relay_install"
+      ],
+      "scope": "remote lifecycle plus separate package core relay installation; other script workflows not covered",
+      "failure_cause": "Incomplete or failed guest acceptance; requires systemd, complete marker, and every required case.",
+      "ram_mib": 1024,
+      "case": "os_suite",
+      "evidence": "docs/audit/2026-10-12-vps-debian13-controller-stopped-fileobserver.log",
+      "image": {
+        "source_url": "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2",
+        "checksum_algorithm": "sha512",
+        "verified_checksum": "f46f0671a6e5bdec5291ab8972bae2f10e5408c2f64a74078f11efc2f06a436a9d0313ed50e0472542eeabf780e9f7c792ac0a314c6c20507fcd9fd81b468c3d",
+        "checksum_verified": true
+      },
+      "versions": {
+        "official_lab_core": "v1.8.1-909b5157",
+        "installer_remote_bouncer_release": "v0.0.36",
+        "installed_package_core": null,
+        "installed_package_bouncer": null,
+        "package_version_note": "Final package versions were not captured; lab core version describes the independent official LAPI fixture only."
+      },
+      "disk_virtual_bytes": 8589934592,
+      "safe_diagnostics": {},
+      "evidence_sha256": "6c6ff1490af0de1679d3364388804ee86e650c5fb780fd9970271a2904728bb8",
+      "evidence_archive_created_at": "2026-10-12T08:38:12.380912+00:00",
+      "run_state": "controller_stopped",
+      "source_provenance": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "library_tree_sha256": "3695e71aafd2b1e0945a3cb59dc2e3e57ae3a9c76440698b67ebba942f533ad1",
+        "payload_provenance": {
+          "core_binary_sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+          "cscli_binary_sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+          "prepare_vps_deb.py": "13b51eee3ad5868a8f8d192625d5f6f2201a0e765a8dbc55a784906a3b7a1b5b",
+          "vps_deb_guest.py": "610e43f8f37f3dc7cdddfcc1db407484c5e8ec89c4efa2b962d54ed26954d548",
+          "vps_deb_phase2.py": "dda866a0dc07dd0e990c3e0615e129401e908db6d06336b4d36ad1355543eebb"
+        }
+      },
+      "seed_sha256": "dbcf1546d55d1e906008a7ffe681f6ced7bacec9abee9c81a5bb2cb3f82d2270",
+      "seed_provenance_note": "Seed hash recorded when archiving retained run; source hashes retained from guest.",
+      "failure_classification": "observer_no_output_after_reboot_cause_unproven"
+    }
+  ],
+  "constraints": {
+    "host_mutations": false,
+    "host_forwarded_ports": false,
+    "host_filesystem_shares": false,
+    "real_notifications_sent": false
+  },
+  "not_tested_functions": [
+    "WebUI",
+    "Web Bouncer and AppSec deployment",
+    "Docker/1Panel/LDNMP integration",
+    "CDN real-IP",
+    "production traffic enforcement",
+    "long-term stability"
+  ]
+}

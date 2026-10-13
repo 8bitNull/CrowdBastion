@@ -1,0 +1,159 @@
+{
+  "distro": "centos9",
+  "actual_distro": "CentOS Stream 9",
+  "os_id": "centos",
+  "version": "9",
+  "architecture": "x86_64",
+  "kernel": "5.14.0-754.el9.x86_64",
+  "pid1": "systemd",
+  "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+  "ram_kib": 781252,
+  "scope": "fresh_native_core_only",
+  "validation_level": "actual_systemd",
+  "status": "passed",
+  "remote_status": "not_tested",
+  "core_status": "passed",
+  "cases": [
+    {
+      "case": "guest_dependencies",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "packages_ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_relay_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_repeat_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "preserved": true,
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_reboot",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_add",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_delete",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    }
+  ],
+  "health": [
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec-firewall-bouncer",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    }
+  ],
+  "boots": [
+    {
+      "phase": "native_core_reboot",
+      "boot": 1,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 2,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 3,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    }
+  ],
+  "remote_complete": false,
+  "complete": true,
+  "missing_cases": [],
+  "failure_cause": null,
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+    "test_scope": "fresh_native_core_only",
+    "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+    "guest_sha256": "92dd97ff90ae672d5ac5745053844356bafe94264e8fb935d1a3d9c46fd4f14e",
+    "phase2_sha256": "7ee4ee1394c0bb88d2ac0e6feadb61a3e82a22e0230ef31c063e9ac54296fc60",
+    "seed_sha256": "5dd887b6ad42437376eb2c0179cbb763d7e8d060212d3a70ba964f812214ad7e",
+    "payload_sha256": "a4d80b980e46068f3bbaf5287f6f5fb99efabb4a12f38127f313054b2ed33293",
+    "architecture": "amd64",
+    "core_source": "official_native_repository",
+    "runtime_sha256": "9d6c4fd72ce7a2e1cb4f0feb2a7737b115e424fb2247f611eee052c6679139d7",
+    "native_phase_sha256": "e2683256c0fe0176dff0ac43dabd855f40b448b1b243a4123212e0889ea87afb"
+  },
+  "evidence": "docs/audit/vps-repair-evidence/centos9-cold-core-v1.serial.log",
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "stopped_by_agent": false,
+  "serial_sha256": "2f91df72a66396c2dc10faeebb3fcbafd5532b2a0fc1e48ce5e9e2731a58dbc8",
+  "ram_mib": 1024,
+  "image_sha256": "611888de3afdf07d6b909d89bbf530547aaafd6ac06134c5e036944aa9a1d003",
+  "elapsed_seconds": 2124.709,
+  "interpretation": "Archived original scope result; native phase v1 emitted cached final properties. Three reboot decision observations are retained, without new final-health assurance."
+}

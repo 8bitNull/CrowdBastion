@@ -1,0 +1,22 @@
+VPS_ENV {"actual_distro": "Ubuntu 22.04.5 LTS", "disk_size_bytes": 8132173824, "disk_free_bytes": 6095392768, "ram_total_kib": 979280, "arch": "x86_64", "kernel": "5.15.0-198-generic", "init": "systemd", "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7", "library_tree_sha256": "3a3a7f8126a660f0de08128957084551c810feece2cd36754820920a837c36ec"}
+VPS_RESULT {"case": "guest_dependencies_index", "exit_code": 0, "command_exit_code": 0, "assertions": {"index_ready": true}}
+VPS_RESULT {"case": "guest_dependencies", "exit_code": 0, "command_exit_code": 0, "assertions": {"packages_ready": true}}
+VPS_RESULT {"case": "fresh_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true, "enabled": true, "local_exists": true}}
+VPS_RESULT {"case": "repeat_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true}}
+VPS_RESULT {"case": "change_url_and_key", "exit_code": 0, "command_exit_code": 0, "assertions": {"changed": true, "active": true}}
+VPS_RESULT {"case": "bad_key_preserves_state", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}
+VPS_RESULT {"case": "foreign_local_ownership", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}
+VPS_RESULT {"case": "official_decision_nft_ban_sync", "exit_code": 0, "command_exit_code": 0, "assertions": {"ban_present": true}}
+VPS_RESULT {"case": "official_decision_nft_unban_sync", "exit_code": 0, "command_exit_code": 0, "assertions": {"ban_removed": true}}
+VPS_RESULT {"case": "boot_auto_start", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": false, "enabled": true}}
+VPS_RESULT {"case": "remove_managed_remote", "exit_code": 0, "command_exit_code": 0, "assertions": {"inactive": true, "disabled": true, "local_removed": true}}
+VPS_RESULT {"case": "existing_core_preserved", "exit_code": 0, "command_exit_code": 0, "assertions": {"unchanged": true}}
+VPS_REMOTE_COMPLETE
+VPS_NOTE core_relay_failure_markers []
+VPS_RESULT {"case": "fresh_core_relay_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"core_active": true, "bouncer_active": true}}
+VPS_RESULT {"case": "core_status", "exit_code": 2, "command_exit_code": 2, "assertions": {"operation_completed": false}}
+VPS_RESULT {"case": "core_log_check", "exit_code": 0, "command_exit_code": 0, "assertions": {"operation_completed": true}}
+VPS_RESULT {"case": "core_relay_status", "exit_code": 2, "command_exit_code": 2, "assertions": {"operation_completed": false}}
+VPS_RESULT {"case": "core_update_hub", "exit_code": 0, "command_exit_code": 0, "assertions": {"operation_completed": true}}
+VPS_RESULT {"case": "core_relay_repeat", "exit_code": 0, "command_exit_code": 0, "assertions": {"core_active": true, "main_config_preserved": true}}
+VPS_COMPLETE

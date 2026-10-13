@@ -1,0 +1,362 @@
+{
+  "generated_at": "2026-10-12T12:23:47.115170+00:00",
+  "execution_state": "completed",
+  "status": "failed",
+  "scope": "official_native_arm64_bootstrap_remote_lifecycle_existing_core_integration_attempt",
+  "identity": {
+    "actual_distro": "Debian GNU/Linux 13 (trixie)",
+    "os_id": "debian",
+    "version": "13",
+    "architecture": "aarch64",
+    "kernel": "6.12.111+deb13-arm64",
+    "pid1": "systemd",
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "ram_kib": 980512
+  },
+  "runner": {
+    "qemu_exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 2132.43,
+    "ram_mib": 1024,
+    "vcpus": 1,
+    "accel": "tcg",
+    "stopped_by_agent": true,
+    "stop_reason": "No new structured phase/case progress after diagnostics; sporadic trace output may continue. Original run manually stopped and disk preserved for a separate minimal diagnostic experiment."
+  },
+  "remote_status": "failed",
+  "existing_core_integration_status": "not_tested",
+  "post_reboot_health": {
+    "status": "failed",
+    "phase": "remote_post_reboot_diagnostics_before_removal",
+    "states": {
+      "crowdsec": "Result=timeout\nExecMainCode=0\nExecMainStatus=0\nActiveState=activating\nSubState=auto-restart\n<opaque-redacted>.service\n",
+      "crowdsec-firewall-bouncer": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=activating\nSubState=start-pre\n<opaque-redacted>.service\n"
+    },
+    "reason": "Service snapshots do not confirm both core and remote Bouncer healthy; raw instantaneous active predicate is insufficient."
+  },
+  "raw_case_assertion_status": "failed",
+  "required_assertions": {
+    "fresh_remote_install": [
+      "active",
+      "enabled",
+      "local_exists"
+    ],
+    "repeat_remote_install": [
+      "active"
+    ],
+    "change_url_and_key": [
+      "changed",
+      "active"
+    ],
+    "bad_key_preserves_state": [
+      "rejected",
+      "local_unchanged",
+      "active"
+    ],
+    "foreign_local_ownership": [
+      "rejected",
+      "local_unchanged",
+      "active"
+    ],
+    "actual_nft_decision_add": [
+      "present"
+    ],
+    "actual_nft_decision_delete": [
+      "absent"
+    ],
+    "boot_auto_start": [
+      "active",
+      "enabled"
+    ],
+    "remove_managed_remote": [
+      "inactive",
+      "disabled",
+      "local_removed"
+    ],
+    "existing_core_preserved": [
+      "unchanged"
+    ],
+    "core_relay_install": [
+      "core_active",
+      "bouncer_active"
+    ],
+    "help_and_readonly_status": [
+      "help_ok",
+      "status_ok",
+      "unchanged"
+    ],
+    "retained_remote_refused_relay": [
+      "refused",
+      "unchanged"
+    ],
+    "retained_remote_refused_core": [
+      "refused",
+      "unchanged"
+    ],
+    "guest_dependencies": [
+      "packages_ready"
+    ],
+    "guest_dependencies_index": [
+      "ready"
+    ],
+    "core_repository_setup": [
+      "ready"
+    ],
+    "core_package_install": [
+      "installed"
+    ],
+    "native_core_reboot": [
+      "core_active",
+      "bouncer_active",
+      "core_enabled",
+      "bouncer_enabled"
+    ],
+    "native_core_decision_add": [
+      "synced"
+    ],
+    "native_core_decision_delete": [
+      "synced"
+    ]
+  },
+  "missing_or_failed_cases": [
+    "remove_managed_remote",
+    "existing_core_preserved",
+    "core_relay_install",
+    "retained_remote_refused_relay",
+    "retained_remote_refused_core",
+    "native_core_reboot",
+    "native_core_decision_add",
+    "native_core_decision_delete"
+  ],
+  "completion_markers_valid": false,
+  "cases": [
+    {
+      "case": "guest_dependencies_index",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "ready": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "guest_dependencies",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "packages_ready": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "core_repository_setup",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "ready": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "core_package_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "installed": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "fresh_remote_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "active": true,
+        "enabled": true,
+        "local_exists": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "help_and_readonly_status",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "help_ok": true,
+        "status_ok": true,
+        "unchanged": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "repeat_remote_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "change_url_and_key",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "changed": true,
+        "active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "actual_nft_decision_add",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "present": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "actual_nft_decision_delete",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "absent": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "bad_key_preserves_state",
+      "exit_code": 0,
+      "command_exit_code": 1,
+      "assertions": {
+        "rejected": true,
+        "local_unchanged": true,
+        "active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "foreign_local_ownership",
+      "exit_code": 0,
+      "command_exit_code": 1,
+      "assertions": {
+        "rejected": true,
+        "local_unchanged": true,
+        "active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "boot_auto_start",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "active": true,
+        "enabled": true
+      },
+      "status": "passed"
+    }
+  ],
+  "diagnostics": [
+    {
+      "case": "crowdsec_state",
+      "data": "Result=timeout\nExecMainCode=0\nExecMainStatus=0\nActiveState=activating\nSubState=auto-restart\n<opaque-redacted>.service\n"
+    },
+    {
+      "case": "crowdsec_journal",
+      "data": "Starting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\nStopping crowdsec.service - Crowdsec agent...\ncrowdsec.service: Deactivated successfully.\nStopped crowdsec.service - Crowdsec agent.\ncrowdsec.service: Consumed 1min 40.249s CPU time, 93.3M memory peak.\nStarting crowdsec.service - Crowdsec agent...\nStarted crowdsec.service - Crowdsec agent.\nStopping crowdsec.service - Crowdsec agent...\ncrowdsec.service: Deactivated successfully.\nStopped crowdsec.service - Crowdsec agent.\ncrowdsec.service: Consumed 1min 31.896s CPU time, 92.4M memory peak.\nStarting crowdsec.service - Crowdsec agent...\ncrowdsec.service: start-pre operation timed out. Terminating.\ncrowdsec.service: Control process exited, code=killed, status=15/TERM\ncrowdsec.service: Failed with result 'timeout'.\nFailed to start crowdsec.service - Crowdsec agent.\ncrowdsec.service: Consumed 32.092s CPU time, 145.5M memory peak.\n"
+    },
+    {
+      "case": "crowdsec-firewall-bouncer_state",
+      "data": "Result=success\nExecMainCode=0\nExecMainStatus=0\nActiveState=activating\nSubState=start-pre\n<opaque-redacted>.service\n"
+    },
+    {
+      "case": "crowdsec-firewall-bouncer_journal",
+      "data": "time=\"2026-10-12T11:55:25Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T11:55:26Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\nStopping crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ncrowdsec-firewall-bouncer.service: Deactivated successfully.\nStopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ncrowdsec-firewall-bouncer.service: Consumed 2.750s CPU time, 9M memory peak.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T11:59:56Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:00:15Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:00:23Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 5.263s CPU time, 20.7M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 1.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T12:00:37Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:00:43Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:00:49Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 3.398s CPU time, 8.1M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 2.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T12:01:01Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:01:05Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:01:09Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 3.561s CPU time, 8M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 3.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T12:01:21Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:01:24Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:01:26Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 3.084s CPU time, 8M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 4.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T12:01:37Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:01:39Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:01:41Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 2.886s CPU time, 8.8M memory peak.\ncrowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 5.\nStarting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\ntime=\"2026-10-12T12:01:53Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\ntime=\"2026-10-12T12:01:56Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\nStarted crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\ntime=\"2026-10-12T12:01:59Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ncrowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\ncrowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\ncrowdsec-firewall-bouncer.service: Consumed 3.147s CPU time, 9.9M memory peak.\n"
+    },
+    {
+      "case": "packages",
+      "data": "dpkg-query: no packages found matching <opaque-redacted>\ncrowdsec 1.8.1 install ok installed\n"
+    },
+    {
+      "case": "/var/log/crowdsec-firewall-bouncer.log",
+      "data": "time=\"2026-10-12T12:01:09Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:09Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:09Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:21Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:21Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:21Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:23Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:23Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T12:01:23Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:23Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:23Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:24Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:24Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:24Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:25Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:25Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:26Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T12:01:26Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:26Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:26Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:26Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:37Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:37Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:38Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:39Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:39Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:39Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:40Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:40Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:41Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T12:01:41Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:41Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:41Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:41Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:53Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:53Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:53Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:54Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:54Z\" level=info msg=\"config is valid\"\ntime=\"2026-10-12T12:01:54Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:54Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:54Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:56Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:01:56Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:01:56Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T12:01:57Z\" level=info msg=\"Using API key <redacted>\"\ntime=\"2026-10-12T12:01:57Z\" level=error msg=\"auth-api: auth with api key <redacted> return nil response, error: dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:01:58Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T12:01:59Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T12:01:59Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T12:01:59Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T12:01:59Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\ntime=\"2026-10-12T12:02:10Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.<opaque-redacted>\"\ntime=\"2026-10-12T12:02:10Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T12:02:10Z\" level=info msg=\"nftables initiated\""
+    },
+    {
+      "case": "/var/log/crowdsec.log",
+      "data": "time=\"2026-10-12T11:52:21Z\" level=info msg=\"Successfully registered enricher 'GeoIpASN'\"\ntime=\"2026-10-12T11:52:21Z\" level=info msg=\"Successfully registered enricher 'IpToRange'\"\ntime=\"2026-10-12T11:52:21Z\" level=info msg=\"Successfully registered enricher 'reverse_dns'\"\ntime=\"2026-10-12T11:52:21Z\" level=info msg=\"Successfully registered enricher 'ParseDate'\"\ntime=\"2026-10-12T11:52:21Z\" level=info msg=\"Successfully registered enricher 'UnmarshalJSON'\"\ntime=\"2026-10-12T11:52:21Z\" level=info msg=\"Loading parsers from 7 files\"\ntime=\"2026-10-12T11:52:22Z\" level=info msg=\"Loaded 2 parser nodes\" <opaque-redacted>.yaml stage=s00-raw\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T11:52:24Z\" level=warning msg=\"grok 'IPv4_WORKAROUND' already registred\" id=spring-glitter module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T11:52:24Z\" level=warning msg=\"grok 'IP_WORKAROUND' already registred\" id=spring-glitter module=parser <opaque-redacted> stage=s01-parse\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-parse\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s02-enrich\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 8 nodes from 3 stages\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loading postoverflow parsers\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s00-enrich\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 1 parser nodes\" <opaque-redacted>.yaml stage=s01-whitelist\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 4 nodes from 2 stages\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loading 6 scenario files\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding leaky bucket\" cfg=silent-sound name=crowdsecurity/ssh-bf\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding leaky bucket\" cfg=twilight-feather <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding trigger bucket\" cfg=broken-snow <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding leaky bucket\" cfg=bitter-glitter <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding leaky bucket\" cfg=empty-water name=crowdsecurity/ssh-slow-bf\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding leaky bucket\" cfg=late-dew <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding conditional bucket\" cfg=damp-paper <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding conditional bucket\" cfg=billowing-waterfall <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Adding trigger bucket\" cfg=bitter-shadow <opaque-redacted>\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Loaded 9 scenarios\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.linux.yaml\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Configuring datasource\" module=acquisition.file type=file\ntime=\"2026-10-12T11:52:24Z\" level=warning msg=\"No matching files for pattern /var/log/messages\" module=acquisition.file type=file\ntime=\"2026-10-12T11:52:24Z\" level=warning msg=\"No matching files for pattern /var/log/syslog\" module=acquisition.file type=file\ntime=\"2026-10-12T11:52:24Z\" level=warning msg=\"No matching files for pattern /var/log/kern.log\" module=acquisition.file type=file\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"loading acquisition file : /etc/crowdsec/acquis.d/setup.sshd.yaml\"\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Configuring datasource\" module=acquisition.journalctl type=journalctl\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Starting parser routine\" idx=0\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Starting bucket routine\" idx=0\ntime=\"2026-10-12T11:52:24Z\" level=info msg=\"Starting output routine\" idx=0\ntime=\"2026-10-12T11:52:26Z\" level=info msg=\"Starting processing data\"\ntime=\"2026-10-12T11:52:26Z\" level=info msg=\"Spawning process\" command=\"journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl\ntime=\"2026-10-12T11:55:29Z\" level=info msg=\"(<opaque-redacted>) manual 'ban' from '<opaque-redacted>' by ip 198.51.100.77 : 10m ban on Ip 198.51.100.77\" module=db\ntime=\"2026-10-12T11:56:41Z\" level=warning msg=\"SIGTERM received, shutting down\"\ntime=\"2026-10-12T11:56:41Z\" level=info msg=\"Crowdsec engine shutting down\"\ntime=\"2026-10-12T11:56:41Z\" level=info msg=\"Datasource stopping\" module=acquisition.journalctl src=\"journalctl-_SYSTEMD_UNIT=ssh.service\" type=journalctl\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"Bucket routine exiting\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"Killing parser routines\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"serve: shutting down api server\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"pluginTomb dying\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"killing all plugins\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"push tomb is dying, sending cache (0 elements) before exiting\"\ntime=\"2026-10-12T11:56:42Z\" level=info msg=\"Shutting down API server\"\ntime=\"2026-10-12T11:56:42Z\" level=warning msg=\"Crowdsec service shutting down\"\ntime=\"2026-10-12T12:00:22Z\" level=info msg=\"gocron: new scheduler created\" module=db\ntime=\"2026-10-12T12:00:22Z\" level=info msg=\"gocron: scheduler started\" module=db\ntime=\"2026-10-12T12:00:22Z\" level=error msg=\"Machine is not enrolled in the console, can't synchronize with the console\""
+    }
+  ],
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "files": {
+      "guest.py": "7c5cfd8d3623b4a054075896f43b62e27fbcf31ca649160222dd2c27f8504bed",
+      "phase2.py": "18d1e9bd9907e7d3384bcc106b731d53ad2db8959ef83fdacc1904f9a8e490a9",
+      "phase3.py": "0f03231f70882b6e57084f8ef6e195f535ce8cd9fe6cb38b72712c0696d6210b",
+      "payload.tgz": "642ecee95a624ab336c5bb96108ffe528e9afb026acf6979472c16cb8a507556",
+      "seed.iso": "8618be4a7c9dfcb2732603bf7a5ecfc3935acfa76485fedf0a420febd9c7ade7"
+    },
+    "helpers": {
+      "lib/appsec_audit.sh": "0a4af9dd506a789a60a86a3c8c92d3edb2a418f6af054a2e23b48f765f9e087c",
+      "lib/private_transport.sh": "ad5392f57ab151f692ec5162d01c0fa1c8b72dd358d9354d8acb671708c6f336",
+      "lib/crowdsec_transport.py": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e",
+      "lib/real_ip.sh": "1431630e834b146b0dd2769bfe48dabaee0aea234d4fd1b655f6cee0f9b63702",
+      "lib/hub_maintenance.sh": "c8ba0694c969f0e584404f87b901f58685e6a9371026f210c9cf37dd920dd30e",
+      "lib/crowdsec_realip.py": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059",
+      "lib/remote_bouncer.sh": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+      "lib/crowdsec_web.py": "931d95251734b12ed2fc4c1db539464425b444a6c333882d7229cb23e5db7370",
+      "lib/crowdsec_request_audit.py": "27559e7ba183074682e53a67689f7d97e0e15f8a3adb4c51bc7922a4fba8e7fe",
+      "lib/crowdsec_realip_diagnose.py": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167",
+      "lib/crowdsec_relay_paths.py": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6",
+      "lib/crowdsec_telegram.py": "1c293fa912e59e1043744c13eb8932faae18b1eb02ea6ed46a7ede4fc0edcc3b",
+      "lib/maintenance.sh": "88dd387ec0c1f15b593fa6e1ad374edcad8db5cc0ce2194ade75055bf262fdd5",
+      "lib/crowdsec_hub_snapshot.py": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+      "lib/relay.sh": "88b0050d345a8bf0d1355d072d17ba403847194936fdbe7c3b05f9280e60c759",
+      "lib/crowdsec_maintenance.py": "86c8bfc0fe776799cb0f1a15ad1f30cab826e7e1e27f4298f9b3703dd618e012",
+      "lib/crowdsec_host.py": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a",
+      "lib/crowdsec_config.py": "d73115800bfcb07b3835d00b5da2cfbcca82e376bf37a08721ebc2fcb300941f",
+      "lib/crowdsec_detection_diagnose.py": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f",
+      "lib/crowdsec_relay.py": "47c5f497be70a562d8bebc6c500fc94729c26e09cdbf5c1d60be4c2e6784e388",
+      "lib/crowdsec_safety.py": "22bac0eb776c09257b34ce06dc32d83e04630f72068af866d208bfca5c16c2d2",
+      "lib/crowdsec_appsec.py": "0db68a60e29c88c8ee06982b2272ec7c593cc671c2731b92580317f5d0cd6f16",
+      "lib/native_web_bouncer.sh": "591f341b5012b5cf6a96e0a50917d83e77de76ddba9b4f70b529378476402933",
+      "lib/crowdsec_remote_bouncer.py": "c12684d86008a0f7e3537003b0060dba133c2b15ffabed13af32d183af038f6a",
+      "lib/host_web_bouncer.sh": "827d68cedb7ef772d5edaae64623701407e73daf22da4c8d60382b6b598819f6",
+      "lib/__pycache__/crowdsec_maintenance.cpython-311.pyc": "c57e70eb77d5cb80e1b948b53f1bf426c0d9c1b87e34a26326527bff85e98c32",
+      "lib/__pycache__/crowdsec_transport.cpython-311.pyc": "aa185f2cdcfa0b3bff797f63587ac8b04e95c6bbf8440cb62c33f2a33c04b5f7",
+      "lib/__pycache__/crowdsec_safety.cpython-311.pyc": "ee8fbffadafa18e78f9969cfeb4795ce3f760f2082a516f65f92d4626513a5db",
+      "lib/__pycache__/crowdsec_relay.cpython-311.pyc": "13d52da8bf58a2b8340412421faede7042edc74305173099e306d3a0b15b53da",
+      "lib/__pycache__/crowdsec_appsec.cpython-311.pyc": "ac4d60a5ed6a782d12e49f1aaecdd0437d0f53c37eb56fa82b159c46a1dc19d7",
+      "lib/__pycache__/crowdsec_realip.cpython-311.pyc": "34e6dd04ec5cdab75b55e8560a23dc7ee491e04b0ede8c9683b87a6c4b8de6f3",
+      "lib/__pycache__/crowdsec_request_audit.cpython-311.pyc": "4a55b8a98c3853f3fa13fe53162b8f4a9859f5d6bd94e977fcf2cb75a423df89",
+      "lib/__pycache__/crowdsec_config.cpython-311.pyc": "a9a922f3fac3dde98f0c15ac0e3606703cb93c61e21b484457463e6a0065bedf",
+      "lib/__pycache__/crowdsec_telegram.cpython-311.pyc": "90483385ebce2e068a7cf784bcab44cc8da5083510d986dce9aac85c1a131fef",
+      "lib/__pycache__/crowdsec_web.cpython-311.pyc": "0bf1b636456bbdd091ccc6c93a6366e127f29de21802d2d599c20958b12139ce",
+      "lib/__pycache__/crowdsec_realip_diagnose.cpython-311.pyc": "3e6f3f2076150968677a2acdc2c3fc381cd19fb1e25f53fdfec4182d5ec4e293",
+      "lib/__pycache__/crowdsec_host.cpython-311.pyc": "27a2a47d9e19a964fcf14b965689c03108891762fd5cd950e820c79a060d2031",
+      "lib/__pycache__/crowdsec_hub_snapshot.cpython-311.pyc": "a50d572d8e580c10d671fa8dcaa0d0323574395ae19c14fc48aa1c525467725f",
+      "lib/__pycache__/crowdsec_relay_paths.cpython-311.pyc": "5b72e6793b749ea64fdfa087b2a825fc0eaf5c4168f9fe4307219e64442fea26",
+      "lib/__pycache__/crowdsec_detection_diagnose.cpython-311.pyc": "5de146af374c71868dc16519c1fb04f5f92f8e2ce6972cd84ba467f272480c09"
+    },
+    "image_sha512": "001e742c14a69f3f506c1663b271b4aeed7fa766f7471a13d49ee22d338b8a637b5206a75bf994435af7b26ce3794a255dcf22e312b0d4b8d7b7f96076fe925f"
+  },
+  "raw_serial_sha256": "f869030613c0995d464d998378d88950e8dac0f7f026ecc5fc48e48b74fdfd33",
+  "limits": [
+    "QEMU TCG functional evidence; not VPS throughput or CPU capacity.",
+    "Core was already installed as the native LAPI before relay integration; not a cold core install.",
+    "No real公网 forwarding, long-duration, or vendor-specific VPS tests."
+  ],
+  "evidence": "docs/audit/arm64-followup-evidence/debian13-arm64.serial.log",
+  "evidence_sha256": "4c802b9e091f3d251ee4cd6a13363a35f9d3f1f40774761c003157cf4cc7fd1f",
+  "source_verification": {
+    "unittest_total": 522,
+    "passed": 505,
+    "skipped": 17,
+    "failed": 0,
+    "elapsed_seconds": 139.56,
+    "shellcheck_exit_code": 0,
+    "bash_syntax_exit_code": 0,
+    "diff_check_exit_code": 0
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "old_harness_false_positive_reproduced": true,
+  "corrected_harness_rejects_failed_nft_reads": true,
+  "old": [
+    {
+      "case": "actual_nft_decision_add",
+      "rc": 0,
+      "assertions": {
+        "present": false
+      }
+    },
+    {
+      "case": "actual_nft_decision_delete",
+      "rc": 0,
+      "assertions": {
+        "absent": true
+      }
+    }
+  ],
+  "corrected": [
+    {
+      "case": "actual_nft_decision_add",
+      "rc": 0,
+      "assertions": {
+        "present": false
+      }
+    },
+    {
+      "case": "actual_nft_decision_delete",
+      "rc": 0,
+      "assertions": {
+        "absent": false
+      }
+    }
+  ]
+}

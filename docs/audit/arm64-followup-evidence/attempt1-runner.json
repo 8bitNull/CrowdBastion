@@ -1,0 +1,11 @@
+{
+  "qemu_exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 283.3,
+  "ram_mib": 1024,
+  "vcpus": 1,
+  "accel": "tcg",
+  "execution_state": "interrupted_by_harness_review",
+  "status": "not_tested",
+  "reason": "Stopped during initial boot before VPS_ENV or cases; nft exit-code and readiness cutoff instrumentation corrected for new isolated run."
+}

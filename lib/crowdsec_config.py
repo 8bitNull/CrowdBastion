@@ -71,6 +71,110 @@ def notification_locations(root):
     return Path(profiles), Path(directory)/'crowdsec-1key-telegram.yaml'
 
 
+def telegram_routes(root, token, chat):
+    """Find legacy HTTP routes to this bot/chat without exposing credentials.
+
+    Leave plugin files intact: profiles own delivery, and a multi-document file
+    can contain unrelated channels. Only unambiguous literal Chat IDs match.
+    """
+    _, managed = notification_locations(root)
+    names = set()
+    for path in sorted(managed.parent.iterdir()) if managed.parent.exists() else []:
+        if path.suffix not in ('.yaml', '.yml'):
+            continue
+        for doc in read(path, True):
+            if not isinstance(doc, dict) or doc.get('type') != 'http':
+                continue
+            url = urlsplit(str(doc.get('url', '')))
+            if not url.path.rstrip('/').endswith('/bot'+token+'/sendMessage'):
+                continue
+            template = doc.get('format', '')
+            if not isinstance(template, str):
+                continue
+            ids = re.findall(r'"chat_id"\s*:\s*"?(-?\d+)"?(?=\s*[,}])', template)
+            ids += re.findall(r'"chat_id"\s+"(-?\d+)"', template)
+            name = doc.get('name')
+            if (ids and len(ids) == template.count('"chat_id"') and set(ids) == {chat}
+                    and isinstance(name, str) and name != 'crowdsec_1key_telegram'):
+                names.add(name)
+    return sorted(names)
+
+
+def telegram_template(chat):
+    # Alert/Event Meta is []*MetaItems0 (Key/Value), not a map. Read the
+    # actual contributing events, preserving request/UA pairs and limiting
+    # samples so an attacker cannot exceed Telegram's message size limit.
+    return r'''{{- $text := "CrowdSec 告警" -}}
+{{- $batch := gt (len .) 1 -}}{{- $detailLimit := 1 -}}{{- $sampleLimit := 3 -}}{{- $pathLimit := 350 -}}{{- $uaLimit := 180 -}}
+{{- if $batch -}}
+{{- $detailLimit = 3 -}}{{- $sampleLimit = 1 -}}{{- $pathLimit = 200 -}}{{- $uaLimit = 120 -}}
+{{- $counts := dict -}}{{- $simulated := 0 -}}
+{{- range . -}}{{- $rule := .Scenario | toJson | fromJson -}}{{- $_ := set $counts $rule (add (get $counts $rule | default 0) 1) -}}{{- if (.Simulated | toJson | fromJson) -}}{{- $simulated = add $simulated 1 -}}{{- end -}}{{- end -}}
+{{- $text = printf "CrowdSec 批量告警\n本批告警: %d 条（模拟: %d 条）\n规则汇总:" (len .) $simulated -}}
+{{- range $i, $rule := keys $counts | sortAlpha -}}{{- if lt $i 10 -}}{{- $text = printf "%s\n%s: %d 条" $text ($rule | trunc 80) (get $counts $rule) -}}{{- end -}}{{- end -}}
+{{- if gt (len $counts) 10 -}}{{- $text = printf "%s\n另有 %d 种规则未展开" $text (sub (len $counts) 10) -}}{{- end -}}
+{{- $text = printf "%s\n取证仅展示前 %d 条告警；完整记录请用 cscli alerts list / inspect 查询。" $text (min $detailLimit (len .)) -}}
+{{- end -}}
+{{- $text = printf "%s\n执行状态: 本通知未验证 Bouncer 实际拦截" $text -}}
+{{- range $index, $alert := . -}}{{- if lt $index $detailLimit -}}
+{{- if gt .ID 0 -}}{{- $text = printf "%s\n\n【Alert #%d】" $text .ID -}}{{- else -}}{{- $text = printf "%s\n\n【实时告警】" $text -}}{{- end -}}
+{{- $text = printf "%s\n场景: %s" $text (.Scenario | toJson | fromJson | trunc 100) -}}
+{{- if (.Simulated | toJson | fromJson) -}}{{- $text = printf "%s\n模式: 模拟告警（不代表实际封禁）" $text -}}{{- end -}}
+{{- if not .Decisions -}}{{- $text = printf "%s\n决策: 本告警未附带处置决策" $text -}}{{- end -}}
+{{- if .Source -}}{{- $text = printf "%s\n来源: %s\n归属地: %s | %s" $text (.Source.Value | trunc 60) (.Source.Cn | trunc 30) (.Source.AsName | trunc 50) -}}{{- end -}}
+{{- if .StartAt -}}{{- $text = printf "%s\n告警时间: %s" $text (.StartAt | toJson | fromJson | trunc 60) -}}{{- end -}}
+{{- range $i, $d := .Decisions -}}{{- if lt $i 3 -}}{{- $text = printf "%s\n决策: %s / %s" $text ($d.Type | trunc 40) ($d.Duration | trunc 40) -}}{{- end -}}{{- end -}}
+{{- $kind := .Kind -}}
+{{- $contextPath := "" -}}{{- $contextUA := "" -}}{{- $contextHasUA := false -}}{{- $contextVerb := "" -}}{{- $contextSingle := true -}}
+{{- range .Meta -}}
+{{- if or (eq .Key "http_path") (eq .Key "target_uri") (eq .Key "http_user_agent") (eq .Key "user_agent") (eq .Key "method") (eq .Key "http_verb") -}}
+{{- $value := .Value -}}
+{{- if hasPrefix "[" $value -}}
+{{- $decoded := $value | fromJson -}}
+{{- if kindIs "slice" $decoded -}}{{- if gt (len $decoded) 1 -}}{{- $contextSingle = false -}}{{- end -}}{{- $value = join " | " $decoded -}}{{- end -}}
+{{- end -}}
+{{- if and (eq .Key "http_path") $value -}}{{- $contextPath = $value -}}{{- end -}}
+{{- if and (eq .Key "target_uri") (not $contextPath) -}}{{- $contextPath = $value -}}{{- end -}}
+{{- if eq .Key "http_user_agent" -}}{{- $contextUA = $value -}}{{- $contextHasUA = true -}}{{- end -}}
+{{- if and (eq .Key "user_agent") (not $contextHasUA) -}}{{- $contextUA = $value -}}{{- $contextHasUA = true -}}{{- end -}}
+{{- if or (eq .Key "method") (eq .Key "http_verb") -}}{{- $contextVerb = $value -}}{{- end -}}
+{{- end -}}{{- end -}}
+{{- $samples := 0 -}}{{- $seen := dict -}}
+{{- range .Events -}}
+{{- $path := "" -}}{{- $ua := "" -}}{{- $verb := "" -}}{{- $hasUA := false -}}
+{{- range .Meta -}}
+{{- if and (eq .Key "http_path") .Value -}}{{- $path = .Value -}}{{- end -}}
+{{- if and (or (eq .Key "target_uri") (eq .Key "uri")) (not $path) -}}{{- $path = .Value -}}{{- end -}}
+{{- if eq .Key "http_user_agent" -}}{{- $ua = .Value -}}{{- $hasUA = true -}}{{- end -}}
+{{- if and (eq .Key "user_agent") (not $hasUA) -}}{{- $ua = .Value -}}{{- $hasUA = true -}}{{- end -}}
+{{- if eq .Key "http_verb" -}}{{- $verb = .Value -}}{{- end -}}
+{{- end -}}
+{{- if and (eq $kind "waf") $contextSingle $path (eq $path $contextPath) -}}
+{{- if and (not $hasUA) $contextHasUA -}}{{- $ua = $contextUA -}}{{- $hasUA = true -}}{{- end -}}
+{{- if not $verb -}}{{- $verb = $contextVerb -}}{{- end -}}
+{{- end -}}
+{{- if or $path $hasUA -}}
+{{- $signature := list $path $ua $verb | toJson -}}
+{{- if and (lt $samples $sampleLimit) (not (hasKey $seen $signature)) -}}
+{{- $_ := set $seen $signature true -}}{{- $samples = add $samples 1 -}}
+{{- if not $path -}}{{- $path = "事件未记录请求路径" -}}{{- end -}}
+{{- if not $hasUA -}}{{- $ua = "事件未记录 UA" -}}{{- else if or (eq $ua "") (eq $ua "-") -}}{{- $ua = "请求未提供 UA" -}}{{- end -}}
+{{- $text = printf "%s\n请求样本 %d\n刺探目标: %s %s\n客户端指纹: %s" $text $samples ($verb | trunc 20) ($path | trunc $pathLimit) ($ua | trunc $uaLimit) -}}
+{{- end -}}{{- end -}}
+{{- end -}}
+{{- if eq $samples 0 -}}
+{{- $path := $contextPath -}}{{- $ua := $contextUA -}}{{- $hasUA := $contextHasUA -}}
+{{- if or $path $hasUA -}}
+{{- if not $path -}}{{- $path = "告警上下文未记录请求路径" -}}{{- end -}}
+{{- if not $hasUA -}}{{- $ua = "告警上下文未记录 UA" -}}{{- else if or (eq $ua "") (eq $ua "-") -}}{{- $ua = "请求未提供 UA" -}}{{- end -}}
+{{- $text = printf "%s\n刺探目标: %s\n客户端指纹: %s" $text ($path | trunc $pathLimit) ($ua | trunc $uaLimit) -}}
+{{- else -}}{{- $text = printf "%s\n取证: 告警未携带 HTTP 请求元数据（非 HTTP 告警或源数据未记录）" $text -}}{{- end -}}
+{{- end -}}
+{{- end -}}{{- end -}}
+{{- dict "chat_id" CHAT_ID "text" ($text | trunc 3900) | toJson -}}
+'''.replace('CHAT_ID', json.dumps(chat))
+
+
 def merged_config(path):
     data = read_mapping(path)
     def merge(left, right):
@@ -368,10 +472,15 @@ def main(args):
         profiles, notification = notification_locations(args[0])
         print(notification)
         print(profiles)
+    elif action == 'telegram-routes':
+        for name in telegram_routes(*args):
+            print(name)
     elif action == 'repair-log-acquis':
         stage_log_repair(*args)
     elif action == 'log-acquis-file':
         print(acquisition_locations(args[0], 'web-sites.yaml')[2])
+    elif action == 'relay-acquis-file':
+        print(acquisition_locations(args[0], 'crowdsec-1key-relay.yaml')[2])
     elif action == 'log-repair-file':
         print(acquisition_locations(args[0])[2])
     elif action == 'web-log-file':
@@ -503,15 +612,24 @@ def main(args):
             'volumes': [directory+'/data:/app/data'],
         }}}, private=True)
     elif action == 'telegram':
-        path, token, chat, endpoint = args
+        path, token, chat, endpoint, *delivery = args
         if not re.fullmatch(r'\d+:[A-Za-z0-9_-]+', token) or not re.fullmatch(r'-?\d+', chat):
             raise ValueError('Bot Token 或 Chat ID 格式错误')
         main(['url', endpoint])
         # Build text first and let toJson escape quotes, newlines and attacker data.
-        template = '{{ $text := "CrowdSec 告警" }}\n{{ range . }}\n{{ $text = printf "%s\\n场景: %s" $text (.Scenario | toJson | fromJson) }}\n{{ if .Source }}{{ $text = printf "%s\\n来源: %s" $text (.Source.Value | toJson | fromJson) }}{{ end }}\n{{ range .Decisions }}{{ $text = printf "%s\\n决策: %s / %s" $text (.Type | toJson | fromJson) (.Duration | toJson | fromJson) }}{{ end }}\n{{ end }}\n{{ dict "chat_id" '+json.dumps(chat)+' "text" $text | toJson }}\n'
-        write(path, {'type': 'http', 'name': 'crowdsec_1key_telegram', 'log_level': 'info', 'format': template, 'url': endpoint.rstrip('/')+'/bot'+token+'/sendMessage', 'method': 'POST', 'headers': {'Content-Type': 'application/json'}, 'timeout': '10s', 'max_retry': 3}, private=True)
+        mode = delivery[0] if delivery else 'preserve'
+        if len(delivery) > 1 or mode not in ('preserve', 'immediate', 'batch'):
+            raise ValueError('通知模式必须为 preserve / immediate / batch')
+        wait, threshold = '1s', 1
+        if mode == 'batch':
+            wait, threshold = '30s', 10
+        elif mode == 'preserve' and Path(path).exists():
+            current = read_mapping(path)
+            wait, threshold = current.get('group_wait', '1s'), current.get('group_threshold', 1)
+        template = telegram_template(chat)
+        write(path, {'type': 'http', 'name': 'crowdsec_1key_telegram', 'log_level': 'info', 'format': template, 'url': endpoint.rstrip('/')+'/bot'+token+'/sendMessage', 'method': 'POST', 'headers': {'Content-Type': 'application/json'}, 'group_wait': wait, 'group_threshold': threshold, 'timeout': '10s', 'max_retry': 3}, private=True)
     elif action == 'profiles':
-        path, operation = args
+        path, operation, *replaced = args
         docs = read(path, True)
         for doc in docs:
             if not isinstance(doc, dict):
@@ -519,7 +637,8 @@ def main(args):
             routes = doc.get('notifications') or []
             if not isinstance(routes, list):
                 raise ValueError('notifications 必须为列表')
-            if operation == 'enable' and 'crowdsec_1key_telegram' not in routes:
+            if operation == 'enable':
+                routes = [x for x in routes if x != 'crowdsec_1key_telegram' and x not in replaced]
                 routes.append('crowdsec_1key_telegram')
             if operation == 'disable':
                 routes = [x for x in routes if x != 'crowdsec_1key_telegram']

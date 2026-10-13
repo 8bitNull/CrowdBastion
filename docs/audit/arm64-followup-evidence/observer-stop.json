@@ -1,0 +1,7 @@
+{
+  "host_observed_utc_epoch": 1791806965.0799212,
+  "last_serial_mtime_epoch": 1791806892.448,
+  "serial_inactivity_seconds": 72.63,
+  "last_serial_line": "",
+  "reason": "No new structured phase/case progress after diagnostics; sporadic trace output may continue. Original run manually stopped and disk preserved for a separate minimal diagnostic experiment."
+}

@@ -1,0 +1,2183 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-12T08:38:03.684772+00:00",
+  "execution_state": "completed",
+  "required_remote_cases": [
+    "fresh_remote_install",
+    "repeat_remote_install",
+    "change_url_and_key",
+    "bad_key_preserves_state",
+    "foreign_local_ownership",
+    "actual_nft_decision_add",
+    "actual_nft_decision_delete",
+    "boot_auto_start",
+    "remove_managed_remote",
+    "existing_core_preserved"
+  ],
+  "required_core_cases": [
+    "core_relay_install"
+  ],
+  "validation_levels": [
+    "actual_systemd",
+    "not_tested"
+  ],
+  "results": [
+    {
+      "distro": "alma9",
+      "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+      "os_id": "almalinux",
+      "version": "9.8",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+      "pid1": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "ram_kib": 2008608,
+      "validation_level": "actual_systemd",
+      "status": "passed",
+      "remote_status": "passed",
+      "core_status": "passed",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "help_and_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "help_ok": true,
+            "status_ok": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_relay",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_core",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 2008608,
+          "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        }
+      ],
+      "remote_complete": true,
+      "complete": true,
+      "missing_cases": [],
+      "failure_cause": null,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "ram_mib": 2048,
+      "artifacts": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "test_scope": "full_lifecycle",
+        "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "guest_sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+        "phase2_sha256": "19f8dbaa18f90dae4926942c04bbda227ca8c001f07e70c273d5f5bb9812f058",
+        "seed_sha256": "907f776249392e7f96db6ce5d5454360c8a5c225f330266e4ab1994e383550de",
+        "payload_sha256": "c13028c20513b38061d623960e41f0f9e2096a1fba89bba7a28788f7786ac54c",
+        "architecture": "amd64",
+        "core_source": "/tmp/crowdsec-remote-lapi-lab/root"
+      },
+      "image_provenance": {
+        "url": "https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-9.8-20261005.x86_64.qcow2",
+        "checksum_url": "https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM",
+        "digest": "25942b554efaac077e2f60d6bb27bd3332c171454cc21bbd33e5f79244d7570f",
+        "checksum_matches": true,
+        "bytes": 572850176
+      },
+      "evidence": "docs/audit/vps-rpm-arm-evidence/alma9.serial.log",
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "19f8dbaa18f90dae4926942c04bbda227ca8c001f07e70c273d5f5bb9812f058",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/19f8dbaa18f90dae4926942c04bbda227ca8c001f07e70c273d5f5bb9812f058.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/alma9.serial.log",
+      "evidence_sha256": "e32266ce93aa46d575a0fc712ce2980e6e66a4482c7f057050ebc83ce471c2ad",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "rocky9",
+      "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+      "os_id": "rocky",
+      "version": "9.8",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+      "pid1": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "ram_kib": 1812012,
+      "validation_level": "actual_systemd",
+      "status": "passed",
+      "remote_status": "passed",
+      "core_status": "passed",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "help_and_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "help_ok": true,
+            "status_ok": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_relay",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_core",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 1812012,
+          "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        }
+      ],
+      "remote_complete": true,
+      "complete": true,
+      "missing_cases": [],
+      "failure_cause": null,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "ram_mib": 2048,
+      "artifacts": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "test_scope": "full_lifecycle",
+        "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "guest_sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+        "phase2_sha256": "c92b2fc58ca6ecea87504c998b58ff534c5aef24d237ef42b81028c496155f1d",
+        "seed_sha256": "f0867e88c7d03670d19c4ca95956e79892a250ec261eea3fd56c625f5ae61192",
+        "payload_sha256": "4ce949ac1d46302e6781e5b2e3578a2103e625c11c962e8e47132516db362fba",
+        "architecture": "amd64",
+        "core_source": "/tmp/crowdsec-remote-lapi-lab/root"
+      },
+      "image_provenance": {
+        "url": "https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base-9.8-20260525.0.x86_64.qcow2",
+        "checksum_url": "https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base-9.8-20260525.0.x86_64.qcow2.CHECKSUM",
+        "digest": "92c206cc6f790c61583247eefe87890f8828420662c17cacf247cec78ab4eec8",
+        "checksum_matches": true,
+        "bytes": 645988352
+      },
+      "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9.serial.log",
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "c92b2fc58ca6ecea87504c998b58ff534c5aef24d237ef42b81028c496155f1d",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/c92b2fc58ca6ecea87504c998b58ff534c5aef24d237ef42b81028c496155f1d.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/rocky9.serial.log",
+      "evidence_sha256": "cca660ec0d7094ccbe1ac448f83f1ed1ae412849f3aa2f093ca3a5db1e9dfdf9",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "centos9",
+      "actual_distro": "CentOS Stream 9",
+      "os_id": "centos",
+      "version": "9",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-754.el9.x86_64",
+      "pid1": "systemd",
+      "ram_kib": 781252,
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "remote_status": "passed",
+      "core_status": "not_tested",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252,
+          "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        }
+      ],
+      "remote_complete": true,
+      "complete": false,
+      "missing_cases": [],
+      "failure_cause": "Kernel OOM killed python3 PID4115 under vps-phase2.service during native core CLI; core and bouncer units started but no final CLI exit was observed.",
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "ram_mib": 1024,
+      "image_provenance": {
+        "url": "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-20260930.0.x86_64.qcow2",
+        "checksum_url": "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-20260930.0.x86_64.qcow2.SHA256SUM",
+        "digest": "a7f804379970e055d5d5ff408787f0d984b4d640e261473ff58d83561bd19433",
+        "checksum_matches": true,
+        "bytes": 1275985920
+      },
+      "evidence": "docs/audit/vps-rpm-arm-evidence/centos9.serial.log",
+      "core_attempt_state": "attempted_incomplete_oom",
+      "artifacts": {
+        "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+        "remote_helper_sha256": "be7cafe9584b5cbadd580d2399f82ea80de0e95f5d373236536f9ce7e3b7cb19",
+        "guest_sha256": "d13789908fd681ff580c360b435dae5f9ed638a451d1f5916f8b026d89a571da",
+        "phase2_sha256": "1c4504992447e91fa8a42febd1b2a3951a9cb44dedb13b0587bd0ce91c8f6367",
+        "seed_sha256": "8d8fb745536e9beab0aba94bb18c3d399a1f7c16e7f4260688c94b44f446cf1e"
+      },
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "be7cafe9584b5cbadd580d2399f82ea80de0e95f5d373236536f9ce7e3b7cb19",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/be7cafe9584b5cbadd580d2399f82ea80de0e95f5d373236536f9ce7e3b7cb19.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "d13789908fd681ff580c360b435dae5f9ed638a451d1f5916f8b026d89a571da",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/d13789908fd681ff580c360b435dae5f9ed638a451d1f5916f8b026d89a571da.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "1c4504992447e91fa8a42febd1b2a3951a9cb44dedb13b0587bd0ce91c8f6367",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/1c4504992447e91fa8a42febd1b2a3951a9cb44dedb13b0587bd0ce91c8f6367.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/centos9.serial.log",
+      "evidence_sha256": "94623cc87c03ef8edf4ea1d10080ba9669795edd675bfa356eeaf3a27aa9e79b",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "debian13-arm64",
+      "actual_distro": "Debian GNU/Linux 13 (trixie)",
+      "os_id": "debian",
+      "version": "13",
+      "architecture": "aarch64",
+      "kernel": "6.12.111+deb13-arm64",
+      "pid1": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "ram_kib": 980512,
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "remote_status": "failed",
+      "core_status": "failed",
+      "cases": [
+        {
+          "case": "guest_dependencies_index",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_repository_setup",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_package_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "installed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": false,
+            "enabled": true
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_relay",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_core",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_relay_install",
+          "exit_code": 1,
+          "command_exit_code": 1,
+          "assertions": {
+            "core_active": false,
+            "bouncer_active": false
+          },
+          "status": "failed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+          "actual_distro": "Debian GNU/Linux 13 (trixie)",
+          "architecture": "aarch64",
+          "kernel": "6.12.111+deb13-arm64",
+          "ram_kib": 980512,
+          "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        }
+      ],
+      "remote_complete": true,
+      "complete": true,
+      "missing_cases": [],
+      "failure_cause": "Remote reboot active=false/enabled=true; subsequent existing native core integration failed during bouncer package postinst service start. Unit journals not captured so cause unresolved. Adopted QEMU actual exit code unknown.",
+      "qemu_exit_code": null,
+      "timed_out": false,
+      "ram_mib": 1024,
+      "artifacts": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "guest_sha256": "615a51f0c3a7dcc50fa7bbbd74a5a22a92f8f1b98963fefaa2b04ee54ab2a809",
+        "phase2_sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "seed_sha256": "dd18741afa65cf84226df60c6b512f43a5b2253463251409631f8e1281025659",
+        "payload_sha256": "345e16b9aa4869a6105b4036c66e0db1d7c1d68edb00f079d6633c40e99e4546",
+        "architecture": "arm64",
+        "core_source": "official_native_repository"
+      },
+      "monitor_mode": "adopted_existing_qemu",
+      "bound_seconds": 2400,
+      "bound_extension_reason": "ARM TCG real reboot already reached original1500s bound",
+      "core_install_state": "existing_native_core_integration",
+      "original_runner_exit_code": 143,
+      "original_runner_bound_seconds": 1500,
+      "image_provenance": {
+        "url": "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-arm64.qcow2",
+        "checksum_url": "https://cloud.debian.org/images/cloud/trixie/latest/SHA512SUMS",
+        "digest": "001e742c14a69f3f506c1663b271b4aeed7fa766f7471a13d49ee22d338b8a637b5206a75bf994435af7b26ce3794a255dcf22e312b0d4b8d7b7f96076fe925f",
+        "checksum_matches": true,
+        "bytes": 430374912
+      },
+      "evidence": "docs/audit/vps-rpm-arm-evidence/debian13-arm64.serial.log",
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "615a51f0c3a7dcc50fa7bbbd74a5a22a92f8f1b98963fefaa2b04ee54ab2a809",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/615a51f0c3a7dcc50fa7bbbd74a5a22a92f8f1b98963fefaa2b04ee54ab2a809.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/debian13-arm64.serial.log",
+      "evidence_sha256": "b2a3ef9994d3e5cb6669e517f922741f97c2346329032f616111ba4bc0475bad",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "fedora44",
+      "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+      "os_id": "fedora",
+      "version": "44",
+      "architecture": "x86_64",
+      "kernel": "6.19.10-300.fc44.x86_64",
+      "pid1": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "ram_kib": 2000336,
+      "validation_level": "actual_systemd",
+      "status": "passed",
+      "remote_status": "passed",
+      "core_status": "passed",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "help_and_readonly_status",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "help_ok": true,
+            "status_ok": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "change_url_and_key",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_relay",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "retained_remote_refused_core",
+          "exit_code": 0,
+          "command_exit_code": 1,
+          "assertions": {
+            "refused": true,
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        },
+        {
+          "case": "core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+          "actual_distro": "Fedora Linux 44 (Cloud Edition)",
+          "architecture": "x86_64",
+          "kernel": "6.19.10-300.fc44.x86_64",
+          "ram_kib": 2000336,
+          "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+        }
+      ],
+      "remote_complete": true,
+      "complete": true,
+      "missing_cases": [],
+      "failure_cause": null,
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "ram_mib": 2048,
+      "artifacts": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "test_scope": "full_lifecycle",
+        "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "guest_sha256": "30c8d81b59502c3587f5d33113995ac7b87ffbf73c6ce0a689d00bc49ab5946b",
+        "phase2_sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "seed_sha256": "2a4161d1e9bd1c1d3a99e20c2841c1e5c67c14bb31809578fd6f3872c7395f62",
+        "payload_sha256": "db0b875a8cb0ac7e39f82baa25518de9514e62b58dfcdee44a00c5832ffa3f4d",
+        "architecture": "amd64",
+        "core_source": "/tmp/crowdsec-remote-lapi-lab/root"
+      },
+      "image_provenance": {
+        "url": "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2",
+        "checksum_url": "https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-44-1.7-x86_64-CHECKSUM",
+        "digest": "28680fe5b371a5a82ebf43a31926e086a168e59949d03969c5093e7071f90b7f",
+        "checksum_matches": true,
+        "bytes": 583729152
+      },
+      "evidence": "docs/audit/vps-rpm-arm-evidence/fedora44.serial.log",
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "30c8d81b59502c3587f5d33113995ac7b87ffbf73c6ce0a689d00bc49ab5946b",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/30c8d81b59502c3587f5d33113995ac7b87ffbf73c6ce0a689d00bc49ab5946b.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/fedora44.serial.log",
+      "evidence_sha256": "f4612ddd4b6cd4e0aa1624e5bdd56d8ff6f453aecd3179b19bd64d8f78aeac94",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "rhel",
+      "status": "not_tested",
+      "remote_status": "not_tested",
+      "core_status": "not_tested",
+      "validation_level": "not_tested",
+      "cases": [],
+      "failure_cause": "No user-authorized licensed RHEL image or entitlement; compatible distributions do not substitute."
+    }
+  ],
+  "historical_attempts": [
+    {
+      "distro": "alma9-initial",
+      "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+      "os_id": "almalinux",
+      "version": "9.8",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+      "pid1": "systemd",
+      "ram_kib": 977696,
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "remote_status": "failed",
+      "core_status": "not_tested",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        },
+        {
+          "case": "key_rotation_url_normalization_only",
+          "exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "scope_correction": "Trailing-slash normalization is not an endpoint URL change.",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+          "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "AlmaLinux 9.8 (Olive Jaguar)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.53.1.el9_8.x86_64",
+          "ram_kib": 977696
+        }
+      ],
+      "remote_complete": false,
+      "complete": false,
+      "missing_cases": [
+        "actual_nft_decision_add",
+        "actual_nft_decision_delete",
+        "boot_auto_start",
+        "remove_managed_remote",
+        "existing_core_preserved"
+      ],
+      "failure_cause": "First Alma run phase2 serial TTY stall; incomplete bounded attempt.",
+      "evidence": "docs/audit/vps-rpm-arm-evidence/alma9-initial.serial.log",
+      "artifact_provenance_state": "not_captured",
+      "image_provenance": {
+        "url": "https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/AlmaLinux-9-GenericCloud-9.8-20261005.x86_64.qcow2",
+        "checksum_url": "https://repo.almalinux.org/almalinux/9/cloud/x86_64/images/CHECKSUM",
+        "digest": "25942b554efaac077e2f60d6bb27bd3332c171454cc21bbd33e5f79244d7570f",
+        "checksum_matches": true,
+        "bytes": 572850176
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/alma9-initial.serial.log",
+      "evidence_sha256": "0a904463ab15aa2ec85d540fcaab4c377bdc7befb56f9ba362992f7309bb06de",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    },
+    {
+      "distro": "rocky9-initial",
+      "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+      "os_id": "rocky",
+      "version": "9.8",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+      "pid1": "systemd",
+      "ram_kib": 781088,
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "remote_status": "failed",
+      "core_status": "not_tested",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "fresh_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true,
+            "local_exists": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "repeat_remote_install",
+          "exit_code": 0,
+          "assertions": {
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "key_rotation_url_normalization_only",
+          "exit_code": 0,
+          "assertions": {
+            "changed": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "scope_correction": "Trailing-slash normalization is not an endpoint URL change.",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "actual_nft_decision_add",
+          "exit_code": 0,
+          "assertions": {
+            "present": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "actual_nft_decision_delete",
+          "exit_code": 0,
+          "assertions": {
+            "absent": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "bad_key_preserves_state",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "foreign_local_ownership",
+          "exit_code": 0,
+          "assertions": {
+            "rejected": true,
+            "local_unchanged": true,
+            "active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "boot_auto_start",
+          "exit_code": 0,
+          "assertions": {
+            "active": true,
+            "enabled": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "remove_managed_remote",
+          "exit_code": 0,
+          "assertions": {
+            "inactive": true,
+            "disabled": true,
+            "local_removed": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        },
+        {
+          "case": "existing_core_preserved",
+          "exit_code": 0,
+          "assertions": {
+            "unchanged": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+          "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "Rocky Linux 9.8 (Blue Onyx)",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-687.10.1.el9_8.0.1.x86_64",
+          "ram_kib": 781088
+        }
+      ],
+      "remote_complete": false,
+      "complete": false,
+      "missing_cases": [],
+      "failure_cause": "First Rocky native core transition retained standalone unit failed to start; run stopped before final CLI exit.",
+      "evidence": "docs/audit/vps-rpm-arm-evidence/rocky9-initial.serial.log",
+      "artifact_provenance_state": "not_captured",
+      "image_provenance": {
+        "url": "https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base-9.8-20260525.0.x86_64.qcow2",
+        "checksum_url": "https://download.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud-Base-9.8-20260525.0.x86_64.qcow2.CHECKSUM",
+        "digest": "92c206cc6f790c61583247eefe87890f8828420662c17cacf247cec78ab4eec8",
+        "checksum_matches": true,
+        "bytes": 645988352
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/rocky9-initial.serial.log",
+      "evidence_sha256": "c012ae807d0169d325aaa05bb3f59e915365ab9784bf950615e8f78daf9aca02",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    }
+  ],
+  "scoped_followups": [
+    {
+      "distro": "centos9-core-fixed",
+      "actual_distro": "CentOS Stream 9",
+      "os_id": "centos",
+      "version": "9",
+      "architecture": "x86_64",
+      "kernel": "5.14.0-754.el9.x86_64",
+      "pid1": "systemd",
+      "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+      "ram_kib": 781252,
+      "validation_level": "actual_systemd",
+      "status": "failed",
+      "remote_status": "failed",
+      "core_status": "passed",
+      "cases": [
+        {
+          "case": "guest_dependencies",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "packages_ready": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9-core-fixed.serial.log",
+          "evidence_sha256": "474b41256d74158f07de1f516a238fee5a256590c96013b35d7795777652dbe0",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252
+        },
+        {
+          "case": "core_relay_install",
+          "exit_code": 0,
+          "command_exit_code": 0,
+          "assertions": {
+            "core_active": true,
+            "bouncer_active": true
+          },
+          "status": "passed",
+          "validation_level": "actual_systemd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/centos9-core-fixed.serial.log",
+          "evidence_sha256": "474b41256d74158f07de1f516a238fee5a256590c96013b35d7795777652dbe0",
+          "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00",
+          "actual_distro": "CentOS Stream 9",
+          "architecture": "x86_64",
+          "kernel": "5.14.0-754.el9.x86_64",
+          "ram_kib": 781252
+        }
+      ],
+      "remote_complete": false,
+      "complete": false,
+      "missing_cases": [
+        "fresh_remote_install",
+        "repeat_remote_install",
+        "change_url_and_key",
+        "bad_key_preserves_state",
+        "foreign_local_ownership",
+        "actual_nft_decision_add",
+        "actual_nft_decision_delete",
+        "boot_auto_start",
+        "remove_managed_remote",
+        "existing_core_preserved"
+      ],
+      "failure_cause": "Required guest identity/assertions incomplete or failed; inspect serial evidence.",
+      "artifacts": {
+        "installer_sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "test_scope": "fresh_native_core_only",
+        "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "guest_sha256": "a381cba65c62b4017cbd861ffd61b5f4a10c362b54586bfbf53241eb6572295e",
+        "phase2_sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "seed_sha256": "1a9161d0ca14871d079aeeffe52cf880e4b1efc619e4d6c62f5b2a224468647c",
+        "payload_sha256": "4e67d89389d3944734f72a1d0754299401bf5ed9875331a95f995fc6fe52a694",
+        "architecture": "amd64",
+        "core_source": "/tmp/crowdsec-remote-lapi-lab/root"
+      },
+      "ram_mib": 1024,
+      "evidence": "docs/audit/vps-rpm-arm-evidence/centos9-core-fixed.serial.log",
+      "timed_out": false,
+      "qemu_exit_code": 0,
+      "test_scope": "fresh_native_core_only",
+      "harness_failure_cause": "Missing faulthandler import after native version check; installer rc0 and active unit assertions recorded before cleanup error.",
+      "scope_status": "failed",
+      "image_provenance": {
+        "url": "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-20260930.0.x86_64.qcow2",
+        "checksum_url": "https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-20260930.0.x86_64.qcow2.SHA256SUM",
+        "digest": "a7f804379970e055d5d5ff408787f0d984b4d640e261473ff58d83561bd19433",
+        "checksum_matches": true,
+        "bytes": 1275985920
+      },
+      "source_artifact_manifest": "docs/audit/vps-rpm-arm-evidence/sources/manifest.json",
+      "source_artifacts": {
+        "opt/test/repo/install-crowdsec-1panel.sh": {
+          "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+        },
+        "opt/test/repo/lib/remote_bouncer.sh": {
+          "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+        },
+        "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+          "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+        },
+        "opt/test/guest.py": {
+          "sha256": "a381cba65c62b4017cbd861ffd61b5f4a10c362b54586bfbf53241eb6572295e",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a381cba65c62b4017cbd861ffd61b5f4a10c362b54586bfbf53241eb6572295e.py"
+        },
+        "opt/test/phase2.py": {
+          "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+          "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+        }
+      },
+      "raw_lab_evidence": "/tmp/crowdsec-vps-rpm-arm-lab/centos9-core-fixed.serial.log",
+      "evidence_sha256": "474b41256d74158f07de1f516a238fee5a256590c96013b35d7795777652dbe0",
+      "evidence_archived_at": "2026-10-12T08:38:03.630790+00:00"
+    }
+  ],
+  "limitations": [
+    "TCG is used only for functional assertions, not CPU/throughput comparisons.",
+    "Actual nft decision membership is not proof of each vendor business traffic paths.",
+    "RHEL lacks authorized image.",
+    "Guest-only external download NIC; no host forwarded ports or host directory shares."
+  ]
+}

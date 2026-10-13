@@ -1,0 +1,43 @@
+{
+  "distro": "debian12",
+  "scope": "fresh_native_core_only",
+  "validation_level": "not_tested",
+  "status": "failed",
+  "remote_status": "not_tested",
+  "core_status": "not_tested",
+  "cases": [],
+  "health": [],
+  "boots": [],
+  "remote_complete": false,
+  "complete": false,
+  "missing_cases": [
+    "core_relay_install",
+    "native_core_reboot",
+    "native_core_decision_add",
+    "native_core_decision_delete",
+    "core_repeat_install"
+  ],
+  "failure_cause": "Guest source provenance missing or mismatched.",
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+    "test_scope": "fresh_native_core_only",
+    "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+    "guest_sha256": "92dd97ff90ae672d5ac5745053844356bafe94264e8fb935d1a3d9c46fd4f14e",
+    "phase2_sha256": "7ee4ee1394c0bb88d2ac0e6feadb61a3e82a22e0230ef31c063e9ac54296fc60",
+    "seed_sha256": "5dd887b6ad42437376eb2c0179cbb763d7e8d060212d3a70ba964f812214ad7e",
+    "payload_sha256": "a4d80b980e46068f3bbaf5287f6f5fb99efabb4a12f38127f313054b2ed33293",
+    "architecture": "amd64",
+    "core_source": "official_native_repository",
+    "runtime_sha256": "9d6c4fd72ce7a2e1cb4f0feb2a7737b115e424fb2247f611eee052c6679139d7",
+    "native_phase_sha256": "e2683256c0fe0176dff0ac43dabd855f40b448b1b243a4123212e0889ea87afb"
+  },
+  "evidence": "docs/audit/vps-repair-evidence/debian12-seed-cdrom-stopped.serial.log",
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "stopped_by_agent": true,
+  "serial_sha256": "6c290a7888e69879d371c37b84ec17a2b52921c4695f02189408e34757ee682d",
+  "ram_mib": 1024,
+  "image_sha256": "39b7ba95cd57f62d300e687bf60b2d082ad26a69efc0131ea1f555c5d663ca10",
+  "elapsed_seconds": 297.458
+}

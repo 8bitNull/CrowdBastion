@@ -1,0 +1,38 @@
+[
+  {
+    "case": "actual_complete_control",
+    "accepted": true,
+    "expected_accepted": true,
+    "passed": true
+  },
+  {
+    "case": "duplicate_final_health",
+    "accepted": false,
+    "expected_accepted": false,
+    "passed": true
+  },
+  {
+    "case": "conflicting_result_field",
+    "accepted": false,
+    "expected_accepted": false,
+    "passed": true
+  },
+  {
+    "case": "manually_stopped_runner",
+    "accepted": false,
+    "expected_accepted": false,
+    "passed": true
+  },
+  {
+    "case": "boolean_qemu_exit",
+    "accepted": false,
+    "expected_accepted": false,
+    "passed": true
+  },
+  {
+    "case": "missing_completion",
+    "accepted": false,
+    "expected_accepted": false,
+    "passed": true
+  }
+]

@@ -14,10 +14,6 @@ from crowdsec_web import mount_path
 
 from crowdsec_config import acquisition_locations, go_glob, merged_config, read, write
 
-RULE_DIRS = ('hub', 'collections', 'parsers', 'scenarios', 'postoverflows',
-             'contexts', 'appsec-configs', 'appsec-rules')
-
-
 def require_plain_path(path):
     path = Path(path)
     if not path.is_absolute() or any(item.is_symlink() for item in [path, *path.parents]):
@@ -71,56 +67,29 @@ def rule_data_file(path, database):
 
 
 def snapshot(config, destination):
-    effective = merged_config(config)
-    config_dir = Path(effective.get('config_paths', {}).get('config_dir', Path(config).parent))
-    require_plain_path(config_dir)
-    paths = [config_dir/name for name in RULE_DIRS]
-    for key in ('hub_dir', 'index_path'):
-        value = effective.get('config_paths', {}).get(key)
-        if value:
-            require_plain_path(value)
-        if value and not any(Path(value) == path or path in Path(value).parents for path in paths):
-            paths.append(Path(value))
-    data = effective.get('config_paths', {}).get('data_dir')
-    database = effective.get('db_config', {}).get('db_path', '')
-    if data:
-        data_path = Path(data)
-        require_plain_path(data_path)
-        paths.extend(path for path in data_path.iterdir() if rule_data_file(path, database))
-    paths = list(dict.fromkeys(paths))
-    for path in paths:
-        require_plain_path(path)
-    hub_roots = [config_dir/'hub']
-    configured_hub = effective.get('config_paths', {}).get('hub_dir')
-    if configured_hub:
-        hub_roots.append(Path(configured_hub))
-    for hub in hub_roots:
-        require_plain_path(hub)
-        if hub.is_dir() and any(item.is_symlink() for item in hub.rglob('*')):
-            raise ValueError('Hub 内部不能包含符号链接：'+str(hub))
+    from crowdsec_hub_snapshot import before, save
     destination = Path(destination)
     destination.mkdir(mode=0o700, parents=True, exist_ok=True)
-    manifest = {'config': str(Path(config).resolve()), 'paths': []}
-    for index, path in enumerate(paths):
-        if not path.is_absolute() or len(path.parts) < 3:
-            raise ValueError('拒绝备份无效规则路径：'+str(path))
-        copy = destination/str(index)
-        before = fingerprint(path)
-        if before is not None:
-            if path.is_dir() and not path.is_symlink():
-                shutil.copytree(path, copy, symlinks=True)
-            else:
-                shutil.copy2(path, copy, follow_symlinks=False)
-            preserve_ownership(path, copy)
-        manifest['paths'].append({'path': str(path), 'copy': str(copy), 'before': before})
-    manifest['data_dir'] = data
-    manifest['database'] = database
-    manifest['data_files'] = [str(path) for path in Path(data).iterdir() if path.is_file()] if data else []
-    write(destination/'manifest.yaml', manifest)
+    document = before(config, destination/'files')
+    save(destination/'transaction.json', document)
+    write(destination/'manifest.yaml', {'format': 3, 'config': str(Path(config).resolve())})
+
+
+def record_after(destination):
+    from crowdsec_hub_snapshot import capture, read_document, save
+    path = Path(destination)/'transaction.json'
+    document = read_document(path)
+    document['after'] = capture(document)
+    save(path, document)
 
 
 def changed(destination):
-    manifest = read(Path(destination)/'manifest.yaml')
+    destination = Path(destination)
+    manifest = read(destination/'manifest.yaml')
+    if manifest.get('format') in (2, 3):
+        from crowdsec_hub_snapshot import capture, read_document
+        document = read_document(destination/'transaction.json')
+        return capture(document) != document['before']
     if any(fingerprint(entry['path']) != entry['before'] for entry in manifest['paths']):
         return True
     if manifest['data_dir']:
@@ -131,6 +100,14 @@ def changed(destination):
 
 def restore(destination):
     manifest = read(Path(destination)/'manifest.yaml')
+    if manifest.get('format') in (2, 3):
+        from crowdsec_hub_snapshot import read_document, restore as restore_transaction
+        document = read_document(Path(destination)/'transaction.json')
+        if 'after' not in document:
+            document['after'] = document['before']
+        restore_transaction(document)
+        return
+    # Historical directory-copy manifests remain recoverable.
     for entry in manifest['paths']:
         if entry['before'] is not None and fingerprint(entry['copy']) != entry['before']:
             raise ValueError('快照内容已变化，拒绝恢复：'+entry['copy'])
@@ -210,6 +187,8 @@ def main(args):
     action, *args = args
     if action == 'snapshot':
         snapshot(*args)
+    elif action == 'after':
+        record_after(args[0])
     elif action == 'runtime-preflight':
         runtime_preflight(args[0])
     elif action == 'changed':

@@ -1,0 +1,10 @@
+VPS_ENV {"actual_distro": "Debian GNU/Linux 13 (trixie)", "arch": "x86_64", "kernel": "6.12.111+deb13-cloud-amd64", "init": "systemd", "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d", "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376"}
+VPS_RESULT {"case": "guest_dependencies_index", "exit_code": 0, "command_exit_code": 0, "assertions": {"index_ready": true}}
+VPS_RESULT {"case": "guest_dependencies", "exit_code": 0, "command_exit_code": 0, "assertions": {"packages_ready": true}}
+VPS_RESULT {"case": "fresh_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true, "enabled": true, "local_exists": true}}
+VPS_RESULT {"case": "repeat_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true}}
+VPS_RESULT {"case": "change_url_and_key", "exit_code": 0, "command_exit_code": 0, "assertions": {"changed": true, "active": true}}
+VPS_RESULT {"case": "bad_key_preserves_state", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}
+VPS_RESULT {"case": "foreign_local_ownership", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}
+VPS_RESULT {"case": "official_decision_nft_ban_sync", "exit_code": 0, "command_exit_code": 0, "assertions": {"ban_present": true}}
+VPS_RESULT {"case": "official_decision_nft_unban_sync", "exit_code": 0, "command_exit_code": 0, "assertions": {"ban_removed": true}}

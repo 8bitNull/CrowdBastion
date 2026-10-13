@@ -1,0 +1,3 @@
+#cloud-config
+runcmd:
+  - [ bash, -c, 'mkdir -p /mnt/lab; mount LABEL=cidata /mnt/lab; tar -xzf /mnt/lab/payload.tgz -C /; python3 /opt/test/guest.py >/dev/ttyS0 2>&1; systemctl poweroff' ]
