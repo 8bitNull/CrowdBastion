@@ -1,4 +1,4 @@
-# 文档索引
+# CrowdBastion 文档索引
 
 项目总览和启动入口见 [仓库 README](../readme.md)。日常使用看指南，验收状态看报告，设计与计划不代表功能已交付。
 
@@ -7,6 +7,7 @@
 | 文档 | 用途 |
 | --- | --- |
 | [使用说明](usage-guide.md) | 场景选择、安装、验证、备份恢复、卸载与常见问题 |
+| [更名与升级](project-rename.md) | 仓库地址、主入口及旧版运行标识兼容性 |
 | [命令行参考](cli-reference.md) | 参数、菜单、互斥与退出码 |
 | [AppSec 指南](appsec-guide.md) | Web Bouncer、网站和 Docker 接入条件 |
 | [日志与真实 IP 排查](detection-guide.md) | 来源信任、采集与解析、AllowList、防火墙核查 |
@@ -39,7 +40,8 @@
 
 | 路径 | 内容 |
 | --- | --- |
-| `install-crowdsec-1panel.sh` | 菜单与命令行主入口 |
+| `crowdbastion.sh` | 菜单与命令行主入口 |
+| `install-crowdsec-1panel.sh` | 指向主入口的兼容链接，供旧命令和验证工具使用 |
 | `lib/` | Bash 功能模块与 Python 配置、诊断、观察工具；运行时必须保留 |
 | `docs/` | 使用与部署指南；`audit/` 保存验收报告及证据，`superpowers/` 保存计划与设计 |
 | `tests/` | 自动回归及需要外部官方程序的隔离验证工具 |
@@ -48,5 +50,7 @@
 | `experimental/` | 固定版本实验源码补丁，不自动替换生产程序 |
 
 验收归档脚本可能依赖各轮临时环境；复现前先阅读对应报告，不将其当作安装入口。
+
+历史验收记录、设计与计划保留当时的 `crowdsec-1key` 名称及脚本路径；当前入口与兼容说明见 [更名与升级](project-rename.md)。
 
 落地常驻采集服务的配置、状态与停用见 [V2bX 指南](v2bx-guide.md#落地常驻仅观察服务)，仍需真实 VPS 试点验收。

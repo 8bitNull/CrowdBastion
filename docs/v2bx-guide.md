@@ -7,7 +7,7 @@
 菜单 `4 → 4 → 1`，或运行：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --diagnose-v2bx
+sudo bash crowdbastion.sh --diagnose-v2bx
 ```
 
 需要项目既有 Python 3/PyYAML 依赖。工具不自动安装依赖。默认检查 `V2bX.service`；如果主进程可识别且启动参数含绝对配置路径，使用该路径，否则仅检查候选 `/etc/V2bX/config.json`。候选路径不证明服务实际加载了它。
@@ -18,7 +18,7 @@ sudo bash install-crowdsec-1panel.sh --diagnose-v2bx
 sudo env V2BX_CONFIG=/etc/V2bX/config.json \
   V2BX_UNIT=V2bX.service \
   V2BX_ENTRIES='1:mixed,2:mixed,3:mixed' \
-  bash install-crowdsec-1panel.sh --diagnose-v2bx
+  bash crowdbastion.sh --diagnose-v2bx
 ```
 
 `V2BX_ENTRIES` 的编号按主配置 `Nodes` 数组从 1 开始，而非面板 NodeID。上例仅适用于至少有三个节点，且前三个节点均有混合入口的情况。省略的节点报告 `unknown`。可声明：
@@ -70,7 +70,7 @@ sudo python3 lib/crowdsec_v2bx.py \
 sudo env V2BX_LOG_FILE=/root/v2bx-xray-sample.log \
   V2BX_LOG_CORE=xray V2BX_LOG_TIMEZONE=+08:00 \
   V2BX_RELAY_CIDRS='198.51.100.10/32,2001:db8::10/128' \
-  bash install-crowdsec-1panel.sh --v2bx-log-check
+  bash crowdbastion.sh --v2bx-log-check
 ```
 
 `V2BX_LOG_CORE` 支持 `xray`、`sing`、`hysteria2`。`V2BX_RELAY_CIDRS` 是逗号分隔的严格网络地址，已声明中转来源会标为 `relay_address`，排除失败事件导出。未声明的地址始终为 `unverified`，并非可信直连用户；共享中转网段需在核查前完整列出。不要将此设置理解为全局 CrowdSec 白名单。
@@ -101,7 +101,7 @@ xray 文件时间没有时区，需 `V2BX_LOG_TIMEZONE` 明确指定事件发生
 sudo sh -c 'umask 077; journalctl -u V2bX.service -n 200 --no-pager -o json > /root/v2bx-journal-sample.jsonl'
 sudo env V2BX_LOG_FILE=/root/v2bx-journal-sample.jsonl \
   V2BX_LOG_CORE=sing V2BX_UNIT=V2bX.service \
-  bash install-crowdsec-1panel.sh --v2bx-log-check
+  bash crowdbastion.sh --v2bx-log-check
 ```
 
 原始导出可能包含凭据，仅在受控本机保存，不提交仓库或公开分享。不要用 `-o cat` 替代 JSON，否则丢失 journal 接收时间和 unit。工具使用 `__REALTIME_TIMESTAMP` 作接收时间依据并检查 `_SYSTEMD_UNIT`，不据此提升来源可信度。以上命令还需按实际路径补充 `V2BX_RELAY_CIDRS`。
@@ -143,7 +143,7 @@ V2BX_OBSERVE_DB=/var/lib/crowdsec/v2bx-observe/sing.sqlite \
 V2BX_OBSERVE_DURATION=60 \
 V2BX_RELAY_CIDRS=198.51.100.10/32 \
 V2BX_OBSERVE_EXPORT=/var/lib/crowdsec/v2bx-observe/sing-snapshot-001.ndjson \
-bash install-crowdsec-1panel.sh --v2bx-observe
+bash crowdbastion.sh --v2bx-observe
 ```
 
 替换为实际日志和中转范围；样例地址不是可直接部署的白名单。Xray 文件日志另设 `V2BX_LOG_TIMEZONE=+08:00` 等明确偏移，不猜测本地时区。各源使用独立数据库；同一数据库拒绝双实例，活动源 inode 也使用 advisory lock，防止本采样器用不同数据库并发重复读取。该锁不能约束忽略锁的其他采集程序，仍需核查现有 acquisition。
@@ -185,9 +185,9 @@ bash install-crowdsec-1panel.sh --v2bx-observe
 
 ```bash
 sudo chmod 600 /root/v2bx-observer.json
-sudo env V2BX_OBSERVER_CONFIG=/root/v2bx-observer.json bash install-crowdsec-1panel.sh --install-v2bx-observer
-sudo bash install-crowdsec-1panel.sh --v2bx-observer-status
-sudo bash install-crowdsec-1panel.sh --disable-v2bx-observer
+sudo env V2BX_OBSERVER_CONFIG=/root/v2bx-observer.json bash crowdbastion.sh --install-v2bx-observer
+sudo bash crowdbastion.sh --v2bx-observer-status
+sudo bash crowdbastion.sh --disable-v2bx-observer
 ```
 
 安装检查 `/usr/bin/python3` 的 PyYAML，不借用当前 shell 的临时 PYTHONPATH。首次安装复制 helper 和配置到 `/usr/local/lib/crowdsec-v2bx-observer/`，创建 `crowdsec-v2bx-observer.service`，数据位于 `/var/lib/crowdsec-v2bx-observer/`。拒绝覆盖现有目录或同名 unit；安装失败且服务能停下时撤销新文件，若无法停下则保留文件用于排查。停用保留全部数据，不影响 V2bX 和其他防护服务。确认配置无变化且源可用后，可用 `systemctl enable --now crowdsec-v2bx-observer.service` 恢复观察。
@@ -203,9 +203,9 @@ sudo bash install-crowdsec-1panel.sh --disable-v2bx-observer
 菜单 `4 → 4 → 4` 的 `1/2/3` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --enable-v2bx-alerts
-sudo bash install-crowdsec-1panel.sh --v2bx-alerts-status
-sudo bash install-crowdsec-1panel.sh --disable-v2bx-alerts
+sudo bash crowdbastion.sh --enable-v2bx-alerts
+sudo bash crowdbastion.sh --v2bx-alerts-status
+sudo bash crowdbastion.sh --disable-v2bx-alerts
 ```
 
 接入会安装独占 parser、仅观察场景及 acquisition；在 profiles 最前增加该场景专用的空 decisions／`on_success: break` guard，再校验并重启 CrowdSec，启动 `crowdsec-v2bx-alerts.service`。**该操作会重启核心**，须选择维护窗口。原 SSH／Web 等场景仍走后续原 profiles；本工具不创建观察场景决策。存在同名资产、重复文件采集或配置漂移时拒绝自动修改。

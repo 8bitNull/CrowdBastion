@@ -1,6 +1,6 @@
-# CrowdSec 防护管理中心
+# CrowdBastion
 
-面向网站服务器、中转 VPS 和 V2bX 落地节点的 Linux 管理工具。提供 CrowdSec 安装、日志检测、IP 阻断、AppSec 接入，以及 WebUI、Telegram 和日常维护菜单。
+CrowdBastion 是以 CrowdSec 为核心、面向网站服务器、中转 VPS 和 V2bX 落地节点的 Linux 防护与运维管理工具。提供 CrowdSec 安装、日志检测、IP 阻断、AppSec 接入，以及 WebUI、Telegram 和日常维护菜单。
 
 适用于 1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）及宿主机 Nginx/OpenResty。首次使用请看 [使用说明](docs/usage-guide.md)，按节点职责选择入口。
 
@@ -20,13 +20,15 @@
 需要 root、Bash、systemd，以及 Python 3／PyYAML。支持分支和实际验收范围见 [VPS 兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md)；WebUI 另需 Docker/Compose，定时更新另需 cron/crond。软件源、Hub 和所需镜像须可访问。
 
 ```bash
-git clone --branch main https://github.com/8bitNull/crowdsec-1key.git
-cd crowdsec-1key
-bash install-crowdsec-1panel.sh --help
-sudo bash install-crowdsec-1panel.sh
+git clone --branch main https://github.com/8bitNull/CrowdBastion.git
+cd CrowdBastion
+bash crowdbastion.sh --help
+sudo bash crowdbastion.sh
 ```
 
 **主脚本必须与完整 `lib/` 目录一起保留。** 所需入口以实际版本的 `--help` 为准；环境准备及源码包使用见 [下载说明](docs/usage-guide.md#准备环境与下载)。
+
+项目原名 `crowdsec-1key`。旧入口 `install-crowdsec-1panel.sh` 保留为指向 `crowdbastion.sh` 的兼容链接；已有安装的服务名、配置、备份和规则标识继续沿用，升级步骤见 [更名与升级](docs/project-rename.md)。
 
 安装前保存 CrowdSec／防火墙配置，核对管理员来源 IP，并准备 VPS 控制台或恢复入口。菜单 `0` 返回，`Ctrl+D` 退出；删除、停用和卸载需明确确认。
 
@@ -43,7 +45,7 @@ sudo bash install-crowdsec-1panel.sh
 | `--v2bx-log-check` | 日志样本分类、固定字段投影及声明的中转来源排除 |
 | `--v2bx-observe` | 保存观察事件与恢复游标，导出一次性快照 |
 
-运行方式为 `sudo bash install-crowdsec-1panel.sh 参数`。完整菜单、参数及退出码见 [命令行参考](docs/cli-reference.md)。V2bX 输入配置、采样容量与轮转风险见 [V2bX 指南](docs/v2bx-guide.md)。
+运行方式为 `sudo bash crowdbastion.sh 参数`。完整菜单、参数及退出码见 [命令行参考](docs/cli-reference.md)。V2bX 输入配置、采样容量与轮转风险见 [V2bX 指南](docs/v2bx-guide.md)。
 
 ## 防护边界与当前状态
 
@@ -61,6 +63,7 @@ V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IP
 | 文档 | 内容 |
 | --- | --- |
 | [文档索引](docs/README.md) | 完整导航、仓库结构、历史与计划 |
+| [更名与升级](docs/project-rename.md) | 新仓库地址、已有检出的更新方式及运行标识兼容性 |
 | [使用说明](docs/usage-guide.md) / [命令行参考](docs/cli-reference.md) | 安装、菜单、参数、备份与卸载 |
 | [AppSec 指南](docs/appsec-guide.md) / [日志与真实 IP](docs/detection-guide.md) | 网站接入、来源信任与检测排查 |
 | [管理与维护](docs/management-guide.md) | WebUI、Telegram、Hub 更新与恢复 |

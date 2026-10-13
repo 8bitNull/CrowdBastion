@@ -33,10 +33,12 @@
 
 在 VPS 更新完整项目后执行：
 
+以下目录为新检出的示例；已有安装请进入原项目目录，更名不要求移动目录。
+
 ```bash
-cd /home/crowdsec-1key
+cd /home/CrowdBastion
 git pull --ff-only
-sudo bash install-crowdsec-1panel.sh --custom-bot
+sudo bash crowdbastion.sh --custom-bot
 ```
 
 选择 `1. 配置/更新并启用`，安装器更新托管文件并重启 `crowdsec-1key-bot.service`。请保留原 Token、Chat ID、管理员 ID 和路径配置。仅重启服务不会把仓库新版复制到安装路径。若实际运行的是自行部署的 `/usr/local/bin/crowdsec_bot.py`，先按原文档识别和停用它的真实启动入口，再迁移；不要猜测 `crowdsec-bot.service` 一定存在。

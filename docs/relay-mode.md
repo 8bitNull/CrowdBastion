@@ -55,7 +55,7 @@ python3 tests/verify_relay.py /path/to/crowdsec-v1.8.1
 
 ## 节点角色与流量路径诊断
 
-菜单 `4 → 3 → 2` 或 `sudo bash install-crowdsec-1panel.sh --relay-path` 依次选择入口/中间/出口/不确定、用户态/NAT/bridge/不确定，以及可选 TCP/UDP 本地入口端口。选择只用于本次输出，不保存。EOF、`q` 或角色/路径菜单的 `0` 取消。
+菜单 `4 → 3 → 2` 或 `sudo bash crowdbastion.sh --relay-path` 依次选择入口/中间/出口/不确定、用户态/NAT/bridge/不确定，以及可选 TCP/UDP 本地入口端口。选择只用于本次输出，不保存。EOF、`q` 或角色/路径菜单的 `0` 取消。
 
 诊断读取数字 socket 地址与必要的本地 NAT 规则，不读取转发器配置或进程完整命令行。角色是操作者声明，socket 对端是本机可见网络对端；两者不能证明完整远程拓扑。取反、集合端口及其他无法忠实表示的 NAT 条件跳过并标为未验证。随后复用 Bouncer 静态检查；完整诊断仍返回 `2`，读取/输入异常返回 `1`。
 
@@ -86,10 +86,10 @@ sudo python3 tests/verify_relay_network.py \
 在中心运行 CrowdSec、在中转仅执行中心封禁时，使用 `--install-relay-bouncer`，而非安装本地日志检测核心。安装菜单第 6 项也提供接入与维护。中心管理员先为每个中转创建独立 Bouncer 密钥；详见 [中心账号、日志与运维](remote-bouncer-operations.md)。
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --install-relay-bouncer
-sudo bash install-crowdsec-1panel.sh --configure-relay-bouncer
-sudo bash install-crowdsec-1panel.sh --relay-bouncer-status
-sudo bash install-crowdsec-1panel.sh --remove-relay-bouncer
+sudo bash crowdbastion.sh --install-relay-bouncer
+sudo bash crowdbastion.sh --configure-relay-bouncer
+sudo bash crowdbastion.sh --relay-bouncer-status
+sudo bash crowdbastion.sh --remove-relay-bouncer
 ```
 
 URL 和密钥交互输入，密钥隐藏，不支持密钥命令行参数。URL 不允许用户信息、查询、片段或重定向。HTTPS 使用系统 CA 校验；HTTP 只接受字面环回、RFC1918 和 IPv6 ULA 地址，不接受公网地址或域名（含 `.local` 域名）。建议使用 WireGuard 私网或 TLS。认证预检访问真实 `/v1/decisions/stream?startup=true`，检查 HTTP 200 和 JSON 决策流结构；整个 helper 操作限制 15 秒。超时、错误密钥、TLS 或连接失败均不替换原配置。

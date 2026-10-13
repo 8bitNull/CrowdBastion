@@ -1,8 +1,10 @@
-# 命令行参考
+# CrowdBastion 命令行参考
 
 [返回 README](../readme.md) · [使用说明](usage-guide.md)
 
 按参数查找操作；首次使用请先按使用说明选择部署场景。安装与配置入口仍有交互输入。
+
+主入口为 `crowdbastion.sh`；旧入口 `install-crowdsec-1panel.sh` 为兼容链接，参数与退出码一致。服务名和配置路径的兼容说明见 [更名与升级](project-rename.md)。
 
 ## 目录
 
@@ -14,7 +16,7 @@
 ## 参数
 
 ```bash
-bash install-crowdsec-1panel.sh --help
+bash crowdbastion.sh --help
 ```
 
 | 参数 | 功能 |
