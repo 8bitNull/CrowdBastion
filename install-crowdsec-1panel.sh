@@ -1892,8 +1892,8 @@ manage_real_ip() {
 manage_diagnostics() {
     local choice
     while true; do
-        printf '\n诊断与修复 — 状态检查只读，修复与请求核验另行选择\n1. 只读健康检查\n2. 只读检查新增/漏采日志\n3. 只读 AppSec 状态\n4. 真实 IP 管理（先诊断，再选择修复/核验/撤销）\n5. 只读 Self-Report 排查\n6. 修复 HTTP 日志采集\n7. 修复 Firewall Bouncer 连接配置\n8. 诊断后逐项选择基础修复（规则、日志、指标）\n9. 启用 SQLite WAL（需要确认本地磁盘）\n10. 只读中转防护检查\n11. 只读中转角色与流量路径诊断\n12. 只读 V2bX 三内核与混合入口诊断\n13. 只读 V2bX 日志样本检查\n0. 返回\n'
-        prompt choice '请选择 [0-13]: ' || return 0
+        printf '\n诊断与修复 — 状态检查只读，修复与请求核验另行选择\n1. 只读健康检查\n2. 只读检查新增/漏采日志\n3. 只读 AppSec 状态\n4. 真实 IP 管理（先诊断，再选择修复/核验/撤销）\n5. 只读 Self-Report 排查\n6. 修复 HTTP 日志采集\n7. 修复 Firewall Bouncer 连接配置\n8. 诊断后逐项选择基础修复（规则、日志、指标）\n9. 启用 SQLite WAL（需要确认本地磁盘）\n10. 只读中转防护检查\n11. 只读中转角色与流量路径诊断\n12. 只读 V2bX 三内核与混合入口诊断\n13. 只读 V2bX 日志样本检查\n14. V2bX 落地常驻观察（安装／状态／停用）\n0. 返回\n'
+        prompt choice '请选择 [0-14]: ' || return 0
         case "$choice" in
             1) check_health_status ;;
             2) check_log_inventory ;;
@@ -1908,6 +1908,7 @@ manage_diagnostics() {
             11) check_relay_path ;;
             12) diagnose_v2bx ;;
             13) check_v2bx_logs ;;
+            14) manage_v2bx_observer ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1968,6 +1969,9 @@ show_help() {
   --diagnose-v2bx      只读核查 V2bX 三内核、日志、混合入口声明与封禁位置
   --v2bx-log-check     只读检查本机日志样本，输出脱敏事件与未验证状态
   --v2bx-observe       持久保存脱敏观察样本；不安装生产采集或封禁规则
+  --install-v2bx-observer 安装落地常驻仅观察服务（需私有 JSON 配置）
+  --v2bx-observer-status 只读检查落地观察服务、心跳与采集指标
+  --disable-v2bx-observer 停用落地观察服务，保留配置与数据库
   --install-webui      部署/更新 WebUI
   --reset-webui-credentials 检查/轮换 WebUI 独立凭据
   --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
@@ -2029,6 +2033,9 @@ main_operation() {
         --diagnose-v2bx) diagnose_v2bx ;;
         --v2bx-log-check) check_v2bx_logs ;;
         --v2bx-observe) observe_v2bx_logs ;;
+        --install-v2bx-observer) v2bx_observer_service install ;;
+        --v2bx-observer-status) v2bx_observer_service status ;;
+        --disable-v2bx-observer) v2bx_observer_service disable ;;
         --install-webui) deploy_web_ui ;;
         --reset-webui-credentials) reset_webui_credentials ;;
         --install-waf) install_web_rules ;;
@@ -2073,7 +2080,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
+        ''|--help|-h|--status|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }
