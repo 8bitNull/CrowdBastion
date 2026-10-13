@@ -32,7 +32,7 @@ Nginx、NPM、系统日志分别使用 `nginx`、`nginx-proxy-manager`、`syslog
 
 若旧 `web-sites.yaml` 的 YAML 内容与本工具原始预设完全一致，安装/修复会在备份后迁移到实际日志采集，消除不存在路径的告警和与软件包 SSH 采集的重叠。修改过的用户配置保留。修复还会去掉本工具修复文件中已被其他采集配置覆盖的条目；失败时一起恢复旧预设和修复文件。重复安装保留管理员白名单中的原有 IP、CIDR、表达式，以及已有 Firewall Bouncer 的后端类型。
 
-`--check-logs` 或菜单 `4 → 2` 只读列出漏采、待调整和重复采集；结合容器有效 HTTP 日志指令与实际挂载，以及宿主机 nginx/openresty 的默认 `-T` 配置发现自定义日志。发现待调整项目返回 `2`，异常/重复采集返回 `1`；修复使用 `--repair-logs`。重复安装只补缺失软件包和规则，已有核心保留软件源及版本；配置内容没有变化且服务已运行时跳过重启。保留已有指标端口，修改前核对占用进程。
+`--check-logs` 或菜单 `4 → 2 → 1` 只读列出漏采、待调整和重复采集；结合容器有效 HTTP 日志指令与实际挂载，以及宿主机 nginx/openresty 的默认 `-T` 配置发现自定义日志。发现待调整项目返回 `2`，异常/重复采集返回 `1`；修复使用 `--repair-logs`。重复安装只补缺失软件包和规则，已有核心保留软件源及版本；配置内容没有变化且服务已运行时跳过重启。保留已有指标端口，修改前核对占用进程。
 
 1Panel 的站点日志应结合容器的 `nginx -T` 和 `docker inspect` 挂载确定，不能仅按域名推定宿主机目录。用户部署中已确认 `/www` 的宿主机 Source 为 `/opt/1panel/1panel/www`，所以容器日志 `/www/sites/<站点目录>/log/access.log` 对应 `/opt/1panel/1panel/www/sites/<站点目录>/log/access.log`。
 
@@ -68,7 +68,7 @@ NPM 根据[官方模板](https://github.com/NginxProxyManager/nginx-proxy-manage
 
 ## 修复日志采集路径
 
-菜单 `4 → 8` 选择 HTTP 日志修复后，会检查日志目录和 Docker 实际挂载，汇总确认后应用；也可使用菜单 `4 → 6` 或单独执行：
+菜单 `4 → 5 → 3` 选择 HTTP 日志修复后，会检查日志目录和 Docker 实际挂载，汇总确认后应用；也可使用菜单 `4 → 2 → 4` 或单独执行：
 
 ```bash
 sudo bash install-crowdsec-1panel.sh --repair-logs
@@ -88,7 +88,7 @@ Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方
 
 ## 按可信 CDN/代理还原真实访客 IP
 
-若访问日志首字段是 Cloudflare 节点 IP，且 `nginx -T` 没有真实 IP 配置，单独设置 `proxy_set_header X-Real-IP` 不能改变日志和 Web Bouncer 使用的 `$remote_addr`。Docker 部署可运行以下入口，或选择菜单 `4 → 4 → 1 → 2`：
+若访问日志首字段是 Cloudflare 节点 IP，且 `nginx -T` 没有真实 IP 配置，单独设置 `proxy_set_header X-Real-IP` 不能改变日志和 Web Bouncer 使用的 `$remote_addr`。Docker 部署可运行以下入口，或选择菜单 `4 → 2 → 3 → 1 → 2`：
 
 ```bash
 sudo bash install-crowdsec-1panel.sh --repair-real-ip
@@ -96,7 +96,7 @@ sudo bash install-crowdsec-1panel.sh --repair-real-ip
 
 入口先列出现有 `real_ip_header`、可信来源条目数和候选 Header，再要求选择实际接入方式。Cloudflare 公网节点直接接入默认使用官方 HTTPS IPv4/IPv6 网段和 `CF-Connecting-IP`；若已关联请求确认该 Header 缺失、XFF 链可靠，可明确选择接入类型 `5`，使用同样官方网段和 `X-Forwarded-For`，从右向左递归解析。不会自动尝试其他 Header，也不扩大信任范围。配置线索仅用于提示，不等于自动确认网络拓扑。其他 CDN/反向代理需明确输入上游约定的 Header 和可信 IP/CIDR。
 
-上游不确定时，选择接入菜单 `3`，或单独执行 `sudo bash install-crowdsec-1panel.sh --diagnose-real-ip`（管理菜单 `4 → 4 → 1 → 1`）。独立诊断不要求 CrowdSec 核心、curl 或 HTTP real-IP 模块，只读取当前容器配置、挂载和近期日志；支持标准 Nginx 首字段与 NPM `[Client …]`，显示最近日志时间，排除 stream 日志。
+上游不确定时，选择接入菜单 `3`，或单独执行 `sudo bash install-crowdsec-1panel.sh --diagnose-real-ip`（管理菜单 `4 → 2 → 3 → 1 → 1`）。独立诊断不要求 CrowdSec 核心、curl 或 HTTP real-IP 模块，只读取当前容器配置、挂载和近期日志；支持标准 Nginx 首字段与 NPM `[Client …]`，显示最近日志时间，排除 stream 日志。
 
 每份日志只读取最后最多 64KiB / 20 行，最多检查 12 份，无法识别的格式明确标记为待核对。它不输出完整请求或 Header 值，也不会访问站点、下载 CDN 网段、写配置或重载。
 
@@ -110,7 +110,7 @@ sudo bash install-crowdsec-1panel.sh --repair-real-ip
 
 确认前显示 Header、全部可信网段和作用范围。自定义模式拒绝空网段、全网信任和过宽的内网网段；内网需 IPv4 `/24` 或更窄、IPv6 `/64` 或更窄，loopback 需单个地址。Header 缺失、无法提取有效 IP 或连接来源不可信时，Nginx 保留连接来源 IP，不尝试其他 Header；`X-Forwarded-For` 从右向左跳过可信代理。确认后备份、校验并重载，失败恢复。
 
-重复执行可更新配置；`--restore-real-ip` 或菜单 `4 → 4 → 1 → 4` 恢复原自定义文件内容及权限，原文件不存在时移除生成文件。旧版 Cloudflare 管理记录兼容，核心卸载要求先撤销。
+重复执行可更新配置；`--restore-real-ip` 或菜单 `4 → 2 → 3 → 1 → 4` 恢复原自定义文件内容及权限，原文件不存在时移除生成文件。旧版 Cloudflare 管理记录兼容，核心卸载要求先撤销。
 
 Cloudflare 模式仅信任官方公网节点，不自动信任 loopback 或内网代理。Cloudflare Tunnel 需核对其连接来源和 Header 后再选择自定义模式；宿主机 Nginx/OpenResty 使用对应的宿主机修复入口。修复后从外部访问当前 `server_name` 对应站点，用独特查询参数关联该次请求的新访问日志，核对访问设备公网 IP。日志中的 IP 与 Web Bouncer 使用的 IP 仍需在实际部署中核验；旧日志和累计计数不会改写。保留 CDN 白名单、SSH 采集和现有 WAF。
 
@@ -118,16 +118,16 @@ Cloudflare 模式仅信任官方公网节点，不自动信任 loopback 或内�
 
 ## 正常请求的真实 IP 核验
 
-`--verify-real-ip` 或菜单 `4 → 4 → 1 → 3` 支持本工具完整管理、共用访问钩子的原生 Docker Web Bouncer。输入站点根地址和请求设备的已知公网 IP；从本机或外部设备访问带随机标记的正常页面，关联访问日志、连接对端、CF/XFF 与实际传给 `cs.Allow` 的 IP。只为该标记临时记录诊断，原 WAF 仍先执行；失败、中断和成功均恢复原 Lua 并校验/重载。
+`--verify-real-ip` 或菜单 `4 → 2 → 3 → 1 → 3` 支持本工具完整管理、共用访问钩子的原生 Docker Web Bouncer。输入站点根地址和请求设备的已知公网 IP；从本机或外部设备访问带随机标记的正常页面，关联访问日志、连接对端、CF/XFF 与实际传给 `cs.Allow` 的 IP。只为该标记临时记录诊断，原 WAF 仍先执行；失败、中断和成功均恢复原 Lua 并校验/重载。
 
 不记录 Cookie、Authorization 或完整 Header。验证通过才保存私有证明；超过 24 小时、Nginx 配置或 Lua 改变时重新标为“尚未验证”。有 buffer 的日志需明确 flush，最长支持 115 秒 flush、120 秒核验等待；缺少 flush 或超时配置时停止。普通页面验证不代表攻击路径阻断验证。
 
-宿主机使用 `--diagnose-host-real-ip`、`--repair-host-real-ip`、`--verify-host-real-ip` 和 `--restore-host-real-ip`（菜单 `4 → 4 → 2` 后分别选择诊断、修复、核验或撤销）。修复要求 real-IP 模块与已加载标准 HTTP conf.d；不自动插入新的主配置入口。请求核验要求已接入的官方 Bouncer、唯一 inline 访问钩子和可读取的 access/error 日志，拒绝站点钩子覆盖、satisfy any 和 AppSec 本地覆盖；证明同时绑定 Bouncer 配置哈希。
+宿主机使用 `--diagnose-host-real-ip`、`--repair-host-real-ip`、`--verify-host-real-ip` 和 `--restore-host-real-ip`（菜单 `4 → 2 → 3 → 2` 后分别选择诊断、修复、核验或撤销）。修复要求 real-IP 模块与已加载标准 HTTP conf.d；不自动插入新的主配置入口。请求核验要求已接入的官方 Bouncer、唯一 inline 访问钩子和可读取的 access/error 日志，拒绝站点钩子覆盖、satisfy any 和 AppSec 本地覆盖；证明同时绑定 Bouncer 配置哈希。
 
 重复宿主机接入与真实 IP 修复不变时跳过重载。
 
 ## 管理员 AllowList 与 Self-Report
 
-`--self-report-status`（菜单 `4 → 5`，或 `3 → 9`）只读核对回环、本机接口和明确记录的地址对应的告警/决策；不查询外部服务猜出口 IP，也不自动解封或加白。NAT 的自身公网地址可明确记录到 `/etc/crowdsec/crowdsec-1key-own-addresses.json`，格式为 IP 字符串列表，例如 `["203.0.113.10"]`，实际使用自己的地址。手动封禁拒绝回环、未指定地址、本机接口、管理员 parser 白名单地址及这些记录，包括 IPv4-mapped IPv6。
+`--self-report-status`（菜单 `4 → 5 → 1`，或 `3 → 9`）只读核对回环、本机接口和明确记录的地址对应的告警/决策；不查询外部服务猜出口 IP，也不自动解封或加白。NAT 的自身公网地址可明确记录到 `/etc/crowdsec/crowdsec-1key-own-addresses.json`，格式为 IP 字符串列表，例如 `["203.0.113.10"]`，实际使用自己的地址。手动封禁拒绝回环、未指定地址、本机接口、管理员 parser 白名单地址及这些记录，包括 IPv4-mapped IPv6。
 
 `--admin-allowlist`（菜单 `3 → 8`）管理明确选择的单个管理员 IP。中央 AllowList 与 parser whitelist 不同，**会使来源跳过 AppSec**并影响决策过滤；不会自动迁移私网或代理网段。需要支持 AllowLists 的 CrowdSec 版本。自己的公网出口地址无法仅由本机接口推出，必须核对并明确记录。

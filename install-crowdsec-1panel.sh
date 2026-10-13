@@ -770,7 +770,7 @@ reset_webui_credentials() {
 manage_web_ui() {
     local choice
     while true; do
-        printf '\nWebUI 管理\n1. 部署/更新（复用凭据）\n2. 卸载本工具 WebUI\n3. 查看容器日志\n4. 检查/轮换独立凭据\n5. 查看节点并选择注销\n0. 返回\n'
+        printf '\n网页管理面板\n1. 安装或更新管理面板\n2. 卸载本工具的管理面板\n3. 查看容器日志\n4. 检查或更换登录凭据\n5. 查看节点，选择不再使用的节点并注销\n0. 返回\n'
         prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) deploy_web_ui ;;
@@ -991,9 +991,9 @@ setup_appsec() (
     log_info 'AppSec 配置已校验，127.0.0.1:7422 存在监听；网站接入仍需 Web Bouncer。'
     local choice service file
     diagnose_appsec_containers || return 1
-    [[ -f "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" ]] && command -v nginx >/dev/null 2>&1 && printf '1. 接入已有宿主机 Nginx Bouncer\n'
-    [[ -f "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" ]] && command -v openresty >/dev/null 2>&1 && printf '2. 接入已有宿主机 OpenResty Bouncer\n'
-    printf '3. 接入已有 Docker Web Bouncer（host 或已核验的私有 bridge）\n4. 首次安装 Web Bouncer（Docker/宿主机）\n0. 仅配置引擎，稍后接入网站\n'
+    [[ -f "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" ]] && command -v nginx >/dev/null 2>&1 && printf '1. 接入宿主机 Nginx 已有的网站拦截组件\n'
+    [[ -f "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf" ]] && command -v openresty >/dev/null 2>&1 && printf '2. 接入宿主机 OpenResty 已有的网站拦截组件\n'
+    printf '3. 接入 Docker 已有的网站拦截组件（需已确认网络可达）\n4. 为 Docker 或宿主机网站安装拦截组件\n0. 仅配置引擎，稍后接入网站\n'
     prompt choice '请选择可用接入项（0 结束）: ' || return 0
     case "$choice" in
         1) service=nginx ;;
@@ -1180,18 +1180,60 @@ manage_waf_rules() {
     require_core || return 1
     local choice
     while true; do
-        printf '\n规则与更新\n1. Web 日志检测规则\n2. WordPress 日志规则\n3. iptables 日志规则（需要相应采集）\n4. 已安装集合\n5. 更新 Hub 规则\n6. 补齐基础集合（保留自定义/AppSec）\n7. 指定卸载集合\n8. 移除已知 Web 日志扩展\n9. Hub 定时更新\n0. 返回\n'
-        prompt choice '请选择 [0-9]: ' || return 0
+        printf '\n检测规则\n1. 添加检测规则\n2. 查看已安装的规则\n3. 更新检测规则\n4. 补齐基础检测规则\n5. 删除不再使用的规则\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
+        case "$choice" in
+            1) manage_rule_installation ;;
+            2) cscli collections list ;;
+            3) manage_rule_updates ;;
+            4) reset_waf_to_core_baseline ;;
+            5) manage_rule_removal ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_rule_installation() {
+    local choice
+    while true; do
+        printf '\n添加检测规则\n1. 网站访问日志\n2. WordPress 网站日志\n3. 防火墙日志（需已开启日志记录）\n0. 返回\n'
+        prompt choice '请选择 [0-3]: ' || return 0
         case "$choice" in
             1) install_web_rules ;;
             2) install_collections crowdsecurity/wordpress && reload_core_rules ;;
             3) install_collections crowdsecurity/iptables && reload_core_rules ;;
-            4) cscli collections list ;;
-            5) update_hub_logged ;;
-            6) reset_waf_to_core_baseline ;;
-            7) uninstall_specific_waf_collection ;;
-            8) uninstall_all_waf_extensions ;;
-            9) manage_auto_update ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_rule_updates() {
+    local choice
+    while true; do
+        printf '\n更新检测规则\n1. 现在更新\n2. 设置自动更新\n0. 返回\n'
+        prompt choice '请选择 [0-2]: ' || return 0
+        case "$choice" in
+            1) update_hub_logged ;;
+            2) manage_auto_update ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_rule_removal() {
+    local choice
+    while true; do
+        printf '\n删除检测规则\n1. 选择要删除的规则\n2. 移除已知的网站和防火墙日志规则\n0. 返回\n'
+        prompt choice '请选择 [0-2]: ' || return 0
+        case "$choice" in
+            1) uninstall_specific_waf_collection ;;
+            2) uninstall_all_waf_extensions ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1224,7 +1266,7 @@ manage_auto_update() {
     require_core || return 1
     local choice minute hour
     while true; do
-        printf '\nHub 定时更新（服务器时区）\n1. 每天 03:30\n2. 自定义时间\n3. 关闭\n4. 查看任务\n0. 返回\n'
+        printf '\n检测规则自动更新（按服务器时间）\n1. 每天 03:30\n2. 自定义时间\n3. 关闭\n4. 查看任务\n0. 返回\n'
         prompt choice '请选择 [0-4]: ' || return 0
         case "$choice" in
             1) enable_auto_update ;;
@@ -1286,7 +1328,7 @@ manage_admin_allowlist() {
     local choice address
     log_warn '中央 AllowList 会使这些来源跳过 AppSec，并影响中央决策过滤；parser whitelist 只保护日志处理。不会自动迁移代理网段。'
     while true; do
-        printf '\n管理员中央 AllowList\n1. 查看\n2. 明确添加一个 IP\n3. 明确移除一个 IP\n0. 返回\n'
+        printf '\n管理员 IP 放行名单\n1. 查看\n2. 添加一个 IP\n3. 移除一个 IP\n0. 返回\n'
         prompt choice '请选择 [0-3]: ' || return 0
         case "$choice" in
             1) cscli allowlists list && cscli allowlists inspect crowdsec-1key-admin ;;
@@ -1387,7 +1429,7 @@ manage_firewall_ops() {
     require_core && require_yaml || return 1
     local choice ip duration reason
     while true; do
-        printf '\n封禁与访问保护\n1. 活跃决策\n2. 最新警报\n3. 解封 IP\n4. 封禁 IP\n5. 查看防火墙规则\n6. 解析指标\n7. 修复 Bouncer 连接配置\n8. 管理员中央 AllowList\n9. 只读 Self-Report 排查\n0. 返回\n'
+        printf '\nIP 封禁与放行\n1. 查看被封禁的 IP\n2. 查看最近的告警\n3. 解封 IP\n4. 封禁 IP\n5. 查看防火墙规则\n6. 查看日志解析情况\n7. 修复防火墙与检测服务的连接\n8. 管理员 IP 放行名单\n9. 排查服务器自身 IP 被封禁的问题\n0. 返回\n'
         prompt choice '请选择 [0-9]: ' || return 0
         case "$choice" in
             1) cscli decisions list ;;
@@ -1528,7 +1570,7 @@ manage_telegram() {
     require_core || return 1
     local choice
     while true; do
-        printf '\nTelegram 告警\n1. 配置/更新（含通知模式）\n2. 官方插件/API 回执测试\n3. 只读状态与重复来源检查\n4. 停用本工具通道\n5. 可选交互机器人（查询/按钮）\n0. 返回\n'
+        printf '\nTelegram 告警\n1. 设置通知\n2. 发送测试消息并检查是否送达\n3. 查看通知状态，检查重复通知\n4. 停用本工具的通知\n5. 管理交互机器人（查询和按钮操作）\n0. 返回\n'
         prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) setup_telegram_notification interactive ;;
@@ -1672,7 +1714,7 @@ smart_audit_and_optimize() (
     log_succ '已完成所选基础修复并校验配置；请求识别与实际防护仍需分别核验。'
     if [[ "$logs" == true ]]; then log_info '日志采集请通过新增访问与 cscli metrics 核验。'; fi
     log_info 'SQLite WAL 可使用 --enable-wal，在确认数据库位于本地磁盘后启用官方 db_config.use_wal。'
-    log_info '上游不确定时先用 --diagnose-real-ip 或菜单 [4] → [4] 选择目标并只读诊断；确认代理后再用 --repair-real-ip 修复。'
+    log_info '上游不确定时先用 --diagnose-real-ip 或菜单 [4] → [2] → [3] 选择目标并只读诊断；确认代理后再用 --repair-real-ip 修复。'
 )
 
 enable_sqlite_wal() {
@@ -1810,7 +1852,7 @@ uninstall_crowdsec_all() { deep_purge_residuals; }
 manage_uninstall_center() {
     local choice
     while true; do
-        printf '\n卸载与恢复\n1. 卸载/清理 CrowdSec 与本工具数据（需要确认）\n2. 只读残留检查\n保留备份、系统日志和软件源；网站接入须先撤销，恢复步骤见 README。\n0. 返回\n'
+        printf '\n卸载与清理\n1. 卸载 CrowdSec 并清理本工具数据（需要确认）\n2. 检查是否有残留\n保留备份、系统日志和软件源；网站接入须先撤销，恢复步骤见 README。\n0. 返回\n'
         prompt choice '请选择 [0-2]: ' || return 0
         case "$choice" in
             1) uninstall_crowdsec_all ;;
@@ -1825,7 +1867,7 @@ manage_uninstall_center() {
 manage_installation() {
     local choice
     while true; do
-        printf '\n安装与接入\n1. 安装核心与 Firewall Bouncer（网站模式）\n2. 网站防护接入（AppSec / Web Bouncer）\n3. 真实 IP 管理\n4. 登记 Docker bridge 私有端点\n5. 纯中转节点精简安装\n6. 远端 Bouncer-only 接入与维护\n0. 返回\n'
+        printf '\n安装与接入\n1. 安装检测服务和防火墙防护（网站模式）\n2. 为网站接入防护\n3. 检查或修正访客真实 IP\n4. 设置容器连接检测服务的私有地址\n5. 为纯中转节点安装基础防护\n6. 连接远端检测中心\n0. 返回\n'
         prompt choice '请选择 [0-6]: ' || return 0
         case "$choice" in
             1) install_crowdsec_core ;;
@@ -1844,7 +1886,7 @@ manage_installation() {
 manage_website_protection() {
     local choice
     while true; do
-        printf '\n网站防护接入\n1. 配置 AppSec 并选择已有接入或首次安装\n2. 首次安装 Web Bouncer（要求 AppSec 已监听）\n3. 只读 AppSec 状态\n4. 主动验证网站 AppSec（需要确认）\n5. 检查/设置 AppSec 正文与故障策略\n6. 停用本工具 AppSec\n7. 撤销本工具原生容器 Web Bouncer\n0. 返回\n'
+        printf '\n网站防护接入\n1. 配置网站请求检测并接入网站\n2. 安装网站拦截组件（需先配置请求检测）\n3. 查看网站请求检测状态\n4. 发送测试请求验证网站防护（需要确认）\n5. 设置请求正文检查和检测故障时的处理方式\n6. 停用本工具的网站请求检测\n7. 移除本工具安装的容器网站拦截组件\n0. 返回\n'
         prompt choice '请选择 [0-7]: ' || return 0
         case "$choice" in
             1) setup_appsec ;;
@@ -1865,7 +1907,7 @@ manage_real_ip() {
     local target choice label
     local runtime=()
     while true; do
-        printf '\n真实 IP 管理 — 选择目标\n1. Docker Nginx/OpenResty/NPM\n2. 宿主机 Nginx/OpenResty\n0. 返回\n'
+        printf '\n检查访客真实 IP — 选择网站运行位置\n1. Docker Nginx/OpenResty/NPM\n2. 宿主机 Nginx/OpenResty\n0. 返回\n'
         prompt target '请选择 [0-2]: ' || return 0
         case "$target" in
             1) runtime=(); label=Docker ;;
@@ -1874,7 +1916,7 @@ manage_real_ip() {
             *) log_warn '无效选项。'; continue ;;
         esac
         while true; do
-            printf '\n%s 真实 IP\n1. 只读上游链路与真实 IP 诊断\n2. 按明确的可信 CDN/代理修复\n3. 关联正常请求核验日志与 Bouncer IP\n4. 撤销本工具真实 IP 配置\n0. 返回目标选择\n' "$label"
+            printf '\n%s 真实 IP\n1. 检查代理路径和访客真实 IP\n2. 按已确认可信的 CDN 或代理修正配置\n3. 通过正常访问核对日志和拦截组件识别的 IP\n4. 撤销本工具真实 IP 配置\n0. 返回目标选择\n' "$label"
             prompt choice '请选择 [0-4]: ' || return 0
             case "$choice" in
                 1) repair_cloudflare_real_ip diagnose "${runtime[@]}" ;;
@@ -1892,23 +1934,63 @@ manage_real_ip() {
 manage_diagnostics() {
     local choice
     while true; do
-        printf '\n诊断与修复 — 状态检查只读，修复与请求核验另行选择\n1. 只读健康检查\n2. 只读检查新增/漏采日志\n3. 只读 AppSec 状态\n4. 真实 IP 管理（先诊断，再选择修复/核验/撤销）\n5. 只读 Self-Report 排查\n6. 修复 HTTP 日志采集\n7. 修复 Firewall Bouncer 连接配置\n8. 诊断后逐项选择基础修复（规则、日志、指标）\n9. 启用 SQLite WAL（需要确认本地磁盘）\n10. 只读中转防护检查\n11. 只读中转角色与流量路径诊断\n12. 只读 V2bX 三内核与混合入口诊断\n13. 只读 V2bX 日志样本检查\n14. V2bX 落地常驻观察（安装／状态／停用）\n0. 返回\n'
-        prompt choice '请选择 [0-14]: ' || return 0
+        printf '\n检查与修复\n1. 检查整体运行情况\n2. 排查网站问题\n3. 检查中转节点\n4. 管理 V2bX 落地节点\n5. 修复基础配置\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) check_health_status ;;
-            2) check_log_inventory ;;
-            3) check_appsec_status ;;
-            4) manage_real_ip ;;
-            5) diagnose_self_report ;;
-            6) locked_operation repair_log_acquis ;;
-            7) locked_operation repair_firewall_bouncer ;;
-            8) locked_operation smart_audit_and_optimize ;;
-            9) locked_operation enable_sqlite_wal ;;
-            10) check_relay_status ;;
-            11) check_relay_path ;;
-            12) diagnose_v2bx ;;
-            13) check_v2bx_logs ;;
-            14) manage_v2bx_observer ;;
+            2) manage_website_diagnostics ;;
+            3) manage_relay_diagnostics ;;
+            4) manage_v2bx_node ;;
+            5) manage_basic_repairs ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_website_diagnostics() {
+    local choice
+    while true; do
+        printf '\n排查网站问题\n1. 检查网站日志是否正常采集\n2. 查看网站防护运行情况\n3. 检查或修正访客真实 IP\n4. 补齐漏采的网站日志\n0. 返回\n'
+        prompt choice '请选择 [0-4]: ' || return 0
+        case "$choice" in
+            1) check_log_inventory ;;
+            2) check_appsec_status ;;
+            3) manage_real_ip ;;
+            4) locked_operation repair_log_acquis ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_relay_diagnostics() {
+    local choice
+    while true; do
+        printf '\n检查中转节点\n1. 查看中转防护运行情况\n2. 检查连接来源和转发路径\n0. 返回\n'
+        prompt choice '请选择 [0-2]: ' || return 0
+        case "$choice" in
+            1) check_relay_status ;;
+            2) check_relay_path ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_basic_repairs() {
+    local choice
+    while true; do
+        printf '\n修复基础配置\n1. 排查服务器自身 IP 被封禁的问题\n2. 修复防火墙与检测服务的连接\n3. 检查后选择需要修复的项目\n4. 改善日志数据库写入（需使用本地磁盘）\n0. 返回\n'
+        prompt choice '请选择 [0-4]: ' || return 0
+        case "$choice" in
+            1) diagnose_self_report ;;
+            2) locked_operation repair_firewall_bouncer ;;
+            3) locked_operation smart_audit_and_optimize ;;
+            4) locked_operation enable_sqlite_wal ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1919,7 +2001,7 @@ manage_diagnostics() {
 manage_integrations() {
     local choice
     while true; do
-        printf '\n管理与通知\n1. WebUI 管理\n2. 注册 Console\n3. Telegram 告警\n0. 返回\n'
+        printf '\n控制台与通知\n1. 网页管理面板\n2. 绑定 CrowdSec 在线控制台\n3. Telegram 通知\n0. 返回\n'
         prompt choice '请选择 [0-3]: ' || return 0
         case "$choice" in
             1) manage_web_ui ;;
@@ -1935,7 +2017,7 @@ manage_integrations() {
 show_main_menu() {
     local choice
     while true; do
-        printf '\nCrowdSec 管理中心 — 首次安装 [1] → [1]，健康检查 [4] → [1]\n1. 安装与接入\n2. 规则与更新\n3. 封禁与访问保护\n4. 诊断与修复\n5. 管理与通知\n6. 卸载与恢复\n0. 退出\n'
+        printf '\nCrowdSec 管理中心 — 首次安装 [1] → [1]，健康检查 [4] → [1]\n1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n0. 退出\n'
         prompt choice '请选择 [0-6]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
             1) locked_operation manage_installation ;;
@@ -1955,64 +2037,78 @@ show_help() {
     cat <<'EOF'
 用法：sudo bash install-crowdsec-1panel.sh [操作]
 不带参数进入交互菜单。命令行保留交互确认，失败返回非零状态。
-主菜单：1 安装与接入；2 规则与更新；3 封禁与访问保护；
-        4 诊断与修复；5 管理与通知；6 卸载与恢复。
+主菜单：1 安装与接入；2 检测规则；3 IP 封禁与放行；
+        4 检查与修复；5 控制台与通知；6 卸载与清理。
 首次安装：1 → 1；只读健康检查：4 → 1。原命令行操作参数保持兼容。
-  --install-core       安装核心与 Firewall Bouncer
-  --install-relay-bouncer   安装独立远端 Firewall Bouncer（无本地核心）
-  --configure-relay-bouncer 修改远端 URL 与隐藏密钥
-  --relay-bouncer-status    只读检查托管远端 Bouncer
-  --remove-relay-bouncer    移除托管远端配置并停用 Bouncer（保留包）
-  --install-relay      纯中转精简安装：系统/SSH 规则、日志与 Firewall Bouncer
-  --relay-status       只读检查中转 INPUT/FORWARD、IPv4/IPv6 封禁规则证据
-  --relay-path         只读声明角色/路径/入口端口，检查 socket/NAT 与 Bouncer 证据
-  --diagnose-v2bx      只读核查 V2bX 三内核、日志、混合入口声明与封禁位置
-  --v2bx-log-check     只读检查本机日志样本，输出脱敏事件与未验证状态
-  --v2bx-observe       持久保存脱敏观察样本；不安装生产采集或封禁规则
-  --install-v2bx-observer 安装落地常驻仅观察服务（需私有 JSON 配置）
-  --v2bx-observer-status 只读检查落地观察服务、心跳与采集指标
-  --disable-v2bx-observer 停用落地观察服务，保留配置与数据库
-  --enable-v2bx-alerts   接入 CrowdSec 仅观察告警（需已有健康采集器）
-  --v2bx-alerts-status   只读检查观察告警接入、profiles guard 与发布状态
-  --disable-v2bx-alerts  停用观察告警接入，保留发布账本与事件证据
-  --install-webui      部署/更新 WebUI
-  --reset-webui-credentials 检查/轮换 WebUI 独立凭据
-  --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
-  --install-appsec     识别部署方式，配置引擎并接入已有宿主机/Docker Web Bouncer
-  --install-web-bouncer 首次安装 Web Bouncer（Docker/宿主机）
-  --remove-web-bouncer  撤销本工具原生容器 Web Bouncer，保留原 WAF
-  --appsec-status      只读检查 AppSec 数据源、监听、容器组件与指标
-  --verify-appsec      确认后发起标记请求，判定 HTTP 与 AppSec 指标证据
-  --appsec-policy      检查/设置 AppSec 正文不可读与故障时策略
-  --disable-appsec     停用本工具 AppSec
-  --enable-cron        每天 03:30 更新 Hub
-  --update-hub         使用互斥锁、规则备份、校验和失败回滚更新 Hub
-  --check-logs         只读检查新增日志、漏采和重复采集
-  --clean-redundant    查看节点并选择注销（不自动批量删除）
-  --repair-bouncer     修复 Bouncer 的 LAPI 地址配置
-  --repair-logs        按现有日志、宿主机有效配置及 Docker 挂载补齐 HTTP 采集
-  --admin-allowlist    明确管理单个管理员 IP 的中央 AllowList（旁路 AppSec）
-  --self-report-status 只读查看 Self-Report 相关告警、决策与 AllowLists
-  --repair-real-ip     按可信 CDN/代理和 Header 修复 Docker Nginx/OpenResty/NPM 真实 IP
+
+安装和网站接入：
+  --install-core       安装检测服务和防火墙防护
+  --install-appsec     配置网站请求检测，接入已有的网站拦截组件
+  --install-web-bouncer 为 Docker 或宿主机网站安装拦截组件
+  --configure-docker-endpoints  设置容器访问检测服务的私有地址（需事先准备）
+  --appsec-status      查看网站请求检测的日志、监听和运行状态
+  --verify-appsec      确认后发送测试请求，验证网站请求检测是否生效
+  --appsec-policy      设置请求正文无法读取或检测故障时的处理方式
+  --disable-appsec     停用本工具的网站请求检测
+  --remove-web-bouncer  移除本工具安装的容器网站拦截组件，保留原有网站防护
+
+中转节点和远端检测中心：
+  --install-relay      为纯中转节点安装系统和 SSH 检测、防火墙防护
+  --relay-status       检查中转节点的防火墙封禁规则
+  --relay-path         检查连接来源、转发路径和防护位置
+  --install-relay-bouncer   安装防火墙防护并连接远端检测中心
+  --configure-relay-bouncer 修改远端检测中心地址和连接密钥
+  --relay-bouncer-status    查看远端检测中心连接和防护状态
+  --remove-relay-bouncer    移除远端连接配置并停用防护（保留软件包）
+
+V2bX 落地节点：检查、记录日志和异常告警：
+  --diagnose-v2bx      检查 V2bX 三内核配置、日志、连接来源和封禁位置
+  --v2bx-log-check     检查本机运行日志，隐去敏感信息并报告核验状态
+  --v2bx-observe       保存脱敏日志样本（单次采集，不安装常驻服务）
+  --install-v2bx-observer 开启持续日志记录（需私有 JSON 配置文件）
+  --v2bx-observer-status 查看持续日志记录的服务和采集状态
+  --disable-v2bx-observer 停止持续日志记录，保留配置和已有数据
+  --enable-v2bx-alerts   开启异常告警（需持续日志记录正常，不自动封禁）
+  --v2bx-alerts-status   查看异常告警接入、决策隔离和发布状态
+  --disable-v2bx-alerts  停用异常告警，保留已有记录
+
+访客真实 IP 和管理员放行：
   --diagnose-real-ip   上游不确定时只读检查配置、挂载日志及外部请求核对指引
+  --repair-real-ip     按可信 CDN/代理和 Header 修复 Docker Nginx/OpenResty/NPM 真实 IP
   --verify-real-ip     关联正常页面请求、访问日志和 Web Bouncer 实际使用的 IP
   --restore-real-ip    撤销本工具的真实 IP 配置并恢复原内容
-  --repair-host-real-ip    修复宿主机 Nginx/OpenResty 真实 IP（需已加载标准 HTTP conf.d）
   --diagnose-host-real-ip  只读诊断宿主机代理信任与日志
+  --repair-host-real-ip    修复宿主机 Nginx/OpenResty 真实 IP（需已加载标准 HTTP conf.d）
   --verify-host-real-ip    核验宿主机正常请求的日志与官方 Web Bouncer IP
   --restore-host-real-ip   撤销本工具的宿主机真实 IP 配置
-  --configure-docker-endpoints  登记 bridge 容器已准备好的私有 LAPI/AppSec 网关端点
-  --reset-baseline     补齐基础集合，保留自定义与 AppSec
+  --admin-allowlist    管理管理员 IP 放行名单（同时跳过网站请求检测）
+  --self-report-status 排查服务器自身 IP 被封禁的问题
+
+检测规则、运行检查和修复：
+  --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
+  --update-hub         更新检测规则（更新失败时恢复备份）
+  --enable-cron        每天 03:30 自动更新检测规则
+  --reset-baseline     补齐基础检测规则，保留自定义规则和网站请求检测
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
-  --uninstall-waf      选择确认后移除已知 Web 日志规则
-  --check-clean        只读残留检查
-  --deep-clean/--purge 确认后卸载并清理数据
+  --uninstall-waf      确认后移除已知的网站和防火墙日志规则
+  --status             只读健康检查
+  --check-logs         只读检查新增日志、漏采和重复采集
+  --repair-logs        按实际网站配置补齐漏采的访问日志
+  --repair-bouncer     修复防火墙与检测服务的连接地址
+  --optimize           检查基础配置，选择需要修复的项目并确认后应用
+  --enable-wal         改善数据库写入（需确认数据库使用本地磁盘）
+
+管理面板和通知：
+  --install-webui      安装或更新网页管理面板
+  --reset-webui-credentials 检查或更换管理面板登录凭据
+  --clean-redundant    查看节点，选择不再使用的节点并注销（不自动批量删除）
   --telegram           Telegram 管理菜单
   --telegram-test      发送官方插件测试消息并核对 Telegram API 回执
   --custom-bot         可选交互机器人管理（官方通知保持独立）
-  --optimize           诊断后逐项选择基础规则、日志采集与指标，汇总确认后统一加载
-  --enable-wal         确认本地 SQLite 后配置官方 use_wal
-  --status             只读健康检查
+
+卸载、清理和帮助：
+  --check-clean        只读残留检查
+  --deep-clean/--purge 确认后卸载并清理数据
   --uninstall          确认后卸载并清理数据
   --help/-h            帮助（不需要 root）
 EOF

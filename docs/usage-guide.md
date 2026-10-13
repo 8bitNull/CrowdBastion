@@ -71,7 +71,7 @@ sudo bash install-crowdsec-1panel.sh --status
 sudo bash install-crowdsec-1panel.sh --check-logs
 ```
 
-对应菜单 `1 → 1`、`4 → 1`、`4 → 2`。安装时按提示核对管理员来源 IP。菜单 `2` 按网站类型选择规则；需要 Web 日志检测集合时使用 `--install-waf`。检查实际访问日志是否读取，日志中客户端 IP 是否正确；新增站点后可使用 `--repair-logs` 按实际配置和挂载补齐采集。
+对应菜单 `1 → 1`、`4 → 1`、`4 → 2 → 1`。安装时按提示核对管理员来源 IP。菜单 `2 → 1` 按网站类型选择规则；需要 Web 日志检测集合时使用 `--install-waf`。检查实际访问日志是否读取，日志中客户端 IP 是否正确；新增站点后可使用 `--repair-logs` 按实际配置和挂载补齐采集。
 
 ### 接入 AppSec 与 Web Bouncer
 
@@ -91,7 +91,7 @@ AppSec 集合、监听、Web Bouncer 接入和实际请求验证是不同步骤�
 
 ### 核对真实客户端 IP
 
-存在 CDN、反向代理或多层容器时，进入菜单 `1 → 3` 或 `4 → 4`，先选择 Docker/宿主机，再做只读诊断、修复、正常请求核验或撤销。用受控的正常页面请求关联访问日志 IP 与 Web Bouncer 使用的 IP。只信任明确的代理来源，不把所有来源的 X-Forwarded-For 都视为可信。
+存在 CDN、反向代理或多层容器时，进入菜单 `1 → 3` 或 `4 → 2 → 3`，先选择 Docker/宿主机，再做只读诊断、修复、正常请求核验或撤销。用受控的正常页面请求关联访问日志 IP 与 Web Bouncer 使用的 IP。只信任明确的代理来源，不把所有来源的 X-Forwarded-For 都视为可信。
 
 `--admin-allowlist` 管理中央管理员 AllowList，**会使该来源跳过 AppSec**；不要把 CDN 或共享代理网段当作管理员 IP 加入。
 
@@ -106,7 +106,7 @@ sudo bash install-crowdsec-1panel.sh --relay-path
 sudo cscli metrics
 ```
 
-安装入口是菜单 `1 → 5`；诊断入口是 `4 → 10` 和 `4 → 11`。安装补齐 linux、sshd、whitelist-good-actors，优先复用 `/var/log/auth.log`、`/var/log/secure` 或标准 SSH journal。自定义 SSH unit/日志需人工核对，使用 metrics 确认日志真的被读取与解析。
+安装入口是菜单 `1 → 5`；诊断入口是 `4 → 3 → 1` 和 `4 → 3 → 2`。安装补齐 linux、sshd、whitelist-good-actors，优先复用 `/var/log/auth.log`、`/var/log/secure` 或标准 SSH journal。自定义 SSH unit/日志需人工核对，使用 metrics 确认日志真的被读取与解析。
 
 此入口保留已有 Web/AppSec 组件，重复安装不会自动把完整版“瘦身”。纯中转缺少系统采集时重新执行 `--install-relay`；`--reset-baseline` 是网站基础集合入口，不适合作为中转精简重置。
 
@@ -203,7 +203,7 @@ bash install-crowdsec-1panel.sh --help
 
 有本地源码改动时先保存并审阅冲突，不覆盖自己的修改。`--enable-cron` 会把脚本及依赖复制到 `/usr/local/lib/crowdsec-1key/current`；只更新仓库不会自动更新已有 cron 使用的副本，更新后重新运行 `--enable-cron` 同步管理副本和计划。
 
-其他可选操作：菜单 `5 → 1` 部署 WebUI；`5 → 3` 管理 Telegram，首次默认即时通知，也可选择官方批量通知。`--telegram-test` 会发送真实测试消息，API 接受只说明服务接收成功。菜单 `4 → 8` / `--optimize` 先诊断，默认不选择任何修复，再汇总确认；不要把它当作无条件“一键提速”。WAL 通过 `--enable-wal` 在明确数据库为本地磁盘后启用。
+其他可选操作：菜单 `5 → 1` 部署 WebUI；`5 → 3` 管理 Telegram，首次默认即时通知，也可选择官方批量通知。`--telegram-test` 会发送真实测试消息，API 接受只说明服务接收成功。菜单 `4 → 5 → 3` / `--optimize` 先诊断，默认不选择任何修复，再汇总确认；不要把它当作无条件“一键提速”。WAL 通过 `--enable-wal` 在明确数据库为本地磁盘后启用。
 
 WebUI 接入条件、Telegram 即时/批量通知、API 回执和维护事务细节见[管理与维护参考](management-guide.md)。完整参数见[命令行参考](cli-reference.md)。
 

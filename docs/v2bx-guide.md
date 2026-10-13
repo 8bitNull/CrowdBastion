@@ -4,7 +4,7 @@
 
 ## 使用
 
-菜单 `4 → 12`，或运行：
+菜单 `4 → 4 → 1`，或运行：
 
 ```bash
 sudo bash install-crowdsec-1panel.sh --diagnose-v2bx
@@ -64,7 +64,7 @@ sudo python3 lib/crowdsec_v2bx.py \
 
 ## 日志样本离线核查（第二阶段离线部分）
 
-菜单 `4 → 13` 或 `--v2bx-log-check`。每次选择一个内核，混合 unit 的其他格式会计入忽略项，不猜测协议。下面的时区、路径和中转网段是示例，必须替换为实际值：
+菜单 `4 → 4 → 2` 或 `--v2bx-log-check`。每次选择一个内核，混合 unit 的其他格式会计入忽略项，不猜测协议。下面的时区、路径和中转网段是示例，必须替换为实际值：
 
 ```bash
 sudo env V2BX_LOG_FILE=/root/v2bx-xray-sample.log \
@@ -115,7 +115,7 @@ python3 lib/crowdsec_v2bx_logs.py --file /root/v2bx-xray-sample.log \
 
 报告与导出成功仍返回 `2`，表示生产验证未完成；无效输入返回 `1`，帮助返回 `0`。导出为空可能表示没有匹配事件，不能证明没有攻击。
 
-`rules/v2bx/` 是**未安装的离线规则样板**：专用 `v2bx-observation` 标签只接受规范化失败事件；单事件 trigger 设置 `remediation: false`，不设攻击阈值。早期 synthetic 验证为 5 条告警、0 个决策；后续固定实验构建的 IPv4/IPv6 实际投影回放核对 20 组告警、0 决策，见 [最新验收](audit/2026-10-13-v2bx-mixed-ingress.md)。自定义 profiles 若忽略 `Alert.Remediation`，可能仍产生决策，因此不要直接接入生产采集；项目没有提供该规则安装入口。日志核查命令不会安装这些规则或改变服务、防火墙与决策。
+`rules/v2bx/` 是**未安装的离线规则样板**：专用 `v2bx-observation` 标签只接受规范化失败事件；单事件 trigger 设置 `remediation: false`，不设攻击阈值。早期 synthetic 验证为 5 条告警、0 个决策；后续固定实验构建的 IPv4/IPv6 实际投影回放核对 20 组告警、0 决策，见 [最新验收](audit/2026-10-13-v2bx-mixed-ingress.md)。自定义 profiles 若忽略 `Alert.Remediation`，可能仍产生决策，因此不要直接接入生产采集；如需接入，应使用下述“仅观察告警接入”入口，由专用 profiles guard 隔离决策。日志核查命令不会安装这些规则或改变服务、防火墙与决策。
 
 ## 下一阶段的证据
 
@@ -166,7 +166,7 @@ bash install-crowdsec-1panel.sh --v2bx-observe
 
 ## 落地常驻仅观察服务
 
-菜单 `4 → 14`，或使用以下三个命令。它将每个内核的独立文件日志接入持久 Observer；不安装 CrowdSec acquisition、场景或 profiles，也不创建告警、封禁或限速规则。真实 VPS 部署仍须按[部署验收](v2bx-deployment-acceptance.md)核实。
+菜单 `4 → 4 → 3`，或使用以下三个命令。它将每个内核的独立文件日志接入持久 Observer；不安装 CrowdSec acquisition、场景或 profiles，也不创建告警、封禁或限速规则。真实 VPS 部署仍须按[部署验收](v2bx-deployment-acceptance.md)核实。
 
 先在本机建立 root 所有、权限 `0600` 的 JSON 配置，路径按真实日志修改。中转 CIDR 示例必须换成实际出口；三个内核需要三个不同文件，xray 文件日志必须指定实际时区偏移：
 
@@ -200,7 +200,7 @@ sudo bash install-crowdsec-1panel.sh --disable-v2bx-observer
 
 ## 常驻仅观察告警接入
 
-菜单 `4 → 14` 的 `4/5/6` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
+菜单 `4 → 4 → 4` 的 `1/2/3` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
 
 ```bash
 sudo bash install-crowdsec-1panel.sh --enable-v2bx-alerts

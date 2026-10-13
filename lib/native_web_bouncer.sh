@@ -191,7 +191,7 @@ remove_docker_web_bouncer() (
 
 install_web_bouncer() {
     local choice
-    printf '1. 首次安装 Docker Web Bouncer（1Panel/NPM/Lua Nginx）\n2. 首次安装宿主机 Nginx Bouncer\n3. 首次安装宿主机 OpenResty Bouncer\n0. 返回\n'
+    printf '1. 为 Docker 网站安装拦截组件（1Panel/NPM/Lua Nginx）\n2. 为宿主机 Nginx 安装拦截组件\n3. 为宿主机 OpenResty 安装拦截组件\n0. 返回\n'
     prompt choice '请选择 [0-3]: ' || return 0
     case "$choice" in
         1) install_docker_web_bouncer ;;

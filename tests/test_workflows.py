@@ -567,8 +567,9 @@ finally:
         # Enter each category and its child menus, return to the parent, then exit.
         paths = ['1\n0\n', '2\n0\n', '3\n0\n', '4\n0\n', '5\n0\n', '6\n0\n',
                  '1\n2\n0\n0\n', '1\n3\n0\n0\n',
-                 '4\n4\n1\n0\n0\n0\n', '4\n4\n2\n0\n0\n0\n',
-                 '2\n9\n0\n0\n', '5\n1\n0\n0\n', '5\n3\n0\n0\n']
+                 '4\n2\n3\n1\n0\n0\n0\n0\n', '4\n2\n3\n2\n0\n0\n0\n0\n',
+                 '4\n3\n0\n0\n', '4\n4\n3\n0\n0\n0\n', '4\n4\n4\n0\n0\n0\n',
+                 '2\n3\n2\n0\n0\n0\n', '5\n1\n0\n0\n', '5\n3\n0\n0\n']
         for path in paths:
             with self.subTest(path=path):
                 self.trace.write_text('')
@@ -599,7 +600,7 @@ finally:
                      'check_log_inventory() { record logs; }\n'
                      'check_appsec_status() { record appsec; }\n'
                      'diagnose_self_report() { record self-report; }')
-        p = self.run_shell('manage_diagnostics', '1\n2\n3\n5\n0\n', overrides)
+        p = self.run_shell('manage_diagnostics', '1\n2\n1\n2\n0\n5\n1\n0\n0\n', overrides)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual(self.commands().splitlines(), ['health', 'logs', 'appsec', 'self-report'])
 
@@ -653,7 +654,9 @@ finally:
 
     def test_all_submenus_exit_on_eof(self):
         for name in ['manage_web_ui','manage_waf_rules','manage_auto_update','manage_firewall_ops','manage_telegram','manage_uninstall_center',
-                     'manage_installation','manage_website_protection','manage_real_ip','manage_diagnostics','manage_integrations']:
+                     'manage_installation','manage_website_protection','manage_real_ip','manage_diagnostics','manage_integrations','manage_website_diagnostics',
+                     'manage_relay_diagnostics','manage_basic_repairs','manage_v2bx_node','manage_v2bx_observer','manage_v2bx_alerts',
+                     'manage_rule_installation','manage_rule_updates','manage_rule_removal']:
             with self.subTest(menu=name):
                 self.assertEqual(self.run_shell(name, timeout=1).returncode, 0)
 
@@ -1273,6 +1276,13 @@ cscli() {
         self.assertNotEqual(p.returncode, 0)
         self.assertTrue(cfg.exists())
         self.assertNotIn('apt-get purge', self.commands())
+
+
+    def test_v2bx_config_cancel_does_not_install(self):
+        overrides = 'v2bx_observer_service() { record install; }; locked_operation() { record lock; }'
+        result = self.run_shell('manage_v2bx_observer', '1\n\n0\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(self.commands(), '')
 
 
 if __name__ == '__main__':

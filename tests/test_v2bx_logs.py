@@ -293,7 +293,7 @@ class LogCheckRouting(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertEqual(self.commands(), 'LOGCHECK\n')
         self.trace.write_text('')
-        result = self.run_shell('manage_diagnostics', '13\n0\n', overrides=overrides)
+        result = self.run_shell('manage_diagnostics', '4\n2\n0\n0\n', overrides=overrides)
         self.assertEqual(result.returncode, 0)
         self.assertEqual(self.commands(), 'LOGCHECK\n')
 

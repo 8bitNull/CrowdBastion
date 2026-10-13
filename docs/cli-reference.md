@@ -28,12 +28,12 @@ bash install-crowdsec-1panel.sh --help
 | `--relay-status` | 只读检查中转 INPUT/FORWARD、IPv4/IPv6 规则引用；异常 1、尚未验证 2 |
 | `--relay-path` | 交互声明节点角色/流量路径，选择 TCP/UDP 端口，读取 socket/NAT 与 Bouncer 证据 |
 | `--diagnose-v2bx` | 只读核查 V2bX 三内核配置、日志、混合入口声明和本地 Bouncer；详见 [V2bX 指南](v2bx-guide.md)，未验证端到端保护返回 2 |
-| `--v2bx-log-check` | 只读检查三内核日志样本；菜单 `4 → 13`，用 `V2BX_LOG_FILE/CORE/TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT` 指定输入；返回 2 表示生产未验证，见 [V2bX 指南](v2bx-guide.md) |
+| `--v2bx-log-check` | 只读检查三内核日志样本；菜单 `4 → 4 → 2`，用 `V2BX_LOG_FILE/CORE/TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT` 指定输入；返回 2 表示生产未验证，见 [V2bX 指南](v2bx-guide.md) |
 | `--v2bx-observe` | 持久保存固定观察投影、恢复游标与采集指标，可导出一次性快照；仅命令行，不安装常驻服务或规则；参数见下方说明及 [V2bX 指南](v2bx-guide.md) |
-| `--install-v2bx-observer` | 安装落地常驻仅观察服务，需 `V2BX_OBSERVER_CONFIG` 私有 JSON；菜单 `4 → 14` |
+| `--install-v2bx-observer` | 安装落地常驻仅观察服务，需私有 JSON 配置文件（命令行用 `V2BX_OBSERVER_CONFIG`，菜单可输入路径）；菜单 `4 → 4 → 3 → 1` |
 | `--v2bx-observer-status` | 只读服务、心跳及指标，业务保护未验证返回 2 |
 | `--disable-v2bx-observer` | 停止并禁用本工具观察服务，保留配置、数据库与游标 |
-| `--enable-v2bx-alerts` | 接入仅观察规则／采集与 profiles guard，重启核心并启动增量发布；菜单 `4 → 14 → 4` |
+| `--enable-v2bx-alerts` | 接入仅观察规则／采集与 profiles guard，重启核心并启动增量发布；菜单 `4 → 4 → 4 → 1` |
 | `--v2bx-alerts-status` | 只读核查规则／guard、核心、源采集器及发布状态；未验证业务保护返回 2 |
 | `--disable-v2bx-alerts` | 停止发布并撤销本工具接入，保留证据；会重启核心 |
 | `--install-webui` | 部署/更新 WebUI |
@@ -82,15 +82,17 @@ bash install-crowdsec-1panel.sh --help
 | 主菜单 | 功能 |
 | --- | --- |
 | 1 | 安装与接入：核心、网站防护、真实 IP、Docker 私有端点、中转模式 |
-| 2 | 规则与更新：集合安装／移除、基础规则、手动与定时 Hub 更新 |
-| 3 | 封禁与访问保护：告警／决策、封禁／解封、防火墙、AllowList、Self-Report |
-| 4 | 诊断与修复：健康、日志、AppSec、真实 IP、中转与 V2bX、基础修复和 WAL |
-| 5 | 管理与通知：WebUI、Console、Telegram |
-| 6 | 卸载与恢复：卸载／清理、只读残留检查 |
+| 2 | 检测规则：集合安装／移除、基础规则、手动与定时 Hub 更新 |
+| 3 | IP 封禁与放行：告警／决策、封禁／解封、防火墙、AllowList、Self-Report |
+| 4 | 检查与修复：健康、日志、AppSec、真实 IP、中转与 V2bX、基础修复和 WAL |
+| 5 | 控制台与通知：WebUI、Console、Telegram |
+| 6 | 卸载与清理：卸载／清理、只读残留检查 |
+
+检查与修复的五个入口依次为：整体运行情况、网站问题、中转节点、V2bX 落地节点、基础配置修复。V2bX 入口统一提供配置检查、日志检查、持续记录和异常告警。
 
 子菜单在操作后保留，输入 `0` 返回；输入结束或 `Ctrl+D` 可退出菜单。删除、注销、停用和卸载操作默认取消，需要明确输入 `y`。命令行操作失败返回非零状态，交互菜单会保留供继续操作。
 
-安装、修复、更新等修改操作使用同一把 `flock` 锁，并发操作返回 `75`；安装与接入、规则与更新、封禁与访问保护、管理与通知、卸载与恢复菜单持锁直到返回主菜单；诊断与修复菜单按具体修改动作持锁，只读检查不获取管理锁。
+安装、修复、更新等修改操作使用同一把 `flock` 锁，并发操作返回 `75`；安装与接入、检测规则、IP 封禁与放行、控制台与通知、卸载与清理菜单持锁直到返回主菜单；检查与修复菜单按具体修改动作持锁，只读检查不获取管理锁。
 
 ## 状态与退出码
 
