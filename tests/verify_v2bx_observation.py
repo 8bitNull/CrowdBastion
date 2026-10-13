@@ -67,7 +67,7 @@ def samples():
     return events, expected
 
 
-def verify(release, sample_factory=samples, expected_groups=None):
+def verify(release, sample_factory=samples, expected_groups=None, live_producer=None, profile_documents=None, control_scenario=False):
     release = Path(release).resolve()
     engine = release/'cmd/crowdsec/crowdsec'
     cscli = release/'cmd/crowdsec-cli/cscli'
@@ -89,6 +89,15 @@ def verify(release, sample_factory=samples, expected_groups=None):
             (config_dir/name).mkdir(parents=True, exist_ok=True)
         shutil.copy2(parser, config_dir/'parsers/s01-parse'/parser.name)
         shutil.copy2(scenario, config_dir/'scenarios'/scenario.name)
+        if profile_documents is not None:
+            write(config_dir/'profiles.yaml', profile_documents, True)
+        if control_scenario:
+            write(config_dir/'scenarios/control.yaml', {
+                'type': 'trigger', 'name': 'crowdsec-1key/qa-control',
+                'description': 'Isolated remediation control',
+                'filter': "evt.Meta.log_type == 'v2bx_failure_observation' && evt.Meta.source_ip == '198.51.100.250'",
+                'groupby': 'evt.Meta.source_ip', 'blackhole': '1s',
+                'labels': {'service': 'qa', 'remediation': True}})
         config_path = config_dir/'config.yaml'
         config = read(config_path)
         config['common'].update(daemonize=False, log_media='stdout', log_dir=str(base/'logs'))
@@ -141,15 +150,21 @@ def verify(release, sample_factory=samples, expected_groups=None):
                 time.sleep(.2)
             else:
                 raise RuntimeError('Private engine acquisition startup timed out')
-            events, expected = sample_factory()
+            if live_producer is not None:
+                logfile.chmod(0o600)
+                events, expected = live_producer(logfile)
+            else:
+                events, expected = sample_factory()
             expected_count = len(expected_groups) if expected_groups is not None else len(expected)
-            with logfile.open('a') as stream:
-                for item in events:
-                    stream.write(json.dumps(item)+'\n')
+            if live_producer is None:
+                with logfile.open('a') as stream:
+                    for item in events:
+                        stream.write(json.dumps(item)+'\n')
             deadline = time.monotonic()+20
             alerts = []
             while time.monotonic() < deadline:
                 alerts = json.loads(cli('alerts', 'list', '-o', 'json')) or []
+                alerts = [a for a in alerts if a.get('scenario') == 'crowdsec-1key/v2bx-failure-observation']
                 if len(alerts) >= expected_count:
                     break
                 time.sleep(.2)
@@ -169,9 +184,13 @@ def verify(release, sample_factory=samples, expected_groups=None):
             # Verify loaded YAML above and actual per-alert/global decisions here.
             if any(item.get('decisions') for item in alerts):
                 raise RuntimeError('An observation alert unexpectedly contains decisions')
-            decisions = json.loads(cli('decisions', 'list', '-o', 'json')) or []
-            if decisions:
+            decision_rows = json.loads(cli('decisions', 'list', '-o', 'json')) or []
+            decisions = [decision for row in decision_rows for decision in row.get('decisions', [])]
+            control_decisions = [d for d in decisions if d.get('scenario') == 'crowdsec-1key/qa-control']
+            if any(d.get('scenario') != 'crowdsec-1key/qa-control' for d in decisions):
                 raise RuntimeError('Observation generated a decision')
+            if control_scenario and (len(control_decisions) != 1 or control_decisions[0].get('value') != '198.51.100.250'):
+                raise RuntimeError('Independent control remediation was not preserved')
             metrics = json.loads(cli('metrics', 'show', 'acquisition', '-o', 'json'))
             rows = [item for name, item in metrics.get('acquisition', {}).items() if str(logfile) in name]
             if not rows or sum(item.get('reads', 0) for item in rows) != len(events):
@@ -180,8 +199,10 @@ def verify(release, sample_factory=samples, expected_groups=None):
                     'configuration_validation': 'pass', 'normalized_events': len(events),
                     'failure_alerts': len(alerts), 'noneligible_records_excluded': True,
                     'scenario_remediation': False, 'per_alert_decisions_empty': True, 'decisions': 0,
-                    'production_validation': 'unverified'}
-            if sample_factory is samples:
+                    'production_validation': 'unverified', 'control_decisions': len(control_decisions)}
+            if live_producer is not None:
+                result.update(normal_and_relay_excluded=True)
+            elif sample_factory is samples:
                 result.update(scope='isolated official CrowdSec 1.8.1, synthetic/source-backed events; no production traffic',
                               normal_and_relay_excluded=True, invalid_normalized_records_excluded=True)
             else:

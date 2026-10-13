@@ -1,0 +1,17 @@
+{
+  "repository_base": "ef7fe57",
+  "repository_files": {
+    "lib/crowdsec_v2bx_stream.py": "1f0122f14eeb5acc4205ea0f61a583d5863340958ba115974395e536f0c456ce",
+    "lib/crowdsec_v2bx_alerts.py": "7a032d1a5c1ec6cc1709bdb7b9aba2c8d62524f6f07fc3f532384f6d8811f276",
+    "tests/test_v2bx_stream.py": "49f4d1662e220337f3b3b6e5dd81f3bf5634f10514d4f6b8eb6d1fc09d25ff3b",
+    "tests/test_v2bx_alerts.py": "89d6e072f53f1f2741229b7c3d572359be80f6b6785aa9c785ec072850dc93ad",
+    "tests/verify_v2bx_alert_pipeline.py": "b321920bd854d9816218b3193d046dfb31f648c61485c3cfd6575832c2d55ff8",
+    "tests/verify_v2bx_observation.py": "42768a6da705626c204bf3dc5914ebae0a2593723df2194cf88a3b2e89f63f68",
+    "rules/v2bx/parsers/s01-parse/10-v2bx-observation.yaml": "47c5b539b2e363887e72f66aa05a31c58458badf0b70fdf5c0ddb3110392276d",
+    "rules/v2bx/scenarios/v2bx-failure-observation.yaml": "58480d84e97abd46270b35ca7ad99c217f4c4408bb30e9252f6793ac90282a93"
+  },
+  "official_binaries": {
+    "cmd/crowdsec/crowdsec": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+    "cmd/crowdsec-cli/cscli": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17"
+  }
+}

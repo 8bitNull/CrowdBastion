@@ -56,15 +56,24 @@ v2bx_observer_service() {
 manage_v2bx_observer() {
     local choice
     while true; do
-        printf '\nV2bX 落地仅观察服务\n1. 安装（需 V2BX_OBSERVER_CONFIG）\n2. 只读状态\n3. 停用并保留数据\n0. 返回\n'
-        prompt choice '请选择 [0-3]: ' || return 0
+        printf '\nV2bX 落地仅观察服务\n1. 安装（需 V2BX_OBSERVER_CONFIG）\n2. 只读状态\n3. 停用并保留数据\n4. 接入 CrowdSec 仅观察告警\n5. 只读告警接入状态\n6. 停用告警接入并保留证据\n0. 返回\n'
+        prompt choice '请选择 [0-6]: ' || return 0
         case "$choice" in
             1) locked_operation v2bx_observer_service install ;;
             2) v2bx_observer_service status ;;
             3) locked_operation v2bx_observer_service disable ;;
+            4) locked_operation v2bx_alert_service enable ;;
+            5) v2bx_alert_service status ;;
+            6) locked_operation v2bx_alert_service disable ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
         pause
     done
+}
+
+# Managed observation guard and incremental output; no remediation decisions.
+v2bx_alert_service() {
+    require_yaml || return 1
+    python3 "${SCRIPT_DIR}/lib/crowdsec_v2bx_alerts.py" "$1"
 }
