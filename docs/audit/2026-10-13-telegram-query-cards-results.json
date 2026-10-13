@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-13",
+  "scope": [
+    "decision cards and paginated grouped details",
+    "read-only container cards and main config fingerprints",
+    "document per-request enforcement evidence boundary"
+  ],
+  "custom_bot_tests": {
+    "run": 40,
+    "passed": 40,
+    "skipped": 0
+  },
+  "full_suite": {
+    "run": 619,
+    "passed": 599,
+    "skipped": 20,
+    "failed": 0,
+    "note": "Run began before two extra pagination tests were added; both pass in final 40-test bot run. Includes 16 official Telegram tests skipped without release env."
+  },
+  "official_telegram_suite": {
+    "run": 22,
+    "passed": 22,
+    "skipped": 0,
+    "note": "Separate run with CROWDSEC_TEST_RELEASE; covers all 16 official-plugin tests skipped in full suite."
+  },
+  "official_1_8_1_engine": {
+    "passed": true,
+    "checks": [
+      "alerts inspect event Meta path/UA/source",
+      "latest alert and no-decision semantics",
+      "SQLite menu compatibility",
+      "real IP/Range decision JSON array and detail cards",
+      "whitelist crowdsec -t and decision delete; reload stubbed"
+    ]
+  },
+  "review": {
+    "critical": 0,
+    "important": 0,
+    "minor_test_gaps": "authorized malformed callbacks and detail/site pagination covered"
+  },
+  "syntax_and_diff": "passed",
+  "limitations": [
+    "Docker and Telegram card transport mocked",
+    "No production per-request enforcement evidence collector added",
+    "No target VPS deployment or live Telegram messages",
+    "Config fingerprint checks primary host file only, not mounts/assets/runtime"
+  ],
+  "logs": [
+    "/tmp/bot-query-cards-red.log",
+    "/tmp/bot-query-cards-engine.log",
+    "/tmp/bot-query-cards-all.log",
+    "/tmp/bot-query-cards-official-telegram.log"
+  ]
+}

@@ -62,6 +62,18 @@ def verify(release):
             assert '#'+str(aid) in recent, recent
             assert '查询异常' not in bot.module_attack_posture()
             print('Official SQLite schema -> retained recent-alerts/posture menus: PASS.', flush=True)
+            engine['cli']('decisions', 'add', '--ip', '203.0.113.29', '--duration', '1h', '--reason', 'qa/bot-card')
+            engine['cli']('decisions', 'add', '--range', '198.51.100.0/24', '--duration', '2h', '--reason', 'qa/bot-range')
+            card, buttons = bot.module_decisions()
+            assert '203.0.113.29' in card and '198.51.100.0/24' in card, card
+            assert 'qa/bot-card' in card and '查询失败' not in card, card
+            groups = bot.decision_groups()
+            group = next(g for g in groups if g['value'] == '203.0.113.29')
+            detail, _ = bot.module_decisions(target=group['key'])
+            assert 'qa/bot-card' in detail and '剩余:' in detail and '告警 #' in detail, detail
+            range_group = next(g for g in groups if g['value'] == '198.51.100.0/24')
+            assert all(not b['callback_data'].startswith('unban:') for b in bot.decision_buttons(range_group, range_group['decisions']))
+            print('Official decision-list alert array -> IP/Range cards and decision details: PASS.', flush=True)
             bot.WHITELIST_FILE = str(base/'etc/parsers/s02-enrich/qa-custom-bot.yaml')
             original = bot.run_cmd
             calls = []

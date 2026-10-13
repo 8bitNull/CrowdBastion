@@ -441,6 +441,209 @@ def module_forensics(alert_id=None):
         return '❌ 告警查询失败，请检查 cscli 权限、配置和 JSON 输出。', None
 
 
+# Read-only mobile views. Limits are alert/container samples, not global totals.
+VIEW_SIZE = 5
+DECISION_ALERT_LIMIT = 50
+
+
+def card_esc(value, limit=60):
+    # Bound serialized HTML without cutting entities or tags.
+    result = ''
+    for char in str(value or '')[:limit]:
+        escaped = html.escape(char)
+        if len(result)+len(escaped) > limit:
+            break
+        result += escaped
+    return result
+
+
+def page_controls(prefix, page, pages):
+    row = []
+    if page:
+        row.append({'text': '⬅️ 上一页', 'callback_data': f'{prefix}:{page-1}'})
+    row.append({'text': '🔄 刷新', 'callback_data': f'{prefix}:{page}'})
+    if page+1 < pages:
+        row.append({'text': '下一页 ➡️', 'callback_data': f'{prefix}:{page+1}'})
+    return row
+
+
+def page_slice(items, page):
+    pages = max(1, (len(items)+VIEW_SIZE-1)//VIEW_SIZE)
+    page = min(max(0, int(page)), pages-1)
+    return items[page*VIEW_SIZE:(page+1)*VIEW_SIZE], page, pages
+
+
+def decision_groups():
+    alerts = json.loads(run_cmd(['cscli', 'decisions', 'list', '-l', str(DECISION_ALERT_LIMIT), '-o', 'json']))
+    if alerts is None:
+        alerts = []
+    if not isinstance(alerts, list):
+        raise ValueError('Invalid decisions JSON')
+    groups = {}
+    for alert in alerts:
+        if not isinstance(alert, dict):
+            raise ValueError('Invalid alert')
+        for decision in alert.get('decisions') or []:
+            if not isinstance(decision, dict):
+                raise ValueError('Invalid decision')
+            scope, value = str(decision.get('scope', '')), str(decision.get('value', ''))
+            key = (scope, value)
+            if key not in groups:
+                digest = hashlib.sha256(json.dumps(key).encode()).hexdigest()[:16]
+                groups[key] = {'scope': scope, 'value': value, 'key': digest, 'decisions': []}
+            groups[key]['decisions'].append(dict(decision, alert_id=alert.get('id'),
+                scenario=decision.get('scenario') or alert.get('scenario'),
+                simulated=decision.get('simulated') is True or alert.get('simulated') is True))
+    return sorted(groups.values(), key=lambda g: (g['scope'], g['value']))
+
+
+def decision_buttons(group, decisions, detail=False):
+    row = []
+    if not detail:
+        row.append({'text': '📋 决策详情', 'callback_data': 'dd:'+group['key']+':0'})
+    else:
+        aids = list(dict.fromkeys(str(d['alert_id']) for d in decisions if re.fullmatch(r'[1-9][0-9]{0,17}', str(d['alert_id']))))
+        row.extend({'text': '🔍 取证 #'+aid, 'callback_data': 'ins:'+aid} for aid in aids[:2])
+    if group['scope'].lower() == 'ip':
+        try:
+            value = str(ipaddress.ip_address(group['value']))
+            row.append({'text': '🔓 解封此 IP 全部决策', 'callback_data': 'unban:'+value})
+        except ValueError:
+            pass
+    return row
+
+
+def module_decisions(page=0, target=None):
+    refresh = {'inline_keyboard': [page_controls('dec', 0, 1)]}
+    try:
+        groups = decision_groups()
+        intro = '范围: 本地/手动等默认来源，不含 CAPI；最多查询 50 条告警所附决策。\n'
+        if target is not None:
+            group = next((g for g in groups if g['key'] == target), None)
+            if group is None:
+                return '⚠️ 此目标已不在本次查询结果中，可能已过期或超出查询范围。', refresh
+            entries, page, pages = page_slice(group['decisions'], page)
+            text = f"📋 <b>决策详情 {page+1}/{pages}</b>\n目标: <code>{card_esc(group['value'], 64)}</code> ({card_esc(group['scope'], 12)})\n共 {len(group['decisions'])} 条决策\n"+intro
+            keyboard = []
+            for d in entries:
+                text += (f"\n告警 #{card_esc(d['alert_id'], 12)} · 决策 #{card_esc(d.get('id'), 12)}\n"
+                         f"规则: <code>{card_esc(d.get('scenario'), 55)}</code>\n"
+                         f"来源: {card_esc(d.get('origin'), 16)} · {card_esc(d.get('type'), 12)}\n"
+                         f"剩余: {card_esc(d.get('duration'), 24)} · {'模拟' if d['simulated'] else '非模拟'}\n")
+                row = decision_buttons(group, [d], detail=True)
+                if row:
+                    keyboard.append(row)
+            keyboard.append(page_controls('dd:'+target, page, pages))
+            keyboard.append([{'text': '⬅️ 返回决策列表', 'callback_data': 'dec:0'}])
+        else:
+            entries, page, pages = page_slice(groups, page)
+            total = sum(len(g['decisions']) for g in groups)
+            text = f'🚫 <b>封禁决策 {page+1}/{pages}</b>\n本次结果: {len(groups)} 个目标 · {total} 条决策\n'+intro
+            keyboard = []
+            if not entries:
+                text += '\n未找到有效决策。\n'
+            for g in entries:
+                decisions = g['decisions']
+                d = decisions[0]
+                text += (f"\n<code>{card_esc(g['value'], 64)}</code> ({card_esc(g['scope'], 12)})\n"
+                         f"{len(decisions)} 条决策 · {'含模拟决策' if any(x['simulated'] for x in decisions) else '非模拟'}\n"
+                         f"规则: <code>{card_esc(d.get('scenario'), 55)}</code>\n"
+                         f"来源: {card_esc(d.get('origin'), 16)} · {card_esc(d.get('type'), 12)} · 剩余: {card_esc(d.get('duration'), 24)}\n"
+                         f"告警 #{card_esc(d['alert_id'], 12)}"+(' · 更多规则/时长见详情' if len(decisions)>1 else '')+'\n')
+                keyboard.append(decision_buttons(g, decisions))
+            keyboard.append(page_controls('dec', page, pages))
+        text += '\n决策存在不证明 Bouncer 已实际拦截。刷新会重新查询，排序及页数可能变化。'
+        return text, {'inline_keyboard': keyboard}
+    except (RuntimeError, ValueError, TypeError, KeyError):
+        return '❌ 决策查询失败，请检查 cscli 权限、配置和 JSON 输出。', refresh
+
+
+def web_install_records():
+    path = Path(CSCLI_CONFIG).parent/'crowdsec-1key-web-installs.json'
+    if not path.exists():
+        return {}, None
+    try:
+        # Installation records contain credentials: never display their contents.
+        data = json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(data, dict):
+            raise ValueError('Invalid record')
+        return data, None
+    except (OSError, ValueError):
+        return {}, '安装记录不可读或格式无效'
+
+
+def web_config_status(name, records, error):
+    if error:
+        return error
+    if name not in records:
+        return '无本工具安装记录（不排除外部安装）'
+    entry = records[name]
+    if not isinstance(entry, dict):
+        return '安装记录格式无效'
+    if entry.get('status') != 'installed':
+        return '安装记录状态: '+card_esc(entry.get('status', '未知'), 24)
+    try:
+        actual = hashlib.sha256(Path(entry['host_target']).read_bytes()).hexdigest()
+        return '配置指纹一致（仅主配置文件）' if actual == entry['installed_sha'] else '配置已变化，请核对'
+    except (OSError, ValueError, TypeError, KeyError):
+        return '配置不可读或记录不完整'
+
+
+def module_sites(page=0):
+    refresh = {'inline_keyboard': [page_controls('site', 0, 1)]}
+    try:
+        raw = run_cmd(['docker', 'ps', '-a', '--format', '{{json .}}'])
+        containers = [json.loads(line) for line in raw.splitlines() if line.strip()]
+        if any(not isinstance(c, dict) or not c.get('ID') or not c.get('Names') for c in containers):
+            raise ValueError('Invalid container summary')
+        containers.sort(key=lambda c: c['Names'])
+        entries, page, pages = page_slice(containers, page)
+        records, error = web_install_records()
+        text = f'🌐 <b>站点体检 {page+1}/{pages}</b>\nDocker 容器: {len(containers)} 个（包括停止的容器）\n'
+        if not entries:
+            text += '\n未找到容器。\n'
+        for container in entries:
+            text += f"\n<b>{card_esc(container['Names'], 48)}</b>\n容器: {card_esc(container.get('State', '未知'), 16)} · {card_esc(container.get('Status'), 45)}\n"
+            try:
+                # State only: full inspect can expose passwords/environment variables.
+                state = json.loads(run_cmd(['docker', 'inspect', '--format', '{{json .State}}', container['ID']]))
+                if not isinstance(state, dict):
+                    raise ValueError('Invalid state')
+                health = (state.get('Health') or {}).get('Status', '未配置 HEALTHCHECK')
+                text += f"健康: {card_esc(health, 28)}\n启动时间: {card_esc(state.get('StartedAt', '未知'), 35)}\n"
+            except (RuntimeError, ValueError, TypeError, AttributeError):
+                text += '健康/启动时间: 状态查询失败\n'
+            text += 'Bouncer: '+web_config_status(container['Names'], records, error)+'\n'
+        if error and not entries:
+            text += error+'\n'
+        text += '\nHTTP 可用性: 尚未验证（本页不主动探测）。\n配置指纹不证明挂载、资源文件、运行时加载或实际拦截；其他接入方式尚未核验。'
+        return text, {'inline_keyboard': [page_controls('site', page, pages)]}
+    except (RuntimeError, ValueError, TypeError, KeyError):
+        return '❌ Docker 容器查询失败，请检查 Docker 是否安装、守护进程、权限和 JSON 输出。', refresh
+
+
+def handle_view_callback(callback):
+    if not authorized(callback):
+        return False
+    data = callback.get('data', '')
+    match = re.fullmatch(r'(dec|site):(\d{1,6})', data)
+    detail = re.fullmatch(r'dd:([a-f0-9]{16}):(\d{1,6})', data)
+    if not (match or detail):
+        return False
+    message = callback.get('message', {})
+    if not message.get('message_id'):
+        return False
+    answer_callback(callback['id'], '正在查询…')
+    if match:
+        view = module_decisions if match[1] == 'dec' else module_sites
+        text, keyboard = view(int(match[2]))
+    elif detail:
+        text, keyboard = module_decisions(int(detail[2]), target=detail[1])
+    tg_request('editMessageText', {'chat_id': ADMIN_CHAT_ID, 'message_id': message['message_id'],
+        'text': text, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': keyboard})
+    return True
+
+
 def module_emergency_manager():
     """⚡ 应急管家"""
     txt = """⚡ <b>【应急处置与系统调优管家】</b>
@@ -647,6 +850,8 @@ def main():
                     cid, data = cq["id"], cq.get("data", "")
                     if not authorized(cq):
                         continue
+                    if handle_view_callback(cq):
+                        continue
                     if data.startswith("ins:"):
                         txt, kb = module_forensics(int(data.split(":")[1]))
                         send_message(txt, reply_markup=kb)
@@ -692,9 +897,11 @@ def main():
                         txt, kb = module_forensics()
                         send_message(txt, reply_markup=kb or MAIN_KEYBOARD)
                     elif text == "🚫 封禁名单":
-                        send_message(module_command(['cscli', 'decisions', 'list', '-l', '10'], '封禁名单'), reply_markup=MAIN_KEYBOARD)
+                        txt, kb = module_decisions()
+                        send_message(txt, reply_markup=kb)
                     elif text == "🌐 站点体检":
-                        send_message(module_command(['docker', 'ps'], '容器状态'), reply_markup=MAIN_KEYBOARD)
+                        txt, kb = module_sites()
+                        send_message(txt, reply_markup=kb)
                     elif text == "⚡ 应急管家":
                         txt, kb = module_emergency_manager()
                         send_message(txt, reply_markup=kb)
