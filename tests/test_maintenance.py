@@ -26,7 +26,7 @@ class Maintenance(unittest.TestCase):
     webui_docker = test_workflows.Workflows.webui_docker
 
     def rules(self):
-        directory = self.config/'parsers/s01-parse'
+        directory = self.base/'owned-hub/parsers/s01-parse'
         directory.mkdir(parents=True)
         rule = directory/'original.yaml'
         rule.write_text('name: original\n')
@@ -35,7 +35,8 @@ class Maintenance(unittest.TestCase):
         database = data/'custom.db'
         database.write_text('live database')
         document = yaml.safe_load((self.config/'config.yaml').read_text())
-        document['config_paths'] = {'config_dir': str(self.config), 'data_dir': str(data)}
+        (self.config/'parsers/s01-parse').mkdir(parents=True)
+        document['config_paths'] = {'config_dir': str(self.config), 'hub_dir': str(self.base/'owned-hub'), 'data_dir': str(data)}
         document['db_config'] = {'db_path': str(database)}
         (self.config/'config.yaml').write_text(yaml.safe_dump(document))
         return rule, data, database
@@ -43,8 +44,8 @@ class Maintenance(unittest.TestCase):
     def test_snapshot_restores_rules_links_and_downloads_but_not_database(self):
         rule, data, database = self.rules()
         (data/'geo.mmdb').write_text('old download')
-        link = rule.parent/'link.yaml'
-        link.symlink_to('original.yaml')
+        link = self.config/'parsers/s01-parse/link.yaml'
+        link.symlink_to(rule)
         snapshot = self.base/'snapshot'
         maintenance.snapshot(self.config/'config.yaml', snapshot)
         rule.write_text('changed')
@@ -53,6 +54,7 @@ class Maintenance(unittest.TestCase):
         (data/'new.txt').write_text('new download')
         database.write_text('new decisions')
         (data/'custom.db-wal').write_text('new WAL')
+        maintenance.record_after(snapshot)
         self.assertTrue(maintenance.changed(snapshot))
         maintenance.restore(snapshot)
         self.assertEqual(rule.read_text(), 'name: original\n')
@@ -67,12 +69,41 @@ class Maintenance(unittest.TestCase):
         rule, _, _ = self.rules()
         snapshot = self.base/'snapshot'
         maintenance.snapshot(self.config/'config.yaml', snapshot)
-        entry = next(item for item in config.read(snapshot/'manifest.yaml')['paths'] if item['path'].endswith('/parsers'))
-        (Path(entry['copy'])/'s01-parse/original.yaml').write_text('corrupt')
+        document = json.loads((snapshot/'transaction.json').read_text())
+        document['before'][str(rule)]['data'] = 'corrupt'
+        (snapshot/'transaction.json').write_text(json.dumps(document))
         rule.write_text('current rules')
         with self.assertRaises(ValueError):
             maintenance.restore(snapshot)
         self.assertEqual(rule.read_text(), 'current rules')
+
+    def test_snapshot_restore_refuses_later_changes_without_touching_other_files(self):
+        rule, data, _ = self.rules()
+        download = data/'geo.mmdb'; download.write_text('old')
+        snapshot = self.base/'snapshot'
+        maintenance.snapshot(self.config/'config.yaml', snapshot)
+        rule.write_text('transaction'); download.write_text('transaction')
+        maintenance.record_after(snapshot)
+        rule.write_text('external change')
+        with self.assertRaisesRegex(ValueError, 'concurrent modifications'):
+            maintenance.restore(snapshot)
+        self.assertEqual(rule.read_text(), 'external change')
+        self.assertEqual(download.read_text(), 'transaction')
+
+    def test_snapshot_refuses_external_children_before_any_rollback_mutation(self):
+        rule, _, _ = self.rules()
+        snapshot = self.base/'snapshot'
+        maintenance.snapshot(self.config/'config.yaml', snapshot)
+        rule.write_text('transaction')
+        added = rule.parent/'added'; added.mkdir()
+        transaction_file = added/'rule.yaml'; transaction_file.write_text('transaction')
+        maintenance.record_after(snapshot)
+        external = added/'external.yaml'; external.write_text('external')
+        with self.assertRaisesRegex(ValueError, 'concurrent modifications'):
+            maintenance.restore(snapshot)
+        self.assertEqual(rule.read_text(), 'transaction')
+        self.assertEqual(transaction_file.read_text(), 'transaction')
+        self.assertEqual(external.read_text(), 'external')
 
     def test_update_rejects_symlinked_hub_before_mutation(self):
         self.rules()
@@ -170,7 +201,7 @@ class Maintenance(unittest.TestCase):
         self.assertEqual(rule.read_text(), 'name: original\n')
         self.assertIn('systemctl reload crowdsec', self.commands())
         self.assertIn('原规则', result.stdout)
-        self.assertIn('更新失败', (self.base/'var/log/crowdsec-1key-update.log').read_text())
+        self.assertIn('rollback=restored', (self.base/'var/log/crowdsec-1key-update.log').read_text())
 
     def test_hub_validation_failure_rolls_back(self):
         rule, _, _ = self.rules()

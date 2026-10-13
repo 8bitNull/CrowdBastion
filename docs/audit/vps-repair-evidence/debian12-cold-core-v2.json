@@ -1,0 +1,169 @@
+{
+  "distro": "debian12",
+  "actual_distro": "Debian GNU/Linux 12 (bookworm)",
+  "os_id": "debian",
+  "version": "12",
+  "architecture": "x86_64",
+  "kernel": "6.1.0-53-cloud-amd64",
+  "pid1": "systemd",
+  "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+  "ram_kib": 995588,
+  "scope": "fresh_native_core_only",
+  "validation_level": "actual_systemd",
+  "status": "passed",
+  "remote_status": "not_tested",
+  "core_status": "passed",
+  "cases": [
+    {
+      "case": "guest_dependencies_index",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "guest_dependencies",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "packages_ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_relay_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_repeat_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "preserved": true,
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_reboot",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_add",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_delete",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    }
+  ],
+  "health": [
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec-firewall-bouncer",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    }
+  ],
+  "boots": [
+    {
+      "phase": "native_core_reboot",
+      "boot": 1,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 2,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 3,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    }
+  ],
+  "remote_complete": false,
+  "complete": true,
+  "missing_cases": [],
+  "failure_cause": null,
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+    "test_scope": "fresh_native_core_only",
+    "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+    "guest_sha256": "92dd97ff90ae672d5ac5745053844356bafe94264e8fb935d1a3d9c46fd4f14e",
+    "phase2_sha256": "d02400359a3ef11919bf3ab27c3d64573db360410cf6be234327729a65fcd783",
+    "seed_sha256": "192bee9f85c547660264b9d9476cc5e5c69cdf594a387b02550bdf5091945850",
+    "payload_sha256": "e8edaef83e550ae9a04ae26f04df8505d2ffab619a359e591cd67b10b4519703",
+    "architecture": "amd64",
+    "core_source": "official_native_repository",
+    "runtime_sha256": "9d6c4fd72ce7a2e1cb4f0feb2a7737b115e424fb2247f611eee052c6679139d7",
+    "native_phase_sha256": "e1873c58b32eca6b5f2af4d53c80dfc4ca7e54a007a60a2921728176f04ba68f"
+  },
+  "evidence": "docs/audit/vps-repair-evidence/debian12-cold-core-v2.serial.log",
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "stopped_by_agent": false,
+  "serial_sha256": "dce6ca12ba45ecdf6414089631b9deb52a97bb552c477a3c5e0138214a86ebcc",
+  "stage_status_interpretation": "Raw case observations; only overall status includes guest process termination.",
+  "ram_mib": 1024,
+  "image_sha256": "39b7ba95cd57f62d300e687bf60b2d082ad26a69efc0131ea1f555c5d663ca10",
+  "elapsed_seconds": 1003.853
+}

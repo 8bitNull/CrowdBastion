@@ -1,0 +1,5489 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-12T07:16:08.428478+00:00",
+  "validation_level": "fixture",
+  "scope": "Bash OS/package/configuration branches in temporary path fixtures; no real distro, architecture, RAM, kernel, systemd, firewall enforcement, downloads, or external messages tested",
+  "matrix_manifest": [
+    {
+      "id": "debian-apt-get-nftables-fresh",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "debian-apt-get-nftables-existing",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "debian-apt-get-iptables-fresh",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "debian-apt-get-iptables-existing",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "debian-apt-get-already-installed",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "debian-remote_cancel",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "debian-override_refusal",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "debian-readonly_help",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "debian-readonly_status",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "debian-readonly_unverified",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "debian-remote_restart_rollback",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "debian-managed_remove",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "ubuntu-apt-get-nftables-fresh",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "ubuntu-apt-get-nftables-existing",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "ubuntu-apt-get-iptables-fresh",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "ubuntu-apt-get-iptables-existing",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "ubuntu-apt-get-already-installed",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "ubuntu-remote_cancel",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "ubuntu-override_refusal",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "ubuntu-readonly_help",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "ubuntu-readonly_status",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "ubuntu-readonly_unverified",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "ubuntu-remote_restart_rollback",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "ubuntu-managed_remove",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "centos-dnf-nftables-fresh",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-dnf-nftables-existing",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-dnf-iptables-fresh",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-dnf-iptables-existing",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-dnf-already-installed",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-yum-nftables-fresh",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-yum-nftables-existing",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-yum-iptables-fresh",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-yum-iptables-existing",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-yum-already-installed",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "centos-remote_cancel",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "centos-override_refusal",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "centos-readonly_help",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "centos-readonly_status",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "centos-readonly_unverified",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "centos-remote_restart_rollback",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "centos-managed_remove",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rhel-dnf-nftables-fresh",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-dnf-nftables-existing",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-dnf-iptables-fresh",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-dnf-iptables-existing",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-dnf-already-installed",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-yum-nftables-fresh",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-yum-nftables-existing",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-yum-iptables-fresh",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-yum-iptables-existing",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-yum-already-installed",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rhel-remote_cancel",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rhel-override_refusal",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rhel-readonly_help",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "rhel-readonly_status",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "rhel-readonly_unverified",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "rhel-remote_restart_rollback",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rhel-managed_remove",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "almalinux-dnf-nftables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-dnf-nftables-existing",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-dnf-iptables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-dnf-iptables-existing",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-dnf-already-installed",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-yum-nftables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-yum-nftables-existing",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-yum-iptables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-yum-iptables-existing",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-yum-already-installed",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "almalinux-remote_cancel",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "almalinux-override_refusal",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "almalinux-readonly_help",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "almalinux-readonly_status",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "almalinux-readonly_unverified",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "almalinux-remote_restart_rollback",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "almalinux-managed_remove",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rocky-dnf-nftables-fresh",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-dnf-nftables-existing",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-dnf-iptables-fresh",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-dnf-iptables-existing",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-dnf-already-installed",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-yum-nftables-fresh",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-yum-nftables-existing",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-yum-iptables-fresh",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-yum-iptables-existing",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-yum-already-installed",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "rocky-remote_cancel",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rocky-override_refusal",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rocky-readonly_help",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "rocky-readonly_status",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "rocky-readonly_unverified",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "rocky-remote_restart_rollback",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "rocky-managed_remove",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    },
+    {
+      "id": "fedora-dnf-nftables-fresh",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-dnf-nftables-existing",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-dnf-iptables-fresh",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-dnf-iptables-existing",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-dnf-already-installed",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-yum-nftables-fresh",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-yum-nftables-existing",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-yum-iptables-fresh",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-yum-iptables-existing",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-yum-already-installed",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": []
+    },
+    {
+      "id": "fedora-remote_cancel",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "fedora-override_refusal",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "fedora-readonly_help",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ]
+    },
+    {
+      "id": "fedora-readonly_status",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ]
+    },
+    {
+      "id": "fedora-readonly_unverified",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ]
+    },
+    {
+      "id": "fedora-remote_restart_rollback",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ]
+    },
+    {
+      "id": "fedora-managed_remove",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "debian-apt-get-nftables-fresh",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-apt-get-nftables-existing",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-apt-get-iptables-fresh",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "apt-get install -y --no-upgrade iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-apt-get-iptables-existing",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-apt-get-already-installed",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-remote_cancel",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-override_refusal",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-readonly_help",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-readonly_status",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-readonly_unverified",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-remote_restart_rollback",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "debian-managed_remove",
+      "os_id": "debian",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-apt-get-nftables-fresh",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-apt-get-nftables-existing",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-apt-get-iptables-fresh",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "apt-get install -y --no-upgrade iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-apt-get-iptables-existing",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "apt-get install -y --no-upgrade iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-apt-get-already-installed",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-remote_cancel",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-override_refusal",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-readonly_help",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-readonly_status",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-readonly_unverified",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-remote_restart_rollback",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "ubuntu-managed_remove",
+      "os_id": "ubuntu",
+      "package_manager": "apt-get",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-dnf-nftables-fresh",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-dnf-nftables-existing",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-dnf-iptables-fresh",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-dnf-iptables-existing",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-dnf-already-installed",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-yum-nftables-fresh",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-yum-nftables-existing",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-yum-iptables-fresh",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-yum-iptables-existing",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-yum-already-installed",
+      "os_id": "centos",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-remote_cancel",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-override_refusal",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-readonly_help",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-readonly_status",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-readonly_unverified",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-remote_restart_rollback",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "centos-managed_remove",
+      "os_id": "centos",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-dnf-nftables-fresh",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-dnf-nftables-existing",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-dnf-iptables-fresh",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-dnf-iptables-existing",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-dnf-already-installed",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-yum-nftables-fresh",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-yum-nftables-existing",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-yum-iptables-fresh",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-yum-iptables-existing",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-yum-already-installed",
+      "os_id": "rhel",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-remote_cancel",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-override_refusal",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-readonly_help",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-readonly_status",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-readonly_unverified",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-remote_restart_rollback",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rhel-managed_remove",
+      "os_id": "rhel",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-dnf-nftables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-dnf-nftables-existing",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-dnf-iptables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-dnf-iptables-existing",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-dnf-already-installed",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-yum-nftables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-yum-nftables-existing",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-yum-iptables-fresh",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-yum-iptables-existing",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-yum-already-installed",
+      "os_id": "almalinux",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-remote_cancel",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-override_refusal",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-readonly_help",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-readonly_status",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-readonly_unverified",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-remote_restart_rollback",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "almalinux-managed_remove",
+      "os_id": "almalinux",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-dnf-nftables-fresh",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-dnf-nftables-existing",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-dnf-iptables-fresh",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-dnf-iptables-existing",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-dnf-already-installed",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-yum-nftables-fresh",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-yum-nftables-existing",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-yum-iptables-fresh",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-yum-iptables-existing",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-yum-already-installed",
+      "os_id": "rocky",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-remote_cancel",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-override_refusal",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-readonly_help",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-readonly_status",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-readonly_unverified",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-remote_restart_rollback",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "rocky-managed_remove",
+      "os_id": "rocky",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-dnf-nftables-fresh",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-dnf-nftables-existing",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-dnf-iptables-fresh",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-dnf-iptables-existing",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "dnf install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-dnf-already-installed",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-yum-nftables-fresh",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-yum-nftables-existing",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "nftables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y nftables crowdsec-firewall-bouncer-nftables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-yum-iptables-fresh",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "fresh",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "modprobe nf_tables",
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 3,
+        "configuration_files_after": 3,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-yum-iptables-existing",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "package_backend",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "correct_backend_and_manager": true,
+        "configuration_preserved": true,
+        "no_core_package": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "yum install -y iptables ipset crowdsec-firewall-bouncer-iptables"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-yum-already-installed",
+      "os_id": "fedora",
+      "package_manager": "yum",
+      "backend": null,
+      "install_state": "existing",
+      "scenario": "package_skip",
+      "validation_level": "fixture",
+      "cli": [],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "installed_packages_not_reinstalled": true,
+        "configuration_preserved": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-remote_cancel",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_cancel",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-override_refusal",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "override_refusal",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "refused_before_service_queries": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 5,
+        "configuration_files_after": 5,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-readonly_help",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_help",
+      "validation_level": "fixture",
+      "cli": [
+        "--help"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "help_lists_remote_entry": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-readonly_status",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_status",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-bouncer-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "no_management_lock_created": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-readonly_unverified",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "readonly_unverified",
+      "validation_level": "fixture",
+      "cli": [
+        "--relay-status"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_preserved": true,
+        "no_mutating_commands": true,
+        "unverified_exit_propagated_without_lock": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "audit fixture-unverified"
+        ],
+        "configuration_files_before": 4,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "stubbed exit propagation only",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-remote_restart_rollback",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "remote_restart_rollback",
+      "validation_level": "fixture",
+      "cli": [
+        "--configure-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "assertions": {
+        "no_secret_output": true,
+        "configuration_restored": true,
+        "failed_restart_and_restore_attempted": true,
+        "no_enablement_changed": true,
+        "core_service_untouched": true,
+        "no_core_account_commands": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer",
+          "systemctl restart crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 6,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "stubbed for rollback; not an authentication test",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    },
+    {
+      "id": "fedora-managed_remove",
+      "os_id": "fedora",
+      "package_manager": "dnf",
+      "backend": "iptables",
+      "install_state": "existing",
+      "scenario": "managed_remove",
+      "validation_level": "fixture",
+      "cli": [
+        "--remove-relay-bouncer"
+      ],
+      "distribution_version": null,
+      "architecture": null,
+      "kernel": null,
+      "ram_mib": null,
+      "status": "pass",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "assertions": {
+        "no_secret_output": true,
+        "only_managed_files_removed": true,
+        "bouncer_stopped_and_disabled": true,
+        "no_core_or_other_bouncer_changes": true
+      },
+      "failure_cause": null,
+      "evidence": {
+        "command_trace": [
+          "systemctl is-active --quiet crowdsec-firewall-bouncer",
+          "systemctl is-enabled crowdsec-firewall-bouncer",
+          "systemctl stop crowdsec-firewall-bouncer",
+          "systemctl disable crowdsec-firewall-bouncer"
+        ],
+        "configuration_files_before": 6,
+        "configuration_files_after": 4,
+        "fixture_root": "temporary directory, removed after case",
+        "readonly_audit": "not a firewall audit",
+        "auth_preflight": "not performed",
+        "systemd": "shell function stub; no booted operating system"
+      }
+    }
+  ],
+  "summary": {
+    "total": 109,
+    "passed": 109,
+    "failed": 0
+  },
+  "cli_inventory": [
+    {
+      "option": "(interactive menu)",
+      "category": "interactive_menus",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--admin-allowlist",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--appsec-policy",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--appsec-status",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--check-clean",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--check-logs",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--clean-redundant",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--configure-docker-endpoints",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--configure-relay-bouncer",
+      "category": "remote_bouncer",
+      "coverage": "fixture",
+      "case_ids": [
+        "debian-remote_cancel",
+        "debian-override_refusal",
+        "debian-remote_restart_rollback",
+        "ubuntu-remote_cancel",
+        "ubuntu-override_refusal",
+        "ubuntu-remote_restart_rollback",
+        "centos-remote_cancel",
+        "centos-override_refusal",
+        "centos-remote_restart_rollback",
+        "rhel-remote_cancel",
+        "rhel-override_refusal",
+        "rhel-remote_restart_rollback",
+        "almalinux-remote_cancel",
+        "almalinux-override_refusal",
+        "almalinux-remote_restart_rollback",
+        "rocky-remote_cancel",
+        "rocky-override_refusal",
+        "rocky-remote_restart_rollback",
+        "fedora-remote_cancel",
+        "fedora-override_refusal",
+        "fedora-remote_restart_rollback"
+      ]
+    },
+    {
+      "option": "--deep-clean",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--diagnose-host-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--diagnose-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--disable-appsec",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--enable-cron",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--enable-wal",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--help",
+      "category": "help",
+      "coverage": "fixture",
+      "case_ids": [
+        "debian-readonly_help",
+        "ubuntu-readonly_help",
+        "centos-readonly_help",
+        "rhel-readonly_help",
+        "almalinux-readonly_help",
+        "rocky-readonly_help",
+        "fedora-readonly_help"
+      ]
+    },
+    {
+      "option": "--install-appsec",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-core",
+      "category": "core_local_bouncer",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-relay",
+      "category": "core_local_bouncer",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-relay-bouncer",
+      "category": "remote_bouncer",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-waf",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-web-bouncer",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--install-webui",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--optimize",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--purge",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--relay-bouncer-status",
+      "category": "remote_bouncer",
+      "coverage": "fixture",
+      "case_ids": [
+        "debian-readonly_status",
+        "ubuntu-readonly_status",
+        "centos-readonly_status",
+        "rhel-readonly_status",
+        "almalinux-readonly_status",
+        "rocky-readonly_status",
+        "fedora-readonly_status"
+      ]
+    },
+    {
+      "option": "--relay-path",
+      "category": "readonly_health_path",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--relay-status",
+      "category": "readonly_health_path",
+      "coverage": "fixture",
+      "case_ids": [
+        "debian-readonly_unverified",
+        "ubuntu-readonly_unverified",
+        "centos-readonly_unverified",
+        "rhel-readonly_unverified",
+        "almalinux-readonly_unverified",
+        "rocky-readonly_unverified",
+        "fedora-readonly_unverified"
+      ]
+    },
+    {
+      "option": "--remove-relay-bouncer",
+      "category": "remote_bouncer",
+      "coverage": "fixture",
+      "case_ids": [
+        "debian-managed_remove",
+        "ubuntu-managed_remove",
+        "centos-managed_remove",
+        "rhel-managed_remove",
+        "almalinux-managed_remove",
+        "rocky-managed_remove",
+        "fedora-managed_remove"
+      ]
+    },
+    {
+      "option": "--remove-web-bouncer",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--repair-bouncer",
+      "category": "core_local_bouncer",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--repair-host-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--repair-logs",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--repair-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--reset-56",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--reset-baseline",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--reset-webui-credentials",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--restore-host-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--restore-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--self-report-status",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--status",
+      "category": "readonly_health_path",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--telegram",
+      "category": "notifications",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--telegram-test",
+      "category": "notifications",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--uninstall",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--uninstall-waf",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--update-hub",
+      "category": "maintenance_cleanup",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--verify-appsec",
+      "category": "web_appsec",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--verify-host-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "--verify-real-ip",
+      "category": "logs_identity_network",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    },
+    {
+      "option": "-h",
+      "category": "help",
+      "coverage": "not_exercised_by_this_matrix",
+      "case_ids": []
+    }
+  ],
+  "actual_archive_imports": [],
+  "not_validated": [
+    "booted distro versions",
+    "amd64/arm64 execution",
+    "RAM capacity",
+    "actual package repositories/install scripts",
+    "real systemd boot and enablement",
+    "real firewall rule enforcement",
+    "real remote LAPI authentication",
+    "web/Docker/AppSec workflows",
+    "Telegram/email delivery",
+    "long-term stability or WAN bandwidth"
+  ]
+}

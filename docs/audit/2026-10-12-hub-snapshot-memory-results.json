@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "validation_level": "resource_constrained_fixture",
+  "scope": "Isolated Python Hub snapshot memory experiment; synthetic zero-filled download files; no systemd, kernel firewall, or actual VPS acceptance",
+  "helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+  "tdd": {
+    "checksum_record_payload_mib": 96,
+    "address_space_limit_mib": 220,
+    "previous_digest_exit_code": 1,
+    "previous_failure": "MemoryError in json.dumps",
+    "streaming_digest_exit_code": 0,
+    "format2_hash_fidelity": "passed, JSON defaults and checksum exclusion preserved"
+  },
+  "lifecycle": {
+    "files_mib": {
+      "City.mmdb": 61,
+      "ASN.mmdb": 11
+    },
+    "operations": [
+      "capture_before",
+      "save_before",
+      "read_snapshot",
+      "capture_after",
+      "save_after",
+      "restore_unchanged_state"
+    ],
+    "baseline_definition": "same helper with digest replaced by original hashlib.sha256(json.dumps(content,sort_keys=True).encode()).hexdigest()",
+    "budget_700_mib": {
+      "baseline": {
+        "exit_code": 0,
+        "peak_rss_kib": 705272,
+        "elapsed_seconds": 3.031
+      },
+      "streaming": {
+        "exit_code": 0,
+        "peak_rss_kib": 493480,
+        "elapsed_seconds": 2.681
+      }
+    },
+    "budget_600_mib": {
+      "baseline": {
+        "exit_code": 1,
+        "failure": "MemoryError",
+        "peak_rss_kib": 508272,
+        "elapsed_seconds": 2.222
+      },
+      "streaming": {
+        "exit_code": 0,
+        "peak_rss_kib": 493536,
+        "elapsed_seconds": 2.497
+      }
+    }
+  },
+  "limitations": [
+    "single functional memory experiment, not performance benchmark",
+    "snapshot contents and individual encoded values remain resident",
+    "actual CentOS killed process command was not recorded; precise OOM cause not conclusively attributed",
+    "450MiB address-space limit failed for both baseline and streaming lifecycle"
+  ],
+  "probe_evidence": {
+    "path": "/tmp/crowdsec-hub-lifecycle-memory-probe.py",
+    "sha256": "bc02f88805e6282ebcbb7fb5e66bcc7f7f712d9f8e92240bd3912ef699b61348"
+  },
+  "regression_test": "tests/test_hub_snapshot_memory.py",
+  "actual_guest_followup": {
+    "distro": "CentOS Stream 9",
+    "kernel": "5.14.0-754.el9.x86_64",
+    "requested_ram_mib": 1024,
+    "observed_ram_kib": 781252,
+    "case": "core_relay_install",
+    "command_exit_code": 0,
+    "assertions": {
+      "core_active": true,
+      "bouncer_active": true
+    },
+    "oom_observed": false,
+    "native_version": "v1.8.1-rpm-pragmatic-amd64-909b5157",
+    "whole_run_status": "incomplete",
+    "failure_cause": "Core-only test harness NameError during cleanup after emitting passed installer case; no VPS_COMPLETE",
+    "evidence": "/tmp/crowdsec-vps-rpm-arm-lab/centos9-core-fixed.serial.log",
+    "scope": "Separate fresh core-only followup; earlier remote lifecycle not rerun; memory improvement causality not uniquely established by this comparison"
+  }
+}

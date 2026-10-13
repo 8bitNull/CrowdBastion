@@ -9,6 +9,9 @@ locked_operation() (
         exec 9> "$MAINTENANCE_LOCK" || return 1
         if ! flock -n 9; then log_warn '另一个 CrowdSec 管理操作正在执行，请稍后重试。'; return 75; fi
     fi
+    trap hub_workflow_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     MAINTENANCE_LOCK_HELD=true "$@"
 )
 
@@ -30,67 +33,24 @@ config_change_needed() {
 }
 
 reload_core_rules() {
-    crowdsec -t || return 1
+    crowdsec -t || { hub_abort no-load; return 1; }
     if [[ "${CORE_RULES_CHANGED:-false}" == true ]]; then
-        if ! systemctl reload crowdsec || ! systemctl is-active --quiet crowdsec; then return 1; fi
-        CORE_RULES_CHANGED=false
+        CORE_CONFIG_LOADING=reload
+        if ! systemctl reload crowdsec || ! systemctl is-active --quiet crowdsec; then hub_abort; return 1; fi
     else
-        systemctl is-active --quiet crowdsec || { log_err '核心未运行，请先恢复服务。'; return 1; }
+        systemctl is-active --quiet crowdsec || { hub_abort no-load; log_err '核心未运行，请先恢复服务。'; return 1; }
         log_info '规则未变化，跳过重载。'
     fi
+    hub_finalize || { hub_abort; return 1; }
+    # Read by the shared Hub workflow exit handler.
+    # shellcheck disable=SC2034
+    CORE_CONFIG_LOADING=''
+    CORE_RULES_CHANGED=false
 }
 
-run_hub_update() (
-    require_core && require_yaml && require_commands flock || return 1
-    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then
-        mkdir -p "$(dirname "$MAINTENANCE_LOCK")" || return 1
-        exec 9> "$MAINTENANCE_LOCK" || return 1
-        flock -n 9 || { log_warn '已有管理操作，跳过本次 Hub 更新。'; return 75; }
-    fi
-    local hub_update_lock
-    mkdir -p "$(dirname "$HUB_LOCK_FILE")" || return 1
-    exec {hub_update_lock}> "$HUB_LOCK_FILE" || return 1
-    flock -n "$hub_update_lock" || { log_warn '已有 Hub 维护任务，跳过本次更新。'; return 75; }
-    systemctl is-active --quiet crowdsec || { log_err '核心未运行，未自动更新规则。'; return 1; }
-    crowdsec -t || return 1
-    local backup changed=false committed=false
-    mkdir -p "$UPDATE_BACKUPS" || return 1
-    backup=$(mktemp -d "${UPDATE_BACKUPS}/hub.XXXXXXXX") || return 1
-    chmod 700 "$backup" || return 1
-    maintenance_tool snapshot "${CS_DIR}/config.yaml" "$backup" || return 1
-    hub_update_exit() {
-        local result=$?
-        trap - EXIT INT TERM
-        if [[ "$changed" == true && "$committed" != true ]]; then
-            if maintenance_tool restore "$backup" && crowdsec -t && systemctl reload crowdsec && systemctl is-active --quiet crowdsec; then
-                log_warn "更新失败，原规则和下载数据已恢复：${backup}"
-            else
-                log_err "更新回滚未完成，请使用 ${backup} 手动恢复并核验服务。"
-            fi
-        fi
-        exit "$result"
-    }
-    trap hub_update_exit EXIT
-    trap 'exit 130' INT
-    trap 'exit 143' TERM
-    changed=true
-    log_info "Hub 更新开始；规则备份：${backup}"
-    cscli hub update && cscli hub upgrade || return 1
-    crowdsec -t || return 1
-    local comparison=0
-    maintenance_tool changed "$backup" || comparison=$?
-    if [[ "$comparison" == 0 ]]; then
-        systemctl reload crowdsec && systemctl is-active --quiet crowdsec || return 1
-        log_succ 'Hub 规则已更新并加载。'
-    elif [[ "$comparison" == 1 ]]; then
-        log_info 'Hub 内容未变化，跳过重载。'
-    else
-        return 1
-    fi
-    committed=true
-    touch "$backup/.successful" || return 1
-    maintenance_tool prune-snapshots "$UPDATE_BACKUPS" || log_warn '旧成功快照清理失败，请检查备份目录。'
-)
+run_hub_update() {
+    hub_maintenance update
+}
 
 check_log_inventory() (
     require_core && require_yaml || return 1
@@ -122,6 +82,18 @@ webui_ready() (
     log_err 'WebUI HTTP、容器健康或独立 LAPI 登录未就绪。'
     return 1
 )
+
+check_webui_status() {
+    if ! webui_owned && [[ ! -f "${WEBUI_DIR}/docker-compose.yml" ]]; then
+        log_info 'WebUI: 未部署（可选）。'
+        return 0
+    fi
+    local port
+    port=$(maintenance_tool webui-port "${WEBUI_DIR}/docker-compose.yml") || return 1
+    valid_port "$port" || { log_err 'WebUI 端口无效，未执行健康请求。'; return 1; }
+    webui_ready "$port" 1 || return 1
+    log_info '[正常] WebUI HTTP、容器与独立 LAPI 登录。'
+}
 
 webui_owns_port() {
     local port="$1" processes sockets
@@ -162,7 +134,7 @@ update_hub_logged() {
 }
 
 check_protection_evidence() (
-    local work result=0 id name port status service
+    local work result=0 id name status service
     work=$(mktemp -d) || return 1
     trap 'rm -rf -- "$work"' EXIT
     if cscli metrics show acquisition -o json > "$work/acquisition" && cscli metrics show appsec -o json > "$work/appsec"; then
@@ -189,10 +161,6 @@ check_protection_evidence() (
                 request_audit_tool status "$IP_VERIFICATIONS" "$name" "$work/effective" "$WEB_INSTALLS" "$work/mounts" || { status=$?; [[ "$status" == 2 ]] || result=1; }
             fi
         done < <(docker ps --format '{{.ID}} {{.Names}}')
-        if [[ -f "${WEBUI_DIR}/docker-compose.yml" ]]; then
-            port=$(maintenance_tool webui-port "${WEBUI_DIR}/docker-compose.yml") || return 1
-            if webui_ready "$port" 1; then log_info '[正常] WebUI HTTP、容器与独立 LAPI 登录。'; else result=1; fi
-        fi
     fi
     [[ "$result" == 0 ]] && return 2
     return 1

@@ -1,0 +1,158 @@
+[
+  {
+    "seed_name": "seed-arm.iso",
+    "seed_sha256": "dd18741afa65cf84226df60c6b512f43a5b2253463251409631f8e1281025659",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "615a51f0c3a7dcc50fa7bbbd74a5a22a92f8f1b98963fefaa2b04ee54ab2a809",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/615a51f0c3a7dcc50fa7bbbd74a5a22a92f8f1b98963fefaa2b04ee54ab2a809.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+      }
+    }
+  },
+  {
+    "seed_name": "centos9.seed.iso",
+    "seed_sha256": "8d8fb745536e9beab0aba94bb18c3d399a1f7c16e7f4260688c94b44f446cf1e",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "be7cafe9584b5cbadd580d2399f82ea80de0e95f5d373236536f9ce7e3b7cb19",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/be7cafe9584b5cbadd580d2399f82ea80de0e95f5d373236536f9ce7e3b7cb19.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/2ea788460f2fffd240bf3e6244514f928fdd4fc7b042cf0306a503c0c81f6786.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "d13789908fd681ff580c360b435dae5f9ed638a451d1f5916f8b026d89a571da",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/d13789908fd681ff580c360b435dae5f9ed638a451d1f5916f8b026d89a571da.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "1c4504992447e91fa8a42febd1b2a3951a9cb44dedb13b0587bd0ce91c8f6367",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/1c4504992447e91fa8a42febd1b2a3951a9cb44dedb13b0587bd0ce91c8f6367.py"
+      }
+    }
+  },
+  {
+    "seed_name": "seed-centos-core-fixed.iso",
+    "seed_sha256": "1a9161d0ca14871d079aeeffe52cf880e4b1efc619e4d6c62f5b2a224468647c",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "a381cba65c62b4017cbd861ffd61b5f4a10c362b54586bfbf53241eb6572295e",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a381cba65c62b4017cbd861ffd61b5f4a10c362b54586bfbf53241eb6572295e.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+      }
+    }
+  },
+  {
+    "seed_name": "seed-rpm-fixed-v2.iso",
+    "seed_sha256": "2a4161d1e9bd1c1d3a99e20c2841c1e5c67c14bb31809578fd6f3872c7395f62",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "30c8d81b59502c3587f5d33113995ac7b87ffbf73c6ce0a689d00bc49ab5946b",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/30c8d81b59502c3587f5d33113995ac7b87ffbf73c6ce0a689d00bc49ab5946b.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5a32fc8aaf2672c99914ed21b95141bc9e6765785ec9efc944e8452d67734b77.py"
+      }
+    }
+  },
+  {
+    "seed_name": "seed-rpm-fixed-v4.iso",
+    "seed_sha256": "907f776249392e7f96db6ce5d5454360c8a5c225f330266e4ab1994e383550de",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "19f8dbaa18f90dae4926942c04bbda227ca8c001f07e70c273d5f5bb9812f058",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/19f8dbaa18f90dae4926942c04bbda227ca8c001f07e70c273d5f5bb9812f058.py"
+      }
+    }
+  },
+  {
+    "seed_name": "seed-rpm-fixed-v5.iso",
+    "seed_sha256": "f0867e88c7d03670d19c4ca95956e79892a250ec261eea3fd56c625f5ae61192",
+    "files": {
+      "opt/test/repo/install-crowdsec-1panel.sh": {
+        "sha256": "5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/5ab62efdb6c80efc0bc1ff62000b32bf4029cb53cf5a4d81f66260b8b0abedf7.sh"
+      },
+      "opt/test/repo/lib/remote_bouncer.sh": {
+        "sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7.sh"
+      },
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": {
+        "sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd.py"
+      },
+      "opt/test/guest.py": {
+        "sha256": "46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/46470ec9946b81317913d2d4fe6cf4c963e9427b207f771f1971a024dc908877.py"
+      },
+      "opt/test/phase2.py": {
+        "sha256": "c92b2fc58ca6ecea87504c998b58ff534c5aef24d237ef42b81028c496155f1d",
+        "evidence": "docs/audit/vps-rpm-arm-evidence/sources/c92b2fc58ca6ecea87504c998b58ff534c5aef24d237ef42b81028c496155f1d.py"
+      }
+    }
+  }
+]

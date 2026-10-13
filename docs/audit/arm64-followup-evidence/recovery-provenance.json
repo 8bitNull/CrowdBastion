@@ -1,0 +1,13 @@
+{
+  "files": {
+    "guest.py": "88a42743c0d94f32291f3bce044d857a723bff0e49f848ca0c3c2b4650ae0402",
+    "build.py": "891c8ca6e33a0dc74c2cec74a96a4d3fc836f2a8afbcef00b7b13262767f01c6",
+    "payload.tgz": "b0761ae654baa04ef863059030183e6d7ca914c4a4c0731d12fdce268d31d97d",
+    "seed.iso": "8c5d97b8010f2c0feb78e46ba1a74bd84c81ddefa8fb2137a5fcc62abfd6bb0c"
+  },
+  "backing_file": "/tmp/crowdsec-arm-followup/guest-v2.qcow2",
+  "scope": "diagnostic_cloned_guest_timeout_control_not_unmodified_installer_acceptance",
+  "backing_sha256": "b38b4de1bc6779c1b833b7fbb1c971fa515dc3bff9b643874e7c56886af3a5af",
+  "runner_sha256": "e1d4a2e01ee8e45eb0fa402ac9b7aaf19917fa3002e3693803d55c366264e57a",
+  "original_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+}

@@ -1,0 +1,236 @@
+{
+  "distro": "debian12",
+  "actual_distro": "Debian GNU/Linux 12 (bookworm)",
+  "os_id": "debian",
+  "version": "12",
+  "architecture": "x86_64",
+  "kernel": "6.1.0-53-cloud-amd64",
+  "pid1": "systemd",
+  "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+  "ram_kib": 995588,
+  "scope": "existing_core_integration",
+  "validation_level": "actual_systemd",
+  "status": "passed",
+  "remote_status": "not_tested",
+  "core_status": "passed",
+  "cases": [
+    {
+      "case": "guest_dependencies_index",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "guest_dependencies",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "packages_ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_repository_setup",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_package_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "installed": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_relay_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "existing_core_config_preserved",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "preserved": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_repeat_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "preserved": true,
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_reboot",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_add",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_delete",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    }
+  ],
+  "health": [
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec-firewall-bouncer",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    }
+  ],
+  "boots": [
+    {
+      "phase": "native_core_reboot",
+      "boot": 1,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 2,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 3,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    }
+  ],
+  "remote_complete": false,
+  "complete": true,
+  "missing_cases": [],
+  "kernel_oom_observed": false,
+  "failure_cause": null,
+  "host_assessment_sources": {
+    "verify_vps_rpm_arm.py": "83d4cff29ce7c066b8b5b201c18449f8a2505145ce7f21679790519cf58909a7",
+    "vps_guest_runtime.py": "ea56ce01dab421a5366884e7eb24aab2c7d3f474602a9600a2d01297c024efd2",
+    "relay_soak_guest.py": "ac49636a9a2b3bd69eb93241c88b1ed91b21835ccfc4912b0794600e7b3c8343"
+  },
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "hub_helper_sha256": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5",
+    "test_scope": "existing_core_integration",
+    "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+    "guest_sha256": "be79434e451782e3cf2cf53db134924baac8c325794ef7bff472d1ca8cb14045",
+    "phase2_sha256": "f9f2eaa6904460d081a0d9326befe617d98d3ec706bb23a37203b0f42c786e90",
+    "seed_sha256": "4513dd5b0e409b4e01522bbc8a011a629fc4b87015a452b382157b120ce5cf3e",
+    "payload_sha256": "02bdbbbc92b520d02132a8f97d189219f25380926d3579351714ed808c920c47",
+    "architecture": "amd64",
+    "core_source": "official_native_repository",
+    "runtime_sha256": "ea56ce01dab421a5366884e7eb24aab2c7d3f474602a9600a2d01297c024efd2",
+    "native_phase_sha256": "def886fe34c2dc6836b06fd41a7069a6b145b322b8f0e9a74960e3126fd54c8f",
+    "scope_control_sha256": "55679ba473cdb24c3c79e8133f7c3b0a1c31746f41e4e3757d747af2266cd177",
+    "source_sha256": {
+      "opt/test/repo/install-crowdsec-1panel.sh": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "opt/test/repo/lib/crowdsec_appsec.py": "0db68a60e29c88c8ee06982b2272ec7c593cc671c2731b92580317f5d0cd6f16",
+      "opt/test/repo/lib/crowdsec_config.py": "d73115800bfcb07b3835d00b5da2cfbcca82e376bf37a08721ebc2fcb300941f",
+      "opt/test/repo/lib/crowdsec_detection_diagnose.py": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f",
+      "opt/test/repo/lib/crowdsec_host.py": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a",
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5",
+      "opt/test/repo/lib/crowdsec_maintenance.py": "93dc883979b045dfcb36ed301861da61514637c2b4dea8c3fcf2982bac4a26ee",
+      "opt/test/repo/lib/crowdsec_realip.py": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059",
+      "opt/test/repo/lib/crowdsec_realip_diagnose.py": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167",
+      "opt/test/repo/lib/crowdsec_relay.py": "47c5f497be70a562d8bebc6c500fc94729c26e09cdbf5c1d60be4c2e6784e388",
+      "opt/test/repo/lib/crowdsec_relay_paths.py": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6",
+      "opt/test/repo/lib/crowdsec_remote_bouncer.py": "c12684d86008a0f7e3537003b0060dba133c2b15ffabed13af32d183af038f6a",
+      "opt/test/repo/lib/crowdsec_request_audit.py": "27559e7ba183074682e53a67689f7d97e0e15f8a3adb4c51bc7922a4fba8e7fe",
+      "opt/test/repo/lib/crowdsec_safety.py": "22bac0eb776c09257b34ce06dc32d83e04630f72068af866d208bfca5c16c2d2",
+      "opt/test/repo/lib/crowdsec_telegram.py": "1c293fa912e59e1043744c13eb8932faae18b1eb02ea6ed46a7ede4fc0edcc3b",
+      "opt/test/repo/lib/crowdsec_transport.py": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e",
+      "opt/test/repo/lib/crowdsec_web.py": "931d95251734b12ed2fc4c1db539464425b444a6c333882d7229cb23e5db7370",
+      "opt/test/repo/lib/appsec_audit.sh": "0a4af9dd506a789a60a86a3c8c92d3edb2a418f6af054a2e23b48f765f9e087c",
+      "opt/test/repo/lib/host_web_bouncer.sh": "827d68cedb7ef772d5edaae64623701407e73daf22da4c8d60382b6b598819f6",
+      "opt/test/repo/lib/hub_maintenance.sh": "c8ba0694c969f0e584404f87b901f58685e6a9371026f210c9cf37dd920dd30e",
+      "opt/test/repo/lib/maintenance.sh": "88dd387ec0c1f15b593fa6e1ad374edcad8db5cc0ce2194ade75055bf262fdd5",
+      "opt/test/repo/lib/native_web_bouncer.sh": "591f341b5012b5cf6a96e0a50917d83e77de76ddba9b4f70b529378476402933",
+      "opt/test/repo/lib/private_transport.sh": "ad5392f57ab151f692ec5162d01c0fa1c8b72dd358d9354d8acb671708c6f336",
+      "opt/test/repo/lib/real_ip.sh": "1431630e834b146b0dd2769bfe48dabaee0aea234d4fd1b655f6cee0f9b63702",
+      "opt/test/repo/lib/relay.sh": "88b0050d345a8bf0d1355d072d17ba403847194936fdbe7c3b05f9280e60c759",
+      "opt/test/repo/lib/remote_bouncer.sh": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+    },
+    "soak_duration_seconds": null,
+    "soak_sources": {}
+  },
+  "evidence": "/tmp/crowdsec-vps-repair-debian-existing-v1-20261012/debian12.serial.log",
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "stopped_by_agent": false,
+  "serial_sha256": "7994223b853d2e76d7fcd540c83782eed7b5728d2ebb55ee896340d33e9d2307",
+  "stage_status_interpretation": "Raw case observations; only overall status includes guest process termination.",
+  "ram_mib": 1024,
+  "image_sha256": "9ebb87ba8e3e0ab593e39cb89fed15dda05e5997b575285a7fae4ac4bc42ad20",
+  "elapsed_seconds": 905.926
+}

@@ -1,0 +1,8 @@
+VPS_ENV {"actual_distro": "Debian GNU/Linux 12 (bookworm)", "arch": "x86_64", "kernel": "6.1.0-53-cloud-amd64", "init": "systemd"}
+VPS_RESULT {"case": "guest_dependencies_index", "exit_code": 0, "command_exit_code": 0, "assertions": {"index_ready": true}}
+VPS_RESULT {"case": "guest_dependencies", "exit_code": 0, "command_exit_code": 0, "assertions": {"packages_ready": true}}
+VPS_RESULT {"case": "fresh_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true, "enabled": true, "local_exists": true}}
+VPS_RESULT {"case": "repeat_remote_install", "exit_code": 0, "command_exit_code": 0, "assertions": {"active": true}}
+VPS_RESULT {"case": "change_key_only", "exit_code": 0, "command_exit_code": 0, "assertions": {"changed": true, "active": true}}
+VPS_RESULT {"case": "bad_key_preserves_state", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}
+VPS_RESULT {"case": "foreign_local_ownership", "exit_code": 0, "command_exit_code": 1, "assertions": {"rejected": true, "local_unchanged": true, "active": true}}

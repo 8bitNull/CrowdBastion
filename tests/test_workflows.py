@@ -53,6 +53,7 @@ cscli() {
  case "$*" in
   'machines list -o json') echo '[{"machineId":"webui-legitimate-host"},{"machineId":"webui-other-owner"}]' ;;
   'collections list -o json') echo '[]' ;;
+  'collections install '*) mkdir -p "$CS_DIR/hub"; printf '%s\n' "$*" > "$CS_DIR/hub/test-installed" ;;
   'metrics show acquisition -o json') echo '{"acquisition":{}}' ;;
   'metrics show appsec -o json') echo '{"appsec":{}}' ;;
   'bouncers add '*'-o raw') echo '0123456789abcdef0123456789abcdef' ;;
@@ -107,6 +108,51 @@ journalctl() { record journalctl "$@"; }
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('--telegram-test', p.stdout)
         self.assertEqual(self.commands(), '')
+
+    def test_debian_package_postinst_accepts_a_monochrome_terminal(self):
+        # Official Bouncer 0.0.36 initializes colors with set -e. apt gives
+        # postinst a PTY, even when the caller captures its output. vt220 has
+        # sgr0 but no setaf; the latter then aborts package configuration.
+        # Keep that boundary behavior without running apt or systemctl here.
+        helper = self.base / 'postinst-colors.sh'
+        helper.write_text('''set -eu
+tput() { [ "$1" = sgr0 ]; }
+if [ -n "${NO_COLOR-}" ] || [ ! -t 1 ]; then
+    FG_RED=""
+elif [ -n "${TERM-}" ] && tput sgr0 >/dev/null 2>&1; then
+    FG_RED=$(tput setaf 1)
+fi
+printf configured > "$1"
+''')
+        probe = self.base / 'apt-pty.py'
+        probe.write_text('''import os, pty, subprocess, sys
+master, slave = pty.openpty()
+try:
+    process = subprocess.Popen(['sh', sys.argv[1], sys.argv[2]], stdout=slave, stderr=slave)
+    os.close(slave)
+    try:
+        while os.read(master, 4096):
+            pass
+    except OSError:
+        pass
+    raise SystemExit(process.wait(timeout=5))
+finally:
+    os.close(master)
+''')
+        marker = self.base / 'configured'
+        override = ('apt-get() { python3 ' + shlex.quote(str(probe)) + ' ' +
+                    shlex.quote(str(helper)) + ' ' + shlex.quote(str(marker)) + '; }')
+        p = self.run_shell(
+            'unset NO_COLOR; export TERM=vt220; install_packages crowdsec-firewall-bouncer-nftables; '
+            'result=$?; [[ -z "${NO_COLOR+x}" ]] || exit 42; exit "$result"',
+            overrides=override)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(marker.read_text(), 'configured')
+
+    def test_debian_package_failure_remains_a_failure_with_color_disabled(self):
+        p = self.run_shell('install_packages crowdsec-firewall-bouncer-nftables',
+                           overrides='apt-get() { return 29; }')
+        self.assertEqual(p.returncode, 29, p.stdout+p.stderr)
 
     def test_cli_propagates_failure(self):
         p = self.run_shell('main --install-waf', overrides='cscli() { record cscli "$@"; return 1; }')
@@ -504,12 +550,52 @@ journalctl() { record journalctl "$@"; }
         self.assertIn('容器 Web Bouncer', p.stdout+p.stderr)
 
     def test_all_main_menu_entries_dispatch(self):
-        names = ['install_crowdsec_core','manage_web_ui','manage_waf_rules','manage_auto_update','manage_firewall_ops','bind_crowdsec_console','manage_telegram','smart_audit_and_optimize','check_health_status','manage_uninstall_center']
+        names = ['manage_installation','manage_waf_rules','manage_firewall_ops','manage_diagnostics','manage_integrations','manage_uninstall_center']
         overrides = '\n'.join(f'{name}() {{ record invoked {name}; }}' for name in names)
-        p = self.run_shell('show_main_menu', '\n'.join(map(str, range(1,11)))+'\n0\n', overrides)
+        p = self.run_shell('show_main_menu', '\n'.join(map(str, range(1,7)))+'\n0\n', overrides)
         self.assertEqual(p.returncode, 0)
         for name in names:
             self.assertIn('invoked '+name, self.commands())
+
+    def test_nested_menu_return_does_not_execute_operations(self):
+        # Enter each category and its child menus, return to the parent, then exit.
+        paths = ['1\n0\n', '2\n0\n', '3\n0\n', '4\n0\n', '5\n0\n', '6\n0\n',
+                 '1\n2\n0\n0\n', '1\n3\n0\n0\n',
+                 '4\n4\n1\n0\n0\n0\n', '4\n4\n2\n0\n0\n0\n',
+                 '2\n9\n0\n0\n', '5\n1\n0\n0\n', '5\n3\n0\n0\n']
+        for path in paths:
+            with self.subTest(path=path):
+                self.trace.write_text('')
+                p = self.run_shell('show_main_menu', path+'0\n')
+                self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+                self.assertEqual(self.commands(), '')
+                self.assertNotIn('无效选项', p.stderr)
+
+    def test_real_ip_menu_dispatches_target_and_action(self):
+        overrides = ('repair_cloudflare_real_ip() { record repair "$@"; }\n'
+                     'verify_real_ip_request() { record verify "$@"; }')
+        p = self.run_shell('manage_real_ip', '1\n1\n2\n3\n4\n0\n2\n1\n2\n3\n4\n0\n0\n', overrides)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.commands().splitlines(), [
+            'repair diagnose', 'repair apply', 'verify', 'repair remove',
+            'repair diagnose host', 'repair apply host', 'verify host', 'repair remove host'])
+
+    def test_uninstall_menu_has_single_destructive_entry(self):
+        overrides = ('deep_purge_residuals() { record purge; }\n'
+                     'audit_crowdsec_residuals() { record residuals; }')
+        p = self.run_shell('manage_uninstall_center', '1\n2\n3\n0\n', overrides)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.commands().splitlines(), ['purge', 'residuals'])
+
+    def test_diagnostics_read_only_actions_do_not_take_mutation_lock(self):
+        overrides = ('locked_operation() { record unexpected-lock; return 1; }\n'
+                     'check_health_status() { record health; }\n'
+                     'check_log_inventory() { record logs; }\n'
+                     'check_appsec_status() { record appsec; }\n'
+                     'diagnose_self_report() { record self-report; }')
+        p = self.run_shell('manage_diagnostics', '1\n2\n3\n5\n0\n', overrides)
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.commands().splitlines(), ['health', 'logs', 'appsec', 'self-report'])
 
     def make_webui(self):
         ui = self.base/'opt/crowdsec-web-ui'
@@ -560,7 +646,8 @@ journalctl() { record journalctl "$@"; }
         self.assertGreaterEqual(self.commands().count(' up -d'), 2)
 
     def test_all_submenus_exit_on_eof(self):
-        for name in ['manage_web_ui','manage_waf_rules','manage_auto_update','manage_firewall_ops','manage_telegram','manage_uninstall_center']:
+        for name in ['manage_web_ui','manage_waf_rules','manage_auto_update','manage_firewall_ops','manage_telegram','manage_uninstall_center',
+                     'manage_installation','manage_website_protection','manage_real_ip','manage_diagnostics','manage_integrations']:
             with self.subTest(menu=name):
                 self.assertEqual(self.run_shell(name, timeout=1).returncode, 0)
 
@@ -577,6 +664,16 @@ journalctl() { record journalctl "$@"; }
         self.assertEqual(self.run_shell('disable_telegram_notification', 'y\n').returncode, 0)
         self.assertFalse((self.config/'notifications/crowdsec-1key-telegram.yaml').exists())
         self.assertNotIn('notifications', yaml.safe_load((self.config/'profiles.yaml').read_text()))
+
+    def test_telegram_disable_deletion_failure_restores_routes(self):
+        result = self.run_shell('setup_telegram_notification', '123456:ABC_DEF\n-123\nhttps://telegram.example/proxy\nn\n')
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        profile = self.config/'profiles.yaml'
+        notification = self.config/'notifications/crowdsec-1key-telegram.yaml'
+        before = (profile.read_bytes(), notification.read_bytes())
+        result = self.run_shell('disable_telegram_notification', 'y\n', 'rm() { return 1; }')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((profile.read_bytes(), notification.read_bytes()), before)
 
     def test_core_install_failure_stops_before_starting_services(self):
         p = self.run_shell('install_crowdsec_core', '203.0.113.2\n', 'apt-get() { record apt-get "$@"; return 1; }')
@@ -603,7 +700,7 @@ journalctl() { record journalctl "$@"; }
 
     def test_optimize_without_yaml_stops_before_applying_changes(self):
         before = (self.config/'config.yaml').read_text()
-        p = self.run_shell('smart_audit_and_optimize', 'y\n',
+        p = self.run_shell('smart_audit_and_optimize', 'y\nn\nn\ny\n',
                            'require_yaml() { return 1; }')
         self.assertNotEqual(p.returncode, 0)
         self.assertIn('cscli metrics', self.commands())
@@ -630,11 +727,128 @@ journalctl() { record journalctl "$@"; }
         original.parent.mkdir()
         original.write_text('# Keep my custom settings\nfilenames: [/custom/access.log]\nlabels: {type: nginx, site: custom}\n')
         before = original.read_bytes()
-        p = self.run_shell('smart_audit_and_optimize', 'y\n')
+        p = self.run_shell('smart_audit_and_optimize', 'n\ny\nn\ny\n')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn((str(log), 'nginx'), self.repaired_sources())
         self.assertEqual(original.read_bytes(), before)
         self.assertIn('systemctl restart crowdsec', self.commands())
+
+    def test_optimize_rules_only_preserves_config_and_reloads_once(self):
+        before = (self.config/'config.yaml').read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'y\nn\nn\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertIn('collections install', self.commands())
+        self.assertEqual(self.commands().count('systemctl reload crowdsec\n'), 1)
+        self.assertNotIn('systemctl restart', self.commands())
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+
+    def test_optimize_logs_only_does_not_install_rules_or_enable_metrics(self):
+        log = self.web_log('var/log/nginx/access.log')
+        before = (self.config/'config.yaml').read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'n\ny\nn\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn((str(log), 'nginx'), self.repaired_sources())
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertNotIn('collections install', self.commands())
+        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 1)
+
+    def test_optimize_metrics_only_does_not_install_rules_or_write_acquisition(self):
+        self.web_log('var/log/nginx/access.log')
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        metrics = yaml.safe_load((self.config/'config.yaml').read_text())['prometheus']
+        self.assertTrue(metrics['enabled'])
+        self.assertEqual(metrics['listen_addr'], '127.0.0.1')
+        self.assertNotIn('collections install', self.commands())
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 1)
+
+    def test_optimize_all_items_loads_changes_once(self):
+        self.web_log('var/log/nginx/access.log')
+        p = self.run_shell('smart_audit_and_optimize', 'y\ny\ny\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 1)
+        self.assertNotIn('systemctl reload crowdsec', self.commands())
+        self.assertIn('collections install', self.commands())
+        self.assertTrue((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+
+    def test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate(self):
+        self.web_log('var/log/nginx/access.log')
+        before = (self.config/'config.yaml').read_bytes()
+        for answers in ('n\nn\nn\n', 'y\ny\ny\nn\n', 'y\n', 'y\ny\ny\n'):
+            with self.subTest(answers=answers):
+                self.trace.write_text('')
+                p = self.run_shell('smart_audit_and_optimize', answers)
+                self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+                self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+                self.assertNotIn('collections install', self.commands())
+                self.assertNotIn('systemctl restart', self.commands())
+                self.assertNotIn('systemctl reload', self.commands())
+                self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+                self.assertFalse((self.base/'var/backups/crowdsec-1key').exists())
+
+    def test_optimize_repeated_metrics_selection_skips_service_load(self):
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.trace.write_text('')
+        before = (self.config/'config.yaml').read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertNotIn('systemctl restart', self.commands())
+        self.assertNotIn('systemctl reload', self.commands())
+
+    def test_optimize_validation_failure_restores_selected_config(self):
+        self.web_log('var/log/nginx/access.log')
+        before = (self.config/'config.yaml').read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'n\ny\ny\ny\n',
+                           'crowdsec() { record crowdsec "$@"; return 1; }')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('systemctl restart', self.commands())
+        self.assertNotIn('SUCCESS', p.stdout)
+
+    def test_optimize_metric_port_conflict_stops_before_rules_and_log_changes(self):
+        self.web_log('var/log/nginx/access.log')
+        before = (self.config/'config.yaml').read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'y\ny\ny\ny\n',
+                           'ss() { echo \'LISTEN 0 128 127.0.0.1:6060 users:(("other",pid=1,fd=3))\'; }')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertNotIn('collections install', self.commands())
+        self.assertNotIn('systemctl restart', self.commands())
+
+    def test_optimize_service_failure_restores_selected_config(self):
+        self.web_log('var/log/nginx/access.log')
+        before = (self.config/'config.yaml').read_bytes()
+        override = '''systemctl() {
+ record systemctl "$@"
+ if [[ "$*" == 'restart crowdsec' && ! -f "$TRACE.failed" ]]; then
+  touch "$TRACE.failed"; return 1
+ fi
+ return 0
+}'''
+        p = self.run_shell('smart_audit_and_optimize', 'n\ny\ny\ny\n', override)
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 2)
+        self.assertNotIn('SUCCESS', p.stdout)
+
+    def test_optimize_interruption_restores_staged_configuration(self):
+        before = (self.config/'config.yaml').read_bytes()
+        override = '''enable_prometheus_metrics() {
+ yaml_tool metrics "${CS_DIR}/config.yaml" || return 1
+ kill -TERM "$BASHPID"
+}'''
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n', override)
+        self.assertEqual(p.returncode, 143, p.stdout+p.stderr)
+        self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+        self.assertNotIn('systemctl restart', self.commands())
+        self.assertNotIn('SUCCESS', p.stdout)
 
     def test_log_repair_discovers_custom_docker_mounts_and_excludes_stream_logs(self):
         nginx_log = self.web_log('srv/custom panel/www/sites/bob.example.com/log/access.log')

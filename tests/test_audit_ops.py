@@ -141,6 +141,48 @@ cscli() {
         p = self.run_shell('check_health_status', overrides='firewall_status() { return 0; }; docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; [[ "$*" == *State.Running* ]] && echo false; return 0; }')
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
 
+    def test_health_reads_webui_health_and_login_only_once(self):
+        self.make_webui()
+        p = self.run_shell('main --status', overrides='''docker() {
+ record docker "$@"
+ [[ "$*" != *State.Running* ]] || echo 'true healthy'
+ return 0
+}''')
+        self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
+        lines = self.commands().splitlines()
+        self.assertEqual(sum('/api/health' in line for line in lines), 1)
+        self.assertEqual(sum(line.startswith('cscli -c ') and line.endswith('lapi status') for line in lines), 1)
+        self.assertNotRegex(self.commands(), r'systemctl (restart|reload)|machines (add|delete)|docker compose')
+
+    def test_health_reads_effective_appsec_listeners_only_once(self):
+        (self.config/'acquis.d').mkdir()
+        (self.config/'acquis.d/appsec.yaml').write_text('source: appsec\nlisten_addr: 127.0.0.1:7422\n')
+        p = self.run_shell('main --status', overrides='''yaml_tool() {
+ record yaml "$1"
+ python3 "$CONFIG_HELPER" "$@"
+}''')
+        self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
+        self.assertEqual(self.commands().splitlines().count('yaml appsec-listeners'), 1)
+
+    def test_appsec_multiple_listeners_share_one_socket_read(self):
+        (self.config/'acquis.d').mkdir()
+        (self.config/'acquis.d/appsec.yaml').write_text('source: appsec\nlisten_addr: 127.0.0.1:7422\n---\nsource: appsec\nlisten_addr: 127.0.0.1:7423\n')
+        p = self.run_shell('main --appsec-status', overrides='''ss() {
+ record ss "$@"
+ printf '%s\\n' 'LISTEN 0 128 127.0.0.1:7422 0.0.0.0:*' 'LISTEN 0 128 127.0.0.1:7423 0.0.0.0:*'
+}''')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertEqual(self.commands().splitlines().count('ss -H -lnt'), 1)
+
+    def test_webui_status_rejects_non_ok_http_payload(self):
+        self.make_webui()
+        p = self.run_shell('main --status', overrides='''docker() {
+ record docker "$@"; [[ "$*" != *State.Running* ]] || echo 'true healthy'; return 0;
+}
+curl() { record curl "$@"; echo '{"status":"failed"}'; return 0; }''')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertNotRegex(self.commands(), r'systemctl (restart|reload)|machines (add|delete)')
+
     def test_health_core_only_does_not_require_optional_firewall(self):
         p = self.run_shell('check_health_status', overrides='''systemctl() { record systemctl "$@"; [[ "$*" != 'is-active crowdsec-firewall-bouncer' ]]; }
 firewall_status() { record firewall-status; return 1; }''')

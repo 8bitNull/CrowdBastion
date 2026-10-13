@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-10-12T12:25:22.060840+00:00",
+  "status": "passed",
+  "scope": "cloned_guest_diagnostic_timeout_control_only",
+  "identity": {
+    "architecture": "aarch64",
+    "pid1": "systemd",
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+  },
+  "cases": [
+    {
+      "case": "isolated_official_precheck",
+      "exit_code": 0,
+      "assertions": {
+        "successful": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "controlled_core_start",
+      "exit_code": 0,
+      "assertions": {
+        "core_active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "controlled_bouncer_start",
+      "exit_code": 0,
+      "assertions": {
+        "bouncer_active": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "controlled_decision_add",
+      "exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed"
+    },
+    {
+      "case": "controlled_decision_delete",
+      "exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed"
+    }
+  ],
+  "diagnostics": [
+    {
+      "case": "baseline_crowdsec_properties",
+      "data": "TimeoutStartUSec=1min 30s\nResult=timeout\nNRestarts=0\nExecMainStatus=0\nExecStartPre={ path=/usr/bin/crowdsec ; argv[]=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }\nActiveState=activating\nSubState=auto-restart\n<opaque-redacted>.service"
+    },
+    {
+      "case": "baseline_crowdsec_journal",
+      "data": "[  191.663177] arm-minimal-recovery systemd[1]: Starting crowdsec.service - Crowdsec agent...\n[  281.052386] arm-minimal-recovery systemd[1]: crowdsec.service: start-pre operation timed out. Terminating.\n[  281.413440] arm-minimal-recovery systemd[1]: crowdsec.service: Control process exited, code=killed, status=15/TERM\n[  281.423046] arm-minimal-recovery systemd[1]: crowdsec.service: Failed with result 'timeout'.\n[  281.446619] arm-minimal-recovery systemd[1]: Failed to start crowdsec.service - Crowdsec agent.\n[  281.476484] arm-minimal-recovery systemd[1]: crowdsec.service: Consumed 47.030s CPU time, 164.1M memory peak."
+    },
+    {
+      "case": "baseline_crowdsec-firewall-bouncer_properties",
+      "data": "TimeoutStartUSec=1min 30s\nResult=exit-code\nNRestarts=4\nExecMainStatus=1\nExecStartPre={ <opaque-redacted> ; argv[]<opaque-redacted> -c <opaque-redacted>.yaml -t ; ignore_errors=no ; start_time=[Mon 2026-10-12 12:16:27 UTC] ; stop_time=[Mon 2026-10-12 12:16:32 UTC] ; pid=833 ; code=exited ; status=0 }\nActiveState=activating\nSubState=auto-restart\n<opaque-redacted>.service"
+    },
+    {
+      "case": "baseline_crowdsec-firewall-bouncer_journal",
+      "data": "crowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\n[  258.755746] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Consumed 3.122s CPU time, 7.8M memory peak.\n[  268.849471] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 3.\n[  269.047552] arm-minimal-recovery systemd[1]: Starting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\n[  270.188544] arm-minimal-recovery crowdsec-firewall-bouncer[762]: time=\"2026-10-12T12:15:56Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  273.455228] arm-minimal-recovery crowdsec-firewall-bouncer[767]: time=\"2026-10-12T12:15:59Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  277.285206] arm-minimal-recovery systemd[1]: Started crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\n[  277.411940] arm-minimal-recovery crowdsec-firewall-bouncer[767]: time=\"2026-10-12T12:16:03Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\n[  277.554791] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\n[  277.590121] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\n[  277.646887] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Consumed 3.839s CPU time, 8M memory peak.\n[  300.839074] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 4.\n[  301.834357] arm-minimal-recovery systemd[1]: Starting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\n[  303.264397] arm-minimal-recovery crowdsec-firewall-bouncer[833]: time=\"2026-10-12T12:16:29Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  307.824592] arm-minimal-recovery crowdsec-firewall-bouncer[841]: time=\"2026-10-12T12:16:33Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  313.746596] arm-minimal-recovery crowdsec-firewall-bouncer[841]: time=\"2026-10-12T12:16:39Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\n[  313.235649] arm-minimal-recovery systemd[1]: Started crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\n[  313.649175] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\n[  313.675783] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\n[  313.742539] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Consumed 3.361s CPU time, 9M memory peak."
+    },
+    {
+      "case": "actual_native_core_unit",
+      "data": "# <opaque-redacted>.service\n[Unit]\nDescription=Crowdsec agent\nAfter=syslog.target network.target remote-fs.target nss-lookup.target\n\n[Service]\nType=notify\nEnvironment=LC_ALL=C LANG=C\nExecStartPre=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error\nExecStart=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml\n#ExecStartPost=/bin/sleep 0.1\nExecReload=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error\nExecReload=/bin/kill -HUP $MAINPID\nRestart=always\nRestartSec=60\n\n[Install]\nWantedBy=multi-user.target"
+    },
+    {
+      "case": "stop_crowdsec",
+      "data": "0"
+    },
+    {
+      "case": "stop_crowdsec-firewall-bouncer",
+      "data": "0"
+    },
+    {
+      "case": "isolated_official_precheck_elapsed_seconds",
+      "data": "43.73"
+    },
+    {
+      "case": "isolated_official_precheck_output",
+      "data": ""
+    },
+    {
+      "case": "controlled_core_start_elapsed_seconds",
+      "data": "94.79"
+    },
+    {
+      "case": "controlled_core_start_output",
+      "data": ""
+    },
+    {
+      "case": "controlled_bouncer_start_output",
+      "data": ""
+    },
+    {
+      "case": "controlled_crowdsec_properties",
+      "data": "TimeoutStartUSec=5min\nResult=success\nNRestarts=0\nExecMainStatus=0\nExecStartPre={ path=/usr/bin/crowdsec ; argv[]=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error ; ignore_errors=no ; start_time=[Mon 2026-10-12 12:17:42 UTC] ; stop_time=[Mon 2026-10-12 12:18:29 UTC] ; pid=923 ; code=exited ; status=0 }\nActiveState=active\nSubState=running\n<opaque-redacted>.service"
+    },
+    {
+      "case": "controlled_crowdsec_journal",
+      "data": "[  191.663177] arm-minimal-recovery systemd[1]: Starting crowdsec.service - Crowdsec agent...\n[  281.052386] arm-minimal-recovery systemd[1]: crowdsec.service: start-pre operation timed out. Terminating.\n[  281.413440] arm-minimal-recovery systemd[1]: crowdsec.service: Control process exited, code=killed, status=15/TERM\n[  281.423046] arm-minimal-recovery systemd[1]: crowdsec.service: Failed with result 'timeout'.\n[  281.446619] arm-minimal-recovery systemd[1]: Failed to start crowdsec.service - Crowdsec agent.\n[  281.476484] arm-minimal-recovery systemd[1]: crowdsec.service: Consumed 47.030s CPU time, 164.1M memory peak.\n[  316.893317] arm-minimal-recovery systemd[1]: Stopped crowdsec.service - Crowdsec agent.\n[  316.931016] arm-minimal-recovery systemd[1]: crowdsec.service: Consumed 47.030s CPU time, 164.1M memory peak.\n[  376.774629] arm-minimal-recovery systemd[1]: Starting crowdsec.service - Crowdsec agent...\n[  470.838452] arm-minimal-recovery systemd[1]: Started crowdsec.service - Crowdsec agent."
+    },
+    {
+      "case": "controlled_crowdsec-firewall-bouncer_properties",
+      "data": "TimeoutStartUSec=1min 30s\nResult=success\nNRestarts=0\nExecMainStatus=0\nExecStartPre={ <opaque-redacted> ; argv[]<opaque-redacted> -c <opaque-redacted>.yaml -t ; ignore_errors=no ; start_time=[Mon 2026-10-12 12:19:18 UTC] ; stop_time=[Mon 2026-10-12 12:19:21 UTC] ; pid=951 ; code=exited ; status=0 }\nActiveState=active\nSubState=running\n<opaque-redacted>.service"
+    },
+    {
+      "case": "controlled_crowdsec-firewall-bouncer_journal",
+      "data": "[  300.839074] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Scheduled restart job, restart counter is at 4.\n[  301.834357] arm-minimal-recovery systemd[1]: Starting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\n[  303.264397] arm-minimal-recovery crowdsec-firewall-bouncer[833]: time=\"2026-10-12T12:16:29Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  307.824592] arm-minimal-recovery crowdsec-firewall-bouncer[841]: time=\"2026-10-12T12:16:33Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  313.746596] arm-minimal-recovery crowdsec-firewall-bouncer[841]: time=\"2026-10-12T12:16:39Z\" level=fatal msg=\"process terminated with error: Get \\\"http://127.0.0.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false&startup=true\\\": dial tcp 127.0.0.2:8080: connect: connection refused\"\n[  313.235649] arm-minimal-recovery systemd[1]: Started crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\n[  313.649175] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Main process exited, code=exited, status=1/FAILURE\n[  313.675783] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Failed with result 'exit-code'.\n[  313.742539] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Consumed 3.361s CPU time, 9M memory peak.\n[  317.458560] arm-minimal-recovery systemd[1]: Stopped crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key).\n[  317.491336] arm-minimal-recovery systemd[1]: crowdsec-firewall-bouncer.service: Consumed 3.361s CPU time, 9M memory peak.\n[  472.631592] arm-minimal-recovery systemd[1]: Starting crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)...\n[  473.836362] arm-minimal-recovery crowdsec-firewall-bouncer[951]: time=\"2026-10-12T12:19:19Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  477.454040] arm-minimal-recovery crowdsec-firewall-bouncer[964]: time=\"2026-10-12T12:19:23Z\" level=info msg=\"Loading yaml file: '<opaque-redacted>.yaml' with additional values from '<opaque-redacted>.yaml.local'\"\n[  479.642927] arm-minimal-recovery systemd[1]: Started crowdsec-firewall-bouncer.service - CrowdSec remote Firewall Bouncer (crowdsec-1key)."
+    }
+  ],
+  "controlled_final_health": {
+    "crowdsec": "TimeoutStartUSec=5min\nResult=success\nNRestarts=0\nExecMainStatus=0\nExecStartPre={ path=/usr/bin/crowdsec ; argv[]=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error ; ignore_errors=no ; start_time=[Mon 2026-10-12 12:17:42 UTC] ; stop_time=[Mon 2026-10-12 12:18:29 UTC] ; pid=923 ; code=exited ; status=0 }\nActiveState=active\nSubState=running\n<opaque-redacted>.service",
+    "crowdsec-firewall-bouncer": "TimeoutStartUSec=1min 30s\nResult=success\nNRestarts=0\nExecMainStatus=0\nExecStartPre={ <opaque-redacted> ; argv[]<opaque-redacted> -c <opaque-redacted>.yaml -t ; ignore_errors=no ; start_time=[Mon 2026-10-12 12:19:18 UTC] ; stop_time=[Mon 2026-10-12 12:19:21 UTC] ; pid=951 ; code=exited ; status=0 }\nActiveState=active\nSubState=running\n<opaque-redacted>.service"
+  },
+  "harness_progress_seen": false,
+  "complete": true,
+  "runner": {
+    "qemu_exit_code": 0,
+    "timed_out": false,
+    "elapsed_seconds": 527.71,
+    "ram_mib": 1024,
+    "vcpus": 1,
+    "accel": "tcg"
+  },
+  "artifacts": {
+    "files": {
+      "guest.py": "88a42743c0d94f32291f3bce044d857a723bff0e49f848ca0c3c2b4650ae0402",
+      "build.py": "891c8ca6e33a0dc74c2cec74a96a4d3fc836f2a8afbcef00b7b13262767f01c6",
+      "payload.tgz": "b0761ae654baa04ef863059030183e6d7ca914c4a4c0731d12fdce268d31d97d",
+      "seed.iso": "8c5d97b8010f2c0feb78e46ba1a74bd84c81ddefa8fb2137a5fcc62abfd6bb0c"
+    },
+    "backing_file": "/tmp/crowdsec-arm-followup/guest-v2.qcow2",
+    "scope": "diagnostic_cloned_guest_timeout_control_not_unmodified_installer_acceptance",
+    "backing_sha256": "b38b4de1bc6779c1b833b7fbb1c971fa515dc3bff9b643874e7c56886af3a5af",
+    "runner_sha256": "e1d4a2e01ee8e45eb0fa402ac9b7aaf19917fa3002e3693803d55c366264e57a",
+    "original_installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5"
+  },
+  "evidence": "docs/audit/arm64-followup-evidence/recovery.serial.log",
+  "evidence_sha256": "0ef9d81f895f5636b984f6543606ce0c8e2a952b8ac3be431f530db925c4baaf",
+  "raw_serial_sha256": "bc6b7da0136ccce1d48aa7e8e231db8c79b189b3ce98b41a3861c21b7d5ccc49",
+  "production_installer_changed": false,
+  "limits": [
+    "This is a cloned post-failure guest with diagnostic TimeoutStartSec=300; not acceptance of the original default boot or installer.",
+    "Boot conditions, stopped services and caches differ; does not uniquely establish CPU contention as the root cause.",
+    "Harness units masked by bootcmd; no harness progress observed in this boot.",
+    "No subsequent reboot under diagnostic timeout was tested."
+  ]
+}

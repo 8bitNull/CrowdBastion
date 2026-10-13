@@ -1,0 +1,2 @@
+# Preserve archived serial evidence bytes and hashes; do not render terminal dumps as diffs.
+docs/audit/**/*.log -text -diff

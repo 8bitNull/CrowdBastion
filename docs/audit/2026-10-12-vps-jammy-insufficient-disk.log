@@ -1,0 +1,3 @@
+VPS_ENV {"actual_distro": "Ubuntu 22.04.5 LTS", "arch": "x86_64", "kernel": "5.15.0-198-generic", "init": "systemd", "installer_sha256": "5086d50a9a7e9ca84f62f4a7574fca108fae1f24781dace2d569000e7924081d", "library_tree_sha256": "2d508b6005b0763e9f9927cdf7523a3ce6ae4d52fe8bf713d06793c4ef025376"}
+VPS_RESULT {"case": "guest_dependencies_index", "exit_code": 100, "command_exit_code": 100, "assertions": {"index_ready": false}}
+VPS_RESULT {"case": "guest_dependencies", "exit_code": 100, "command_exit_code": 100, "assertions": {"packages_ready": false}}

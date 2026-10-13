@@ -1,0 +1,194 @@
+{
+  "distro": "centos9",
+  "actual_distro": "CentOS Stream 9",
+  "os_id": "centos",
+  "version": "9",
+  "architecture": "x86_64",
+  "kernel": "5.14.0-754.el9.x86_64",
+  "pid1": "systemd",
+  "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+  "ram_kib": 781240,
+  "scope": "fresh_native_core_only",
+  "validation_level": "actual_systemd",
+  "status": "passed",
+  "remote_status": "not_tested",
+  "core_status": "passed",
+  "cases": [
+    {
+      "case": "guest_dependencies",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "packages_ready": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_relay_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "core_repeat_install",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "preserved": true,
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_reboot",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "core_active": true,
+        "bouncer_active": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_add",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    },
+    {
+      "case": "native_core_decision_delete",
+      "exit_code": 0,
+      "command_exit_code": 0,
+      "assertions": {
+        "synced": true
+      },
+      "status": "passed",
+      "validation_level": "actual_systemd"
+    }
+  ],
+  "health": [
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    },
+    {
+      "phase": "native_core_reboot",
+      "service": "crowdsec-firewall-bouncer",
+      "properties": "Result=success\nActiveState=active\nSubState=running\n"
+    }
+  ],
+  "boots": [
+    {
+      "phase": "native_core_reboot",
+      "boot": 1,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 2,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    },
+    {
+      "phase": "native_core_reboot",
+      "boot": 3,
+      "services": {
+        "crowdsec": true,
+        "crowdsec-firewall-bouncer": true
+      },
+      "add": true,
+      "delete": true,
+      "add_command_exit_code": 0,
+      "delete_command_exit_code": 0
+    }
+  ],
+  "remote_complete": false,
+  "complete": true,
+  "missing_cases": [],
+  "failure_cause": null,
+  "host_assessment_sources": {
+    "verify_vps_rpm_arm.py": "ff8f171a8a76ef5f45bff74d90d98aec39f630ef36f0e75aafad17126bda6185",
+    "vps_guest_runtime.py": "ea56ce01dab421a5366884e7eb24aab2c7d3f474602a9600a2d01297c024efd2",
+    "relay_soak_guest.py": "bdf9c03aa3fa5d70f8b13f04a20421d573cb70390c9a9a5655b51d9c9178843e"
+  },
+  "artifacts": {
+    "installer_sha256": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+    "hub_helper_sha256": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+    "test_scope": "fresh_native_core_only",
+    "remote_helper_sha256": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7",
+    "guest_sha256": "92dd97ff90ae672d5ac5745053844356bafe94264e8fb935d1a3d9c46fd4f14e",
+    "phase2_sha256": "d02400359a3ef11919bf3ab27c3d64573db360410cf6be234327729a65fcd783",
+    "seed_sha256": "91aa6c9af99906ef76cb1af2cae5952307398eb8951a4bd3280905c35daa9234",
+    "payload_sha256": "f9afa8d65aba08bcca79dbe21892b5d8262f247a1c5cf4cfc6c2632ec0c8f46b",
+    "architecture": "amd64",
+    "core_source": "official_native_repository",
+    "runtime_sha256": "ea56ce01dab421a5366884e7eb24aab2c7d3f474602a9600a2d01297c024efd2",
+    "native_phase_sha256": "def886fe34c2dc6836b06fd41a7069a6b145b322b8f0e9a74960e3126fd54c8f",
+    "source_sha256": {
+      "opt/test/repo/install-crowdsec-1panel.sh": "222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5",
+      "opt/test/repo/lib/crowdsec_appsec.py": "0db68a60e29c88c8ee06982b2272ec7c593cc671c2731b92580317f5d0cd6f16",
+      "opt/test/repo/lib/crowdsec_config.py": "d73115800bfcb07b3835d00b5da2cfbcca82e376bf37a08721ebc2fcb300941f",
+      "opt/test/repo/lib/crowdsec_detection_diagnose.py": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f",
+      "opt/test/repo/lib/crowdsec_host.py": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a",
+      "opt/test/repo/lib/crowdsec_hub_snapshot.py": "dcb2565221f5909310ec08450e0fea8df9121d04f73be5a152a09ec4948218dd",
+      "opt/test/repo/lib/crowdsec_maintenance.py": "86c8bfc0fe776799cb0f1a15ad1f30cab826e7e1e27f4298f9b3703dd618e012",
+      "opt/test/repo/lib/crowdsec_realip.py": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059",
+      "opt/test/repo/lib/crowdsec_realip_diagnose.py": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167",
+      "opt/test/repo/lib/crowdsec_relay.py": "47c5f497be70a562d8bebc6c500fc94729c26e09cdbf5c1d60be4c2e6784e388",
+      "opt/test/repo/lib/crowdsec_relay_paths.py": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6",
+      "opt/test/repo/lib/crowdsec_remote_bouncer.py": "c12684d86008a0f7e3537003b0060dba133c2b15ffabed13af32d183af038f6a",
+      "opt/test/repo/lib/crowdsec_request_audit.py": "27559e7ba183074682e53a67689f7d97e0e15f8a3adb4c51bc7922a4fba8e7fe",
+      "opt/test/repo/lib/crowdsec_safety.py": "22bac0eb776c09257b34ce06dc32d83e04630f72068af866d208bfca5c16c2d2",
+      "opt/test/repo/lib/crowdsec_telegram.py": "1c293fa912e59e1043744c13eb8932faae18b1eb02ea6ed46a7ede4fc0edcc3b",
+      "opt/test/repo/lib/crowdsec_transport.py": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e",
+      "opt/test/repo/lib/crowdsec_web.py": "931d95251734b12ed2fc4c1db539464425b444a6c333882d7229cb23e5db7370",
+      "opt/test/repo/lib/appsec_audit.sh": "0a4af9dd506a789a60a86a3c8c92d3edb2a418f6af054a2e23b48f765f9e087c",
+      "opt/test/repo/lib/host_web_bouncer.sh": "827d68cedb7ef772d5edaae64623701407e73daf22da4c8d60382b6b598819f6",
+      "opt/test/repo/lib/hub_maintenance.sh": "c8ba0694c969f0e584404f87b901f58685e6a9371026f210c9cf37dd920dd30e",
+      "opt/test/repo/lib/maintenance.sh": "88dd387ec0c1f15b593fa6e1ad374edcad8db5cc0ce2194ade75055bf262fdd5",
+      "opt/test/repo/lib/native_web_bouncer.sh": "591f341b5012b5cf6a96e0a50917d83e77de76ddba9b4f70b529378476402933",
+      "opt/test/repo/lib/private_transport.sh": "ad5392f57ab151f692ec5162d01c0fa1c8b72dd358d9354d8acb671708c6f336",
+      "opt/test/repo/lib/real_ip.sh": "1431630e834b146b0dd2769bfe48dabaee0aea234d4fd1b655f6cee0f9b63702",
+      "opt/test/repo/lib/relay.sh": "88b0050d345a8bf0d1355d072d17ba403847194936fdbe7c3b05f9280e60c759",
+      "opt/test/repo/lib/remote_bouncer.sh": "a3eb9007486cf1d811eb84afafee0da424ef557392b46989df9a12259766a2a7"
+    },
+    "soak_duration_seconds": null,
+    "soak_sources": {}
+  },
+  "evidence": "/tmp/crowdsec-vps-repair-centos-v2-20261012/centos9.serial.log",
+  "timed_out": false,
+  "qemu_exit_code": 0,
+  "stopped_by_agent": false,
+  "serial_sha256": "aa34f4edf6c105fc3e184a5f5df58e7920bcd951eb082c8da02428839363c92a",
+  "stage_status_interpretation": "Raw case observations; only overall status includes guest process termination.",
+  "ram_mib": 1024,
+  "image_sha256": "611888de3afdf07d6b909d89bbf530547aaafd6ac06134c5e036944aa9a1d003",
+  "elapsed_seconds": 1906.215
+}

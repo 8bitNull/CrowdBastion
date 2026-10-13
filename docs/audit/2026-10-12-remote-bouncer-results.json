@@ -1,0 +1,249 @@
+{
+  "schema": 1,
+  "decision_api": "official CrowdSec LAPI on separate central network namespace",
+  "scope": "no-NIC QEMU; fresh sessions; gost/realm/NAT IPv4/IPv6 TCP/UDP; no throughput or long-term stability claim",
+  "cases": [
+    {
+      "tool": "gost",
+      "family": 4,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "gost",
+      "family": 4,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "gost",
+      "family": 6,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "gost",
+      "family": 6,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "realm",
+      "family": 4,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "realm",
+      "family": 4,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "realm",
+      "family": 6,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "realm",
+      "family": 6,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "nat",
+      "family": 4,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "nat",
+      "family": 4,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "10.231.3.1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "nat",
+      "family": 6,
+      "protocol": "tcp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    },
+    {
+      "tool": "nat",
+      "family": 6,
+      "protocol": "udp",
+      "normal_bad": true,
+      "backend_peer": "fd42:231:3::1",
+      "normal_good": true,
+      "blocked_bad": false,
+      "counter_increased": true,
+      "healthy_good": true,
+      "recovered_bad": true,
+      "recovered_good": true,
+      "status": "passed"
+    }
+  ],
+  "conditions": {
+    "generated_remote_config": true,
+    "matrix": true,
+    "expiry": true,
+    "disconnected_expiry": true,
+    "disconnect_retains_ban": true,
+    "disconnect_healthy": true,
+    "reconnect_unban": true,
+    "bouncer_restart": true,
+    "lapi_restart": true,
+    "wrong_key_rejected": true
+  },
+  "versions": {
+    "crowdsec": "version: v1.8.1-909b5157\nCodename: alphaga\nBuildDate: 2026-09-03_09:11:02\nGoVersion: 1.26.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.1-909b5157-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite\nExcluded components: cscli_setup",
+    "cscli": "version: v1.8.1-909b5157\nCodename: alphaga\nBuildDate: 2026-09-03_09:11:44\nGoVersion: 1.26.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.1-909b5157-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: cscli_setup, datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite",
+    "bouncer": "version: v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\nBuildDate: 2026-08-04_09:54:16\nGoVersion: 1.25.2\nPlatform: linux",
+    "gost": "gost v3.3.0 (go1.26.7 linux/amd64)",
+    "realm": "Realm 2.9.6 [brutal][batched-udp][proxy][balance][transport][multi-thread]"
+  },
+  "idle_stream_shape": {
+    "new": "list",
+    "deleted": "list"
+  },
+  "restart_drop_packets": {
+    "before": 0,
+    "after": 2
+  },
+  "wrong_key_observation": {
+    "returncode": 1,
+    "log": "time=\"2026-10-12T06:09:16Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Using API key auth\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T06:09:17Z\" level=fatal msg=\"process terminated with error: API error: access forbidden\"\n"
+  },
+  "core_log": "T06:08:24Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:24 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 87.562554ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:25Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:25 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 96.548926ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:26Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:26 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 41.233584ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:27 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 157.641547ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:27 UTC] \\\"GET /v1/allowlists/check/fd42:231:1::2 HTTP/1.1 200 6.612456ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip fd42:231:1::2 : 1h ban on Ip fd42:231:1::2\" module=db\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:27 UTC] \\\"POST /v1/alerts HTTP/1.1 201 21.506758ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:27 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 27.666891ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:28Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:28 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 34.691479ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:29Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:29 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 34.194056ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:30Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:30 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 42.499473ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:31Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:31 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 140.385788ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:31Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:31 UTC] \\\"DELETE /v1/decisions?ip=fd42%3A231%3A1%3A%3A2 HTTP/1.1 200 6.406284ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:31Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:31 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 45.969457ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:32Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:32 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 62.28376ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:33Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:33 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 80.557476ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:34Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:34 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 41.219064ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:35 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 147.459276ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:35 UTC] \\\"GET /v1/allowlists/check/fd42:231:1::2 HTTP/1.1 200 3.380273ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip fd42:231:1::2 : 1h ban on Ip fd42:231:1::2\" module=db\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:35 UTC] \\\"POST /v1/alerts HTTP/1.1 201 14.913943ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:35 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 70.441256ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:36Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:36 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 64.532615ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:37Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:37 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 30.303439ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:38Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:38 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 76.246896ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:39Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:39 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 139.664403ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:39Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:39 UTC] \\\"DELETE /v1/decisions?ip=fd42%3A231%3A1%3A%3A2 HTTP/1.1 200 4.485981ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:39Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:39 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 25.952229ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:40Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:40 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 74.297362ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:41 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 73.578917ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:41 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 144.157924ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:41 UTC] \\\"GET /v1/allowlists/check/10.231.1.2 HTTP/1.1 200 3.009791ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip 10.231.1.2 : 5s ban on Ip 10.231.1.2\" module=db\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:41 UTC] \\\"POST /v1/alerts HTTP/1.1 201 25.688487ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:42Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:42 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 31.555728ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:43Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:43 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 44.246085ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:44Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:44 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 18.168566ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:45Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:45 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 63.304797ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:46Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:46 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 40.348038ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:47 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 67.819657ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:47 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 145.478773ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:47 UTC] \\\"GET /v1/allowlists/check/10.231.1.2 HTTP/1.1 200 3.226112ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip 10.231.1.2 : 5s ban on Ip 10.231.1.2\" module=db\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:47 UTC] \\\"POST /v1/alerts HTTP/1.1 201 21.165827ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:48Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:48 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 59.814603ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:57Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:57 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 22.427234ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:58Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:58 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 32.132981ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:58Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:58 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 152.044418ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:58Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:58 UTC] \\\"GET /v1/allowlists/check/10.231.1.2 HTTP/1.1 200 3.473014ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:58Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip 10.231.1.2 : 1h ban on Ip 10.231.1.2\" module=db\ntime=\"2026-10-12T06:08:58Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:08:58 UTC] \\\"POST /v1/alerts HTTP/1.1 201 16.637795ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:08:59Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:08:59 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 73.258695ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:05Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:05 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 135.589475ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:05Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:05 UTC] \\\"DELETE /v1/decisions?ip=10.231.1.2 HTTP/1.1 200 4.487041ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:06Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:06 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 106.539065ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:07 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 46.278399ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:07 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 155.710554ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:07 UTC] \\\"GET /v1/allowlists/check/10.231.1.2 HTTP/1.1 200 3.023611ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"(low-spec-lab/cscli) manual 'ban' from 'low-spec-lab' by ip 10.231.1.2 : 1h ban on Ip 10.231.1.2\" module=db\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:07 UTC] \\\"POST /v1/alerts HTTP/1.1 201 15.187405ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:08 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 54.193393ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:08 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false&startup=true HTTP/1.1 200 76.700929ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:09Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:09 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 25.471116ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:10Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:10 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 38.179974ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:11Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:11 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 114.021926ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:12Z\" level=warning msg=\"SIGTERM received, shutting down\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"serve: shutting down api server\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"pluginTomb dying\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"killing all plugins\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"Shutting down API server\"\ntime=\"2026-10-12T06:09:12Z\" level=warning msg=\"Crowdsec service shutting down\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"push and pull to Central API disabled\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"Enabled feature flags: none\"\ntime=\"2026-10-12T06:09:12Z\" level=info msg=\"Crowdsec v1.8.1-909b5157\"\ntime=\"2026-10-12T06:09:13Z\" level=warning msg=\"Communication with CrowdSec Central API disabled from configuration file\"\ntime=\"2026-10-12T06:09:13Z\" level=info msg=\"push and pull to Central API disabled\"\ntime=\"2026-10-12T06:09:13Z\" level=info msg=\"gocron: new scheduler created\" module=db\ntime=\"2026-10-12T06:09:13Z\" level=info msg=\"gocron: scheduler started\" module=db\ntime=\"2026-10-12T06:09:13Z\" level=info msg=\"CrowdSec Local API listening on 10.231.4.2:8080\"\ntime=\"2026-10-12T06:09:13Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:13 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 41.341475ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:14Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:14 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 24.088476ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:15Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:15 UTC] \\\"POST /v1/watchers/login HTTP/1.1 200 152.786344ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:15Z\" level=info msg=\"10.231.4.2 - [Mon, 12 Oct 2026 06:09:15 UTC] \\\"DELETE /v1/decisions?ip=10.231.1.2 HTTP/1.1 200 5.009685ms \\\"crowdsec/v1.8.1-909b5157-linux\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:15Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:15 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 88.914753ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"10.231.4.1 - [Mon, 12 Oct 2026 06:09:16 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false&startup=true HTTP/1.1 403 37.473028ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\n",
+  "bouncer_log": "time=\"2026-10-12T06:06:53Z\" level=info msg=\"Loading yaml file: '/tmp/remote-lapi-b45vjnbi/bouncer.yaml' with additional values from '/tmp/remote-lapi-b45vjnbi/bouncer.yaml.local'\"\ntime=\"2026-10-12T06:06:53Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\"\ntime=\"2026-10-12T06:06:53Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T06:06:53Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T06:06:53Z\" level=info msg=\"Using API key auth\"\ntime=\"2026-10-12T06:06:53Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T06:07:02Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-input\"\ntime=\"2026-10-12T06:07:02Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-forward\"\ntime=\"2026-10-12T06:07:02Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:06Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:07Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:08Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:11Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:15Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:16Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:17Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:19Z\" level=info msg=\"Created set and rule for origin cscli and type ipv6_addr in chain crowdsec-chain-input\"\ntime=\"2026-10-12T06:07:19Z\" level=info msg=\"Created set and rule for origin cscli and type ipv6_addr in chain crowdsec-chain-forward\"\ntime=\"2026-10-12T06:07:19Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:23Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:24Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:25Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:27Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:31Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:32Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:33Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:35Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:39Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:40Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:41Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:43Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:48Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:49Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:50Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:53Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:07:57Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:58Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:07:59Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:01Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:05Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:06Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:07Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:11Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:15Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:16Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:17Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:19Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:23Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:24Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:25Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:27Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:31Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:32Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:33Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:35Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:39Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:40Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:41Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:42Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:46Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:47Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:48Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:08:49Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:49Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:50Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:50Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:51Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:51Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:52Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:52Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:53Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:53Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:54Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:54Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:55Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:55Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:56Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:56Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:08:57Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:08:59Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:09:00Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:00Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:01Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:01Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:02Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:02Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:03Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:03Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:04Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:04Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:05Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:05Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: network is unreachable\"\ntime=\"2026-10-12T06:09:06Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:09:07Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Received shutdown signal, exiting gracefully\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Loading yaml file: '/tmp/remote-lapi-b45vjnbi/bouncer.yaml' with additional values from '/tmp/remote-lapi-b45vjnbi/bouncer.yaml.local'\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Using API key auth\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-input\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"Created set and rule for origin cscli and type ipv4_addr in chain crowdsec-chain-forward\"\ntime=\"2026-10-12T06:09:08Z\" level=info msg=\"1 decision added\"\ntime=\"2026-10-12T06:09:12Z\" level=error msg=\"auth-api: auth with api key failed return nil response, error: dial tcp 10.231.4.2:8080: connect: connection refused\"\ntime=\"2026-10-12T06:09:12Z\" level=error msg=\"Get \\\"http://10.231.4.2:8080/v1/decisions/stream?additional_pull=false&community_pull=false\\\": dial tcp 10.231.4.2:8080: connect: connection refused\"\ntime=\"2026-10-12T06:09:15Z\" level=info msg=\"1 decision deleted\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Received shutdown signal, exiting gracefully\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Using API key auth\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Processing new and deleted decisions . . .\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"Shutting down backend\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec' table\"\ntime=\"2026-10-12T06:09:16Z\" level=info msg=\"removing 'crowdsec6' table\"\ntime=\"2026-10-12T06:09:17Z\" level=fatal msg=\"process terminated with error: API error: access forbidden\"\n",
+  "exit_code": 0,
+  "status": "passed",
+  "experiment": {
+    "qemu": "TCG q35, 1 vCPU, 1024 MiB, Debian kernel 6.1.0-47-amd64",
+    "nic": "none",
+    "host_directory_sharing": false,
+    "disk": "dedicated copied root, snapshot=on",
+    "central_mode": "official CrowdSec -no-cs LAPI only; no attack detector test",
+    "source_sha256": {
+      "harness": "c45cf285105f11f3399f37526c232a973c4a66b2acf39ac3f5d267836a161bf8",
+      "remote_helper": "c12684d86008a0f7e3537003b0060dba133c2b15ffabed13af32d183af038f6a",
+      "launch": "1adfcc869a36ca3aacae04faf4b79a92ee49b63a73eb82494bb05a9d2ad4daee"
+    }
+  },
+  "previous_attempts": [
+    {
+      "attempt": 1,
+      "status": "failed",
+      "reason": "Startup race: key inserted in SQLite before LAPI listener ready; official Bouncer exited connection refused. Authenticated network readiness added."
+    },
+    {
+      "attempt": 2,
+      "status": "failed",
+      "reason": "All matrix and lifecycle packet conditions passed, but wrong-key assertion only matched numeric status. Official Bouncer actually exited API error: access forbidden; classifier corrected/tested."
+    },
+    {
+      "attempt": 3,
+      "status": "interrupted",
+      "reason": "Stopped to fix permanent harness source credentials/data isolation; no outcome claim."
+    },
+    {
+      "attempt": 4,
+      "status": "passed",
+      "reason": "Passed full matrix and nine lifecycle/auth conditions, safe inline source staging; DROP 0\u21922."
+    },
+    {
+      "attempt": 5,
+      "status": "interrupted",
+      "reason": "Stopped to make base URL/key deliberately invalid so success proves generated .local loading; no outcome claim."
+    }
+  ]
+}

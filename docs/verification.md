@@ -1,5 +1,19 @@
 # 使用流程与官方配置验证记录
 
+试用前修复已开始，当前验收设施改动、客机轮次与阻断项见 [修复执行记录](audit/2026-10-12-vps-repair-progress.md)。历史“通过”不追加本轮的三次重启或长测保证。
+
+VPS 系统、架构及防火墙的分层验收见 [2026-10-12 兼容性矩阵](audit/2026-10-12-vps-compatibility.md)。其中真实 systemd 客机、分支 fixture 和既有资源模拟分别记录，不能将全仓回归数量当作每种 VPS 的功能验收数量。 Debian/Ubuntu 包配置失败的后续修复与 1 GiB 实测见 [定位报告](audit/2026-10-12-core-install-diagnosis.md)。
+
+## 纯中转节点精简模式（2026-10-12）
+
+- 新增中转回归 **28 项通过**：首次/已有核心安装、文件日志/journalctl、有效路径、通配符与较宽 journal unit 过滤去重、额外过滤条件提示、完整版共存、重复执行、校验/重启失败恢复、符号链接拒绝、菜单/CLI、只读免锁、iptables/nftables/ipset、IPv6 禁用和密钥不泄露。
+- 最终全量 unittest **397 项**：392 项通过、5 项需要官方插件的可选检查跳过；随后配置 `CROWDSEC_TEST_RELEASE` 单独运行这 5 项，全部通过。隔离测试依赖 PyYAML；测试进程强制使用系统 Python 的旧诊断用例通过 `PYTHONPATH` 指向已有虚拟环境依赖复验通过。
+- 官方 CrowdSec **1.8.1**：`tests/verify_relay.py` 用临时配置和 loopback LAPI 验证生成的 SSH journalctl/文件数据源均通过 `crowdsec -t`，合成 SSH 失败认证文件行实际读取与解析通过。journalctl 只验证配置，未宣称目标 VPS 的真实 SSH journal 事件已验证。
+- Bash 语法、Python 编译、ShellCheck（既有排除项）和 `git diff --check` 通过。独立复审发现并修复较宽 journal unit 过滤产生重复采集的问题；修复后无剩余 Important 问题。
+- 未部署/重载生产服务，未操作真实 Firewall Bouncer、防火墙或 Forwardx。只读检查提供规则引用证据；TCP/UDP、IPv4/IPv6、NAT/Docker、多跳隧道共存与实际业务阻断仍需在目标节点分别验证。
+
+功能与参考来源见 [中转模式与防护边界](relay-mode.md)。
+
 ## 分支整合验证（2026-10-12）
 
 整合宿主机检查、真实 IP 请求关联、维护副本及私有 bridge 适配，并保留主分支已有的 AppSec 策略/证据判定、Telegram 有效配置路径、WebUI 认证、自封保护和卸载三态预检。修复维护目录归属/权限、共享 Hub 锁、Hub 根/祖先/内部符号链接快照边界，以及已有宽权限密钥文件的写入权限。独立代码复审无剩余 Critical/Important 问题。
@@ -178,3 +192,60 @@ python3 tests/verify_real_ip.py --metadata /path/to/openresty-packages-metadata
 5. Telegram 实际机器人接收与官方 Console 接受注册后的同步。
 
 这些项目保留了诊断及验证入口，不声称已在当前环境完成全部生产端到端验证。
+
+## 中转路径与隔离网络验收
+
+`--relay-path` / 菜单 `4 → 11` 只读采集本地 socket/NAT 与 Bouncer 引用；声明的节点角色不能替代来源和阻断实测。回归覆盖交互取消、EOF、端口选择、输出脱敏及 NAT 取反/不支持条件不被误报为正向证据。
+
+`tests/verify_relay_network.py` 将完整验收限制在私有网络和挂载命名空间，先检查两种隔离，再在私有 `/run` 创建客户端/后端子命名空间。回归还覆盖相同命名空间拒绝、缺少依赖返回结构化未验证、UDP 端口占用保护、SIGTERM 及嵌套进程回收、命名 DROP 计数器不混入普通处理计数。
+
+```bash
+python3 -m unittest discover -s tests -p 'test_relay*.py'
+sudo python3 tests/verify_relay_network.py --gost /path/to/gost \
+  --realm /path/to/realm --bouncer /path/to/crowdsec-firewall-bouncer \
+  --output /tmp/relay-results.json
+```
+
+官方 Bouncer 对接本地合成决策流 API，验收聚焦内核执行；实际日志采集另由 `tests/verify_relay.py` 验证。`--forward-only` 只证明 loopback 转发，不证明封禁。仅测试新会话；不覆盖 Docker bridge、iptables Bouncer、生产链路或性能容量。
+
+2026-10-12 在无外部网卡、无宿主机共享目录的 QEMU TCG 客体中完成真实 nftables 验收：Debian Linux **6.1.0-47-amd64**、gost **3.3.0**、realm **2.9.6**、官方 Firewall Bouncer **0.0.36**。gost/realm/NAT × IPv4/IPv6 × TCP/UDP **12/12 通过**，每项均验证封禁来源不可达、未封禁来源仍可达、真实 DROP 计数增加和解封恢复。后端来源全部为中转节点 `10.231.3.1` 或 `fd42:231:3::1`，说明用户态转发及本次 MASQUERADE 拓扑会隐藏原始客户端地址。
+
+原始报告：[隔离中转验收结果](audit/2026-10-12-relay-network-results.json)。精简客体先后缺少 `nft_objref`、`nft_nat`，各自独立复现缺失模块错误并补齐后重跑；这不是生产脚本自动调整内核模块的功能。测试使用真实程序和内核规则，但决策 API 为合成 fixture，不证明目标 VPS 的规则顺序、日志检测、既有长连接或防攻击容量。
+
+同阶段完整回归 **422 项：415 通过、7 项可选跳过**；另行启用官方通知插件的 **7 项通过**。中转专项 **51/51**、loopback 真实转发 **8/8**、Bash/Python 语法与 ShellCheck 通过。
+
+## 中转性能工具验证
+
+2026-10-12 新增 `tests/benchmark_relay.py` 与性能指标文档。真实 loopback 测量 **8/8 无错误**；无外部网卡/共享目录的 QEMU TCG 客体中，gost/realm × TCP/UDP × 无 Bouncer/空决策/1000 决策 × 2 重复，共 **24 次测量无错误**，生成 **8 组、每组 2 个 block 的配对比较**。这些数据验证工具流程，不是低配 VPS 的开销或容量结论。原始数据及客体标记见 [性能工具烟雾报告](audit/2026-10-12-relay-benchmark-smoke.json)，定义和目标节点测量方法见 [性能测量](relay-benchmark.md)。
+
+独立复核修正了负载 JSON 超过 pipe 容量可能挂起、失败条件丢失、未按事务数加权延迟样本的问题。gost UDP 默认响应后关闭虚拟会话的持续负载错误独立复现，基准明确启用并记录 `keepAlive=true`；原来的新会话阻断验收配置未改动。10 项基准测试（含实际官方 gost 回归和 PyYAML 缺失预检）通过，中转专项 61/61 通过。
+
+本阶段最终全仓回归 **448 项：434 通过、14 项可选跳过，无失败**。中转专项 **61/61** 通过，Bash/Python 语法、ShellCheck 和 diff-check 通过。测试期间工作区其他任务新增的 Telegram 状态辅助脚本补齐后，重新运行完整回归确认通过；该任务的代码未由本次性能工作修改。
+
+## Telegram 职责收敛验收
+
+后续完成 [TG 模拟 VPS 验收](2026-10-12-telegram-vps-acceptance.md)：31 项专项/停用回归无跳过，真实 OpenResty/Bouncer 拦截与同请求 TG 卡片关联通过，即时及 10 条批量通知通过。模拟 API 不代表真实 Telegram 公网送达，临时进程实验室不代表 systemd/包管理安装验收。
+
+2026-10-12 保留 TG 配置、官方插件/API 回执测试、只读状态与重复来源检查、停用四项功能。增加可选原生批量通知，纠正实时告警编号、模拟状态和未核验实际拦截的消息语义；官方测试检查真实 API HTTP/JSON 回执，私有证据绑定配置并在 24 小时后失效。复审发现的停用删除失败未恢复路由问题已复现并修复。
+
+TG 专项 **29/29 通过**；完整回归 **451 项：450 通过、1 项可选跳过，无失败**。使用官方 CrowdSec **1.8.1** 的单条/批量真实引擎隔离验证通过：`/.env` 路径与实际 UA 显示、10 条告警分组、两个规则各 5 条的统计、模拟数量和 3 组有限取证；Bash/Python 语法、ShellCheck 和 diff-check 通过。停用失败回归在临时配置树中确认旧实现失败、新实现恢复全部原始配置字节。
+
+仅使用临时配置与 loopback 接收器，未部署 VPS、未向真实 Telegram 发消息。API 接受不等于使用者已读，插件测试不验证真实攻击取证或生产 Bouncer 拦截。独立按钮机器人不属于本工具；服务/cron 扫描只给候选，不能排除其他名称的进程。详情见 [TG 修复与职责记录](2026-10-12-telegram-fix.md)。
+
+进一步的低配模拟使用独立虚拟磁盘与 1 vCPU，不再把完整根文件系统放在 RAM 中；真实核心共存的 512 MiB 短矩阵 12/12 无错误、最低可用内存 236.1 MiB，256 MiB 共存未完成且最低可用内存 10.6 MiB；256 MiB 无核心对照 12/12 无错误、最低可用内存 88.0 MiB。三次均未观察 OOM，不能将它等同长期资源充足。首轮 512 MiB 较长测试超时保留，没有以短矩阵重跑抹去失败。详见 [低配资源模拟与原始证据](audit/2026-10-12-low-spec-simulation.md)。
+
+ARM64 后续实际客机诊断：见 [Debian 13 ARM64 启动诊断](audit/2026-10-12-arm64-followup.md)。原生包安装与重启前远程决策同步通过；重启核心超时及后续未验证案例单独记录，不计完整验收。
+
+
+### 2026-10-12 试用前修复：快照内存与严格验收
+
+最新源码回归 581 项全部通过、无跳过（启用已验证的官方 CrowdSec 插件和 gost 可选检查）；ShellCheck、Bash 语法、Python 编译、diff 检查通过。新增快照将内容分块写入私有备份文件，防止下载文件 Base64 副本导致安装 OOM；恢复仍检查备份完整性、外部变更及数据库排除。旧内嵌快照保持兼容，其旧内容读取不宣称同样的内存上限。
+
+61 MiB + 11 MiB 下载文件的完整快照、修改记录、恢复在 160 MiB 地址空间限制下完成，峰值 RSS 19424 KiB；这是资源受限 fixture。新快照版本的 CentOS 空白本地核心生命周期已通过；512 MiB 默认安装和三次重启通过，但旧 120 秒负载失败，整轮不计通过。新的就绪/采样观察器在独立 512 MiB 客机完成整轮短测：三次重启同步、120 秒四路径各 121 成功/0 错误、未观察到 OOM、QEMU 0。独立 1 小时轮次曾启动，但 2026-10-13 复核时进程不存在、最终报告和退出证据缺失；24 小时尚无执行证据，两者均未通过验收。详见 [内存修复与证据](audit/2026-10-12-hub-blob-memory-repair.md)和[最新修复进度](audit/2026-10-12-vps-repair-progress.md)。ARM64 原生验证、独立恢复及全时长稳定性尚未关闭，目前没有新增试用放行组合。
+
+
+### 2026-10-13 文档发布前回归
+
+在实际准备发布的检出目录重新执行全仓 unittest：**581 项全部通过、无跳过**，166.984 秒；ShellCheck、Bash 语法、Python 编译及暂存区 diff 检查通过。README、新使用说明和相关状态文档的 91 个本地链接及说明中的 29 个脚本参数核对通过。公开归档串口日志按原始字节保存，避免换行转换破坏 SHA256；新增文档和归档进行了凭据模式检查。
+
+[发布前检查记录](audit/2026-10-13-documentation-publication.json)记录源码和主说明文档 hashes。上述是源码与文档发布检查，不授予长期稳定性、独立恢复或原生 ARM64试用资格；长测最新状态见[修复进度](audit/2026-10-12-vps-repair-progress.md)。

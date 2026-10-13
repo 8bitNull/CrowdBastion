@@ -1,0 +1,15 @@
+{
+  "returncode": 0,
+  "measurement": {
+    "peak_rss_kib": 19424
+  },
+  "helper_sha256": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5",
+  "maintenance_sha256": "93dc883979b045dfcb36ed301861da61514637c2b4dea8c3fcf2982bac4a26ee",
+  "address_space_limit_mib": 160,
+  "download_sizes_mib": [
+    61,
+    11
+  ],
+  "scope": "Fixture-only snapshot/create/change/record/restore, not full VPS acceptance",
+  "baseline_failure": "MemoryError in base64.b64encode during before"
+}
