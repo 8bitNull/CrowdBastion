@@ -26,10 +26,10 @@
 
 ## 下载与启动
 
-当前使用说明对应 `refactor/menu-consolidation` 分支。下载完整仓库后运行：
+使用 `main` 分支。下载完整仓库后运行：
 
 ```bash
-git clone --branch refactor/menu-consolidation https://github.com/8bitNull/crowdsec-1key.git
+git clone --branch main https://github.com/8bitNull/crowdsec-1key.git
 cd crowdsec-1key
 bash install-crowdsec-1panel.sh --help
 sudo bash install-crowdsec-1panel.sh

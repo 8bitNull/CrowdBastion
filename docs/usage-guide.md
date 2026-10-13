@@ -2,7 +2,7 @@
 
 [返回 README](../readme.md)
 
-本说明对应仓库 `refactor/menu-consolidation` 分支，覆盖网站防护、本地中转精简模式和远端 Bouncer-only。安装前先选节点职责，再使用对应入口；完整验证范围见 [VPS 兼容性矩阵](audit/2026-10-12-vps-compatibility.md)。
+本说明对应仓库 `main` 分支，覆盖网站防护、本地中转精简模式和远端 Bouncer-only。安装前先选节点职责，再使用对应入口；完整验证范围见 [VPS 兼容性矩阵](audit/2026-10-12-vps-compatibility.md)。
 
 ## 目录
 
@@ -37,7 +37,7 @@
 安装前保存现有 CrowdSec/防火墙配置，确认管理员公网来源 IP，准备 VPS 控制台或其他可用恢复入口。已有 gost、realm、NAT 规则继续由其原工具管理。
 
 ```bash
-git clone --branch refactor/menu-consolidation https://github.com/8bitNull/crowdsec-1key.git
+git clone --branch main https://github.com/8bitNull/crowdsec-1key.git
 cd crowdsec-1key
 bash install-crowdsec-1panel.sh --help
 sudo bash install-crowdsec-1panel.sh
@@ -195,7 +195,9 @@ sudo bash install-crowdsec-1panel.sh --enable-cron
 更新本工具源码前先结束修改操作，再在未自行修改源码的检出目录执行：
 
 ```bash
-git pull --ff-only origin refactor/menu-consolidation
+git fetch origin
+git switch main
+git pull --ff-only origin main
 bash install-crowdsec-1panel.sh --help
 ```
 
