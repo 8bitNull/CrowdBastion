@@ -2,6 +2,8 @@
 
 [返回 README](../readme.md) · [使用说明](usage-guide.md) · [命令参考](cli-reference.md)
 
+CrowdBastion 沿用旧版 `crowdsec-1key` 的服务名、通知通道、配置和维护路径，以便复用已有安装；详见 [更名与升级](project-rename.md)。
+
 本页说明可选组件的接入条件、通知证据、更新事务与恢复范围。常用操作步骤见使用说明；AppSec 策略见[接入参考](appsec-guide.md#正文与故障策略)。
 
 ## 目录
@@ -39,7 +41,7 @@ API 代理的路径前缀同样支持；动态 Chat ID 或多目标模板无法�
 
 通知优先遍历 `.Events[].Meta` 的 `key/value` 列表提取 `http_path`、`http_user_agent`、`http_verb`，即时消息最多展示 3 组去重后的请求样本，保持路径与 UA 对应；无请求样本时回退到告警 `.Meta` 上下文。AppSec 兼容事件 `uri`，并解码告警 `target_uri` / `user_agent` / `method` 的 JSON 数组字符串；仅当单一上下文路径与事件一致时补齐 UA 和方法，避免混配。
 
-没有原始字段时说明未记录，空 UA / `-` 显示“请求未提供 UA”，不再笼统显示未知。未获得正数 Alert ID 时显示“实时告警”，模拟告警及无决策告警单独标识；处置决策不代表已验证 Bouncer 实际拦截。消息采用 JSON 转义的纯文本并限制长度，避免攻击者的引号、换行、HTML 和超长字段造成发送失败。更新脚本后运行 `sudo bash install-crowdsec-1panel.sh --telegram`，选择 `1. 配置/更新` 加载新模板；已有配置不会仅因仓库文件更新而自动变化。
+没有原始字段时说明未记录，空 UA / `-` 显示“请求未提供 UA”，不再笼统显示未知。未获得正数 Alert ID 时显示“实时告警”，模拟告警及无决策告警单独标识；处置决策不代表已验证 Bouncer 实际拦截。消息采用 JSON 转义的纯文本并限制长度，避免攻击者的引号、换行、HTML 和超长字段造成发送失败。更新脚本后运行 `sudo bash crowdbastion.sh --telegram`，选择 `1. 配置/更新` 加载新模板；已有配置不会仅因仓库文件更新而自动变化。
 
 ### 只读检查与重复来源
 

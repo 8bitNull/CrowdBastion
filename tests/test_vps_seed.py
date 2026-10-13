@@ -9,6 +9,42 @@ import unittest
 
 class SeedTests(unittest.TestCase):
     @unittest.skipUnless(importlib.util.find_spec('pycdlib'),'pycdlib required for media validation')
+    def test_seed_payloads_keep_both_entry_points_runnable(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td)
+            core=root/'core-snapshot'
+            (core/'opt/core/etc').mkdir(parents=True)
+            (core/'opt/core/etc/config.yaml').write_text('{}\n')
+            (core/'bin').mkdir()
+            for name in ('crowdsec','cscli'):
+                (core/'bin'/name).write_text('#!/bin/sh\nexit 0\n')
+            for builder in ('prepare_vps_deb.py','prepare_vps_rpm_arm.py'):
+                with self.subTest(builder=builder):
+                    lab=root/builder
+                    seed=lab/'seed.iso'
+                    command=[sys.executable,str(Path(__file__).with_name(builder)),
+                             '--lab',str(lab),'--output',str(seed)]
+                    if builder=='prepare_vps_deb.py':
+                        command+=['--core-root',str(core)]
+                        archive=lab/'payload.tgz'
+                    else:
+                        command+=['--arm','--core-only']
+                        archive=seed.with_suffix('.payload.tgz')
+                    result=subprocess.run(command,text=True,capture_output=True,timeout=20)
+                    self.assertEqual(result.returncode,0,result.stderr)
+                    unpacked=lab/'unpacked'
+                    unpacked.mkdir()
+                    subprocess.run(['tar','-xzf',str(archive),'-C',str(unpacked)],check=True)
+                    outputs=[]
+                    for entry in ('crowdbastion.sh','install-crowdsec-1panel.sh'):
+                        script=unpacked/'opt/test/repo'/entry
+                        result=subprocess.run(['bash',str(script),'--help'],cwd=root,
+                                              text=True,capture_output=True,timeout=5)
+                        self.assertEqual(result.returncode,0,result.stderr)
+                        outputs.append(result.stdout)
+                    self.assertEqual(outputs[0],outputs[1])
+
+    @unittest.skipUnless(importlib.util.find_spec('pycdlib'),'pycdlib required for media validation')
     def test_arm_cold_core_seed_is_self_contained_and_immutable(self):
         script=Path(__file__).with_name('prepare_vps_rpm_arm.py')
         with tempfile.TemporaryDirectory() as td:

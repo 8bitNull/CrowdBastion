@@ -1,4 +1,4 @@
-# CrowdSec 防护管理中心使用说明
+# CrowdBastion 使用说明
 
 [返回 README](../readme.md)
 
@@ -37,13 +37,15 @@
 安装前保存现有 CrowdSec/防火墙配置，确认管理员公网来源 IP，准备 VPS 控制台或其他可用恢复入口。已有 gost、realm、NAT 规则继续由其原工具管理。
 
 ```bash
-git clone --branch main https://github.com/8bitNull/crowdsec-1key.git
-cd crowdsec-1key
-bash install-crowdsec-1panel.sh --help
-sudo bash install-crowdsec-1panel.sh
+git clone --branch main https://github.com/8bitNull/CrowdBastion.git
+cd CrowdBastion
+bash crowdbastion.sh --help
+sudo bash crowdbastion.sh
 ```
 
 始终保留完整 `lib/`，不要只下载一个 `.sh` 文件。命令行每次只指定一个操作；安装和配置参数仍有交互输入。菜单输入 `0` 返回，`Ctrl+D` 或输入结束退出；取消确认不会执行删除、注销或卸载。
+
+已有 `crowdsec-1key` 检出可直接更新远程地址并升级，无需重装或改动安装路径；具体步骤见 [更名与升级](project-rename.md)。旧脚本入口仍可使用，需同时保留它指向的 `crowdbastion.sh`。
 
 配置编辑需要 Python 3/PyYAML，安装入口会准备对应包。已有核心若缺少依赖，可按系统选择：
 
@@ -66,9 +68,9 @@ WebUI 另需 Docker/Compose；定时更新另需运行中的 cron/crond。容器
 ### 安装核心并检查日志
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --install-core
-sudo bash install-crowdsec-1panel.sh --status
-sudo bash install-crowdsec-1panel.sh --check-logs
+sudo bash crowdbastion.sh --install-core
+sudo bash crowdbastion.sh --status
+sudo bash crowdbastion.sh --check-logs
 ```
 
 对应菜单 `1 → 1`、`4 → 1`、`4 → 2 → 1`。安装时按提示核对管理员来源 IP。菜单 `2 → 1` 按网站类型选择规则；需要 Web 日志检测集合时使用 `--install-waf`。检查实际访问日志是否读取，日志中客户端 IP 是否正确；新增站点后可使用 `--repair-logs` 按实际配置和挂载补齐采集。
@@ -78,11 +80,11 @@ sudo bash install-crowdsec-1panel.sh --check-logs
 菜单 `1 → 2` 分别提供 AppSec 配置、首次 Web Bouncer 安装、状态、主动验证、故障策略和停用。命令行步骤为：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --install-appsec
+sudo bash crowdbastion.sh --install-appsec
 # 尚无 Web Bouncer 时，在 AppSec 监听就绪后安装
-sudo bash install-crowdsec-1panel.sh --install-web-bouncer
-sudo bash install-crowdsec-1panel.sh --appsec-status
-sudo bash install-crowdsec-1panel.sh --verify-appsec
+sudo bash crowdbastion.sh --install-web-bouncer
+sudo bash crowdbastion.sh --appsec-status
+sudo bash crowdbastion.sh --verify-appsec
 ```
 
 AppSec 集合、监听、Web Bouncer 接入和实际请求验证是不同步骤。按提示选择实际部署方式、容器和站点；不要只凭监听 7422 或服务 active 判断网站已有 WAF。
@@ -100,9 +102,9 @@ AppSec 集合、监听、Web Bouncer 接入和实际请求验证是不同步骤�
 适用于本机需要独立系统/SSH 检测的 gost、realm、socat、Nginx Stream 或 NAT 节点。
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --install-relay
-sudo bash install-crowdsec-1panel.sh --relay-status
-sudo bash install-crowdsec-1panel.sh --relay-path
+sudo bash crowdbastion.sh --install-relay
+sudo bash crowdbastion.sh --relay-status
+sudo bash crowdbastion.sh --relay-path
 sudo cscli metrics
 ```
 
@@ -129,8 +131,8 @@ sudo cscli bouncers add relay-a
 
 ```bash
 # 仅在中转执行：URL 和密钥按提示交互输入
-sudo bash install-crowdsec-1panel.sh --install-relay-bouncer
-sudo bash install-crowdsec-1panel.sh --relay-bouncer-status
+sudo bash crowdbastion.sh --install-relay-bouncer
+sudo bash crowdbastion.sh --relay-bouncer-status
 ```
 
 对应菜单 `1 → 6 → 1` 和 `1 → 6 → 3`。输入中心实际 LAPI URL（例如私网 `http://10.20.0.1:8080/`）和刚创建的 Bouncer 密钥。密钥隐藏输入，不放进命令行参数。首次无 Bouncer 的安装使用校验后的官方 0.0.36 发布包；已有基础配置时复用原安装和防火墙后端，非托管 `.local` 覆盖或归属冲突会拒绝自动修改。
@@ -142,8 +144,8 @@ sudo bash install-crowdsec-1panel.sh --relay-bouncer-status
 先在中心创建新账号，然后在对应中转执行：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --configure-relay-bouncer
-sudo bash install-crowdsec-1panel.sh --relay-bouncer-status
+sudo bash crowdbastion.sh --configure-relay-bouncer
+sudo bash crowdbastion.sh --relay-bouncer-status
 ```
 
 确认真实同步和业务验证正常后，再在中心撤销旧账号。`--relay-bouncer-status` 不发起认证请求，状态正常不等于 URL/密钥已完成实际认证和业务阻断验证。中心账号也可用 `sudo cscli bouncers list` 检查拉取记录。
@@ -181,13 +183,13 @@ sudo cscli decisions list
 
 ```bash
 # 按节点模式选择状态入口
-sudo bash install-crowdsec-1panel.sh --status
+sudo bash crowdbastion.sh --status
 
 # 本地核心或中心：手动更新 Hub
-sudo bash install-crowdsec-1panel.sh --update-hub
+sudo bash crowdbastion.sh --update-hub
 
 # 本地核心或中心：配置每天 03:30 的 Hub 更新
-sudo bash install-crowdsec-1panel.sh --enable-cron
+sudo bash crowdbastion.sh --enable-cron
 ```
 
 仅 Bouncer 的节点不运行本地 Hub 更新。定时任务使用服务器时区，需 cron/crond 正常运行；日志在 `/var/log/crowdsec-1key-update.log`，保留 8 份轮转。更新 Hub 不等于更新 CrowdSec 软件包；CAPI 社区决策由引擎同步。
@@ -198,7 +200,7 @@ sudo bash install-crowdsec-1panel.sh --enable-cron
 git fetch origin
 git switch main
 git pull --ff-only origin main
-bash install-crowdsec-1panel.sh --help
+bash crowdbastion.sh --help
 ```
 
 有本地源码改动时先保存并审阅冲突，不覆盖自己的修改。`--enable-cron` 会把脚本及依赖复制到 `/usr/local/lib/crowdsec-1key/current`；只更新仓库不会自动更新已有 cron 使用的副本，更新后重新运行 `--enable-cron` 同步管理副本和计划。
@@ -221,7 +223,7 @@ WebUI 接入条件、Telegram 即时/批量通知、API 回执和维护事务细
 sudo python3 lib/crowdsec_maintenance.py restore /var/backups/crowdsec-1key/hub.实际目录 && \
 sudo crowdsec -t && \
 sudo systemctl reload crowdsec && \
-sudo bash install-crowdsec-1panel.sh --status
+sudo bash crowdbastion.sh --status
 ```
 
 本步骤只适用于本地核心或中心。恢复失败时不要删除保护文件或数据库来绕过检查；先检查工具输出和日志。
@@ -231,7 +233,7 @@ sudo bash install-crowdsec-1panel.sh --status
 远端中转撤销接入：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --remove-relay-bouncer
+sudo bash crowdbastion.sh --remove-relay-bouncer
 ```
 
 这会停用 Bouncer 并移除托管远端覆盖，保留基础配置、软件包、二进制和 standalone unit，不会自动启动原本地配置。中心旧账号需管理员另行撤销。随后直接执行本地核心安装可能被迁移保护拒绝，须先人工核对保留的 unit、二进制、配置和包归属，具体见 [迁移边界](relay-mode.md#远端与本地核心之间的迁移边界)。
@@ -239,8 +241,8 @@ sudo bash install-crowdsec-1panel.sh --remove-relay-bouncer
 本地核心卸载前，先按提示撤销仍接入的 Web Bouncer 并验证网站，然后执行：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --uninstall
-sudo bash install-crowdsec-1panel.sh --check-clean
+sudo bash crowdbastion.sh --uninstall
+sudo bash crowdbastion.sh --check-clean
 ```
 
 卸载必须明确确认，会停止服务、移除检测到的软件包及 CrowdSec 数据；防火墙无法检查或仍有受管理资源时会中止/保留现场。备份、系统日志、软件源和其他容器不自动删除。只需停用 AppSec 时使用 `--disable-appsec`；撤销本工具的原生容器 Web Bouncer 使用 `--remove-web-bouncer`。

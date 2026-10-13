@@ -99,7 +99,7 @@ setup_custom_bot() {
     if ! cat > "$CUSTOM_BOT_UNIT" <<EOF
 # crowdsec-1key-managed-interactive-bot
 [Unit]
-Description=CrowdSec optional interactive Telegram bot
+Description=CrowdBastion optional interactive Telegram bot
 After=network-online.target crowdsec.service
 Wants=network-online.target
 

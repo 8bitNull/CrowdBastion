@@ -39,12 +39,13 @@ def main():
     if args.integration_only:guest=repo/'tests/vps_rpm_arm_guest_existing.py'
     scope='fresh_native_core_only' if args.core_only else 'existing_core_integration' if args.integration_only else 'remote_only' if args.remote_only else 'full_lifecycle'
     phase2=repo/'tests/vps_rpm_arm_phase2.py'
-    source_sha256={'opt/test/repo/'+str(path.relative_to(repo)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [repo/'install-crowdsec-1panel.sh',*sorted((repo/'lib').glob('*.py')),*sorted((repo/'lib').glob('*.sh'))]}
+    source_sha256={'opt/test/repo/'+str(path.relative_to(repo)):hashlib.sha256(path.read_bytes()).hexdigest() for path in [repo/'crowdbastion.sh',repo/'install-crowdsec-1panel.sh',*sorted((repo/'lib').glob('*.py')),*sorted((repo/'lib').glob('*.sh'))]}
     def source_filter(info):
         return None if '__pycache__' in Path(info.name).parts or info.name.endswith('.pyc') else info
     soak_sources={}
     lab_id=secrets.token_hex(16)
     with tarfile.open(payload,'w:gz',compresslevel=1) as tar:
+        tar.add(repo/'crowdbastion.sh',arcname='opt/test/repo/crowdbastion.sh')
         tar.add(repo/'install-crowdsec-1panel.sh',arcname='opt/test/repo/install-crowdsec-1panel.sh')
         tar.add(repo/'lib',arcname='opt/test/repo/lib',filter=source_filter)
         tar.add(guest,arcname='opt/test/guest.py');tar.add(phase2,arcname='opt/test/phase2.py')

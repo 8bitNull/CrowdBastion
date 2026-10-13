@@ -922,7 +922,7 @@ def main():
             time.sleep(2)
 
 def cli():
-    parser = argparse.ArgumentParser(description='CrowdSec 交互机器人；官方通道负责自动告警')
+    parser = argparse.ArgumentParser(description='CrowdBastion 交互机器人；CrowdSec 官方通道负责自动告警')
     parser.add_argument('--config', default='/etc/crowdsec/crowdsec-1key-bot.json')
     parser.add_argument('--check-config', action='store_true')
     args = parser.parse_args()

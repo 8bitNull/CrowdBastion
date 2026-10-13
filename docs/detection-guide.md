@@ -71,7 +71,7 @@ NPM 根据[官方模板](https://github.com/NginxProxyManager/nginx-proxy-manage
 菜单 `4 → 5 → 3` 选择 HTTP 日志修复后，会检查日志目录和 Docker 实际挂载，汇总确认后应用；也可使用菜单 `4 → 2 → 4` 或单独执行：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --repair-logs
+sudo bash crowdbastion.sh --repair-logs
 ```
 
 修复扫描预设目录，以及运行中的 Nginx/OpenResty 镜像的 `/www`、`/www/sites`、`/var/log/nginx` 挂载和 NPM 的 `/data`、`/data/logs` 挂载。它按映射找到宿主机上实际存在的 HTTP 日志，包括 `/opt/1panel/1panel/www` 和其他自定义 Source。Docker 不可用时提示并仅扫描预设；忽略不相关的挂载和被子挂载遮住的旧文件。自定义镜像名或其他容器日志布局需要手工核对。
@@ -91,12 +91,12 @@ Docker 转发流量需要正确的防火墙链/钩子。修复入口保留官方
 若访问日志首字段是 Cloudflare 节点 IP，且 `nginx -T` 没有真实 IP 配置，单独设置 `proxy_set_header X-Real-IP` 不能改变日志和 Web Bouncer 使用的 `$remote_addr`。Docker 部署可运行以下入口，或选择菜单 `4 → 2 → 3 → 1 → 2`：
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --repair-real-ip
+sudo bash crowdbastion.sh --repair-real-ip
 ```
 
 入口先列出现有 `real_ip_header`、可信来源条目数和候选 Header，再要求选择实际接入方式。Cloudflare 公网节点直接接入默认使用官方 HTTPS IPv4/IPv6 网段和 `CF-Connecting-IP`；若已关联请求确认该 Header 缺失、XFF 链可靠，可明确选择接入类型 `5`，使用同样官方网段和 `X-Forwarded-For`，从右向左递归解析。不会自动尝试其他 Header，也不扩大信任范围。配置线索仅用于提示，不等于自动确认网络拓扑。其他 CDN/反向代理需明确输入上游约定的 Header 和可信 IP/CIDR。
 
-上游不确定时，选择接入菜单 `3`，或单独执行 `sudo bash install-crowdsec-1panel.sh --diagnose-real-ip`（管理菜单 `4 → 2 → 3 → 1 → 1`）。独立诊断不要求 CrowdSec 核心、curl 或 HTTP real-IP 模块，只读取当前容器配置、挂载和近期日志；支持标准 Nginx 首字段与 NPM `[Client …]`，显示最近日志时间，排除 stream 日志。
+上游不确定时，选择接入菜单 `3`，或单独执行 `sudo bash crowdbastion.sh --diagnose-real-ip`（管理菜单 `4 → 2 → 3 → 1 → 1`）。独立诊断不要求 CrowdSec 核心、curl 或 HTTP real-IP 模块，只读取当前容器配置、挂载和近期日志；支持标准 Nginx 首字段与 NPM `[Client …]`，显示最近日志时间，排除 stream 日志。
 
 每份日志只读取最后最多 64KiB / 20 行，最多检查 12 份，无法识别的格式明确标记为待核对。它不输出完整请求或 Header 值，也不会访问站点、下载 CDN 网段、写配置或重载。
 

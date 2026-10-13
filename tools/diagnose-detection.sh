@@ -101,5 +101,5 @@ printf '\n离线 sshd-session 兼容性样本（不是服务器真实事件）�
 printf '%s localhost sshd-session[99999]: Failed password for invalid user audit-test from 198.51.100.254 port 54321 ssh2\n' "$(LC_ALL=C date -u '+%b %e %T')" > "$audit_tmp/synthetic"
 cscli explain --file "$audit_tmp/synthetic" --type syslog -v || audit_result=1
 printf '\n检查完成；配置、白名单、日志文件与运行服务均未修改。\n'
-printf '真实 AppSec 请求验证另用：sudo bash install-crowdsec-1panel.sh --verify-appsec\n'
+printf '真实 AppSec 请求验证另用：sudo bash crowdbastion.sh --verify-appsec\n'
 exit "$audit_result"

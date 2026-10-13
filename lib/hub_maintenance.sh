@@ -172,7 +172,7 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
         source "$HUB_ENTRY_ROOT/manager.sh"
     else
         # shellcheck source=/dev/null
-        source "$HUB_ENTRY_ROOT/install-crowdsec-1panel.sh"
+        source "$HUB_ENTRY_ROOT/crowdbastion.sh"
     fi
     case "${1:-update}" in
         update) main --update-hub ;;

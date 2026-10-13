@@ -27,7 +27,7 @@
 3. 在项目目录执行：
 
    ```bash
-   sudo bash install-crowdsec-1panel.sh --custom-bot
+   sudo bash crowdbastion.sh --custom-bot
    ```
 
    也可进入 `--telegram` 菜单第 5 项“可选交互机器人”。

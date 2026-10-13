@@ -7,7 +7,7 @@
 在实际落地 VPS 的项目目录运行，按实际配置路径和 unit 修改参数。不要把开发容器的输出当作落地证据。
 
 ```bash
-sudo bash install-crowdsec-1panel.sh --diagnose-v2bx
+sudo bash crowdbastion.sh --diagnose-v2bx
 ```
 
 需要 JSON 时调用同目录 helper：

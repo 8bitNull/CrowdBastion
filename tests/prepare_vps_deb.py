@@ -6,6 +6,7 @@ p.add_argument('--lab',default='/tmp/crowdsec-vps-deb-lab'); p.add_argument('--c
 a=p.parse_args(); lab=pathlib.Path(a.lab); lab.mkdir(parents=True,exist_ok=True)
 repo=pathlib.Path(__file__).resolve().parent.parent
 with tarfile.open(lab/'payload.tgz','w:gz') as tar:
+    tar.add(repo/'crowdbastion.sh',arcname='opt/test/repo/crowdbastion.sh')
     tar.add(repo/'install-crowdsec-1panel.sh',arcname='opt/test/repo/install-crowdsec-1panel.sh')
     tar.add(repo/'lib',arcname='opt/test/repo/lib')
     for source,name in [('vps_deb_guest.py','guest.py'),('vps_deb_phase2.py','phase2.py')]: tar.add(repo/'tests'/source,arcname='opt/test/'+name)

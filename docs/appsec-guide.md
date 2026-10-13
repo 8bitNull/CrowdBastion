@@ -38,7 +38,7 @@ labels:
 
 ## Web Bouncer 与环境适配
 
-接入菜单显示已安装且命令可用的宿主机 Bouncer，并提供 `3：接入已有 Docker Web Bouncer`、`4：首次安装 Web Bouncer`。首次安装也可单独执行 `sudo bash install-crowdsec-1panel.sh --install-web-bouncer`，前提是 AppSec 已监听。Docker 已有接入会核对 host 或已登记的私有 bridge 网络、有效 CrowdSec 请求调用和真实 bind/volume 配置挂载，备份后修改 `APPSEC_URL`、执行 `nginx -t` 并重载；重复接入不变时跳过重载。
+接入菜单显示已安装且命令可用的宿主机 Bouncer，并提供 `3：接入已有 Docker Web Bouncer`、`4：首次安装 Web Bouncer`。首次安装也可单独执行 `sudo bash crowdbastion.sh --install-web-bouncer`，前提是 AppSec 已监听。Docker 已有接入会核对 host 或已登记的私有 bridge 网络、有效 CrowdSec 请求调用和真实 bind/volume 配置挂载，备份后修改 `APPSEC_URL`、执行 `nginx -t` 并重载；重复接入不变时跳过重载。
 
 首次安装生成的持久化配置也支持该入口。
 
