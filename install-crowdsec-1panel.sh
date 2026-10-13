@@ -15,6 +15,14 @@ HUB_LOG_FILE="/var/log/crowdsec-1key-hub.log"
 # shellcheck source=lib/hub_maintenance.sh
 source "${SCRIPT_DIR}/lib/hub_maintenance.sh"
 TG_NOTIF_FILE="${CS_DIR}/notifications/crowdsec-1key-telegram.yaml"
+CUSTOM_BOT_SCRIPT="/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py"
+CUSTOM_BOT_CONFIG="${CS_DIR}/crowdsec-1key-bot.json"
+CUSTOM_BOT_UNIT="/etc/systemd/system/crowdsec-1key-bot.service"
+CUSTOM_BOT_STATE="/var/lib/crowdsec-1key-bot"
+CUSTOM_BOT_LEGACY="/usr/local/bin/crowdsec_bot.py"
+CUSTOM_BOT_CRON_DIR="/etc/cron.d"
+# shellcheck source=lib/custom_bot.sh
+source "${SCRIPT_DIR}/lib/custom_bot.sh"
 PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
@@ -1518,13 +1526,14 @@ manage_telegram() {
     require_core || return 1
     local choice
     while true; do
-        printf '\nTelegram 告警\n1. 配置/更新（含通知模式）\n2. 官方插件/API 回执测试\n3. 只读状态与重复来源检查\n4. 停用本工具通道\n0. 返回\n'
-        prompt choice '请选择 [0-4]: ' || return 0
+        printf '\nTelegram 告警\n1. 配置/更新（含通知模式）\n2. 官方插件/API 回执测试\n3. 只读状态与重复来源检查\n4. 停用本工具通道\n5. 可选交互机器人（查询/按钮）\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) setup_telegram_notification interactive ;;
             2) test_telegram_notification ;;
             3) check_telegram_settings ;;
             4) disable_telegram_notification ;;
+            5) manage_custom_bot ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac
@@ -1756,6 +1765,7 @@ deep_purge_residuals() {
             return 1
         fi
     done
+    purge_custom_bot || return 1
     local service
     for service in crowdsec-firewall-bouncer crowdsec; do
         if systemctl is-active --quiet "$service" 2>/dev/null; then systemctl stop "$service" || return 1; fi
@@ -1985,6 +1995,7 @@ show_help() {
   --deep-clean/--purge 确认后卸载并清理数据
   --telegram           Telegram 管理菜单
   --telegram-test      发送官方插件测试消息并核对 Telegram API 回执
+  --custom-bot         可选交互机器人管理（官方通知保持独立）
   --optimize           诊断后逐项选择基础规则、日志采集与指标，汇总确认后统一加载
   --enable-wal         确认本地 SQLite 后配置官方 use_wal
   --status             只读健康检查
@@ -2041,6 +2052,7 @@ main_operation() {
         --check-logs) check_log_inventory ;;
         --telegram) manage_telegram ;;
         --telegram-test) test_telegram_notification ;;
+        --custom-bot) manage_custom_bot ;;
         --optimize) smart_audit_and_optimize ;;
         --enable-wal) enable_sqlite_wal ;;
         --status) check_health_status ;;

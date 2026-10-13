@@ -286,3 +286,11 @@ ShellCheck 排除项对应 trap/间接函数调用与默认可选参数的已知
 
 真实引擎检查会下载 Hub 集合，在临时目录和 loopback 端口运行，不安装系统服务、不修改防火墙、不向真实 Telegram 发送消息。
 全功能审查见 [审查报告](feature-audit-2026-10-11.md)，该报告记录优化前基线。
+
+## 自定义交互机器人接入（2026-10-13）
+
+用户确认后接入上传的 `crowdsec_bot.py`：官方通道保留自动推送，交互机器人默认只查询/按钮操作。修复不受支持的 `--no-metrics`、人类可读正则取证、固定 DROP 描述、失败误报、用户输入 shell 拼接和白名单首次创建；加入用户/聊天双重校验、单实例、私有 offset、独立配置与服务回滚、归属检查及核心卸载清理。
+
+机器人专项 **26/26**；全仓 **607 项：603 通过、4 项可选跳过，无失败**。官方 CrowdSec **1.8.1** 临时引擎的真实 LAPI/SQLite/CLI 验证告警事件路径/UA/按钮及保留的查询菜单，白名单通过真实 `crowdsec -t`；系统重载为模拟，未调用真实 Telegram API。Bash/Python 语法、ShellCheck、diff-check 与独立复审通过。复审发现的四项重要问题均有修复及回归。
+
+原上传文件及 VPS `/usr/local/bin/crowdsec_bot.py` 未覆盖；新服务安装入口为 `--custom-bot` 或 TG 菜单第 5 项。迁移需先核对并停用旧轮询服务/cron，不能同时轮询同一 Token。说明见 [自定义机器人修复与接入](2026-10-13-custom-telegram-bot.md)，原始输出见 [验收记录](audit/2026-10-13-custom-telegram-bot-results.json)。

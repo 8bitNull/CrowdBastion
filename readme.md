@@ -101,6 +101,7 @@ sudo bash install-crowdsec-1panel.sh --relay-bouncer-status
 | [AppSec 接入参考](docs/appsec-guide.md) | 环境适配、Web Bouncer、Docker 网络、网站验证与故障策略 |
 | [日志与真实 IP 排查](docs/detection-guide.md) | 日志路径、低解析率、防火墙、CDN/代理、AllowList 与 Self-Report |
 | [管理与维护参考](docs/management-guide.md) | WebUI、Telegram、Hub 更新、WAL 与失败恢复范围 |
+| [自定义 TG 机器人](docs/2026-10-13-custom-telegram-bot.md) | 可选九宫格/按钮接入、路径与 UA 修复、服务迁移和回滚；官方通道负责自动告警 |
 | [中转模式](docs/relay-mode.md) / [中心运维](docs/remote-bouncer-operations.md) | 本地精简、远端 Bouncer、流量路径与迁移边界 |
 | [性能测量](docs/relay-benchmark.md) | 目标节点的测量方法与数据解释 |
 | [验证记录](docs/verification.md) / [兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md) | 测试方法、历史证据、实际覆盖范围与未完成项目 |

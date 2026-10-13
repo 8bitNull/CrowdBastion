@@ -61,7 +61,13 @@ cscli() {
  return 0
 }
 crowdsec() { record crowdsec "$@"; return 0; }
-systemctl() { record systemctl "$@"; return 0; }
+systemctl() {
+ record systemctl "$@"
+ if [[ "$1" == show && "$*" == *crowdsec-1key-bot.service* ]]; then
+  if [[ -f "$CUSTOM_BOT_UNIT" ]]; then printf 'LoadState=loaded\nFragmentPath=%s\n' "$CUSTOM_BOT_UNIT"; else echo 'LoadState=not-found'; fi
+ fi
+ return 0
+}
 docker() {
  record docker "$@"
  case "$*" in

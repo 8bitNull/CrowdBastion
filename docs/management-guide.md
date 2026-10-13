@@ -21,9 +21,11 @@ WebUI 从官方 `latest` 拉取目标镜像，部署固定为已拉取镜像的 
 
 ## Telegram
 
+经用户批准，增加可选自定义交互机器人：`--custom-bot` 或 TG 菜单第 5 项。官方通道继续负责自动告警，新机器人默认只处理九宫格查询和按钮操作；旧 `/usr/local/bin/crowdsec_bot.py` 不自动覆盖，先核对并停用旧轮询服务/cron。机器人私有配置、同 Token 单实例、服务归属检查及失败回滚与官方通知启停独立。路径/UA 通过官方 JSON 取证修复，使用方法和权限边界见 [自定义机器人修复与接入](2026-10-13-custom-telegram-bot.md)。
+
 Telegram 使用独立名称 `crowdsec_1key_telegram`，读取实际 `notification_dir`、`api.server.profiles_path` 及优先执行的 `.local` profiles。默认通知文件为 `/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml`。重复配置会原位更新；配置前扫描实际通知目录，将同一 Bot Token / Chat ID 的旧 HTTP 通知（例如 `http_default`）从 base / `.local` profile 路由中替换，并去重本工具路由，其他目标的通知保留。
 
-API 代理的路径前缀同样支持；动态 Chat ID 或多目标模板无法确定归属时保留，须手工核对。旧插件文件不删除，以免影响同文件中的其他通道；修改前备份，校验或加载失败回滚。停用只移除本工具通道。菜单保留配置/更新、官方插件/API 回执测试、只读检查和停用四项。
+API 代理的路径前缀同样支持；动态 Chat ID 或多目标模板无法确定归属时保留，须手工核对。旧插件文件不删除，以免影响同文件中的其他通道；修改前备份，校验或加载失败回滚。停用只移除本工具通道。官方通知保留配置/更新、官方插件/API 回执测试、只读检查和停用四项，交互机器人为独立子菜单。
 
 ### 官方插件与 API 回执测试
 
