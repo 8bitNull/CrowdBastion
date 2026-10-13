@@ -87,7 +87,7 @@ sudo bash install-crowdsec-1panel.sh --verify-appsec
 
 AppSec 集合、监听、Web Bouncer 接入和实际请求验证是不同步骤。按提示选择实际部署方式、容器和站点；不要只凭监听 7422 或服务 active 判断网站已有 WAF。
 
-1Panel、科技lion LDNMP、NPM 和宿主机 Nginx/OpenResty 的适配前提见 [README 接入表](../readme.md#日志检测与-appsec-waf)。原生容器首次安装使用实际持久化挂载；Docker bridge 需要先准备私有 LAPI/AppSec 网关，再用 `--configure-docker-endpoints` 登记，登记入口不会自动创建网络或暴露公网端口。
+1Panel、科技lion LDNMP、NPM 和宿主机 Nginx/OpenResty 的适配前提见 [AppSec 接入与环境适配](appsec-guide.md#web-bouncer-与环境适配)。原生容器首次安装使用实际持久化挂载；Docker bridge 需要先准备私有 LAPI/AppSec 网关，再用 `--configure-docker-endpoints` 登记，登记入口不会自动创建网络或暴露公网端口。
 
 ### 核对真实客户端 IP
 
@@ -175,6 +175,8 @@ sudo cscli decisions list
 | 修改操作返回 `75` | 另一管理操作持锁，等其正常结束后重试 |
 | 安装/配置命令其他非零退出 | 本次操作未成功，保留诊断并检查恢复状态 |
 
+日志路径、低解析率和代理信任的详细排查见[日志、防火墙与真实 IP 参考](detection-guide.md)。
+
 ## 日常维护与更新
 
 ```bash
@@ -200,6 +202,8 @@ bash install-crowdsec-1panel.sh --help
 有本地源码改动时先保存并审阅冲突，不覆盖自己的修改。`--enable-cron` 会把脚本及依赖复制到 `/usr/local/lib/crowdsec-1key/current`；只更新仓库不会自动更新已有 cron 使用的副本，更新后重新运行 `--enable-cron` 同步管理副本和计划。
 
 其他可选操作：菜单 `5 → 1` 部署 WebUI；`5 → 3` 管理 Telegram，首次默认即时通知，也可选择官方批量通知。`--telegram-test` 会发送真实测试消息，API 接受只说明服务接收成功。菜单 `4 → 8` / `--optimize` 先诊断，默认不选择任何修复，再汇总确认；不要把它当作无条件“一键提速”。WAL 通过 `--enable-wal` 在明确数据库为本地磁盘后启用。
+
+WebUI 接入条件、Telegram 即时/批量通知、API 回执和维护事务细节见[管理与维护参考](management-guide.md)。完整参数见[命令行参考](cli-reference.md)。
 
 ## 备份与失败恢复
 
