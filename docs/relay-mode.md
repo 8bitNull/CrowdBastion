@@ -1,6 +1,6 @@
 # 纯中转节点精简模式
 
-适用于需要基础 SSH 行为检测和 IP 决策阻断的 Linux/systemd 中转节点。菜单 `1 → 5` 安装，`4 → 10` 只读检查；CLI 对应 `--install-relay`、`--relay-status`。沿用项目发行版、软件源、Python/PyYAML 和管理员 IP 前提。
+适用于需要基础 SSH 行为检测和 IP 决策阻断的 Linux/systemd 中转节点。菜单 `1 → 5` 安装，`4 → 3 → 1` 只读检查；CLI 对应 `--install-relay`、`--relay-status`。沿用项目发行版、软件源、Python/PyYAML 和管理员 IP 前提。
 
 ## 安装与已有配置
 
@@ -55,7 +55,7 @@ python3 tests/verify_relay.py /path/to/crowdsec-v1.8.1
 
 ## 节点角色与流量路径诊断
 
-菜单 `4 → 11` 或 `sudo bash install-crowdsec-1panel.sh --relay-path` 依次选择入口/中间/出口/不确定、用户态/NAT/bridge/不确定，以及可选 TCP/UDP 本地入口端口。选择只用于本次输出，不保存。EOF、`q` 或角色/路径菜单的 `0` 取消。
+菜单 `4 → 3 → 2` 或 `sudo bash install-crowdsec-1panel.sh --relay-path` 依次选择入口/中间/出口/不确定、用户态/NAT/bridge/不确定，以及可选 TCP/UDP 本地入口端口。选择只用于本次输出，不保存。EOF、`q` 或角色/路径菜单的 `0` 取消。
 
 诊断读取数字 socket 地址与必要的本地 NAT 规则，不读取转发器配置或进程完整命令行。角色是操作者声明，socket 对端是本机可见网络对端；两者不能证明完整远程拓扑。取反、集合端口及其他无法忠实表示的 NAT 条件跳过并标为未验证。随后复用 Bouncer 静态检查；完整诊断仍返回 `2`，读取/输入异常返回 `1`。
 

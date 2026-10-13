@@ -166,7 +166,7 @@ class RelayPathRouting(unittest.TestCase):
         self.assertIn('FORWARD', p.stdout)
 
     def test_menu_routes_to_read_only_diagnostic(self):
-        p = self.run_shell('manage_diagnostics', '11\n\n0\n', overrides='check_relay_path() { record PATH_DIAGNOSTIC; }; locked_operation() { record LOCK; return 99; }')
+        p = self.run_shell('manage_diagnostics', '3\n2\n0\n0\n', overrides='check_relay_path() { record PATH_DIAGNOSTIC; }; locked_operation() { record LOCK; return 99; }')
         self.assertEqual(p.returncode, 0)
         self.assertIn('PATH_DIAGNOSTIC', self.commands())
         self.assertNotIn('LOCK', self.commands())

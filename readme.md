@@ -11,7 +11,7 @@
 | 网站服务器 | `1 → 1` / `--install-core` | 本地日志检测与 IP 阻断；AppSec 在线检查另从 `1 → 2` 接入 |
 | 需要本地 SSH 检测的中转 VPS | `1 → 5` / `--install-relay` | 本地 CrowdSec + Firewall Bouncer，补齐系统／SSH 采集 |
 | 已有独立 CrowdSec 中心的中转 VPS | `1 → 6 → 1` / `--install-relay-bouncer` | 同步中心决策并执行 IP 阻断 |
-| V2bX 三内核落地，直连／中转并存 | `4 → 12` / `--diagnose-v2bx` | 核查配置、日志与来源路径，业务检测保持仅观察 |
+| V2bX 三内核落地，直连／中转并存 | `4 → 4 → 1` / `--diagnose-v2bx` | 核查配置、日志与来源路径，业务检测保持仅观察 |
 
 中转模式适用于 gost、realm、socat、Nginx Stream 或 NAT 节点。部署条件见 [中转模式](docs/relay-mode.md)和 [中心运维](docs/remote-bouncer-operations.md)。
 
@@ -52,7 +52,7 @@ sudo bash install-crowdsec-1panel.sh
 - 共享中转 peer 不能代替用户 IP 作为业务封禁对象；连接限速和带宽清洗不属于当前中转管理功能，链路耗尽需要上游防护。
 - 配置修改提供备份与恢复；系统软件包、实时数据库和网站数据不属于完整事务备份。卸载前先核对 [恢复与卸载流程](docs/usage-guide.md#备份与失败恢复)。
 
-V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IPv4/IPv6 和 TCP/UDP 应用载荷的隔离证据。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。菜单 `4 → 14` 支持独立文件日志常驻观察和 `--enable-v2bx-alerts` 仅观察告警接入；专用 profiles guard 隔离决策，不启用自动封禁或限速。
+V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IPv4/IPv6 和 TCP/UDP 应用载荷的隔离证据。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。菜单 `4 → 4` 支持独立文件日志常驻观察和 `--enable-v2bx-alerts` 仅观察告警接入；专用 profiles guard 隔离决策，不启用自动封禁或限速。
 
 真实 VPS 的仅观察试点仍待 [部署验收](docs/v2bx-deployment-acceptance.md)。系统长测、恢复及部分架构／资源组合尚未关闭；源码回归和 QEMU 结果不代表公网吞吐或生产放行。具体测试数量、配置对照与失败记录见 [验证记录](docs/verification.md)、[验收索引](docs/audit/README.md)和 [修复进度](docs/audit/2026-10-12-vps-repair-progress.md)。
 

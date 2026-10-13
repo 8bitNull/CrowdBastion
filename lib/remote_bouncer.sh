@@ -186,7 +186,7 @@ remote_bouncer_status() {
 manage_remote_bouncer() {
     local choice
     while true; do
-        printf '\n远端 Bouncer-only\n1. 安装/接入\n2. 修改 URL 与密钥\n3. 只读状态\n4. 移除托管远端配置并停用\n0. 返回\n'
+        printf '\n连接远端检测中心\n1. 安装防火墙防护并接入远端检测中心\n2. 修改检测中心地址和连接密钥\n3. 查看连接和运行状态\n4. 移除本工具的远端配置并停用防护\n0. 返回\n'
         prompt choice '请选择 [0-4]: ' || return 0
         case "$choice" in
             1) remote_bouncer_change install ;;

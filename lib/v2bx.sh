@@ -53,18 +53,55 @@ v2bx_observer_service() {
     python3 "${SCRIPT_DIR}/lib/crowdsec_v2bx_service.py" "$action" "${args[@]}"
 }
 
-manage_v2bx_observer() {
+
+manage_v2bx_node() {
     local choice
     while true; do
-        printf '\nV2bX 落地仅观察服务\n1. 安装（需 V2BX_OBSERVER_CONFIG）\n2. 只读状态\n3. 停用并保留数据\n4. 接入 CrowdSec 仅观察告警\n5. 只读告警接入状态\n6. 停用告警接入并保留证据\n0. 返回\n'
-        prompt choice '请选择 [0-6]: ' || return 0
+        printf '\nV2bX 落地节点\n1. 检查节点配置和连接来源\n2. 检查最近的运行日志\n3. 管理持续日志记录\n4. 管理异常告警\n0. 返回\n'
+        prompt choice '请选择 [0-4]: ' || return 0
         case "$choice" in
-            1) locked_operation v2bx_observer_service install ;;
+            1) diagnose_v2bx ;;
+            2) check_v2bx_logs ;;
+            3) manage_v2bx_observer ;;
+            4) manage_v2bx_alerts ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_v2bx_observer() {
+    local choice
+    local V2BX_OBSERVER_CONFIG="${V2BX_OBSERVER_CONFIG:-}"
+    while true; do
+        printf '\n持续记录落地节点日志\n1. 开始记录\n2. 查看记录情况\n3. 停止记录，保留已有数据\n0. 返回\n'
+        prompt choice '请选择 [0-3]: ' || return 0
+        case "$choice" in
+            1)
+                if [[ -z "$V2BX_OBSERVER_CONFIG" ]]; then
+                    prompt V2BX_OBSERVER_CONFIG '日志记录配置文件路径（留空返回）: ' || return 0
+                    [[ -n "$V2BX_OBSERVER_CONFIG" ]] || continue
+                fi
+                locked_operation v2bx_observer_service install ;;
             2) v2bx_observer_service status ;;
             3) locked_operation v2bx_observer_service disable ;;
-            4) locked_operation v2bx_alert_service enable ;;
-            5) v2bx_alert_service status ;;
-            6) locked_operation v2bx_alert_service disable ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+        pause
+    done
+}
+
+manage_v2bx_alerts() {
+    local choice
+    while true; do
+        printf '\n落地节点异常告警\n先开启持续日志记录；这里的异常只生成告警。\n开启或停用告警会重启 CrowdSec。\n1. 开启异常告警\n2. 查看告警接入情况\n3. 停用告警，保留已有记录\n0. 返回\n'
+        prompt choice '请选择 [0-3]: ' || return 0
+        case "$choice" in
+            1) locked_operation v2bx_alert_service enable ;;
+            2) v2bx_alert_service status ;;
+            3) locked_operation v2bx_alert_service disable ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac

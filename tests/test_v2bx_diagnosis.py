@@ -304,7 +304,7 @@ class V2bXRouting(unittest.TestCase):
         self.assertEqual(self.commands(), 'V2BX\n')
 
     def test_menu_routes_without_lock_and_eof_exits(self):
-        result = self.run_shell('manage_diagnostics', '12\n0\n', overrides=
+        result = self.run_shell('manage_diagnostics', '4\n1\n0\n0\n', overrides=
                                'diagnose_v2bx() { record V2BX; }; locked_operation() { record LOCK; return 99; }')
         self.assertEqual(result.returncode, 0)
         self.assertEqual(self.commands(), 'V2BX\n')
