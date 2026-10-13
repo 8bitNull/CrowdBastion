@@ -1,5 +1,9 @@
 # 使用流程与官方配置验证记录
 
+截至 2026-10-13，最近有记录的完整源码回归为 [sing QUIC 阶段](audit/2026-10-13-v2bx-sing-quic-events.md)的 689 项：669 通过、20 跳过、0 失败。后续 [混合入口验收](audit/2026-10-13-v2bx-mixed-ingress.md)补充多账号、IPv6、UDP 应用载荷及 20 组观察告警／0 决策；它另跑探针 5 项和日志适配 24 项，没有重跑整仓测试。各轮证据见 [验收索引](audit/README.md)，使用入口见 [文档索引](README.md)。
+
+同日文档整理核对了 66 个 Markdown 文件中的 337 个本地链接目标、实际 `--help` 的三个 V2bX 入口、混合入口归档的 26 个文件哈希，以及 diff 空白检查；原验收数据保持一致。本次文档整理没有重跑程序回归或生产部署。
+
 试用前修复已开始，当前验收设施改动、客机轮次与阻断项见 [修复执行记录](audit/2026-10-12-vps-repair-progress.md)。历史“通过”不追加本轮的三次重启或长测保证。
 
 VPS 系统、架构及防火墙的分层验收见 [2026-10-12 兼容性矩阵](audit/2026-10-12-vps-compatibility.md)。其中真实 systemd 客机、分支 fixture 和既有资源模拟分别记录，不能将全仓回归数量当作每种 VPS 的功能验收数量。 Debian/Ubuntu 包配置失败的后续修复与 1 GiB 实测见 [定位报告](audit/2026-10-12-core-install-diagnosis.md)。
@@ -294,3 +298,91 @@ ShellCheck 排除项对应 trap/间接函数调用与默认可选参数的已知
 机器人专项 **26/26**；全仓 **607 项：603 通过、4 项可选跳过，无失败**。官方 CrowdSec **1.8.1** 临时引擎的真实 LAPI/SQLite/CLI 验证告警事件路径/UA/按钮及保留的查询菜单，白名单通过真实 `crowdsec -t`；系统重载为模拟，未调用真实 Telegram API。Bash/Python 语法、ShellCheck、diff-check 与独立复审通过。复审发现的四项重要问题均有修复及回归。
 
 原上传文件及 VPS `/usr/local/bin/crowdsec_bot.py` 未覆盖；新服务安装入口为 `--custom-bot` 或 TG 菜单第 5 项。迁移需先核对并停用旧轮询服务/cron，不能同时轮询同一 Token。说明见 [自定义机器人修复与接入](2026-10-13-custom-telegram-bot.md)，原始输出见 [验收记录](audit/2026-10-13-custom-telegram-bot-results.json)。
+
+## V2bX 只读诊断第一阶段（2026-10-13）
+
+新增 `--diagnose-v2bx`、菜单 `4 → 12`、三个内核的配置/日志核查，以及按节点声明直连/中转/混合入口的条件性封禁位置。实际解析、来源信任和端到端阻断始终保持未验证。
+
+专项 **25 项通过**；完整回归 **646 项：626 通过、20 项按环境条件跳过，无失败**。Bash/Python 语法、ShellCheck（既有排除项）、已跟踪 diff 与新文件空白检查通过。独立审查的 scoped IPv6 输出、未解析 Include 默认地址、sing Disable、Hysteria2 未支持的 Log.Output、非普通 CrowdSec 配置阻塞均用失败回归复现后修复；另验证复用的 Bouncer INPUT/FORWARD 引用不会被解释为业务阻断。
+
+可复现命令：
+
+```bash
+PATH="$PWD/.venv/bin:$PATH" python3 -m unittest discover -s tests -p test_v2bx_diagnosis.py -q
+PATH="$PWD/.venv/bin:$PATH" PYTHONPATH=/tmp/v2bx-test-python-deps python3 -m unittest discover -s tests -q
+bash -n install-crowdsec-1panel.sh lib/v2bx.sh
+python3 -m py_compile lib/crowdsec_v2bx.py tests/test_v2bx_diagnosis.py
+shellcheck -x -e SC2317,SC2329,SC2120,SC2119 install-crowdsec-1panel.sh lib/*.sh
+git diff --check
+```
+
+本次环境的系统 `/usr/bin/python3` 缺少 PyYAML，而既有检测脚本测试将 PATH 固定为 `/usr/bin:/bin`。首次直接使用虚拟环境解释器时，shell 子进程仍使用系统 Python；将虚拟环境加入 PATH 后，基线 621 项仅剩这一项依赖失败。本次将已有 PyYAML 复制到临时 `/tmp/v2bx-test-python-deps`，通过 PYTHONPATH 提供给该子进程后完成全仓验证，没有修改系统 Python 或已有测试。正常环境在系统 Python 安装 `tests/requirements.txt` 后不需要临时 PYTHONPATH。ShellCheck 使用临时下载/解压的 Debian 0.9.0 软件包，未安装系统包。
+
+另用用户指定的 `wyx2685/V2bX` 仓库 `71277de` 的 `example/config.json` 检查真实 CLI 和 JSON 输出；当前环境没有 V2bX/systemd 服务证据，正确报告本机查询失败/未验证，未输出原始配置凭据。全部新防护验证均为隔离样本，未向生产创建决策、重启服务或修改防火墙。真实 VPS 版本、入口来源与协议失败日志仍是第二阶段的前置证据，说明见 [V2bX 指南](v2bx-guide.md)。
+
+## V2bX 日志观察第二阶段：离线部分（2026-10-13）
+
+新增 `--v2bx-log-check` 与菜单 `4 → 13`、固定字段日志投影、中转 CIDR 排除、显式时间依据、未安装的观察 parser/scenario 和官方临时引擎验证脚本。适配源码来自 V2bX 71277de 的替换依赖；样本为 synthetic/source-backed，未获取目标 VPS 真实日志。
+
+独立审查核实并修复 Xray Trojan fallback 误分类，以及 `str.splitlines()` 对控制字符/Unicode separators 分行导致的伪造事件。两项新增回归在修正前出现预期失败，修正后通过。Xray Trojan 保持 fallback_candidate，Hysteria2 仅连接事件；不宣称三内核全部协议已有认证检测。
+
+本轮实际验证：
+
+```bash
+PATH="$PWD/.venv/bin:$PATH" python3 -m unittest discover -s tests -p 'test_v2bx*.py' -q
+PATH="$PWD/.venv/bin:$PATH" PYTHONPATH=/tmp/v2bx-test-python-deps python3 -m unittest discover -s tests -q
+for script in install-crowdsec-1panel.sh lib/*.sh; do bash -n "$script" || exit; done
+python3 -m py_compile lib/crowdsec_v2bx.py lib/crowdsec_v2bx_logs.py tests/test_v2bx_diagnosis.py tests/test_v2bx_logs.py tests/verify_v2bx_observation.py
+/tmp/v2bx-test-notes/shellcheck/usr/bin/shellcheck -x -e SC2317,SC2329,SC2120,SC2119 install-crowdsec-1panel.sh lib/*.sh
+PATH="$PWD/.venv/bin:$PATH" python3 tests/verify_v2bx_observation.py /tmp/crowdsec-qa-engine/crowdsec-v1.8.1 docs/audit/2026-10-13-v2bx-observation-results.json
+git diff --check
+```
+
+结果：V2bX 专项 41 项通过（诊断 25 + 日志 16）；全仓 662 项，642 通过、20 跳过，0 失败，耗时 162.844 秒。Bash/Python 语法、ShellCheck、已跟踪 diff 与新增文件尾空白检查均通过。Python 依赖与临时 ShellCheck 的环境处理同上一节，没有安装系统包。
+
+官方 CrowdSec 1.8.1 `-t` 通过，临时引擎实际读取全部 13 条规范化构造事件，产生 5 条观察告警，逐告警和全局 decisions 均为空。场景加载 `remediation: false`；`cscli alerts list -o json` 没有 Remediation 字段，验收没有将缺失字段误判为 false。使用发行包默认 profiles；自定义 profiles 行为仍需另行验证。
+
+源码与发行包校验值、事件范围和实际结果见 [隔离验收记录](audit/2026-10-13-v2bx-observation.md)。规则没有生产安装入口；目标 VPS 的版本、日志、来源信任、误报、重复采集、轮转和封禁/恢复仍未验证，没有修改生产采集、防火墙、服务或决策。
+
+
+## V2bX 混合入口网络模拟（2026-10-13）
+
+独立 QEMU TCG 客机，1 vCPU/1024 MiB、Linux 6.1.0-47、无外网 NIC、无宿主目录共享、快照磁盘。使用真实 CrowdSec 1.8.1 LAPI、Firewall Bouncer 0.0.36、gost 3.3.0、realm 2.9.6。没有在宿主修改防火墙/路由，没有运行真实 V2bX，不能算作三内核协议认证/日志验收。
+
+首轮使用原有 5 秒探针进程预算失败，保留失败结果。并发启动对照实测约 12.22 秒；仅客机测试副本改用 20 秒进程等待，套接字 1.5 秒超时不变，正式测试代码与生产默认没有修改。调整后实际运行 326.67 秒，任务和 QEMU 均退出 0，无超时；12 个中转矩阵和 12 个落地矩阵的全部断言符合预期，10 条远端故障/恢复条件均通过。
+
+实测来源对照：直连/保源 DNAT 在落地可见客户端地址并可阻断；gost 代理在落地可见中转地址，落地客户端 IP 决策不能阻断代理，正确位置由中转入口矩阵验证。健康来源和解封恢复均有实际新会话及 DROP 计数证据。
+
+本轮定向运行 `test_relay_network.py` 10 项与 `test_remote_bouncer_lab.py` 7 项，均通过；归档脚本 Python/Bash 语法、JSON、链接和 diff 检查通过。仅文档/临时验收脚本归档变更，未重复全仓测试。详见 [实验记录](audit/2026-10-13-v2bx-vps-simulation.md)，其中保留首轮失败、时限对照、调整后全部断言、版本及实际磁盘二进制校验值。
+
+## V2bX 真实三内核协议与日志模拟（2026-10-13）
+
+官方 V2bX v0.4.0、sing-box 1.12.0、受控 UniProxy fixture，运行于无外网 NIC 的独立 QEMU（2 vCPU／1536 MiB）。13 个基础内核／协议组合 × 直连／gost 代理中转 = 26 案例，正常／错误凭据／恢复共 78 阶段通过；核验随机业务响应、真实日志来源及进程存活。最终 guest task 0、QEMU 0、无超时、226.13 秒。UDP 中转显式 keepalive=true、ttl=30s，原失败轮次和诊断一并归档。
+
+实际日志揭示 sing 嵌套节点标签、Xray VMess 明确认证理由前 drain/read-timeout 包装两处漏检，已通过两个先失败后通过的回归测试修正。全部仓库测试 664 项，644 通过、20 跳过、0 失败，155.534 秒；Bash/Python 语法、ShellCheck 与 diff 空白检查通过。临时 Python/ShellCheck 环境同前述处理，不安装系统包。
+
+真实日志投影在官方 CrowdSec 1.8.1 临时引擎回放，严格核对告警的实际来源／内核／协议组，5 个观察告警、0 决策；正常／恢复无 eligible 失败、中转来源不 eligible。另重跑原 synthetic 13 条／5 告警／0 决策测试，二者证据分开。具体条数、每协议的失败事件缺口、版本与 hashes 见 [真实验收记录](audit/2026-10-13-v2bx-real-protocol-simulation.md)。
+
+这不是所有传输、IPv6 真实协议、UDP 应用载荷、并发压力或生产防护验收；业务通过不等于每个协议的行为检测可用。规则未接入生产，未创建生产决策，未更改宿主路由／防火墙。
+
+## V2bX 日志覆盖与持久观察稳定性（2026-10-13）
+
+sing AnyTLS明确认证拒绝新增观察；Shadowsocks AEAD错误仅记integrity_failure，不触发认证场景。新增`--v2bx-observe`／SQLite原子投影与游标，源和数据库单实例锁、轮转／截断风险计数和一次性私有快照。未创建生产采集或服务。
+
+官方V2bX v0.4.0、sing-box1.12.0在native loopback完成66/66真实连接／故障对照：13组合正常／错误／恢复／目标不可达，7组合TLS名称错误，目标响应超时，以及轮转／程序重启／采样器重启／截断。不是新的QEMU或IPv6真实协议矩阵。
+
+真实投影回放到官方CrowdSec1.8.1：严格核对6组观察告警、0决策，其他非eligible事件排除；另有16条synthetic反例／6告警／0决策，两种证据独立。最终全仓687项，667通过、20跳过、0失败，169.466秒；Bash/Python语法、ShellCheck和diff检查通过。旧fd晚写和copytruncate仍可能漏采，不能声称所有轮转无损或端到端恰好一次。
+
+完整结果、采集指标、独立审查修正、源码版本与缺失来源的QUIC检测条件见 [本阶段验收](audit/2026-10-13-v2bx-observation-stability.md)。
+
+## V2bX hysteria2实验拒绝事件（2026-10-13）
+
+固定v0.4.0源码的临时fork新增hysteria2 core明确认证拒绝事件；Go两个测试及-race、Python日志23项通过。真实客户端专项13/13、完整build tags三内核回归66/66通过；实际投影官方CrowdSec1.8.1回放严格核对7组观察告警、0决策，独立synthetic18条／7告警／0决策。最终全仓688项，668通过、20跳过、0失败，155.228秒。首次并发编译期间的一项原有5秒超时、复测和范围限制均保留，见 [本轮报告](audit/2026-10-13-v2bx-hy2-structured-events.md)。实验补丁未生产部署；sing QUIC日志缺口未关闭。
+
+## V2bX sing QUIC实验事件（2026-10-13）
+
+固定sing-quic v0.5.0与sing-box_mod v1.13.0-alpha.5本地副本补齐TUIC/Hysteria1/2明确拒绝，专用安全logger移除新增事件的面板URL前缀。最终版本Go集成依赖图6测试-race、Python日志24项通过；真实客户端36/36、QUIC边界5/5、三内核回归66/66通过。实际三内核投影35条，分组去重后32条进入官方引擎，严格核对10组观察告警、0决策；独立synthetic24条／10告警／0决策。最终全仓689项，669通过、20跳过、0失败，165.433秒；Bash/Python语法、ShellCheck、diff和补丁适用检查通过。初版隐私失败、最终重跑与其他范围限制见 [本轮报告](audit/2026-10-13-v2bx-sing-quic-events.md)。仍未生产部署或启用自动封禁。
+
+## V2bX 多账号、IPv6 与 UDP 应用验收（2026-10-13）
+
+固定实验构建在 QEMU 中完成 13 基础组合 × 两地址族的配置对照，156 次健康 TCP、156 次健康 UDP 随机载荷验证通过，错误账号未取得载荷；请求区间重叠及健康／中转 peer 核查通过。原 `::` 主矩阵 25/26，hysteria2 core IPv4 另用显式 IPv4 监听对照通过，原失败保留。实际 157 投影进入官方引擎前按组去重，严格核对 20 告警／0 决策；新增探针 5 测试与现有日志 24 测试通过。详见 [本轮验收](audit/2026-10-13-v2bx-mixed-ingress.md)。没有重新运行整仓测试、生产部署、压力阈值或自动封禁。

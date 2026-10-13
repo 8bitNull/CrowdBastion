@@ -1,0 +1,554 @@
+{
+  "scope": "cumulative experimental V2bX v0.4.0 hy2/sing-quic patch, real sing-box1.12.0, IPv4 native loopback plus actual UDP socket relay; not VPS or physical network",
+  "cases": [
+    {
+      "phase": "masquerade",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "http_statuses": [
+          404
+        ]
+      },
+      "events": [],
+      "fixed_payloads": []
+    },
+    {
+      "phase": "repeated_bad",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "http_statuses": [
+          404,
+          404
+        ]
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:36Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:36Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "fixed_payloads": [
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:48656"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:48656"
+        }
+      ]
+    },
+    {
+      "phase": "policy",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "http_statuses": [
+          404
+        ]
+      },
+      "events": [],
+      "fixed_payloads": []
+    },
+    {
+      "phase": "auth_timeout",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "closed_without_auth": true
+      },
+      "events": [],
+      "fixed_payloads": []
+    },
+    {
+      "phase": "flood",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "http_statuses": [
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404,
+          404
+        ]
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:39Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:40Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "fixed_payloads": [
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "observations_dropped",
+          "dropped": 25
+        },
+        {
+          "schema_version": 1,
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_rejected",
+          "addr": "127.0.0.1:56211"
+        }
+      ]
+    }
+  ],
+  "production_validation": "unverified",
+  "sampler": {
+    "lines": 31,
+    "events": 23,
+    "failure_observations": 23,
+    "integrity_failures": 0,
+    "ignored": {
+      "unsupported_format": 7,
+      "unsupported_reason": 1
+    },
+    "oversized_lines": 0,
+    "rotations": 0,
+    "truncations": 0,
+    "continuity_risks": 0,
+    "missing_polls": 0
+  },
+  "fixed_auth_payloads_checked": 24,
+  "legacy_hysteria_auth_str_absent": true,
+  "full_observation_lines_without_panel_or_credentials": true,
+  "status": "passed"
+}

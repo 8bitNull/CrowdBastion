@@ -1,0 +1,487 @@
+{
+  "cases": [
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        }
+      ],
+      "passed": false
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        }
+      ],
+      "passed": false
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phases": [
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        },
+        {
+          "valid": false,
+          "response_verified": false,
+          "error_class": "RuntimeError",
+          "client_alive": true
+        },
+        {
+          "valid": true,
+          "response_verified": true,
+          "error_class": null,
+          "client_alive": true
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "panel_calls": [
+    {
+      "node": 1,
+      "endpoint": "config"
+    },
+    {
+      "node": 1,
+      "endpoint": "user"
+    },
+    {
+      "node": 1,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 2,
+      "endpoint": "config"
+    },
+    {
+      "node": 2,
+      "endpoint": "user"
+    },
+    {
+      "node": 2,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 3,
+      "endpoint": "config"
+    },
+    {
+      "node": 3,
+      "endpoint": "user"
+    },
+    {
+      "node": 3,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 4,
+      "endpoint": "config"
+    },
+    {
+      "node": 4,
+      "endpoint": "user"
+    },
+    {
+      "node": 4,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 5,
+      "endpoint": "config"
+    },
+    {
+      "node": 5,
+      "endpoint": "user"
+    },
+    {
+      "node": 5,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 6,
+      "endpoint": "config"
+    },
+    {
+      "node": 6,
+      "endpoint": "user"
+    },
+    {
+      "node": 6,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 7,
+      "endpoint": "config"
+    },
+    {
+      "node": 7,
+      "endpoint": "user"
+    },
+    {
+      "node": 7,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 8,
+      "endpoint": "config"
+    },
+    {
+      "node": 8,
+      "endpoint": "user"
+    },
+    {
+      "node": 8,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 9,
+      "endpoint": "config"
+    },
+    {
+      "node": 9,
+      "endpoint": "user"
+    },
+    {
+      "node": 9,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 10,
+      "endpoint": "config"
+    },
+    {
+      "node": 10,
+      "endpoint": "user"
+    },
+    {
+      "node": 10,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 11,
+      "endpoint": "config"
+    },
+    {
+      "node": 11,
+      "endpoint": "user"
+    },
+    {
+      "node": 11,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 12,
+      "endpoint": "config"
+    },
+    {
+      "node": 12,
+      "endpoint": "user"
+    },
+    {
+      "node": 12,
+      "endpoint": "alivelist"
+    },
+    {
+      "node": 13,
+      "endpoint": "config"
+    },
+    {
+      "node": 13,
+      "endpoint": "user"
+    },
+    {
+      "node": 13,
+      "endpoint": "alivelist"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "scope": "isolated official CrowdSec 1.8.1, synthetic/source-backed events; no production traffic",
+  "configuration_validation": "pass",
+  "normalized_events": 13,
+  "failure_alerts": 5,
+  "normal_and_relay_excluded": true,
+  "invalid_normalized_records_excluded": true,
+  "scenario_remediation": false,
+  "per_alert_decisions_empty": true,
+  "decisions": 0,
+  "production_validation": "unverified"
+}

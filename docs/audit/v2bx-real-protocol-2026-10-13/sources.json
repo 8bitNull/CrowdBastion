@@ -1,0 +1,29 @@
+{
+  "V2bX": {
+    "version": "v0.4.0",
+    "source_commit": "3deccaae00d168fd049f8a8659656664f25ee301",
+    "url": "https://github.com/wyx2685/V2bX/releases/download/v0.4.0/V2bX-linux-64.zip",
+    "archive_sha256": "ba694f3285a5653ce75db305b37407f553490dc524012890bacec8f0c2770253",
+    "digest_verified": true
+  },
+  "client": {
+    "version": "sing-box 1.12.0",
+    "url": "https://github.com/SagerNet/sing-box/releases/download/v1.12.0/sing-box-1.12.0-linux-amd64.tar.gz",
+    "archive_sha256": "f59b1253ae0143997cb46915af30d14a33431dcbd7e39edacfcde8d73050faaf",
+    "release_api_digest_verified": true
+  },
+  "proxy": {
+    "version": "gost 3.3.0",
+    "embedded_x": "github.com/go-gost/x v0.16.0",
+    "udp_parameters": "keepalive=true&ttl=30s",
+    "binary_sha256": "1d8f971e9447cf4114fb1376b85c8c14e840db50ae8dbe895398a34e97c13e08"
+  },
+  "embedded_dependencies": {
+    "go": "go1.25.0 X:jsonv2",
+    "xray": "wyx2685/xray-core v0.0.0-20250912060919-a74bf884128d",
+    "sing": "wyx2685/sing-box_mod v1.13.0-alpha.5",
+    "hysteria2": "apernet/hysteria/core/v2 v2.6.3",
+    "sing-quic": "sagernet/sing-quic v0.5.0"
+  },
+  "notes": "Official release differs from earlier HEAD 71277de; exact release tested. No private key, raw config, raw server/client logs or binaries archived."
+}

@@ -1,0 +1,2055 @@
+{
+  "scope": "real official V2bX v0.4.0; three cores, 13 base core/protocol combinations; IPv4 direct and gost proxy; local TCP target over TCP/TLS/QUIC tunnels; not all transports or UDP application payload",
+  "cases": [
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:35.875657Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:45.170602Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "vmess",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 1
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:47.157393Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:51.547079Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:55.315348Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "vless",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 1
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:38:57.126247Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:01.172960Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_reason": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:11.924689Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:15.859304Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:19.634931Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "trojan",
+                "event_type": "fallback_candidate",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:21.364499Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:26Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "vmess",
+                "event_type": "protocol_rejection",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 1
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:33Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "vless",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 1
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 2
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:39:44Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "trojan",
+                "event_type": "protocol_rejection",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 1
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 2
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 6
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "path": "direct",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:15Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              },
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:15Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_close",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.1.2"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:19Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_open",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              },
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:19Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_close",
+                "source_ip": "10.231.1.2",
+                "source_status": "unverified",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:23.566365Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:31.373416Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "vmess",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:33.771259Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:38.268162Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:42.174299Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "vless",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:44.212179Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:49.205251Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_reason": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:40:59.321442Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:03.547059Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:08.023779Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "trojan",
+                "event_type": "fallback_candidate",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:09.881390Z",
+                "time_basis": "explicit_offset",
+                "core": "xray",
+                "protocol": "unknown",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:15Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "vmess",
+                "event_type": "protocol_rejection",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:21Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "vless",
+                "event_type": "auth_failure",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 2
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:41:35Z",
+                "time_basis": "log_offset",
+                "core": "sing",
+                "protocol": "trojan",
+                "event_type": "protocol_rejection",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {
+              "unsupported_format": 1
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": false,
+      "wrong_credentials_probe_valid": true,
+      "passed": false
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "upstream_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 2
+            },
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": true,
+          "socks_negotiated": true,
+          "outcome": "response_received",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": true,
+      "wrong_credentials_probe_valid": true,
+      "passed": true
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": false,
+      "wrong_credentials_probe_valid": true,
+      "passed": false
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "upstream_connected": true,
+          "outcome": "upstream_transport_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {
+              "unsupported_format": 3
+            },
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": false,
+      "wrong_credentials_probe_valid": true,
+      "passed": false
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "path": "proxy-gost",
+      "phases": [
+        {
+          "phase": "healthy",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "wrong_credentials",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "outcome": "socks_upstream_rejected",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        },
+        {
+          "phase": "recovery",
+          "response_verified": false,
+          "socks_negotiated": true,
+          "upstream_connected": true,
+          "outcome": "upstream_transport_closed",
+          "client_alive": true,
+          "server_alive": true,
+          "log_projection": {
+            "observed_source_ips": [
+              "10.231.3.1"
+            ],
+            "phase_attribution": "bounded window; delayed teardown cannot be excluded",
+            "events": [
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:42:59Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_open",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              },
+              {
+                "schema_version": 1,
+                "timestamp": "2026-10-13T10:43:07Z",
+                "time_basis": "log_offset",
+                "core": "hysteria2",
+                "protocol": "hysteria2",
+                "event_type": "connection_close",
+                "source_ip": "10.231.3.1",
+                "source_status": "relay_address",
+                "observation_only": true
+              }
+            ],
+            "ignored": {},
+            "failure_observations": 0
+          }
+        }
+      ],
+      "source_verified": false,
+      "wrong_credentials_probe_valid": true,
+      "passed": false
+    }
+  ],
+  "production_validation": "unverified",
+  "all_nodes_started": true,
+  "status": "failed"
+}

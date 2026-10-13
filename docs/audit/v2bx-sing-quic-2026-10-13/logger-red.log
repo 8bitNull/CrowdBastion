@@ -1,0 +1,5 @@
+# github.com/sagernet/sing-box/log [github.com/sagernet/sing-box/log.test]
+sing-box_mod/log/observation_test.go:14:8: undefined: ObservationLogger
+sing-box_mod/log/observation_test.go:19:17: undefined: ObservationLogger
+FAIL	github.com/sagernet/sing-box/log [build failed]
+FAIL

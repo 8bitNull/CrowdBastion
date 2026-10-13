@@ -1,0 +1,6 @@
+{
+  "new_protocol_tests": "AnyTLS and SS fixtures initially failed unsupported_format, then passed exact parser additions",
+  "observer_tests": "Missing implementation; restart during rename gap; missing new source recovery; source/export alias conflict; source/database alias conflict; cross-database duplicate source. Each gained failing regression before fix.",
+  "synthetic_rule_test": "Permissive AnyTLS protocol_rejection produced unexpected observation; filter tightened to AnyTLS auth_failure only; actual and synthetic final validations passed",
+  "rotation_limit": "Observed EOF handoff can miss subsequent old-writer writes. Explicit continuity risk on every handoff; late-write regression ensures risk is reported, not losslessness."
+}

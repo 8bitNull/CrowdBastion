@@ -1,0 +1,50 @@
+[
+  {
+    "name": "sing-tuic",
+    "url": "https://raw.githubusercontent.com/wyx2685/sing-box_mod/v1.13.0-alpha.5/protocol/tuic/inbound.go",
+    "sha256": "91c537346ee4135215b10ebf31c8e5315413a25c14bf019b2aecd33fff2b2311",
+    "status": "downloaded"
+  },
+  {
+    "name": "sing-hysteria",
+    "url": "https://raw.githubusercontent.com/wyx2685/sing-box_mod/v1.13.0-alpha.5/protocol/hysteria/inbound.go",
+    "sha256": "d727e6c29909463cc4fabffc398ff7d0ce218212b5aa71c4ae5280b449f10a8a",
+    "status": "downloaded"
+  },
+  {
+    "name": "sing-anytls",
+    "url": "https://raw.githubusercontent.com/wyx2685/sing-box_mod/v1.13.0-alpha.5/protocol/anytls/inbound.go",
+    "sha256": "161271784600d0f23b1dd8abd1257b6d8dcdbda84e0f86568318ee0accadeb37",
+    "status": "downloaded"
+  },
+  {
+    "name": "quic-hysteria",
+    "url": "https://raw.githubusercontent.com/SagerNet/sing-quic/v0.5.0/hysteria/service.go",
+    "sha256": "2cf16c5a1676b80a8ce8ea1e9f51fe7a4f06419f1fa1c311a31986e3d292b98f",
+    "status": "downloaded"
+  },
+  {
+    "name": "quic-hysteria2",
+    "url": "https://raw.githubusercontent.com/SagerNet/sing-quic/v0.5.0/hysteria2/service.go",
+    "sha256": "d1c0a2479eb5683d928830eec4b0cda14f7e297242f07b4dc9791bae069529c7",
+    "status": "downloaded"
+  },
+  {
+    "name": "quic-tuic",
+    "url": "https://raw.githubusercontent.com/SagerNet/sing-quic/v0.5.0/tuic/service.go",
+    "sha256": "76162b40711276f76fac1054d434ed02f89c29c3ae3460b852a4edf69506fbe6",
+    "status": "downloaded"
+  },
+  {
+    "name": "hy2-auth",
+    "url": "https://github.com/wyx2685/V2bX/blob/3deccaae00d168fd049f8a8659656664f25ee301/core/hy2/user.go",
+    "status": "release-source",
+    "sha256": "ef1ceaecbe432a8c0be10e1ed92127021db29ab09160b6413239cab70b3c2434"
+  },
+  {
+    "name": "hy2-log",
+    "url": "https://github.com/wyx2685/V2bX/blob/3deccaae00d168fd049f8a8659656664f25ee301/core/hy2/logger.go",
+    "status": "release-source",
+    "sha256": "9e71197b70967c9b5fc4ca3d20e8b5195c59edc87d8e96b12cb300f47520ca60"
+  }
+]

@@ -1,0 +1,103 @@
+{
+  "upstream_repository": "https://github.com/wyx2685/V2bX",
+  "upstream_tag": "v0.4.0",
+  "upstream_commit": "3deccaae00d168fd049f8a8659656664f25ee301",
+  "sing_quic_version": "v0.5.0",
+  "sing_box_fork_version": "v1.13.0-alpha.5",
+  "go_version": "go1.25.0",
+  "goexperiment": "jsonv2",
+  "build_tags": "sing xray hysteria2 with_quic with_grpc with_utls with_wireguard with_acme with_gvisor",
+  "modules": {
+    "sing-quic": {
+      "changed": [
+        "hysteria/service.go",
+        "hysteria2/service.go",
+        "tuic/service.go"
+      ],
+      "added": [
+        "hysteria/auth_observation_test.go",
+        "hysteria2/auth_observation_test.go",
+        "internal/observation/sink.go",
+        "internal/observation/sink_test.go",
+        "tuic/auth_observation_test.go"
+      ],
+      "upstream_sha256": {
+        "tuic/service.go": "76162b40711276f76fac1054d434ed02f89c29c3ae3460b852a4edf69506fbe6",
+        "hysteria/service.go": "2cf16c5a1676b80a8ce8ea1e9f51fe7a4f06419f1fa1c311a31986e3d292b98f",
+        "hysteria2/service.go": "d1c0a2479eb5683d928830eec4b0cda14f7e297242f07b4dc9791bae069529c7",
+        "go.mod": "3ea3d1261206d57e9c20b3a7ef172deae9d0302621b6e224307f70aa68cfa3ce",
+        "go.sum": "9ffdfeca1a231748c66a34691133fa923b9f3e9c231579382704e2421511fc1a"
+      },
+      "patched_sha256": {
+        "tuic/service.go": "2d3337932c45f7fd98f9a7f94edf6ccaf9334343792308987b9fd6c83669c4b8",
+        "hysteria/service.go": "55e029616be4e96580f64574d1a852e1ea5713c349865c045a4c5efb46f3942c",
+        "hysteria2/service.go": "928c5df53493684e6094c6f841ba52b43a89f05747ec3ef66be5e1b78aac15b5",
+        "tuic/auth_observation_test.go": "59b84f05f06adea325a3e6e44412b9450ca3559cf86636d40ea618c9250d54d1",
+        "hysteria/auth_observation_test.go": "eaf8e113db356249e80acd5c076e4211bcf23d921ffd05355ec98c411318f487",
+        "internal/observation/sink_test.go": "86409960eac50a5427251a64fd2e4ccddb8526ef27384ee654a07f44f34d961f",
+        "internal/observation/sink.go": "8082a369b7ba6eb60019c974976a7c33cd11a91ddb1f73b04a486f1a694f1b5e",
+        "hysteria2/auth_observation_test.go": "3e36187d9df4b6036617f3780cbc33a09cabd5f12f32af184044adcb710ff31b",
+        "go.mod": "3ea3d1261206d57e9c20b3a7ef172deae9d0302621b6e224307f70aa68cfa3ce",
+        "go.sum": "9ffdfeca1a231748c66a34691133fa923b9f3e9c231579382704e2421511fc1a"
+      }
+    },
+    "sing-box_mod": {
+      "changed": [
+        "protocol/hysteria/inbound.go",
+        "protocol/hysteria2/inbound.go",
+        "protocol/tuic/inbound.go"
+      ],
+      "added": [
+        "log/observation.go",
+        "log/observation_test.go"
+      ],
+      "upstream_sha256": {
+        "protocol/tuic/inbound.go": "91c537346ee4135215b10ebf31c8e5315413a25c14bf019b2aecd33fff2b2311",
+        "protocol/hysteria/inbound.go": "d727e6c29909463cc4fabffc398ff7d0ce218212b5aa71c4ae5280b449f10a8a",
+        "protocol/hysteria2/inbound.go": "61f82f9081ecd599812253a76b2fd4c36f25b4d0263c08b2e9eab1e3c88558a3",
+        "go.mod": "a0fdbe041eb5dfa16d647905f89a48816ec521bd6eabc9bc203d455de6701c4d",
+        "go.sum": "e08d401d79ca07b73b27f26292eaa26afd2840b261ec5b6a6b6402b9ad079f85"
+      },
+      "patched_sha256": {
+        "protocol/tuic/inbound.go": "7d64d6b108b09e961cc8afd450dbf6fafbcb44dbcaf79536c02a808d49f2cd11",
+        "protocol/hysteria/inbound.go": "e9ba57029032e5168319627f26f8cdbeef89998288c2f445f2b8b40bb3c4cd13",
+        "protocol/hysteria2/inbound.go": "a0d1c4dbe41f1d9cb337d419f78415d9e0bf8af45929aad2730890dc110c89be",
+        "log/observation_test.go": "03212e1496918100d5e342d8ab6e843f10e652d7d58f00b28e86134f3bfe0ede",
+        "log/observation.go": "fbd1cbe59ede5db7e5febc99d7740f77038adaec448802b709808dbaadc258ae",
+        "go.mod": "a0fdbe041eb5dfa16d647905f89a48816ec521bd6eabc9bc203d455de6701c4d",
+        "go.sum": "e08d401d79ca07b73b27f26292eaa26afd2840b261ec5b6a6b6402b9ad079f85"
+      }
+    }
+  },
+  "v2bx_go_mod_sha256": "99c0f9fe8f59bdaddd8ef753bde0ae0afceb36dc165808c2e848ecca6d344d10",
+  "v2bx_go_sum_sha256": "2bd4d30e391e9b11a42266b24c7081986269187c5cacab6aa5f1fec8c5d0e991",
+  "prior_hy2_patch_sha256": "06acb732158a87292877d2dab1a234ef25c0ed549d3a942050a2a92e576ec0fd",
+  "binary_sha256": "4b475ac949676bfb0da05f840e14ce5ab1fcc506b946e2fcc0252b59a69d4c2f",
+  "patches_sha256": {
+    "v2bx-local-quic.patch": "25507ce45bdd3ced46a7e94d4615e52a6754f5ad1206c1ef35774ceb468e257f",
+    "sing-quic-v0.5.0-auth-observation.patch": "b561b0a61e8973ece3b52420c98e1d40e24d8f4ebd0b23137c0fb394e0425d20",
+    "sing-box-mod-v1.13.0-alpha.5-safe-logger.patch": "c2dde997e4ad89ddbcc538c9c361edc94fc6db13dcdcca415b592c21119e6b47"
+  },
+  "client_binary_sha256": "84b23a2304a6c4efa41dc027a78b7226a94ef6c63566b56a5a2721bdfe473446",
+  "sing_quic_module_info": {
+    "Version": "v0.5.0",
+    "Time": "2025-08-13T15:37:51Z",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/sagernet/sing-quic",
+      "Hash": "246b446cfc50563a3527e96878ef601515b44c83"
+    }
+  },
+  "sing_quic_module_zip_sha256": "b258a1bb7602f5e76545daeeb52e9e1310c948dba70e9429122b625cbf63cc47",
+  "sing_box_fork_module_info": {
+    "Version": "v1.13.0-alpha.5",
+    "Time": "2025-08-20T17:44:16Z",
+    "Origin": {
+      "VCS": "git",
+      "URL": "https://github.com/wyx2685/sing-box_mod",
+      "Hash": "cbf07b5800ae913f87c701e89abd4297854dfe0c",
+      "Ref": "refs/tags/v1.13.0-alpha.5"
+    }
+  },
+  "sing_box_fork_module_zip_sha256": "759075bcf3760f62c0a9bcc9276270ad2f032e8a30989ba8853f9062264b3ac3"
+}

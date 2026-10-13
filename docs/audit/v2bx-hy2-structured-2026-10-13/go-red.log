@@ -1,0 +1,6 @@
+# github.com/InazumaV/V2bX/core/hy2 [github.com/InazumaV/V2bX/core/hy2.test]
+core/hy2/auth_observation_test.go:20:9: h.Auth.rejections undefined (type *V2bX has no field or method rejections)
+core/hy2/auth_observation_test.go:40:11: undefined: authRejectLogger
+core/hy2/auth_observation_test.go:41:40: unknown field rejections in struct literal of type V2bX
+FAIL	github.com/InazumaV/V2bX/core/hy2 [build failed]
+FAIL

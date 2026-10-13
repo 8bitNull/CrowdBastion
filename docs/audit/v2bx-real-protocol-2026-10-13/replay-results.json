@@ -1,0 +1,42 @@
+{
+  "scope": "isolated official CrowdSec 1.8.1; actual V2bX lab log projections; deduplicated eligible groups; no production traffic",
+  "configuration_validation": "pass",
+  "normalized_events": 36,
+  "failure_alerts": 5,
+  "normal_and_relay_excluded": true,
+  "scenario_remediation": false,
+  "per_alert_decisions_empty": true,
+  "decisions": 0,
+  "production_validation": "unverified",
+  "actual_alert_groups_verified": true,
+  "raw_projected_events": 36,
+  "eligible_events_before_deduplication": 5,
+  "expected_groups": [
+    {
+      "source_ip": "10.231.1.2",
+      "core": "xray",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "xray",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "trojan"
+    }
+  ],
+  "scope_exclusions": "No invented authentication failures; unsupported log formats excluded; relay addresses ineligible"
+}

@@ -1,0 +1,312 @@
+[
+  {
+    "attempt": 1,
+    "accepted_as_final": false,
+    "reason_stopped": "overlap recorded but not required; missing UDP barrier/listener readiness",
+    "completed_cases": 3,
+    "runner": {
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 99.02,
+      "ram_mib": 1536,
+      "network": "no NIC",
+      "acceleration": "TCG",
+      "argv": [
+        "/tmp/crowdsec-qemu-lab/host/usr/bin/qemu-system-x86_64",
+        "-L",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/qemu",
+        "-bios",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/seabios/bios.bin",
+        "-accel",
+        "tcg",
+        "-machine",
+        "q35",
+        "-cpu",
+        "max",
+        "-m",
+        "1536",
+        "-smp",
+        "2",
+        "-nographic",
+        "-monitor",
+        "none",
+        "-nic",
+        "none",
+        "-kernel",
+        "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+        "-initrd",
+        "/tmp/v2bx-mixed-ingress-20261013/boot.gz",
+        "-append",
+        "console=ttyS0 panic=-1",
+        "-drive",
+        "file=/tmp/v2bx-mixed-ingress-20261013/disk.raw,format=raw,if=virtio,snapshot=on"
+      ]
+    },
+    "case_summary": [
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vless",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "shadowsocks",
+        "passed": true,
+        "udp_healthy_verified": false
+      }
+    ]
+  },
+  {
+    "attempt": 2,
+    "accepted_as_final": false,
+    "reason_stopped": "probe did not validate all SOCKS reply fields; barriers unbounded",
+    "completed_cases": 5,
+    "runner": {
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 133.5,
+      "ram_mib": 1536,
+      "network": "no NIC",
+      "acceleration": "TCG",
+      "argv": [
+        "/tmp/crowdsec-qemu-lab/host/usr/bin/qemu-system-x86_64",
+        "-L",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/qemu",
+        "-bios",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/seabios/bios.bin",
+        "-accel",
+        "tcg",
+        "-machine",
+        "q35",
+        "-cpu",
+        "max",
+        "-m",
+        "1536",
+        "-smp",
+        "2",
+        "-nographic",
+        "-monitor",
+        "none",
+        "-nic",
+        "none",
+        "-kernel",
+        "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+        "-initrd",
+        "/tmp/v2bx-mixed-ingress-20261013/boot.gz",
+        "-append",
+        "console=ttyS0 panic=-1",
+        "-drive",
+        "file=/tmp/v2bx-mixed-ingress-20261013/disk.raw,format=raw,if=virtio,snapshot=on"
+      ]
+    },
+    "case_summary": [
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vless",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "shadowsocks",
+        "passed": true,
+        "udp_healthy_verified": false
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "trojan",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "sing",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      }
+    ]
+  },
+  {
+    "attempt": 3,
+    "accepted_as_final": false,
+    "reason_stopped": "strict overlap assertion exposed actual TCG subprocess launch skew",
+    "completed_cases": 7,
+    "runner": {
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 184.01,
+      "ram_mib": 1536,
+      "network": "no NIC",
+      "acceleration": "TCG",
+      "argv": [
+        "/tmp/crowdsec-qemu-lab/host/usr/bin/qemu-system-x86_64",
+        "-L",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/qemu",
+        "-bios",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/seabios/bios.bin",
+        "-accel",
+        "tcg",
+        "-machine",
+        "q35",
+        "-cpu",
+        "max",
+        "-m",
+        "1536",
+        "-smp",
+        "2",
+        "-nographic",
+        "-monitor",
+        "none",
+        "-nic",
+        "none",
+        "-kernel",
+        "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+        "-initrd",
+        "/tmp/v2bx-mixed-ingress-20261013/boot.gz",
+        "-append",
+        "console=ttyS0 panic=-1",
+        "-drive",
+        "file=/tmp/v2bx-mixed-ingress-20261013/disk.raw,format=raw,if=virtio,snapshot=on"
+      ]
+    },
+    "case_summary": [
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vless",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "shadowsocks",
+        "passed": true,
+        "udp_healthy_verified": false
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "trojan",
+        "passed": false,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "sing",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "sing",
+        "protocol": "vless",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "sing",
+        "protocol": "shadowsocks",
+        "passed": true,
+        "udp_healthy_verified": false
+      }
+    ]
+  },
+  {
+    "attempt": 4,
+    "accepted_as_final": false,
+    "reason_stopped": "future start synchronization added; inspection identified missing native Shadowsocks UDP relay",
+    "completed_cases": 3,
+    "runner": {
+      "qemu_exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 140.18,
+      "ram_mib": 1536,
+      "network": "no NIC",
+      "acceleration": "TCG",
+      "argv": [
+        "/tmp/crowdsec-qemu-lab/host/usr/bin/qemu-system-x86_64",
+        "-L",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/qemu",
+        "-bios",
+        "/tmp/crowdsec-qemu-lab/host/usr/share/seabios/bios.bin",
+        "-accel",
+        "tcg",
+        "-machine",
+        "q35",
+        "-cpu",
+        "max",
+        "-m",
+        "1536",
+        "-smp",
+        "2",
+        "-nographic",
+        "-monitor",
+        "none",
+        "-nic",
+        "none",
+        "-kernel",
+        "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+        "-initrd",
+        "/tmp/v2bx-mixed-ingress-20261013/boot.gz",
+        "-append",
+        "console=ttyS0 panic=-1",
+        "-drive",
+        "file=/tmp/v2bx-mixed-ingress-20261013/disk.raw,format=raw,if=virtio,snapshot=on"
+      ]
+    },
+    "case_summary": [
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vmess",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "vless",
+        "passed": true,
+        "udp_healthy_verified": true
+      },
+      {
+        "family": 4,
+        "core": "xray",
+        "protocol": "shadowsocks",
+        "passed": true,
+        "udp_healthy_verified": false
+      }
+    ]
+  }
+]

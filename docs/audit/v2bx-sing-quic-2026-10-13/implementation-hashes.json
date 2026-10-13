@@ -1,0 +1,13 @@
+{
+  "lib/crowdsec_v2bx_logs.py": "ffd60cae8e47c9e9a43beed9da43bb88dc210bbe065941b2c0782cbaf4669b9b",
+  "lib/crowdsec_v2bx_observe.py": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848",
+  "rules/v2bx/parsers/s01-parse/10-v2bx-observation.yaml": "47c5b539b2e363887e72f66aa05a31c58458badf0b70fdf5c0ddb3110392276d",
+  "rules/v2bx/scenarios/v2bx-failure-observation.yaml": "58480d84e97abd46270b35ca7ad99c217f4c4408bb30e9252f6793ac90282a93",
+  "tests/test_v2bx_logs.py": "bda5e7f442212cee643ddbcf2ea8d56444f1ba5628c3455689852840c3755be3",
+  "tests/verify_v2bx_observation.py": "d52b5b0d6fe375a45e1a7e2accdc8ce8180c9c29b64824cf02974bdb582abc47",
+  "tests/verify_v2bx_real_observation.py": "60a03172934bece63f17ec4ec74750c5f7067953a391a4e74e8bff70b7815ef7",
+  "experimental/v2bx-sing-quic/v2bx-local-quic.patch": "25507ce45bdd3ced46a7e94d4615e52a6754f5ad1206c1ef35774ceb468e257f",
+  "experimental/v2bx-sing-quic/sing-quic-v0.5.0-auth-observation.patch": "b561b0a61e8973ece3b52420c98e1d40e24d8f4ebd0b23137c0fb394e0425d20",
+  "experimental/v2bx-sing-quic/README.md": "dc9b10ec341187b2f624142133a4477e41e03063b030f7bb1e991044dbabbb8b",
+  "experimental/v2bx-sing-quic/sing-box-mod-v1.13.0-alpha.5-safe-logger.patch": "c2dde997e4ad89ddbcc538c9c361edc94fc6db13dcdcca415b592c21119e6b47"
+}

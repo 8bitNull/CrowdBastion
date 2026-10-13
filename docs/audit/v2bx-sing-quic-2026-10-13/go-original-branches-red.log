@@ -1,0 +1,13 @@
+--- FAIL: TestUnknownUserRejectsOnceAndScrubsDuplicateErrors (0.00s)
+    auth_observation_test.go:54: missing rejection or UUID leak
+FAIL
+FAIL	github.com/sagernet/sing-quic/tuic	0.006s
+--- FAIL: TestWrongPasswordKeepsWireRejectionAndRemovesCredential (0.00s)
+    auth_observation_test.go:57: unsafe rejection logs: []string{"connection failed: authentication failed, auth_str=submitted-private-password"}
+FAIL
+FAIL	github.com/sagernet/sing-quic/hysteria	0.003s
+--- FAIL: TestRejectionIsDistinctFromMasqueradeAndBandwidthPolicy (0.00s)
+    auth_observation_test.go:52: wrong branch/leak: []string(nil)
+FAIL
+FAIL	github.com/sagernet/sing-quic/hysteria2	0.002s
+FAIL

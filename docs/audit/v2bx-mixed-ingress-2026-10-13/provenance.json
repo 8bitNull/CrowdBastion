@@ -1,0 +1,25 @@
+{
+  "components": [
+    {
+      "path": "/tmp/v2bx-sing-quic-20261013/V2bX-final",
+      "sha256": "4b475ac949676bfb0da05f840e14ce5ab1fcc506b946e2fcc0252b59a69d4c2f"
+    },
+    {
+      "path": "/tmp/v2bx-real-lab/sing-box-1.12.0",
+      "sha256": "84b23a2304a6c4efa41dc027a78b7226a94ef6c63566b56a5a2721bdfe473446"
+    },
+    {
+      "path": "/tmp/crowdsec-qemu-lab/root/bin/gost",
+      "sha256": "1d8f971e9447cf4114fb1376b85c8c14e840db50ae8dbe895398a34e97c13e08"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+      "sha256": "1a29e4786a772be2f50482815d02e2d8537c2ad51f8280a95f29ac630f00cac7"
+    }
+  ],
+  "server_source": "V2bX v0.4.0 commit 3deccaae00d168fd049f8a8659656664f25ee301 plus previously verified hysteria2 and paired sing QUIC experimental patches",
+  "related_evidence": "docs/audit/v2bx-sing-quic-2026-10-13/",
+  "client": "official sing-box 1.12.0",
+  "network": "QEMU no NIC; private net and mount namespaces; no production access",
+  "traffic": "13 base core/protocol combinations; not all transports or cipher suites"
+}

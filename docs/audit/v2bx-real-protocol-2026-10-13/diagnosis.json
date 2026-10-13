@@ -1,0 +1,7 @@
+{
+  "xray_failure": "HTTP Host localhost was sniffed as destination; isolated guest resolver ::1:53 refused DNS; numeric HTTP Host removes unintended external resolution",
+  "proxy_first_phase_failure": "Forwarder helper did not wait for listener; add ss listener readiness, not fixed sleeps",
+  "changes": "Temporary experiment only; production core/config untouched",
+  "log_phase_attribution": "Bounded post-termination drain; delayed teardown still not excluded",
+  "udp_proxy_failure": "gost default UDP keepalive=false makes virtual UDP connection close on WriteTo after the first response; real QUIC requires a stable datagram session. Debug logs showed repeated upstream ports for same client socket. Use explicit keepalive=true&ttl=30s in lab only."
+}

@@ -1,0 +1,8 @@
+{
+  "qemu_exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 64.71,
+  "ram_mib": 1024,
+  "network": "no NIC",
+  "acceleration": "TCG"
+}

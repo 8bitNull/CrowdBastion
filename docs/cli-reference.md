@@ -27,6 +27,9 @@ bash install-crowdsec-1panel.sh --help
 | `--install-relay` | 纯中转节点精简安装：系统/SSH 规则与采集，保留已有 Web/AppSec |
 | `--relay-status` | 只读检查中转 INPUT/FORWARD、IPv4/IPv6 规则引用；异常 1、尚未验证 2 |
 | `--relay-path` | 交互声明节点角色/流量路径，选择 TCP/UDP 端口，读取 socket/NAT 与 Bouncer 证据 |
+| `--diagnose-v2bx` | 只读核查 V2bX 三内核配置、日志、混合入口声明和本地 Bouncer；详见 [V2bX 指南](v2bx-guide.md)，未验证端到端保护返回 2 |
+| `--v2bx-log-check` | 只读检查三内核日志样本；菜单 `4 → 13`，用 `V2BX_LOG_FILE/CORE/TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT` 指定输入；返回 2 表示生产未验证，见 [V2bX 指南](v2bx-guide.md) |
+| `--v2bx-observe` | 持久保存固定观察投影、恢复游标与采集指标，可导出一次性快照；仅命令行，不安装常驻服务或规则；参数见下方说明及 [V2bX 指南](v2bx-guide.md) |
 | `--install-webui` | 部署/更新 WebUI |
 | `--reset-webui-credentials` | 检查并选择轮换 WebUI 凭据 |
 | `--install-waf` | 安装 Web 日志检测集合 |
@@ -70,6 +73,15 @@ bash install-crowdsec-1panel.sh --help
 
 ## 菜单交互与并发
 
+| 主菜单 | 功能 |
+| --- | --- |
+| 1 | 安装与接入：核心、网站防护、真实 IP、Docker 私有端点、中转模式 |
+| 2 | 规则与更新：集合安装／移除、基础规则、手动与定时 Hub 更新 |
+| 3 | 封禁与访问保护：告警／决策、封禁／解封、防火墙、AllowList、Self-Report |
+| 4 | 诊断与修复：健康、日志、AppSec、真实 IP、中转与 V2bX、基础修复和 WAL |
+| 5 | 管理与通知：WebUI、Console、Telegram |
+| 6 | 卸载与恢复：卸载／清理、只读残留检查 |
+
 子菜单在操作后保留，输入 `0` 返回；输入结束或 `Ctrl+D` 可退出菜单。删除、注销、停用和卸载操作默认取消，需要明确输入 `y`。命令行操作失败返回非零状态，交互菜单会保留供继续操作。
 
 安装、修复、更新等修改操作使用同一把 `flock` 锁，并发操作返回 `75`；安装与接入、规则与更新、封禁与访问保护、管理与通知、卸载与恢复菜单持锁直到返回主菜单；诊断与修复菜单按具体修改动作持锁，只读检查不获取管理锁。
@@ -87,3 +99,9 @@ bash install-crowdsec-1panel.sh --help
 Machine 是 LAPI 客户端凭据，名字相似不代表重复的防御引擎；脚本不会根据名称、日期或版本自动重建宿主机身份，也不会批量删除所有 `webui-*` 或其他 Bouncer。
 
 菜单编号已调整，原命令行操作参数保持兼容。`--reset-56` 和卸载别名仍可使用。
+
+## V2bX 持久观察样本
+
+`--v2bx-observe` 使用 `V2BX_LOG_FILE`、`V2BX_LOG_CORE`、`V2BX_OBSERVE_DB` 指定源和私有数据库，沿用 `V2BX_LOG_TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT`。可设 `V2BX_OBSERVE_DURATION`（默认60秒）、`V2BX_OBSERVE_MAX_EVENTS`（默认100000）、`V2BX_OBSERVE_EXPORT`（新的快照路径）。它只保存脱敏投影与采集指标，不安装服务／CrowdSec acquisition 或产生决策。完成返回2；错误返回1，Ctrl-C返回130。
+
+快照覆盖全部已保存事件，不适合作为反复更新的实时tail文件。轮转与截断的连续性风险、同一源重复采集的限制及具体命令见 [V2bX 指南](v2bx-guide.md)。

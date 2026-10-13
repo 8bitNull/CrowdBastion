@@ -1,0 +1,11 @@
+{
+  "experimental/v2bx-hy2/v0.4.0-auth-observation.patch": "06acb732158a87292877d2dab1a234ef25c0ed549d3a942050a2a92e576ec0fd",
+  "experimental/v2bx-hy2/README.md": "acd3e80d77fd6fb6be0bf3016db0fc6d557ee05c3aab66bece6551ed79aadd92",
+  "lib/crowdsec_v2bx_logs.py": "98dea4cbdbfa4d713c8d42f5d91289c47c2f9234c793d4d56602278faa196a61",
+  "lib/crowdsec_v2bx_observe.py": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848",
+  "rules/v2bx/parsers/s01-parse/10-v2bx-observation.yaml": "4ffede1833430f88f5510e85980a41262a53abaf1f67fce2c32d519f87288052",
+  "rules/v2bx/scenarios/v2bx-failure-observation.yaml": "58480d84e97abd46270b35ca7ad99c217f4c4408bb30e9252f6793ac90282a93",
+  "tests/test_v2bx_logs.py": "2d9fc62d9e31f594e20a3ded28d6a54c1c7eaf8cf27a6d9c193ecd42094271c4",
+  "tests/verify_v2bx_observation.py": "04fbf7d13b3640ac471a479ccf1b4be8a63cc83aa29f45ba7fddbc85771c6f68",
+  "tests/verify_v2bx_real_observation.py": "60a03172934bece63f17ec4ec74750c5f7067953a391a4e74e8bff70b7815ef7"
+}

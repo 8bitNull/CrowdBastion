@@ -1,0 +1,5 @@
+ok  	github.com/sagernet/sing-box/log	1.018s
+ok  	github.com/sagernet/sing-quic/internal/observation	1.016s
+ok  	github.com/sagernet/sing-quic/tuic	1.018s
+ok  	github.com/sagernet/sing-quic/hysteria	1.020s
+ok  	github.com/sagernet/sing-quic/hysteria2	1.032s

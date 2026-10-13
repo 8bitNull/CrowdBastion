@@ -1,0 +1,27 @@
+[
+  {
+    "guest_path": "/bin/crowdsec",
+    "sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757",
+    "matches_source_tree": true
+  },
+  {
+    "guest_path": "/bin/cscli",
+    "sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17",
+    "matches_source_tree": true
+  },
+  {
+    "guest_path": "/bin/crowdsec-firewall-bouncer",
+    "sha256": "7c53e7d4d072ecdae48d1446f306d9baede1183eb662cc0a18765fbbb27dc56d",
+    "matches_source_tree": true
+  },
+  {
+    "guest_path": "/bin/gost",
+    "sha256": "1d8f971e9447cf4114fb1376b85c8c14e840db50ae8dbe895398a34e97c13e08",
+    "matches_source_tree": true
+  },
+  {
+    "guest_path": "/bin/realm",
+    "sha256": "6a1733bfc51e3d19743757ca08f4c81f36afe7972eab0607bef264fc99064208",
+    "matches_source_tree": true
+  }
+]

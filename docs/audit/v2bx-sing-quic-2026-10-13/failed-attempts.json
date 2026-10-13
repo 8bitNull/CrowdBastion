@@ -1,0 +1,25 @@
+{
+  "first_experimental_binary": {
+    "client_cases": 36,
+    "controls": 5,
+    "three_core_cases": 66,
+    "status": "not_final_evidence",
+    "privacy_gap": "Clean JSON payload retained panel URL in inherited inbound logger prefix; independently reviewed, replaced with safe factory logger, all actual controls rerun in fresh directories"
+  },
+  "original_branch_red": {
+    "status": "expected failure",
+    "tests": 3,
+    "reason": "Missing explicit events and original UUID/submitted Hysteria1 credential leakage"
+  },
+  "unit_fixture_compile": "TUIC embedded ReceiveStream/bytes.Reader had ambiguous Read; added explicit test Read delegation; final test runs pass",
+  "quic_probe_build": "First call used repository instead of temporary Go module; retried in correct source directory",
+  "final_runner_initialization": "Missing temporary PyYAML PYTHONPATH; process failed before server start; corrected environment and reran fresh labs",
+  "initial_full_unittest": {
+    "total": 689,
+    "skipped": 20,
+    "failed": 0,
+    "duration_seconds": 202.357,
+    "status": "superseded by final run after safe prefix changes"
+  },
+  "production_validation": "unverified"
+}

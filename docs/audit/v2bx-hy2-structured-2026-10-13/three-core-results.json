@@ -1,0 +1,1310 @@
+{
+  "scope": "experimental V2bX v0.4.0 hy2 auth patch and official sing-box1.12.0; controlled UniProxy, IPv4 native loopback TCP target, no firewall/production changes",
+  "cases": [
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:41.461927Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:47.707858Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "vmess",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:47.953378Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "vmess",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:50.195668Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:51.432708Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:53.668307Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "vless",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:53.901159Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "vless",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:56.140297Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:39:57.381751Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:03.849520Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "shadowsocks",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:06.092824Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:07.338839Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:09.578793Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "trojan",
+          "event_type": "fallback_candidate",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:09.810989Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:12.048836Z",
+          "time_basis": "explicit_offset",
+          "core": "xray",
+          "protocol": "unknown",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "xray",
+      "protocol": "trojan",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:13Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "vmess",
+          "event_type": "protocol_rejection",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vmess",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:14Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "vless",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:15Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "shadowsocks",
+          "event_type": "integrity_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "shadowsocks",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:16Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "trojan",
+          "event_type": "protocol_rejection",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "trojan",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:17Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "trojan",
+          "event_type": "network_error",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "tuic",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:18Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "anytls",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:19Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "anytls",
+          "event_type": "network_error",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "hysteria2",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phase": "healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:22Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:22Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_close",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phase": "wrong_credentials",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:22Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phase": "recovery",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:22Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:22Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_close",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phase": "target_unreachable",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:23Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_open",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        },
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:23Z",
+          "time_basis": "log_offset",
+          "core": "hysteria2",
+          "protocol": "hysteria2",
+          "event_type": "connection_close",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 0
+    },
+    {
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phase": "tls_name_mismatch",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "vless",
+      "phase": "target_response_timeout",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "upstream_connected": true,
+        "outcome": "upstream_transport_closed"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "pre_restart_rotated_healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "post_restart_healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "post_restart_bad",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "upstream_connected": true,
+        "outcome": "upstream_transport_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:32Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "anytls",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "post_consumer_restart_healthy",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": [],
+      "failure_observations": 0
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "post_restart_bad",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:32Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "anytls",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    },
+    {
+      "core": "sing",
+      "protocol": "anytls",
+      "phase": "post_truncate_bad",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "upstream_connected": true,
+        "outcome": "upstream_transport_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T11:40:33Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "anytls",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ],
+      "failure_observations": 1
+    }
+  ],
+  "lifecycle": [
+    {
+      "name": "writer_restart_and_rename",
+      "passed": true,
+      "policy": "Old writer stopped/drained before handoff; arbitrary late writes not claimed lossless"
+    },
+    {
+      "name": "consumer_restart_committed_offsets",
+      "passed": true,
+      "unchanged_event_count_before_new_records": 30
+    },
+    {
+      "name": "copytruncate_detected",
+      "passed": true,
+      "unread_loss_possible": true
+    }
+  ],
+  "production_validation": "unverified",
+  "samplers": {
+    "xray": {
+      "lines": 16,
+      "events": 15,
+      "failure_observations": 2,
+      "integrity_failures": 0,
+      "ignored": {
+        "unsupported_reason": 1
+      },
+      "oversized_lines": 0,
+      "rotations": 0,
+      "truncations": 0,
+      "continuity_risks": 0,
+      "missing_polls": 0
+    },
+    "sing": {
+      "lines": 136,
+      "events": 10,
+      "failure_observations": 7,
+      "integrity_failures": 1,
+      "ignored": {
+        "unsupported_format": 126
+      },
+      "oversized_lines": 0,
+      "rotations": 1,
+      "truncations": 1,
+      "continuity_risks": 2,
+      "missing_polls": 0
+    },
+    "hysteria2": {
+      "lines": 109,
+      "events": 7,
+      "failure_observations": 1,
+      "integrity_failures": 0,
+      "ignored": {
+        "unsupported_format": 102
+      },
+      "oversized_lines": 0,
+      "rotations": 0,
+      "truncations": 0,
+      "continuity_risks": 0,
+      "missing_polls": 0
+    }
+  },
+  "status": "passed"
+}
