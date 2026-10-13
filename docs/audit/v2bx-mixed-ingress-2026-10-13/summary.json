@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "cases": 26,
+  "tcp_and_source_safety_passed": 26,
+  "healthy_udp_forwarded_cases": 26,
+  "udp_unverified_cases": [],
+  "all_measured_attempts_overlap": true,
+  "healthy_tcp_tokens": 156,
+  "healthy_udp_tokens": 156,
+  "bad_token_responses": 0,
+  "projected_events": 157
+}

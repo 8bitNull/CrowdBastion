@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/go-gost/x/v0.16.0/listener/udp/metadata.go",
+    "sha256": "2f1c316ed36ba38336cb11f100d10c339335f4bdf89751fe1e3f5fc5e28642da",
+    "file": "gost-v0.16.0-listener-udp-metadata.go"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/go-gost/x/v0.16.0/internal/net/udp/conn.go",
+    "sha256": "bd355dc9309c327d0c78798c21c2ad98b696afe506abc9d56071026f6e3309ea",
+    "file": "gost-v0.16.0-internal-net-udp-conn.go"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/go-gost/x/v0.16.0/internal/net/udp/listener.go",
+    "sha256": "7f1d4b30495ae7b37651d17c9f0b3192260e03e023d0aa131cdda0ef6dae1b72",
+    "file": "gost-v0.16.0-internal-net-udp-listener.go"
+  }
+]

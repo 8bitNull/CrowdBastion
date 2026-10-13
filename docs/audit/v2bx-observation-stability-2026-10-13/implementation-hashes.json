@@ -1,0 +1,42 @@
+[
+  {
+    "path": "lib/crowdsec_v2bx_logs.py",
+    "sha256": "c9531594603495cc6cc3f18533445aaf9477f21b5bb4fc16881387a0bf150bec"
+  },
+  {
+    "path": "lib/crowdsec_v2bx_observe.py",
+    "sha256": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848"
+  },
+  {
+    "path": "lib/v2bx.sh",
+    "sha256": "e4ef18d5d22011b14db1f14b164d5c7e1a39b6cdf756658f8df8d80ca29fdf8c"
+  },
+  {
+    "path": "install-crowdsec-1panel.sh",
+    "sha256": "8e8fd8256be8a1e472f12a96f8e896b3183f53e30ce6bf4e6b253eba5757433f"
+  },
+  {
+    "path": "tests/test_v2bx_observe.py",
+    "sha256": "617888d4835b4fc4272b4777a1da3666a4d631880e61d1d0a8216c8a8b52bcb3"
+  },
+  {
+    "path": "tests/test_v2bx_logs.py",
+    "sha256": "954fa68eae285295d9ad3a46c09c270d90d13af45a12228a6d48cbc68e68285b"
+  },
+  {
+    "path": "tests/verify_v2bx_observation.py",
+    "sha256": "5131cf295fcd8db87b856e3ce07cd27767ffc923bbcf7513dce6cb32c7511519"
+  },
+  {
+    "path": "tests/verify_v2bx_real_observation.py",
+    "sha256": "60a03172934bece63f17ec4ec74750c5f7067953a391a4e74e8bff70b7815ef7"
+  },
+  {
+    "path": "rules/v2bx/parsers/s01-parse/10-v2bx-observation.yaml",
+    "sha256": "15144905dd2736af4933e3cd2433d96816a409feec484bb86841eaa90360ca6b"
+  },
+  {
+    "path": "rules/v2bx/scenarios/v2bx-failure-observation.yaml",
+    "sha256": "58480d84e97abd46270b35ca7ad99c217f4c4408bb30e9252f6793ac90282a93"
+  }
+]

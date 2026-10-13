@@ -1,0 +1,136 @@
+{
+  "files": [
+    {
+      "path": "acceptance-checks.json",
+      "sha256": "54e2dae40ceafc04ea02d79e75511a97e67104bdb163625d47b286d0c0b65d41",
+      "bytes": 2302
+    },
+    {
+      "path": "analyze.py",
+      "sha256": "10b091eb903a245dc6beb93ae027c99c00e6a96e3e9f392ea5cc8d48d576af9e",
+      "bytes": 2991
+    },
+    {
+      "path": "combine.py",
+      "sha256": "4ed63062709ee3ce74de1d7660c50b364d010f7b30fab374827bf6fd3cacf9de",
+      "bytes": 1569
+    },
+    {
+      "path": "correctnet-source.go",
+      "sha256": "97f94d5f74b9811a55a15c253a54c4e3028a42d0e87ceed2b84e383bc0337c82",
+      "bytes": 2064
+    },
+    {
+      "path": "events.ndjson",
+      "sha256": "66d71217485e739528d58d948e5ebfde23ffee4e28e0207ee446cf50fae6e00c",
+      "bytes": 39529
+    },
+    {
+      "path": "failed-attempts.json",
+      "sha256": "eb6154a1599d38408e00cc14355eb8715e0cb8325f061bda06dbaf5c6a422487",
+      "bytes": 7633
+    },
+    {
+      "path": "fixture.py",
+      "sha256": "ea0b04fd5820fc80a0e34affe9db21bbd2ebe82643ddc16c3364c3dbe936a2cb",
+      "bytes": 4791
+    },
+    {
+      "path": "full-matrix-results.json",
+      "sha256": "3cf3b0c36e1d7661083ce70738cbff7e6ced97f922182fc020e6962b2f89459b",
+      "bytes": 255803
+    },
+    {
+      "path": "guest.py",
+      "sha256": "3cbcf81c1078656b2202e58772d477711d809fcecccc6c24a40eef3f812668cc",
+      "bytes": 8908
+    },
+    {
+      "path": "hy2-ipv4-guest.py",
+      "sha256": "8aeb6560bd2d8de38a842ffce8a6649996bff12fea6a40d7c4aff03296d44133",
+      "bytes": 8940
+    },
+    {
+      "path": "hy2-ipv4-package-hashes.json",
+      "sha256": "6c0ea130c32497a4be8a7f55b9d3e5f9d854fa7d32fbc78da6c9066549df499a",
+      "bytes": 4749
+    },
+    {
+      "path": "hy2-ipv4-package.py",
+      "sha256": "9417121f8404787bed18c98c070907482958f4dff66af0bfa37693a4eb4ec5a4",
+      "bytes": 2427
+    },
+    {
+      "path": "hy2-ipv4-results.json",
+      "sha256": "97002baa9bac48ddad2fad8bfc61041b8b56fdd514d28bdfc3abad664f3a81ce",
+      "bytes": 9993
+    },
+    {
+      "path": "hy2-ipv4-runner.json",
+      "sha256": "38a76c59539057e0a6429f98949516c43e977d8e8f974e98d65c398c148fe0ab",
+      "bytes": 836
+    },
+    {
+      "path": "log-tests.txt",
+      "sha256": "3233d17ad2bf97e8d8c422d29852d4dfde41f5d1a64ed08d23c701525a85786f",
+      "bytes": 123
+    },
+    {
+      "path": "package-hashes.json",
+      "sha256": "a5244ff04bd5a5e3b780ea4f6f24bae6d5fe7405b960eb26706cf4bcfdfb1691",
+      "bytes": 4749
+    },
+    {
+      "path": "package.py",
+      "sha256": "aa83dbdccb9b03fe88fd917eb5bf6cf27c343278aa32abecfd295d6d8ee493ce",
+      "bytes": 2429
+    },
+    {
+      "path": "probe-tests.txt",
+      "sha256": "baf49b59538192f3e136ca0404cac516ecb8dd2fe5ba1416604056f3080fa49c",
+      "bytes": 103
+    },
+    {
+      "path": "probe.py",
+      "sha256": "5042c6a060a2f95d8e55e10f09dc8d5df0e4bf8023a1294f8b03aab95371cabd",
+      "bytes": 2599
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "c267f8d8d29c458c3aebe894a1c5c3d5face4354c439f5d0349bf7cca2928679",
+      "bytes": 1086
+    },
+    {
+      "path": "replay-results.json",
+      "sha256": "df38af0f5c46b0cdad81a82cb46c8dbea89973f6df4eca6d8ea5730e6e5c526e",
+      "bytes": 2598
+    },
+    {
+      "path": "results.json",
+      "sha256": "033ac1e969678fdd7250e1f2ac82a9e38a4a1b8f112997778b74c262352d4a9f",
+      "bytes": 259949
+    },
+    {
+      "path": "runner.json",
+      "sha256": "62862a291592133945ae59eb1efc8a31c8b01d55488ec005f276ddd64561c9fc",
+      "bytes": 839
+    },
+    {
+      "path": "runner.py",
+      "sha256": "50d843da2aee543efd23a0106f8a85ee10cda79b4d78deabfa5bf95f3103f97c",
+      "bytes": 1362
+    },
+    {
+      "path": "summary.json",
+      "sha256": "6436c5732bdbd72679b3b42afda40f9a7b293baaa77bdb517b5d7d8de0dc9355",
+      "bytes": 299
+    },
+    {
+      "path": "test_probe.py",
+      "sha256": "cea40c66105d413c7838177f574265e1788c74f6e91e76b3676b0b0891ad9c50",
+      "bytes": 1410
+    }
+  ],
+  "excluded": "raw logs, runtime configuration, private keys, binaries, SQLite databases, VM images",
+  "experiment_accounts": "synthetic public fixture credentials only"
+}

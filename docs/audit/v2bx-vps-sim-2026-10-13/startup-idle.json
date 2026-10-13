@@ -1,0 +1,12 @@
+[
+  {
+    "script": "minimal socket",
+    "elapsed_seconds": 0.246,
+    "returncode": 1
+  },
+  {
+    "script": "full helper",
+    "elapsed_seconds": 2.231,
+    "returncode": 1
+  }
+]

@@ -1,0 +1,320 @@
+{
+  "status": "passed",
+  "scope": "isolated QEMU namespaces; 13 base combinations; two valid accounts; concurrent direct/relay plus bad credentials; IPv4/IPv6 ingress and application echo target",
+  "cases": [
+    {
+      "family": 4,
+      "core": "hysteria2",
+      "protocol": "hysteria2",
+      "phases": [
+        {
+          "phase": "baseline",
+          "results": [
+            {
+              "role": "direct",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 22.07185221,
+                  "end": 22.91339408
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 26.01654913,
+                  "end": 26.47747586
+                }
+              ],
+              "client_alive": true
+            },
+            {
+              "role": "relay",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 22.07185221,
+                  "end": 22.91359435
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 26.01654913,
+                  "end": 26.45836357
+                }
+              ],
+              "client_alive": true
+            }
+          ],
+          "events": [
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:35Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "connection_open",
+              "source_ip": "10.231.3.1",
+              "source_status": "relay_address",
+              "observation_only": true
+            },
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:35Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "connection_open",
+              "source_ip": "10.231.2.2",
+              "source_status": "unverified",
+              "observation_only": true
+            }
+          ],
+          "tcp_attempt_intervals_overlap": true,
+          "udp_attempt_intervals_overlap": true,
+          "observed_sources": [
+            "10.231.2.2",
+            "10.231.3.1"
+          ],
+          "server_alive": true
+        },
+        {
+          "phase": "mixed",
+          "results": [
+            {
+              "role": "direct",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 30.59576878,
+                  "end": 31.14800885
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 34.23255792,
+                  "end": 34.75538095
+                }
+              ],
+              "client_alive": true
+            },
+            {
+              "role": "relay",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 30.6007523,
+                  "end": 31.08492316
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 34.21182632,
+                  "end": 34.77521903
+                }
+              ],
+              "client_alive": true
+            },
+            {
+              "role": "bad_direct",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": false,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "socks_rejected",
+                  "start": 30.61322681,
+                  "end": 30.90044137
+                },
+                {
+                  "mode": "udp",
+                  "verified": false,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "transport_closed_or_timeout",
+                  "start": 34.21182632,
+                  "end": 39.66571813
+                }
+              ],
+              "client_alive": true
+            },
+            {
+              "role": "bad_relay",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": false,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "socks_rejected",
+                  "start": 30.59494008,
+                  "end": 30.90044137
+                },
+                {
+                  "mode": "udp",
+                  "verified": false,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "transport_closed_or_timeout",
+                  "start": 34.21661347,
+                  "end": 39.72155789
+                }
+              ],
+              "client_alive": true
+            }
+          ],
+          "events": [
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:44Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "auth_failure",
+              "source_ip": "10.231.3.1",
+              "source_status": "relay_address",
+              "observation_only": true
+            },
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:44Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "auth_failure",
+              "source_ip": "10.231.1.2",
+              "source_status": "unverified",
+              "observation_only": true
+            },
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:47Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "auth_failure",
+              "source_ip": "10.231.1.2",
+              "source_status": "unverified",
+              "observation_only": true
+            },
+            {
+              "schema_version": 1,
+              "timestamp": "2026-10-13T12:48:47Z",
+              "time_basis": "log_offset",
+              "core": "hysteria2",
+              "protocol": "hysteria2",
+              "event_type": "auth_failure",
+              "source_ip": "10.231.3.1",
+              "source_status": "relay_address",
+              "observation_only": true
+            }
+          ],
+          "tcp_attempt_intervals_overlap": true,
+          "udp_attempt_intervals_overlap": true,
+          "observed_sources": [
+            "10.231.1.2",
+            "10.231.3.1"
+          ],
+          "server_alive": true
+        },
+        {
+          "phase": "recovery",
+          "results": [
+            {
+              "role": "direct",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 43.79311128,
+                  "end": 44.24211677
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 47.35130627,
+                  "end": 47.79465381
+                }
+              ],
+              "client_alive": true
+            },
+            {
+              "role": "relay",
+              "probes": [
+                {
+                  "mode": "tcp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 43.79311706,
+                  "end": 44.26753678
+                },
+                {
+                  "mode": "udp",
+                  "verified": true,
+                  "negotiated": true,
+                  "probe_valid": true,
+                  "outcome": "response",
+                  "start": 47.35130627,
+                  "end": 47.79466294
+                }
+              ],
+              "client_alive": true
+            }
+          ],
+          "events": [],
+          "tcp_attempt_intervals_overlap": true,
+          "udp_attempt_intervals_overlap": true,
+          "observed_sources": [],
+          "server_alive": true
+        }
+      ],
+      "tcp_passed": true,
+      "udp_healthy_verified": true,
+      "bad_udp_rejected": true,
+      "eligible_sources": [
+        "10.231.1.2"
+      ],
+      "relay_excluded": 3,
+      "source_safety": true,
+      "concurrency_verified": true,
+      "passed": true
+    }
+  ],
+  "production_validation": "unverified"
+}

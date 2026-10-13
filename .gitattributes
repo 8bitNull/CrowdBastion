@@ -1,2 +1,5 @@
 # Preserve archived serial evidence bytes and hashes; do not render terminal dumps as diffs.
 docs/audit/**/*.log -text -diff
+# Preserve literal patch context and archived Go build metadata.
+experimental/**/*.patch -text -whitespace
+docs/audit/**/buildinfo.txt -text -whitespace

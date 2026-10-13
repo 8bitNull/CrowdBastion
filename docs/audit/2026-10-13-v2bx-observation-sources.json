@@ -1,0 +1,92 @@
+[
+  {
+    "dependency": "V2bX",
+    "path": "go.mod",
+    "sha256": "78baa9f6b22a21e2690232ec2a260183b362b76f69b454901816836ecae5c54b"
+  },
+  {
+    "dependency": "V2bX",
+    "path": "core/hy2/hy2.go",
+    "sha256": "47e6552a6880a239d1fdbe3ba9455f38d3ac89cb8a518b436704477028817482"
+  },
+  {
+    "dependency": "V2bX",
+    "path": "core/hy2/logger.go",
+    "sha256": "9e71197b70967c9b5fc4ca3d20e8b5195c59edc87d8e96b12cb300f47520ca60"
+  },
+  {
+    "dependency": "V2bX",
+    "path": "core/hy2/user.go",
+    "sha256": "ef1ceaecbe432a8c0be10e1ed92127021db29ab09160b6413239cab70b3c2434"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "common/log/access.go",
+    "sha256": "d515b7dcdd20113f3dd8a546f796e0595347c21aa285bd642d9152f1f78efd70"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "common/log/logger.go",
+    "sha256": "d0e425bcd87c575b1a7728ff4e9fac120fa042a58a1ce25a2569370a1cac1686"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "proxy/trojan/server.go",
+    "sha256": "e47e6058762f1fe6c08c9d15c80da3fa3faf9829431ce6fff70d36d06bdfccd6"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "proxy/vless/inbound/inbound.go",
+    "sha256": "e30a0d11896585d51e99d58840a5542094eee7f1e6f21f7f64167753bded839b"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "proxy/vless/encoding/encoding.go",
+    "sha256": "e4d5b3da045b6eddc603ba0c16282559e8877377c3d9861c9384638986f7a781"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "proxy/vmess/encoding/server.go",
+    "sha256": "889b525df63a8748403af282b34eccc8e876e8df5519694d6dc66f28848a247f"
+  },
+  {
+    "dependency": "xray-mod",
+    "path": "proxy/vmess/inbound/inbound.go",
+    "sha256": "c87edd866da6725f36e02847915e5fecb62b9366a21b52ca38ac3405fa0ceffc"
+  },
+  {
+    "dependency": "sing-mod",
+    "path": "log/format.go",
+    "sha256": "dd70bc8f76045ed519ad97925adc29468a93ef2780bb764caae926aac42abef8"
+  },
+  {
+    "dependency": "sing-mod",
+    "path": "log/log.go",
+    "sha256": "d18622c8e780f3e6af938ff866fd51847164bae477ebfd492b1a3ccb700c4d2f"
+  },
+  {
+    "dependency": "sing-mod",
+    "path": "transport/trojan/service.go",
+    "sha256": "6ffe5d2408d4b391b2e625de0777debecbd02c1a01c1b079f46c18fcac114edf"
+  },
+  {
+    "dependency": "sing-vmess-mod",
+    "path": "vless/service.go",
+    "sha256": "1e0183d67b4564c86f0c8405bdf109ec84db08a03d43d0e079276fb18875cdeb"
+  },
+  {
+    "dependency": "sing-vmess",
+    "path": "service.go",
+    "sha256": "acd0471fcbc1f2aab0e3b6cdece0d0608a16b8463eee1fdc718cdc76e03ef5ca"
+  },
+  {
+    "dependency": "hysteria2",
+    "path": "server/server.go",
+    "sha256": "fc492e9d1603ab771896612c9e0dfc48071b83480725f442eba16b37f3a2bfbd"
+  },
+  {
+    "dependency": "CrowdSec 1.8.1 release archive",
+    "path": "release.tgz",
+    "sha256": "ae64cdab8ee49534d6c36eab4ce40b5478842a4b4abfe83f7796aace569821eb"
+  }
+]

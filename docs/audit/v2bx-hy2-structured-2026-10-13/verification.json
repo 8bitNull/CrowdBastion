@@ -1,0 +1,46 @@
+{
+  "hy2_actual_cases": {
+    "total": 13,
+    "passed": 13
+  },
+  "three_core_actual_cases": {
+    "total": 66,
+    "passed": 66
+  },
+  "go_race_tests": {
+    "total": 2,
+    "passed": 2
+  },
+  "python_log_tests": {
+    "total": 23,
+    "passed": 23
+  },
+  "full_unittest": {
+    "total": 688,
+    "passed": 668,
+    "skipped": 20,
+    "errors": 0,
+    "duration_seconds": 155.228
+  },
+  "real_three_core_engine": {
+    "raw_projected": 32,
+    "eligible_before_group_dedup": 10,
+    "read": 29,
+    "alerts": 7,
+    "decisions": 0
+  },
+  "real_hy2_engine": {
+    "raw_projected": 17,
+    "eligible_before_group_dedup": 4,
+    "read": 14,
+    "alerts": 1,
+    "decisions": 0
+  },
+  "synthetic_engine": {
+    "read": 18,
+    "alerts": 7,
+    "decisions": 0
+  },
+  "production_validation": "unverified",
+  "review": "Two independent read-only reviews found no important implementation or evidence inconsistencies; synthetic log and final unittest archive verified by coordinator"
+}

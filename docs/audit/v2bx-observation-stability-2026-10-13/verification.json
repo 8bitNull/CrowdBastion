@@ -1,0 +1,34 @@
+{
+  "full_suite": {
+    "tests": 687,
+    "passed": 667,
+    "skipped": 20,
+    "failures": 0,
+    "elapsed_seconds": 169.466
+  },
+  "observer_tests": 19,
+  "real_protocol_controls": {
+    "tests": 66,
+    "passed": 66
+  },
+  "real_official_engine": {
+    "alerts": 6,
+    "decisions": 0,
+    "actual_groups_verified": true
+  },
+  "synthetic_official_engine": {
+    "records": 16,
+    "alerts": 6,
+    "decisions": 0
+  },
+  "checks": [
+    "Python syntax",
+    "Bash syntax",
+    "ShellCheck",
+    "git diff --check",
+    "source/implementation/artifact hashes",
+    "projected field privacy",
+    "relative Markdown links"
+  ],
+  "production_validation": "unverified"
+}

@@ -1,0 +1,56 @@
+{
+  "actual_sing_cases": {
+    "total": 36,
+    "passed": 36
+  },
+  "actual_quic_controls": {
+    "total": 5,
+    "passed": 5
+  },
+  "actual_three_core_cases": {
+    "total": 66,
+    "passed": 66
+  },
+  "go_integrated_race": {
+    "new_tests": 6,
+    "pass": true
+  },
+  "python_log_tests": {
+    "total": 24,
+    "passed": 24
+  },
+  "full_unittest": {
+    "total": 689,
+    "passed": 669,
+    "skipped": 20,
+    "failed": 0,
+    "duration_seconds": 165.433
+  },
+  "flood": {
+    "actual_auth_requests": 46,
+    "emitted_auth_events": 21,
+    "reported_dropped": 25
+  },
+  "real_three_core_engine": {
+    "projected": 35,
+    "eligible_before_group_dedup": 13,
+    "read": 32,
+    "alerts": 10,
+    "decisions": 0
+  },
+  "real_sing_engine": {
+    "projected": 34,
+    "eligible_before_group_dedup": 30,
+    "read": 7,
+    "alerts": 3,
+    "decisions": 0
+  },
+  "synthetic_engine": {
+    "read": 24,
+    "alerts": 10,
+    "decisions": 0
+  },
+  "full_new_observation_line_privacy_verified": true,
+  "production_validation": "unverified",
+  "review": "Independent reviewer verified safe logger redesign, final source/patch/binary hashes, fresh full-line privacy, actual results and replay counts; no important issues remain"
+}

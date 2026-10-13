@@ -1,0 +1,75 @@
+{
+  "scope": "throwaway acceptance probe artifacts, not installed code; QEMU no NIC, no shared directories, snapshot disk",
+  "files": [
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/landing.py",
+      "sha256": "6428f96cc1d4e675b2ea05ad3cb4313d2538efb950bcfdf618b686bc2b750982"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/prepare.py",
+      "sha256": "8a602d256cd9795df5ed6fe5535267a6620201dcecfb3ffb285d9767dc75530e"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/run.sh",
+      "sha256": "0b37e0af0509d87d0301edfee20a7ecbe742522d6868fa86d69b6da9316b5697"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/boot.gz",
+      "sha256": "bdaa58f1e5398145d295b30673ca1906bd21a381434235861e99eaad74435ca1"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/boot/vmlinuz-6.1.0-47-amd64",
+      "sha256": "1a29e4786a772be2f50482815d02e2d8537c2ad51f8280a95f29ac630f00cac7"
+    },
+    {
+      "path": "tests/verify_remote_bouncer.py",
+      "sha256": "c45cf285105f11f3399f37526c232a973c4a66b2acf39ac3f5d267836a161bf8"
+    },
+    {
+      "path": "tests/verify_relay_network.py",
+      "sha256": "c6e095c4306e0b4e57551abe4e64c825d007b9be82e7ba591662cfcaf2915ba6"
+    },
+    {
+      "path": "tests/relay_network_lab.py",
+      "sha256": "8773947b75c5eb169697d4a36314305b78a57b54caecb47bde1b4fa314558f98"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/bin/crowdsec",
+      "sha256": "caeac32feb883ee9e3e659c1426701ceb2723f838111dacbe30ef640cc91a757"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/bin/cscli",
+      "sha256": "4227148eb8d8e3092a29e2c4402cfc1ceff6ecd12bf9da4fc5a8cc90bc7eac17"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/bin/crowdsec-firewall-bouncer",
+      "sha256": "7c53e7d4d072ecdae48d1446f306d9baede1183eb662cc0a18765fbbb27dc56d"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/bin/gost",
+      "sha256": "1d8f971e9447cf4114fb1376b85c8c14e840db50ae8dbe895398a34e97c13e08"
+    },
+    {
+      "path": "/tmp/crowdsec-remote-lapi-lab/root/bin/realm",
+      "sha256": "6a1733bfc51e3d19743757ca08f4c81f36afe7972eab0607bef264fc99064208"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/runner.py",
+      "sha256": "5be81663b98525eed0a05813199fee0edefa13efaf4b7a14ab48f2c7a65acd4a"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/run-adjusted.sh",
+      "sha256": "92848f093d703fd83b41bddad7f5cc9db398b237a9067131041ae3664700be28"
+    },
+    {
+      "path": "/tmp/v2bx-vps-sim-20261013/verify_relay_network.py",
+      "sha256": "f0d64bd9ae2f70917ff07a9b3babddaca1ed1bf5aa623afe3aaa4d74a2580bb6"
+    }
+  ],
+  "simulation_override": {
+    "probe_process_timeout_seconds": 20,
+    "original_probe_process_timeout_seconds": 5,
+    "socket_timeout_seconds_unchanged": 1.5,
+    "production_or_repository_test_code_changed": false
+  }
+}

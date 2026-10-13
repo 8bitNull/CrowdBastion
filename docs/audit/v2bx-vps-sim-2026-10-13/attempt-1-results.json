@@ -1,0 +1,39 @@
+{
+  "scope": "isolated no-NIC QEMU network simulation; real CrowdSec LAPI/Bouncer; no V2bX protocol handshake or bandwidth benchmark",
+  "remote": {
+    "schema": 1,
+    "decision_api": "official CrowdSec LAPI on separate central network namespace",
+    "scope": "no-NIC QEMU; fresh sessions; gost/realm/NAT IPv4/IPv6 TCP/UDP; no throughput or long-term stability claim",
+    "cases": [
+      {
+        "tool": "gost",
+        "family": 4,
+        "protocol": "tcp"
+      }
+    ],
+    "conditions": {
+      "generated_remote_config": true
+    },
+    "versions": {
+      "crowdsec": "version: v1.8.1-909b5157\nCodename: alphaga\nBuildDate: 2026-09-03_09:11:02\nGoVersion: 1.26.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.1-909b5157-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite\nExcluded components: cscli_setup",
+      "cscli": "version: v1.8.1-909b5157\nCodename: alphaga\nBuildDate: 2026-09-03_09:11:44\nGoVersion: 1.26.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.1-909b5157-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: cscli_setup, datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite",
+      "bouncer": "version: v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\nBuildDate: 2026-08-04_09:54:16\nGoVersion: 1.25.2\nPlatform: linux",
+      "gost": "gost v3.3.0 (go1.26.7 linux/amd64)",
+      "realm": "Realm 2.9.6 [brutal][batched-udp][proxy][balance][transport][multi-thread]"
+    },
+    "idle_stream_shape": {
+      "new": "list",
+      "deleted": "list"
+    },
+    "core_log": "time=\"2026-10-13T09:55:07Z\" level=info msg=\"push and pull to Central API disabled\"\ntime=\"2026-10-13T09:55:07Z\" level=info msg=\"Enabled feature flags: none\"\ntime=\"2026-10-13T09:55:07Z\" level=info msg=\"Crowdsec v1.8.1-909b5157\"\ntime=\"2026-10-13T09:55:10Z\" level=warning msg=\"Communication with CrowdSec Central API disabled from configuration file\"\ntime=\"2026-10-13T09:55:10Z\" level=info msg=\"push and pull to Central API disabled\"\ntime=\"2026-10-13T09:55:11Z\" level=info msg=\"gocron: new scheduler created\" module=db\ntime=\"2026-10-13T09:55:11Z\" level=info msg=\"gocron: scheduler started\" module=db\ntime=\"2026-10-13T09:55:11Z\" level=info msg=\"CrowdSec Local API listening on 10.231.4.2:8080\"\ntime=\"2026-10-13T09:55:11Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:11 UTC] \\\"GET /v1/decisions/stream?startup=true HTTP/1.1 200 189.439476ms \\\"Python-urllib/3.11\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:13 UTC] \\\"GET /v1/decisions/stream?startup=true HTTP/1.1 200 29.237422ms \\\"Python-urllib/3.11\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:14Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:14 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false&startup=true HTTP/1.1 200 140.968951ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:14Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:14 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 46.46122ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:16Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:16 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 415.774177ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:16Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:16 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 273.883638ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:18Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:18 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 259.287768ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:19Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:18 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 253.446057ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\ntime=\"2026-10-13T09:55:19Z\" level=info msg=\"10.231.4.1 - [Tue, 13 Oct 2026 09:55:19 UTC] \\\"GET /v1/decisions/stream?additional_pull=false&community_pull=false HTTP/1.1 200 285.70161ms \\\"crowdsec-firewall-bouncer/v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\\\" \\\"\" module=lapi\n",
+    "bouncer_log": "time=\"2026-10-13T09:55:13Z\" level=info msg=\"Loading yaml file: '/tmp/remote-lapi-i_vjkcx4/bouncer.yaml' with additional values from '/tmp/remote-lapi-i_vjkcx4/bouncer.yaml.local'\"\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"Starting crowdsec-firewall-bouncer v0.0.36-4c315193cd4f19e3937cdee2f15183ec4d602f56\"\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"backend type: nftables\"\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"nftables initiated\"\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"Using API key auth\"\ntime=\"2026-10-13T09:55:13Z\" level=info msg=\"Processing new and deleted decisions . . .\"\n",
+    "error": "Command '['ip', 'netns', 'exec', 'bad', '/bin/python3', '/workspace/tests/verify_relay_network.py', '--probe', '10.231.1.1', '30001', 'tcp']' timed out after 5 seconds",
+    "exit_code": 1,
+    "status": "failed"
+  },
+  "landing": {
+    "status": "failed",
+    "error": "Command '['ip', 'netns', 'exec', 'bad', '/bin/python3', '/workspace/tests/verify_relay_network.py', '--probe', '10.231.3.2', '29000', 'tcp']' timed out after 5 seconds"
+  },
+  "status": "failed"
+}

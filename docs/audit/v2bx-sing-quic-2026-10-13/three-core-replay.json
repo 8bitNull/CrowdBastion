@@ -1,0 +1,67 @@
+{
+  "scope": "isolated official CrowdSec 1.8.1; externally produced event exports; provenance supplied by caller",
+  "configuration_validation": "pass",
+  "normalized_events": 32,
+  "failure_alerts": 10,
+  "noneligible_records_excluded": true,
+  "scenario_remediation": false,
+  "per_alert_decisions_empty": true,
+  "decisions": 0,
+  "production_validation": "unverified",
+  "actual_alert_groups_verified": true,
+  "raw_projected_events": 35,
+  "eligible_before_group_deduplication": 13,
+  "expected_groups": [
+    {
+      "source_ip": "127.0.0.1",
+      "core": "xray",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "xray",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "trojan"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "tuic"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "anytls"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "hysteria"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "sing",
+      "protocol": "hysteria2"
+    },
+    {
+      "source_ip": "127.0.0.1",
+      "core": "hysteria2",
+      "protocol": "hysteria2"
+    }
+  ],
+  "group_deduplication": "One actual failure per source/core/protocol to avoid bulk blackhole suppression; not an alert-per-line test"
+}

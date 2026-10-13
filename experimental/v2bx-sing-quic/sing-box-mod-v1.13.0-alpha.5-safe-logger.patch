@@ -1,0 +1,106 @@
+--- /dev/null
++++ b/log/observation.go
+@@ -0,0 +1,17 @@
++package log
++
++// ObservationLogger reuses the configured output and level with a fixed safe
++// label. It never carries the inbound node tag (which may contain a panel URL).
++// Unsupported logger implementations produce no observations rather than
++// falling back to a possibly sensitive prefix. Ordinary logs are unchanged.
++func ObservationLogger(original ContextLogger, protocol string) ContextLogger {
++	switch protocol {
++	case "tuic", "hysteria", "hysteria2":
++	default:
++		return NewNOPFactory().Logger()
++	}
++	if l, ok := original.(*observableLogger); ok && l != nil && l.defaultFactory != nil {
++		return l.defaultFactory.NewLogger("v2bx-auth/" + protocol)
++	}
++	return NewNOPFactory().Logger()
++}
+--- /dev/null
++++ b/log/observation_test.go
+@@ -0,0 +1,37 @@
++package log
++
++import (
++	"bytes"
++	"context"
++	"github.com/sagernet/sing-box/option"
++	"strings"
++	"testing"
++)
++
++type wrappedLogger struct{ ContextLogger }
++
++func TestObservationLoggerUsesSameOutputWithoutSensitiveInboundTag(t *testing.T) {
++	var output bytes.Buffer
++	f, err := New(Options{Context: context.Background(), DefaultWriter: &output, Options: option.LogOptions{Timestamp: true, DisableColor: true}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	original := f.NewLogger("inbound/tuic[https://panel.invalid/private-api]")
++	safe := ObservationLogger(original, "tuic")
++	safe.Error("v2bx-observation {}")
++	line := output.String()
++	if !strings.Contains(line, "v2bx-auth/tuic: v2bx-observation {}") || strings.Contains(line, "panel.invalid") || strings.Contains(line, "private-api") {
++		t.Fatalf("sensitive observation prefix: %s", line)
++	}
++	output.Reset()
++	original.Error("ordinary message")
++	if !strings.Contains(output.String(), "panel.invalid") {
++		t.Fatal("original logger unexpectedly changed")
++	}
++	output.Reset()
++	ObservationLogger(wrappedLogger{original}, "tuic").Error("private")
++	ObservationLogger(original, "unknown").Error("private")
++	if output.Len() != 0 {
++		t.Fatal("unsafe logger fallback")
++	}
++}
+--- a/protocol/hysteria/inbound.go
++++ b/protocol/hysteria/inbound.go
+@@ -71,14 +71,15 @@
+ 		udpTimeout = C.UDPTimeout
+ 	}
+ 	service, err := hysteria.NewService[int](hysteria.ServiceOptions{
+-		Context:       ctx,
+-		Logger:        logger,
+-		SendBPS:       sendBps,
+-		ReceiveBPS:    receiveBps,
+-		XPlusPassword: options.Obfs,
+-		TLSConfig:     tlsConfig,
+-		UDPTimeout:    udpTimeout,
+-		Handler:       inbound,
++		ObservationLogger: log.ObservationLogger(logger, "hysteria"),
++		Context:           ctx,
++		Logger:            logger,
++		SendBPS:           sendBps,
++		ReceiveBPS:        receiveBps,
++		XPlusPassword:     options.Obfs,
++		TLSConfig:         tlsConfig,
++		UDPTimeout:        udpTimeout,
++		Handler:           inbound,
+ 
+ 		// Legacy options
+ 
+--- a/protocol/hysteria2/inbound.go
++++ b/protocol/hysteria2/inbound.go
+@@ -118,6 +118,7 @@
+ 		udpTimeout = C.UDPTimeout
+ 	}
+ 	service, err := hysteria2.NewService[int](hysteria2.ServiceOptions{
++		ObservationLogger:     log.ObservationLogger(logger, "hysteria2"),
+ 		Context:               ctx,
+ 		Logger:                logger,
+ 		BrutalDebug:           options.BrutalDebug,
+--- a/protocol/tuic/inbound.go
++++ b/protocol/tuic/inbound.go
+@@ -68,6 +68,7 @@
+ 		udpTimeout = C.UDPTimeout
+ 	}
+ 	service, err := tuic.NewService[int](tuic.ServiceOptions{
++		ObservationLogger: log.ObservationLogger(logger, "tuic"),
+ 		Context:           ctx,
+ 		Logger:            logger,
+ 		TLSConfig:         tlsConfig,

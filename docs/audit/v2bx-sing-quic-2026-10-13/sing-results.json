@@ -1,0 +1,624 @@
+{
+  "scope": "cumulative experimental V2bX v0.4.0 hy2/sing-quic patch, real sing-box1.12.0, IPv4 native loopback plus actual UDP socket relay; not VPS or physical network",
+  "cases": [
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "healthy",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "wrong_credentials",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:25Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "tuic",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "recovery",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "valid_uuid_wrong_password",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:25Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "tuic",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "target_unreachable",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "tls_name_mismatch",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "healthy",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "wrong_credentials",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:26Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "tuic",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.2",
+          "source_status": "relay_address",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "recovery",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "valid_uuid_wrong_password",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:27Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "tuic",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.2",
+          "source_status": "relay_address",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "target_unreachable",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "tls_name_mismatch",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "healthy",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "wrong_credentials",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:28Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "recovery",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "target_unreachable",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "tls_name_mismatch",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "healthy",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "wrong_credentials",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:29Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.2",
+          "source_status": "relay_address",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "recovery",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "target_unreachable",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "tls_name_mismatch",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "healthy",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "wrong_credentials",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:31Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "recovery",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "target_unreachable",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "tls_name_mismatch",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "healthy",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "wrong_credentials",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:32Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.2",
+          "source_status": "relay_address",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "recovery",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": true,
+        "socks_negotiated": true,
+        "outcome": "response_received"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "target_unreachable",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "tls_name_mismatch",
+      "ingress": "relay",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 14,
+      "phase": "bandwidth_policy_rejected",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": []
+    },
+    {
+      "protocol": "tuic",
+      "node": 9,
+      "phase": "consumer_restart_bad",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "upstream_closed"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:34Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "tuic",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria",
+      "node": 11,
+      "phase": "consumer_restart_bad",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:34Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    },
+    {
+      "protocol": "hysteria2",
+      "node": 12,
+      "phase": "consumer_restart_bad",
+      "ingress": "direct",
+      "passed": true,
+      "response": {
+        "response_verified": false,
+        "socks_negotiated": true,
+        "outcome": "socks_upstream_rejected"
+      },
+      "events": [
+        {
+          "schema_version": 1,
+          "timestamp": "2026-10-13T12:13:34Z",
+          "time_basis": "log_offset",
+          "core": "sing",
+          "protocol": "hysteria2",
+          "event_type": "auth_failure",
+          "source_ip": "127.0.0.1",
+          "source_status": "unverified",
+          "observation_only": true
+        }
+      ]
+    }
+  ],
+  "production_validation": "unverified",
+  "sampler": {
+    "lines": 77,
+    "events": 11,
+    "failure_observations": 7,
+    "integrity_failures": 0,
+    "ignored": {
+      "unsupported_format": 66
+    },
+    "oversized_lines": 0,
+    "rotations": 0,
+    "truncations": 0,
+    "continuity_risks": 0,
+    "missing_polls": 0
+  },
+  "fixed_auth_payloads_checked": 11,
+  "legacy_hysteria_auth_str_absent": true,
+  "full_observation_lines_without_panel_or_credentials": true,
+  "status": "passed"
+}

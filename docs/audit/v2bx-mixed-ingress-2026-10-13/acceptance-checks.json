@@ -1,0 +1,114 @@
+{
+  "checks": {
+    "26_cases": true,
+    "healthy_baseline_peers_verified": true,
+    "all_tcp_and_concurrency": true,
+    "all_healthy_udp_forwarded": true,
+    "all_socks_negotiated_and_probe_valid": true,
+    "no_bad_token": true,
+    "exact_20_failure_groups": true,
+    "all_failure_relay_groups_excluded": true
+  },
+  "actual_eligible_groups": [
+    {
+      "source_ip": "10.231.1.2",
+      "core": "hysteria2",
+      "protocol": "hysteria2"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "anytls"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "hysteria"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "hysteria2"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "trojan"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "tuic"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "sing",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "xray",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "10.231.1.2",
+      "core": "xray",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "hysteria2",
+      "protocol": "hysteria2"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "anytls"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "hysteria"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "hysteria2"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "trojan"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "tuic"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "sing",
+      "protocol": "vmess"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "xray",
+      "protocol": "vless"
+    },
+    {
+      "source_ip": "fd42:231:1::2",
+      "core": "xray",
+      "protocol": "vmess"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "upstream_repository": "https://github.com/wyx2685/V2bX",
+  "upstream_tag": "v0.4.0",
+  "upstream_commit": "3deccaae00d168fd049f8a8659656664f25ee301",
+  "go_version": "go1.25.0",
+  "goexperiment": "jsonv2",
+  "build_tags": "sing xray hysteria2 with_quic with_grpc with_utls with_wireguard with_acme with_gvisor",
+  "changed_upstream_files": [
+    "core/hy2/user.go",
+    "core/hy2/hy2.go"
+  ],
+  "upstream_files_sha256": {
+    "core/hy2/user.go": "ef1ceaecbe432a8c0be10e1ed92127021db29ab09160b6413239cab70b3c2434",
+    "core/hy2/hy2.go": "47e6552a6880a239d1fdbe3ba9455f38d3ac89cb8a518b436704477028817482",
+    "go.mod": "1c292f69aba0d0db4845af64b81f3e084f3515157d64a14356e48873329bc1a1",
+    "go.sum": "2bd4d30e391e9b11a42266b24c7081986269187c5cacab6aa5f1fec8c5d0e991"
+  },
+  "patched_files_sha256": {
+    "core/hy2/user.go": "20ad3fc20f306154690e944ef67590e2cfdb074e7196e92ba8c441ae3c5ace93",
+    "core/hy2/hy2.go": "cda9f405499072fab2bfe9422bdae8cc49b1873a8ff8cf5c8598dc43681d0a01",
+    "go.mod": "1c292f69aba0d0db4845af64b81f3e084f3515157d64a14356e48873329bc1a1",
+    "go.sum": "2bd4d30e391e9b11a42266b24c7081986269187c5cacab6aa5f1fec8c5d0e991",
+    "core/hy2/auth_observation.go": "4663e5396b3b72927c8ec0e8e4cd0da6f5da1c66fbefa5ef226fb823ed2b2457",
+    "core/hy2/auth_observation_test.go": "02ef536bce18a6d1ebddc985ded75ff1996a74408dc97efde1b2c347ee550d88",
+    "core/hy2/auth_observation_config_test.go": "4182fea2d8ce0deeb3a13e7cc01837d5acef9aaa2e0960a369b2c41cc675a07b"
+  },
+  "binary_sha256": "61ecc65bb89af6569fffc6777a79d47e4a0ff9586521edf3cd6342a54e28af6a",
+  "toolchain_zip_sha256": "891083c63e4d7a5020bdaa1911a9c5a1a966b993d9d3c1137d1727be04435e02",
+  "patch_sha256": "06acb732158a87292877d2dab1a234ef25c0ed549d3a942050a2a92e576ec0fd",
+  "client_binary_sha256": "84b23a2304a6c4efa41dc027a78b7226a94ef6c63566b56a5a2721bdfe473446",
+  "upstream_server_auth_source_sha256": "201ccf35228a3030aa3488a995bf7797b68fb81bd20ea933ae9ab27bbe3b73c9"
+}

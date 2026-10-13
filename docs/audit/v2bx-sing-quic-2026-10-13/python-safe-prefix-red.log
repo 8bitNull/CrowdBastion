@@ -1,0 +1,15 @@
+======================================================================
+FAIL: test_sing_quic_explicit_rejection_contract_and_negative_branches (test_v2bx_logs.V2bXLogs.test_sing_quic_explicit_rejection_contract_and_negative_branches)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_logs.py", line 40, in test_sing_quic_explicit_rejection_contract_and_negative_branches
+    self.assertEqual(status, 'parsed')
+AssertionError: 'unsupported_format' != 'parsed'
+- unsupported_format
++ parsed
+
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.480s
+
+FAILED (failures=1)

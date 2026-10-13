@@ -1,0 +1,130 @@
+[
+  {
+    "guest_path": "/workspace/real/fixture.py",
+    "sha256": "ea0b04fd5820fc80a0e34affe9db21bbd2ebe82643ddc16c3364c3dbe936a2cb"
+  },
+  {
+    "guest_path": "/workspace/real/guest.py",
+    "sha256": "8aeb6560bd2d8de38a842ffce8a6649996bff12fea6a40d7c4aff03296d44133"
+  },
+  {
+    "guest_path": "/workspace/real/probe.py",
+    "sha256": "5042c6a060a2f95d8e55e10f09dc8d5df0e4bf8023a1294f8b03aab95371cabd"
+  },
+  {
+    "guest_path": "/workspace/real/cert.pem",
+    "sha256": "0a0dc6adf0bdc85bc70ababa3de04da293cf18b02dda0c6bbbff21cac06c0c25"
+  },
+  {
+    "guest_path": "/workspace/real/sing-box",
+    "sha256": "84b23a2304a6c4efa41dc027a78b7226a94ef6c63566b56a5a2721bdfe473446"
+  },
+  {
+    "guest_path": "/workspace/real/v2bx/V2bX",
+    "sha256": "4b475ac949676bfb0da05f840e14ce5ab1fcc506b946e2fcc0252b59a69d4c2f"
+  },
+  {
+    "guest_path": "/workspace/real/v2bx/geoip.dat",
+    "sha256": "52c56c5702f8540106b8cbdc0c448fb83844fb93036ae16100b878d92ef1580d"
+  },
+  {
+    "guest_path": "/workspace/real/v2bx/geosite.dat",
+    "sha256": "4aba9a7aeb1af05fe3184085bed23b48be84d24f115bbddb4dd9bc0f69ff4ce7"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_transport.py",
+    "sha256": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_realip.py",
+    "sha256": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_web.py",
+    "sha256": "931d95251734b12ed2fc4c1db539464425b444a6c333882d7229cb23e5db7370"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_v2bx_observe.py",
+    "sha256": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_request_audit.py",
+    "sha256": "27559e7ba183074682e53a67689f7d97e0e15f8a3adb4c51bc7922a4fba8e7fe"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_realip_diagnose.py",
+    "sha256": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_relay_paths.py",
+    "sha256": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_telegram.py",
+    "sha256": "1c293fa912e59e1043744c13eb8932faae18b1eb02ea6ed46a7ede4fc0edcc3b"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_bot.py",
+    "sha256": "b9c34c212adfd1926aff99b61ed8b29c621dc57b7a1c04d90bf6ff6259b4bc22"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_hub_snapshot.py",
+    "sha256": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_v2bx.py",
+    "sha256": "9a98ccb8a0652e3931f45d1a88cbcf9e0363b6689e41c4165e12ad0b68fec6b3"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_maintenance.py",
+    "sha256": "93dc883979b045dfcb36ed301861da61514637c2b4dea8c3fcf2982bac4a26ee"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_host.py",
+    "sha256": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_config.py",
+    "sha256": "d73115800bfcb07b3835d00b5da2cfbcca82e376bf37a08721ebc2fcb300941f"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_detection_diagnose.py",
+    "sha256": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_relay.py",
+    "sha256": "47c5f497be70a562d8bebc6c500fc94729c26e09cdbf5c1d60be4c2e6784e388"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_safety.py",
+    "sha256": "22bac0eb776c09257b34ce06dc32d83e04630f72068af866d208bfca5c16c2d2"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_appsec.py",
+    "sha256": "0db68a60e29c88c8ee06982b2272ec7c593cc671c2731b92580317f5d0cd6f16"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_bot_settings.py",
+    "sha256": "4a9b4fff51ceeab80d2f756c6635c776dd947d0ad4c72a85b15a471ea1ee6e70"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_remote_bouncer.py",
+    "sha256": "c12684d86008a0f7e3537003b0060dba133c2b15ffabed13af32d183af038f6a"
+  },
+  {
+    "guest_path": "/workspace/real/lib/crowdsec_v2bx_logs.py",
+    "sha256": "ffd60cae8e47c9e9a43beed9da43bb88dc210bbe065941b2c0782cbaf4669b9b"
+  },
+  {
+    "guest_path": "/workspace/tests/relay_network_lab.py",
+    "sha256": "8773947b75c5eb169697d4a36314305b78a57b54caecb47bde1b4fa314558f98"
+  },
+  {
+    "guest_path": "/workspace/tests/verify_relay_network.py",
+    "sha256": "c6e095c4306e0b4e57551abe4e64c825d007b9be82e7ba591662cfcaf2915ba6"
+  },
+  {
+    "guest_path": "/workspace/run.sh",
+    "sha256": "15fa7e177cfabdbfd04fe7e10c3c5dd333e9a2fee6ccef6b5751ec8dae494cb4"
+  }
+]

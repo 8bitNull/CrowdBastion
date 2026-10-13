@@ -1,0 +1,22 @@
+{
+  "scope": "isolated official CrowdSec 1.8.1; externally produced event exports; provenance supplied by caller",
+  "configuration_validation": "pass",
+  "normalized_events": 14,
+  "failure_alerts": 1,
+  "noneligible_records_excluded": true,
+  "scenario_remediation": false,
+  "per_alert_decisions_empty": true,
+  "decisions": 0,
+  "production_validation": "unverified",
+  "actual_alert_groups_verified": true,
+  "raw_projected_events": 17,
+  "eligible_before_group_deduplication": 4,
+  "expected_groups": [
+    {
+      "source_ip": "127.0.0.1",
+      "core": "hysteria2",
+      "protocol": "hysteria2"
+    }
+  ],
+  "group_deduplication": "One actual failure per source/core/protocol to avoid bulk blackhole suppression; not an alert-per-line test"
+}

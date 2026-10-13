@@ -1,0 +1,8 @@
+Official crowdsec -t: PASS
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_observation.py", line 197, in <module>
+    result = verify(sys.argv[1])
+             ^^^^^^^^^^^^^^^^^^^
+  File "/data/project/script/crowdsec-1key/tests/verify_v2bx_observation.py", line 152, in verify
+    raise RuntimeError('Failure/normal/relay observation alert assertions failed')
+RuntimeError: Failure/normal/relay observation alert assertions failed

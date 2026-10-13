@@ -1,0 +1,14 @@
+{
+  "first_full_unittest": {
+    "total": 688,
+    "errors": 1,
+    "skipped": 20,
+    "duration_seconds": 185.441,
+    "test": "test_audit_ops.AuditOps.test_core_install_uses_active_acquisition_and_mounts",
+    "error": "TimeoutExpired at unchanged 5-second subprocess deadline",
+    "context": "Concurrent first-time Go builds and race compilation; load-related hypothesis, not conclusively measured",
+    "isolated_recheck": "pass, 0.761 seconds; no code/test changes"
+  },
+  "toolchain_download": "go.dev and dl.google.com timed out; proxy.golang.org toolchain downloaded successfully",
+  "initial_go_setup": "needed GOEXPERIMENT=jsonv2 per upstream release workflow; setup failure excluded from red-green proof"
+}

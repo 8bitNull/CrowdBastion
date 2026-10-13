@@ -1,0 +1,10 @@
+type: trigger
+name: crowdsec-1key/v2bx-failure-observation
+description: Observe individual V2bX failure events; does not establish an attack or request a ban
+filter: evt.Meta.log_type == 'v2bx_failure_observation' && evt.Meta.v2bx_source_status == 'unverified'
+groupby: evt.Meta.source_ip + '/' + evt.Meta.v2bx_core + '/' + evt.Meta.v2bx_protocol
+blackhole: 1s
+labels:
+  service: v2bx
+  type: observation
+  remediation: false

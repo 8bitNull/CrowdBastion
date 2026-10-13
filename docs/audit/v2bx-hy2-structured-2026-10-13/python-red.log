@@ -1,0 +1,15 @@
+======================================================================
+FAIL: test_experimental_hy2_explicit_rejection_contract (test_v2bx_logs.V2bXLogs.test_experimental_hy2_explicit_rejection_contract)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/data/project/script/crowdsec-1key/tests/test_v2bx_logs.py", line 40, in test_experimental_hy2_explicit_rejection_contract
+    self.assertEqual(status, 'parsed')
+AssertionError: 'unsupported_format' != 'parsed'
+- unsupported_format
++ parsed
+
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.443s
+
+FAILED (failures=1)

@@ -1,0 +1,31 @@
+name: crowdsec-1key/v2bx-observation
+description: Parse projected V2bX failures for observation only; source trust is unverified
+filter: >-
+  evt.Line.Labels.type == 'v2bx-observation' &&
+  JsonExtract(evt.Line.Raw, 'schema_version') == '1' &&
+  JsonExtract(evt.Line.Raw, 'observation_only') == 'true' &&
+  JsonExtract(evt.Line.Raw, 'source_status') == 'unverified' &&
+  JsonExtract(evt.Line.Raw, 'event_type') in ['auth_failure', 'protocol_rejection'] &&
+  ((JsonExtract(evt.Line.Raw, 'core') == 'xray' && JsonExtract(evt.Line.Raw, 'protocol') in ['vless', 'vmess', 'trojan']) ||
+   (JsonExtract(evt.Line.Raw, 'core') == 'sing' && JsonExtract(evt.Line.Raw, 'protocol') in ['vless', 'vmess', 'trojan']) ||
+   (JsonExtract(evt.Line.Raw, 'core') == 'sing' && JsonExtract(evt.Line.Raw, 'protocol') == 'anytls' && JsonExtract(evt.Line.Raw, 'event_type') == 'auth_failure') ||
+   (JsonExtract(evt.Line.Raw, 'core') == 'sing' && JsonExtract(evt.Line.Raw, 'protocol') in ['tuic', 'hysteria', 'hysteria2'] && JsonExtract(evt.Line.Raw, 'event_type') == 'auth_failure') ||
+   (JsonExtract(evt.Line.Raw, 'core') == 'hysteria2' && JsonExtract(evt.Line.Raw, 'protocol') == 'hysteria2' && JsonExtract(evt.Line.Raw, 'event_type') == 'auth_failure')) &&
+  (IpInRange(JsonExtract(evt.Line.Raw, 'source_ip'), '0.0.0.0/0') ||
+   IpInRange(JsonExtract(evt.Line.Raw, 'source_ip'), '::/0'))
+onsuccess: next_stage
+statics:
+  - target: evt.StrTime
+    expression: JsonExtract(evt.Line.Raw, 'timestamp')
+  - meta: source_ip
+    expression: JsonExtract(evt.Line.Raw, 'source_ip')
+  - meta: log_type
+    value: v2bx_failure_observation
+  - meta: v2bx_core
+    expression: JsonExtract(evt.Line.Raw, 'core')
+  - meta: v2bx_protocol
+    expression: JsonExtract(evt.Line.Raw, 'protocol')
+  - meta: v2bx_event_type
+    expression: JsonExtract(evt.Line.Raw, 'event_type')
+  - meta: v2bx_source_status
+    value: unverified

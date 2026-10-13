@@ -1,0 +1,538 @@
+--- /dev/null
++++ b/hysteria/auth_observation_test.go
+@@ -0,0 +1,59 @@
++package hysteria
++
++import (
++	"bytes"
++	"context"
++	"fmt"
++	"github.com/sagernet/quic-go"
++	"github.com/sagernet/sing-quic/internal/observation"
++	"github.com/sagernet/sing/common/logger"
++	"net"
++	"strings"
++	"testing"
++)
++
++type authCapture struct {
++	logger.Logger
++	lines []string
++}
++
++func (c *authCapture) Error(args ...any) { c.lines = append(c.lines, fmt.Sprint(args...)) }
++
++type control struct {
++	quic.Stream
++	input  *bytes.Reader
++	output bytes.Buffer
++}
++
++func (c *control) Read(p []byte) (int, error)  { return c.input.Read(p) }
++func (c *control) Write(p []byte) (int, error) { return c.output.Write(p) }
++
++type peerConnection struct {
++	quic.Connection
++	stream    *control
++	closeCode quic.ApplicationErrorCode
++}
++
++func (c *peerConnection) RemoteAddr() net.Addr {
++	return &net.UDPAddr{IP: net.ParseIP("198.51.100.11"), Port: 1234}
++}
++func (c *peerConnection) AcceptStream(context.Context) (quic.Stream, error) { return c.stream, nil }
++func (c *peerConnection) CloseWithError(code quic.ApplicationErrorCode, _ string) error {
++	c.closeCode = code
++	return nil
++}
++func TestWrongPasswordKeepsWireRejectionAndRemovesCredential(t *testing.T) {
++	var input bytes.Buffer
++	WriteClientHello(&input, ClientHello{SendBPS: 100, RecvBPS: 100, Auth: "submitted-private-password"})
++	conn := &peerConnection{stream: &control{input: bytes.NewReader(input.Bytes())}}
++	c := &authCapture{}
++	s := &serverSession[int]{Service: &Service[int]{logger: c, userMap: map[string]int{}, observations: observation.New(c, "hysteria")}, ctx: context.Background(), quicConn: conn, connDone: make(chan struct{})}
++	s.handleConnection()
++	hello, err := ReadServerHello(&conn.stream.output)
++	if err != nil || hello.OK || hello.Message != "Wrong password" || conn.closeCode != ErrorCodeAuthError {
++		t.Fatal("wire rejection changed")
++	}
++	if len(c.lines) != 1 || !strings.Contains(c.lines[0], `"event_type":"auth_rejected"`) || strings.Contains(c.lines[0], "submitted-private-password") {
++		t.Fatalf("unsafe rejection logs: %#v", c.lines)
++	}
++}
+--- a/hysteria/service.go
++++ b/hysteria/service.go
+@@ -14,6 +14,7 @@
+ 	"github.com/sagernet/quic-go"
+ 	"github.com/sagernet/sing-quic"
+ 	hyCC "github.com/sagernet/sing-quic/hysteria/congestion"
++	"github.com/sagernet/sing-quic/internal/observation"
+ 	"github.com/sagernet/sing/common"
+ 	"github.com/sagernet/sing/common/auth"
+ 	"github.com/sagernet/sing/common/baderror"
+@@ -26,16 +27,18 @@
+ )
+ 
+ type ServiceOptions struct {
+-	Context       context.Context
+-	Logger        logger.Logger
+-	BrutalDebug   bool
+-	SendBPS       uint64
+-	ReceiveBPS    uint64
+-	XPlusPassword string
+-	TLSConfig     aTLS.ServerConfig
+-	UDPDisabled   bool
+-	UDPTimeout    time.Duration
+-	Handler       ServerHandler
++	// Explicit opt-in safe logger; nil disables new observation records.
++	ObservationLogger logger.Logger
++	Context           context.Context
++	Logger            logger.Logger
++	BrutalDebug       bool
++	SendBPS           uint64
++	ReceiveBPS        uint64
++	XPlusPassword     string
++	TLSConfig         aTLS.ServerConfig
++	UDPDisabled       bool
++	UDPTimeout        time.Duration
++	Handler           ServerHandler
+ 
+ 	// Legacy options
+ 
+@@ -51,6 +54,7 @@
+ }
+ 
+ type Service[U comparable] struct {
++	observations  *observation.Sink
+ 	ctx           context.Context
+ 	logger        logger.Logger
+ 	brutalDebug   bool
+@@ -103,6 +107,7 @@
+ 		return nil, E.New("missing download speed configuration")
+ 	}
+ 	return &Service[U]{
++		observations:  observation.New(options.ObservationLogger, "hysteria"),
+ 		ctx:           options.Context,
+ 		logger:        options.Logger,
+ 		brutalDebug:   options.BrutalDebug,
+@@ -199,7 +204,8 @@
+ 			OK:      false,
+ 			Message: "Wrong password",
+ 		})
+-		s.closeWithError0(ErrorCodeAuthError, E.New("authentication failed, auth_str=", clientHello.Auth))
++		s.observations.Reject(s.quicConn.RemoteAddr())
++		s.closeWithError0(ErrorCodeAuthError, observation.ErrRejected)
+ 		return
+ 	}
+ 	err = WriteServerHello(controlStream, ServerHello{
+@@ -301,7 +307,9 @@
+ 		s.connErr = err
+ 		close(s.connDone)
+ 	}
+-	if E.IsClosedOrCanceled(err) {
++	if errors.Is(err, observation.ErrRejected) {
++		// Already recorded at the actual rejection branch; no duplicate or raw credentials.
++	} else if E.IsClosedOrCanceled(err) {
+ 		s.logger.Debug(E.Cause(err, "connection failed"))
+ 	} else {
+ 		s.logger.Error(E.Cause(err, "connection failed"))
+--- /dev/null
++++ b/hysteria2/auth_observation_test.go
+@@ -0,0 +1,54 @@
++package hysteria2
++
++import (
++	"fmt"
++	"github.com/sagernet/quic-go"
++	"github.com/sagernet/sing-quic/internal/observation"
++	"github.com/sagernet/sing/common/logger"
++	"net"
++	"net/http"
++	"net/http/httptest"
++	"strings"
++	"testing"
++)
++
++type authCapture struct {
++	logger.Logger
++	lines []string
++}
++
++func (c *authCapture) Error(args ...any) { c.lines = append(c.lines, fmt.Sprint(args...)) }
++func (c *authCapture) Debug(args ...any) {}
++
++type peerConnection struct{ quic.Connection }
++
++func (peerConnection) RemoteAddr() net.Addr {
++	return &net.UDPAddr{IP: net.ParseIP("198.51.100.10"), Port: 1234}
++}
++func TestRejectionIsDistinctFromMasqueradeAndBandwidthPolicy(t *testing.T) {
++	c := &authCapture{}
++	service := &Service[int]{logger: c, userMap: map[string]int{"valid": 1}, receiveBPS: 100, ignoreClientBandwidth: true, masqueradeHandler: http.NotFoundHandler(), observations: observation.New(c, "hysteria2")}
++	// Host/path/method are protocol fields. Arbitrary 404s must stay unclassified.
++	for _, mode := range []string{"ordinary", "bad", "policy"} {
++		s := &serverSession[int]{Service: service, quicConn: peerConnection{}}
++		r := httptest.NewRequest("GET", "https://ordinary.invalid/", nil)
++		if mode != "ordinary" {
++			r.Method = "POST"
++			r.Host = "hysteria"
++			r.URL.Path = "/auth"
++			r.Header.Set("Hysteria-Auth", "bad-secret")
++			r.Header.Set("Hysteria-CC-RX", "0")
++		}
++		if mode == "policy" {
++			r.Header.Set("Hysteria-Auth", "valid")
++		}
++		w := httptest.NewRecorder()
++		s.ServeHTTP(w, r)
++		if w.Code != 404 {
++			t.Fatal("response changed")
++		}
++	}
++	if len(c.lines) != 1 || !strings.Contains(c.lines[0], `"auth_rejected"`) || strings.Contains(c.lines[0], "bad-secret") {
++		t.Fatalf("wrong branch/leak: %#v", c.lines)
++	}
++}
+--- a/hysteria2/service.go
++++ b/hysteria2/service.go
+@@ -20,6 +20,7 @@
+ 	"github.com/sagernet/sing-quic/hysteria"
+ 	hyCC "github.com/sagernet/sing-quic/hysteria/congestion"
+ 	"github.com/sagernet/sing-quic/hysteria2/internal/protocol"
++	"github.com/sagernet/sing-quic/internal/observation"
+ 	"github.com/sagernet/sing/common"
+ 	"github.com/sagernet/sing/common/auth"
+ 	"github.com/sagernet/sing/common/baderror"
+@@ -32,6 +33,8 @@
+ )
+ 
+ type ServiceOptions struct {
++	// Explicit opt-in safe logger; nil disables new observation records.
++	ObservationLogger     logger.Logger
+ 	Context               context.Context
+ 	Logger                logger.Logger
+ 	BrutalDebug           bool
+@@ -52,6 +55,7 @@
+ }
+ 
+ type Service[U comparable] struct {
++	observations          *observation.Sink
+ 	ctx                   context.Context
+ 	logger                logger.Logger
+ 	brutalDebug           bool
+@@ -89,6 +93,7 @@
+ 		options.TLSConfig.SetNextProtos([]string{http3.NextProtoH3})
+ 	}
+ 	return &Service[U]{
++		observations:          observation.New(options.ObservationLogger, "hysteria2"),
+ 		ctx:                   options.Context,
+ 		logger:                options.Logger,
+ 		brutalDebug:           options.BrutalDebug,
+@@ -195,6 +200,7 @@
+ 		request := protocol.AuthRequestFromHeader(r.Header)
+ 		user, loaded := s.userMap[request.Auth]
+ 		if !loaded {
++			s.observations.Reject(s.quicConn.RemoteAddr())
+ 			s.masqueradeHandler.ServeHTTP(w, r)
+ 			return
+ 		}
+--- /dev/null
++++ b/internal/observation/sink.go
+@@ -0,0 +1,75 @@
++// Package observation emits fixed, bounded, experimental authentication events.
++package observation
++
++import (
++	"encoding/json"
++	"errors"
++	"github.com/sagernet/sing/common/logger"
++	"net"
++	"sync"
++	"time"
++)
++
++// ErrRejected carries no account or submitted credential. Callers suppress
++// duplicate generic error logging for this sentinel, including wrapped errors.
++var ErrRejected = errors.New("authentication rejected")
++
++type Sink struct {
++	mu       sync.Mutex
++	logger   logger.Logger
++	protocol string
++	window   time.Time
++	emitted  uint32
++	dropped  uint64
++}
++
++func New(log logger.Logger, protocol string) *Sink {
++	switch protocol {
++	case "tuic", "hysteria", "hysteria2":
++		return &Sink{logger: log, protocol: protocol}
++	}
++	return nil
++}
++func (s *Sink) Reject(addr net.Addr) {
++	if s == nil || s.logger == nil {
++		return
++	}
++	peer, ok := addr.(*net.UDPAddr)
++	if !ok || peer == nil || peer.IP.To16() == nil || peer.IP.IsUnspecified() || peer.IP.IsMulticast() || peer.Port < 1 || peer.Port > 65535 || peer.Zone != "" {
++		return
++	}
++	endpoint := (&net.UDPAddr{IP: peer.IP, Port: peer.Port}).String()
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	now := time.Now()
++	if s.window.IsZero() || now.Sub(s.window) >= time.Second {
++		if s.dropped > 0 {
++			data, _ := json.Marshal(struct {
++				SchemaVersion int    `json:"schema_version"`
++				Core          string `json:"core"`
++				Protocol      string `json:"protocol"`
++				EventType     string `json:"event_type"`
++				Dropped       uint64 `json:"dropped"`
++			}{1, "sing", s.protocol, "observations_dropped", s.dropped})
++			s.logger.Error("v2bx-observation ", string(data))
++		}
++		s.window = now
++		s.emitted = 0
++		s.dropped = 0
++	}
++	// Per service fixed one-second window, not a sliding-second connection limit.
++	// Drop summaries need a later attempt; shutdown can leave pending counts.
++	if s.emitted >= 20 {
++		s.dropped++
++		return
++	}
++	s.emitted++
++	data, _ := json.Marshal(struct {
++		SchemaVersion int    `json:"schema_version"`
++		Core          string `json:"core"`
++		Protocol      string `json:"protocol"`
++		EventType     string `json:"event_type"`
++		Addr          string `json:"addr"`
++	}{1, "sing", s.protocol, "auth_rejected", endpoint})
++	s.logger.Error("v2bx-observation ", string(data))
++}
+--- /dev/null
++++ b/internal/observation/sink_test.go
+@@ -0,0 +1,65 @@
++package observation
++
++import (
++	"encoding/json"
++	"fmt"
++	"github.com/sagernet/sing/common/logger"
++	"net"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++)
++
++type capture struct {
++	logger.Logger
++	mu    sync.Mutex
++	lines []string
++}
++
++func (c *capture) Error(args ...any) {
++	c.mu.Lock()
++	defer c.mu.Unlock()
++	c.lines = append(c.lines, fmt.Sprint(args...))
++}
++func TestFixedPrivateFields(t *testing.T) {
++	c := &capture{}
++	s := New(c, "hysteria")
++	s.Reject(&net.UDPAddr{IP: net.ParseIP("2001:db8::7"), Port: 12345})
++	if len(c.lines) != 1 {
++		t.Fatal("no rejection")
++	}
++	var fields map[string]any
++	if !strings.HasPrefix(c.lines[0], "v2bx-observation ") || json.Unmarshal([]byte(strings.TrimPrefix(c.lines[0], "v2bx-observation ")), &fields) != nil {
++		t.Fatal("invalid contract")
++	}
++	if len(fields) != 5 || fields["schema_version"] != float64(1) || fields["core"] != "sing" || fields["protocol"] != "hysteria" || fields["event_type"] != "auth_rejected" || fields["addr"] != "[2001:db8::7]:12345" {
++		t.Fatalf("unsafe fields: %#v", fields)
++	}
++	for _, addr := range []net.Addr{nil, &net.UDPAddr{}, &net.UDPAddr{IP: net.ParseIP("224.0.0.1"), Port: 12}, &net.UDPAddr{IP: net.ParseIP("198.51.100.7"), Port: 65536}, &net.UDPAddr{IP: net.ParseIP("fe80::1"), Port: 12, Zone: "private-device"}} {
++		s.Reject(addr)
++	}
++	New(c, "unsupported").Reject(&net.UDPAddr{IP: net.ParseIP("198.51.100.7"), Port: 12})
++	if len(c.lines) != 1 {
++		t.Fatal("unsafe endpoint or protocol accepted")
++	}
++}
++func TestConcurrentBoundedLogsAndDeferredDrops(t *testing.T) {
++	c := &capture{}
++	s := New(c, "tuic")
++	s.window = time.Now()
++	var wg sync.WaitGroup
++	for i := 0; i < 100; i++ {
++		wg.Add(1)
++		go func() { defer wg.Done(); s.Reject(&net.UDPAddr{IP: net.ParseIP("198.51.100.8"), Port: 1234}) }()
++	}
++	wg.Wait()
++	if len(c.lines) != 20 || s.dropped != 80 {
++		t.Fatalf("logs=%d drops=%d", len(c.lines), s.dropped)
++	}
++	s.window = time.Now().Add(-2 * time.Second)
++	s.Reject(&net.UDPAddr{IP: net.ParseIP("198.51.100.8"), Port: 1234})
++	if len(c.lines) != 22 || !strings.Contains(c.lines[20], `"dropped":80`) || strings.Contains(c.lines[20], `"addr"`) {
++		t.Fatal("missing safe drop summary")
++	}
++}
+--- /dev/null
++++ b/tuic/auth_observation_test.go
+@@ -0,0 +1,61 @@
++package tuic
++
++import (
++	"bytes"
++	"fmt"
++	"github.com/sagernet/quic-go"
++	"github.com/sagernet/sing-quic/internal/observation"
++	"github.com/sagernet/sing/common/logger"
++	"net"
++	"strings"
++	"sync"
++	"testing"
++)
++
++type captureAuth struct {
++	logger.Logger
++	mu    sync.Mutex
++	lines []string
++}
++
++func (c *captureAuth) Error(args ...any) {
++	c.mu.Lock()
++	defer c.mu.Unlock()
++	c.lines = append(c.lines, fmt.Sprint(args...))
++}
++
++type authConn struct{ quic.Connection }
++
++func (authConn) RemoteAddr() net.Addr {
++	return &net.UDPAddr{IP: net.ParseIP("198.51.100.9"), Port: 1234}
++}
++func (authConn) CloseWithError(quic.ApplicationErrorCode, string) error { return nil }
++
++type authStream struct {
++	quic.ReceiveStream
++	*bytes.Reader
++}
++
++func (s authStream) Read(p []byte) (int, error) { return s.Reader.Read(p) }
++
++func (authStream) CancelRead(quic.StreamErrorCode) {}
++func TestUnknownUserRejectsOnceAndScrubsDuplicateErrors(t *testing.T) {
++	c := &captureAuth{}
++	s := &serverSession[int]{Service: &Service[int]{logger: c, userMap: map[[16]byte]int{}, observations: observation.New(c, "tuic")}, quicConn: authConn{}, connDone: make(chan struct{}), authDone: make(chan struct{})}
++	request := make([]byte, AuthenticateLen)
++	request[0] = Version
++	request[1] = CommandAuthenticate
++	for i := 2; i < 18; i++ {
++		request[i] = 0xab
++	}
++	for i := 0; i < 2; i++ {
++		err := s.handleUniStream(authStream{Reader: bytes.NewReader(request)})
++		if err == nil || strings.Contains(err.Error(), "abab") {
++			t.Fatal("missing rejection or UUID leak")
++		}
++		s.closeWithError(err)
++	}
++	if len(c.lines) != 1 || !strings.Contains(c.lines[0], `"event_type":"auth_rejected"`) {
++		t.Fatalf("duplicate/unstructured logs: %#v", c.lines)
++	}
++}
+--- a/tuic/service.go
++++ b/tuic/service.go
+@@ -13,6 +13,7 @@
+ 
+ 	"github.com/sagernet/quic-go"
+ 	"github.com/sagernet/sing-quic"
++	"github.com/sagernet/sing-quic/internal/observation"
+ 	"github.com/sagernet/sing/common"
+ 	"github.com/sagernet/sing/common/auth"
+ 	"github.com/sagernet/sing/common/baderror"
+@@ -23,11 +24,11 @@
+ 	M "github.com/sagernet/sing/common/metadata"
+ 	N "github.com/sagernet/sing/common/network"
+ 	aTLS "github.com/sagernet/sing/common/tls"
+-
+-	"github.com/gofrs/uuid/v5"
+ )
+ 
+ type ServiceOptions struct {
++	// Explicit opt-in safe logger; nil disables new observation records.
++	ObservationLogger logger.Logger
+ 	Context           context.Context
+ 	Logger            logger.Logger
+ 	TLSConfig         aTLS.ServerConfig
+@@ -45,6 +46,7 @@
+ }
+ 
+ type Service[U comparable] struct {
++	observations      *observation.Sink
+ 	ctx               context.Context
+ 	logger            logger.Logger
+ 	tlsConfig         aTLS.ServerConfig
+@@ -83,6 +85,7 @@
+ 		return nil, E.New("unknown congestion control algorithm: ", options.CongestionControl)
+ 	}
+ 	return &Service[U]{
++		observations:      observation.New(options.ObservationLogger, "tuic"),
+ 		ctx:               options.Context,
+ 		logger:            options.Logger,
+ 		tlsConfig:         options.TLSConfig,
+@@ -172,6 +175,7 @@
+ }
+ 
+ type serverSession[U comparable] struct {
++	authObservation sync.Once
+ 	*Service[U]
+ 	ctx        context.Context
+ 	quicConn   quic.Connection
+@@ -246,7 +250,8 @@
+ 		copy(userUUID[:], buffer.Range(2, 2+16))
+ 		user, loaded := s.userMap[userUUID]
+ 		if !loaded {
+-			return E.New("authentication: unknown user ", uuid.UUID(userUUID))
++			s.authObservation.Do(func() { s.observations.Reject(s.quicConn.RemoteAddr()) })
++			return observation.ErrRejected
+ 		}
+ 		handshakeState := s.quicConn.ConnectionState()
+ 		tuicToken, err := handshakeState.TLS.ExportKeyingMaterial(string(userUUID[:]), []byte(s.passwordMap[user]), 32)
+@@ -254,7 +259,8 @@
+ 			return E.Cause(err, "authentication: export keying material")
+ 		}
+ 		if !bytes.Equal(tuicToken, buffer.Range(2+16, 2+16+32)) {
+-			return E.New("authentication: token mismatch")
++			s.authObservation.Do(func() { s.observations.Reject(s.quicConn.RemoteAddr()) })
++			return observation.ErrRejected
+ 		}
+ 		s.authUser = user
+ 		close(s.authDone)
+@@ -322,7 +328,9 @@
+ 			if err != nil {
+ 				stream.CancelRead(0)
+ 				stream.Close()
+-				s.logger.Error(E.Cause(err, "handle stream request"))
++				if !errors.Is(err, observation.ErrRejected) {
++					s.logger.Error(E.Cause(err, "handle stream request"))
++				}
+ 			}
+ 		}()
+ 	}
+@@ -389,7 +397,9 @@
+ 		s.connErr = err
+ 		close(s.connDone)
+ 	}
+-	if E.IsClosedOrCanceled(err) {
++	if errors.Is(err, observation.ErrRejected) {
++		// Already recorded at the actual rejection branch; no duplicate or raw credentials.
++	} else if E.IsClosedOrCanceled(err) {
+ 		s.logger.Debug(E.Cause(err, "connection failed"))
+ 	} else {
+ 		s.logger.Error(E.Cause(err, "connection failed"))

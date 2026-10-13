@@ -1,0 +1,187 @@
+--- a/core/hy2/hy2.go
++++ b/core/hy2/hy2.go
+@@ -30,7 +30,8 @@
+ 	return &Hysteria2{
+ 		Hy2nodes: make(map[string]Hysteria2node),
+ 		Auth: &V2bX{
+-			usersMap: make(map[string]int),
++			usersMap:   make(map[string]int),
++			rejections: &authRejectLogger{logger: log},
+ 		},
+ 		Logger: log,
+ 	}, nil
+--- a/core/hy2/user.go
++++ b/core/hy2/user.go
+@@ -13,16 +13,19 @@
+ var _ server.Authenticator = &V2bX{}
+ 
+ type V2bX struct {
+-	usersMap map[string]int
+-	mutex    sync.RWMutex
++	usersMap   map[string]int
++	mutex      sync.RWMutex
++	rejections *authRejectLogger
+ }
+ 
+ func (v *V2bX) Authenticate(addr net.Addr, auth string, tx uint64) (ok bool, id string) {
+ 	v.mutex.RLock()
+-	defer v.mutex.RUnlock()
+-	if _, exists := v.usersMap[auth]; exists {
++	_, exists := v.usersMap[auth]
++	v.mutex.RUnlock()
++	if exists {
+ 		return true, auth
+ 	}
++	v.rejections.reject(addr)
+ 	return false, ""
+ }
+ 
+--- /dev/null
++++ b/core/hy2/auth_observation.go
+@@ -0,0 +1,51 @@
++package hy2
++
++import (
++	"go.uber.org/zap"
++	"net"
++	"sync"
++	"time"
++)
++
++// Experimental observation only. Bound memory and emitted log growth globally
++// per core; never retain credentials, account IDs, node URLs or peer maps.
++// One record per rejected Authenticate call, not per packet or QUIC stream.
++// A malicious connection can submit multiple auth requests; each is an attempt.
++type authRejectLogger struct {
++	mutex   sync.Mutex
++	logger  *zap.Logger
++	window  time.Time
++	emitted uint32
++	dropped uint64
++}
++
++func (l *authRejectLogger) reject(addr net.Addr) {
++	if l == nil || l.logger == nil {
++		return
++	}
++	peer, ok := addr.(*net.UDPAddr)
++	if !ok || peer == nil || peer.IP.To16() == nil || peer.IP.IsUnspecified() || peer.IP.IsMulticast() || peer.Port < 1 || peer.Port > 65535 || peer.Zone != "" {
++		return
++	}
++	// Numeric typed address only: never format arbitrary caller-provided strings.
++	endpoint := (&net.UDPAddr{IP: peer.IP, Port: peer.Port}).String()
++	l.mutex.Lock()
++	defer l.mutex.Unlock()
++	now := time.Now()
++	if l.window.IsZero() || now.Sub(l.window) >= time.Second {
++		if l.dropped > 0 {
++			l.logger.Error("v2bx authentication observations dropped", zap.Int("schema_version", 1), zap.String("core", "hysteria2"), zap.String("protocol", "hysteria2"), zap.Uint64("dropped", l.dropped))
++		}
++		l.window = now
++		l.emitted = 0
++		l.dropped = 0
++	}
++	// At most 20 rejection records plus one drop summary in a fixed window.
++	// Summary is emitted on the next attempt; shutdown may leave pending drops.
++	if l.emitted >= 20 {
++		l.dropped++
++		return
++	}
++	l.emitted++
++	l.logger.Error("v2bx authentication rejected", zap.Int("schema_version", 1), zap.String("core", "hysteria2"), zap.String("protocol", "hysteria2"), zap.String("event_type", "auth_rejected"), zap.String("addr", endpoint))
++}
+--- /dev/null
++++ b/core/hy2/auth_observation_test.go
+@@ -0,0 +1,82 @@
++package hy2
++
++import (
++	"go.uber.org/zap"
++	"go.uber.org/zap/zaptest/observer"
++	"net"
++	"sync"
++	"testing"
++	"time"
++)
++
++func TestAuthObservationPrivacyAndCompatibility(t *testing.T) {
++	core, logs := observer.New(zap.ErrorLevel)
++	v := &V2bX{usersMap: map[string]int{"valid-secret": 1}}
++	// Construct through the production New wiring, then replace only the sink.
++	runtime, err := New(testCoreConfig())
++	if err != nil {
++		t.Fatal(err)
++	}
++	h := runtime.(*Hysteria2)
++	h.Auth.usersMap = v.usersMap
++	h.Auth.rejections.logger = zap.New(core)
++	good := &net.UDPAddr{IP: net.ParseIP("198.51.100.7"), Port: 12345}
++	if ok, id := h.Auth.Authenticate(good, "valid-secret", 0); !ok || id != "valid-secret" {
++		t.Fatal("changed valid auth")
++	}
++	if logs.Len() != 0 {
++		t.Fatal("valid auth logged rejection")
++	}
++	for _, addr := range []net.Addr{good, &net.UDPAddr{IP: net.ParseIP("2001:db8::7"), Port: 12345}} {
++		if ok, id := h.Auth.Authenticate(addr, "submitted-secret", 999); ok || id != "" {
++			t.Fatal("changed invalid auth")
++		}
++	}
++	if logs.Len() != 2 {
++		t.Fatalf("want 2, got %d", logs.Len())
++	}
++	for i, e := range logs.All() {
++		want := "198.51.100.7:12345"
++		if i == 1 {
++			want = "[2001:db8::7]:12345"
++		}
++		fields := e.ContextMap()
++		if e.Message != "v2bx authentication rejected" || len(fields) != 5 || fields["schema_version"] != int64(1) || fields["core"] != "hysteria2" || fields["protocol"] != "hysteria2" || fields["event_type"] != "auth_rejected" || fields["addr"] != want {
++			t.Fatalf("unexpected fixed fields: %#v", e)
++		}
++	}
++	for _, addr := range []net.Addr{nil, &net.UDPAddr{}, &net.UDPAddr{IP: net.ParseIP("224.0.0.1"), Port: 12}, &net.UDPAddr{IP: net.ParseIP("198.51.100.7"), Port: 65536}, &net.UDPAddr{IP: net.ParseIP("fe80::1"), Port: 12, Zone: "private-device"}} {
++		h.Auth.Authenticate(addr, "submitted-secret", 0)
++	}
++	if logs.Len() != 2 {
++		t.Fatal("unsafe endpoint logged")
++	}
++}
++
++func TestAuthObservationBoundedConcurrentGrowth(t *testing.T) {
++	core, logs := observer.New(zap.ErrorLevel)
++	now := time.Now()
++	sink := &authRejectLogger{logger: zap.New(core), window: now}
++	v := &V2bX{usersMap: map[string]int{}, rejections: sink}
++	var wg sync.WaitGroup
++	for i := 0; i < 100; i++ {
++		wg.Add(1)
++		go func() {
++			defer wg.Done()
++			v.Authenticate(&net.UDPAddr{IP: net.ParseIP("198.51.100.8"), Port: 4567}, "bad", 0)
++		}()
++	}
++	wg.Wait()
++	if logs.Len() != 20 || sink.dropped != 80 {
++		t.Fatalf("unbounded: logs=%d drops=%d", logs.Len(), sink.dropped)
++	}
++	sink.window = time.Now().Add(-2 * time.Second)
++	v.Authenticate(&net.UDPAddr{IP: net.ParseIP("198.51.100.8"), Port: 4567}, "bad", 0)
++	if logs.Len() != 22 {
++		t.Fatal("missing next-window drop summary / rejection")
++	}
++	summary := logs.All()[20]
++	if summary.Message != "v2bx authentication observations dropped" || len(summary.ContextMap()) != 4 || summary.ContextMap()["dropped"] != uint64(80) {
++		t.Fatal("invalid drop summary")
++	}
++}
+--- /dev/null
++++ b/core/hy2/auth_observation_config_test.go
+@@ -0,0 +1,7 @@
++package hy2
++
++import "github.com/InazumaV/V2bX/conf"
++
++func testCoreConfig() *conf.CoreConfig {
++	return &conf.CoreConfig{Hysteria2Config: conf.NewHysteria2Config()}
++}
