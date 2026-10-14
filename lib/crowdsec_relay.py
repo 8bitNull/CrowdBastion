@@ -137,15 +137,24 @@ def nft_paths(ruleset, table, name, protocol):
     if not isinstance(records, list):
         raise ValueError('nft JSON 规则格式无效。')
     families = {protocol, 'inet'}
-    sets = {(entry['set'].get('family'), entry['set'].get('table'), entry['set'].get('name'))
-            for entry in records if 'set' in entry}
+    sets = {}
+    for entry in records:
+        candidate = entry.get('set', {})
+        actual = candidate.get('name')
+        # Official nftables sets use <configured blacklist>-<decision origin>.
+        # Keep exact names for older layouts and manually managed set-only rules.
+        if isinstance(actual, str) and (actual == name or
+                (actual.startswith(name+'-') and len(actual) > len(name)+1)):
+            key = (candidate.get('family'), candidate.get('table'))
+            sets.setdefault(key, set()).add('@'+actual)
     hooks = {(entry['chain'].get('family'), entry['chain'].get('table'), entry['chain'].get('name')):
              entry['chain'].get('hook') for entry in records if 'chain' in entry}
     found = set()
     for entry in records:
         rule = entry.get('rule', {})
         family = rule.get('family')
-        if family not in families or rule.get('table') != table or (family, table, name) not in sets:
+        references = sets.get((family, table), set())
+        if family not in families or rule.get('table') != table or not references:
             continue
         hook = hooks.get((family, table, rule.get('chain')))
         if hook not in ('input', 'forward'):
@@ -153,7 +162,8 @@ def nft_paths(ruleset, table, name, protocol):
         expressions = rule.get('expr', [])
         source_match = any(expr.get('match', {}).get('op') in ('==', 'in')
                            and expr.get('match', {}).get('left') == {'payload': {'protocol': protocol, 'field': 'saddr'}}
-                           and expr.get('match', {}).get('right') == '@'+name
+                           and isinstance(expr.get('match', {}).get('right'), str)
+                           and expr['match']['right'] in references
                            for expr in expressions)
         drop = any('drop' in expr or 'reject' in expr for expr in expressions)
         if source_match and drop:

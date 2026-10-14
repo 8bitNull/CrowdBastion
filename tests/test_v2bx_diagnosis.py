@@ -290,6 +290,31 @@ class V2bXDiagnosis(unittest.TestCase):
         data = self.report()
         self.assertEqual(data['acquisition_status'], 'read_failed')
 
+    def test_nft_capi_rules_are_reported_without_claiming_business_blocking(self):
+        self.write_config()
+        bouncers = self.cs / 'bouncers'
+        bouncers.mkdir()
+        (bouncers/'crowdsec-firewall-bouncer.yaml').write_text(
+            'mode: nftables\nnftables:\n  ipv4: {enabled: true}\n  ipv6: {enabled: false}\n')
+        records = [{'set': {'family': 'ip', 'table': 'crowdsec',
+                            'name': 'crowdsec-blacklists-CAPI', 'type': 'ipv4_addr'}}]
+        for hook in ('input', 'forward'):
+            chain = 'crowdsec-chain-'+hook
+            records.extend([
+                {'chain': {'family': 'ip', 'table': 'crowdsec', 'name': chain,
+                           'type': 'filter', 'hook': hook, 'prio': -10, 'policy': 'accept'}},
+                {'rule': {'family': 'ip', 'table': 'crowdsec', 'chain': chain, 'expr': [
+                    {'match': {'op': '==', 'left': {'payload': {'protocol': 'ip', 'field': 'saddr'}},
+                               'right': '@crowdsec-blacklists-CAPI'}},
+                    {'counter': 'crowdsec-blacklists-CAPI'}, {'drop': None}]}}])
+        self.command('nft', json.dumps({'nftables': records}))
+        data = self.report()
+        self.assertTrue(data['bouncer_references']['ipv4']['INPUT'])
+        self.assertTrue(data['bouncer_references']['ipv4']['FORWARD'])
+        self.assertFalse(data['bouncer_references']['ipv6']['INPUT'])
+        self.assertFalse(data['bouncer_references']['ipv6']['FORWARD'])
+        self.assertEqual(data['end_to_end_status'], 'unverified')
+
 
 class V2bXRouting(unittest.TestCase):
     setUp = test_workflows.Workflows.setUp

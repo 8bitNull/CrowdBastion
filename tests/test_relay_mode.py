@@ -266,14 +266,63 @@ class RelayAudit(unittest.TestCase):
         self.assertIn('仅管理集合', result.stdout)
         self.assertNotIn('已发现封禁', result.stdout)
 
-    def nft_fixture(self, hook='input', table='custom', family='ip'):
+    def nft_fixture(self, hook='input', table='custom', family='ip', name='deny4'):
         return {'nftables': [
             {'table': {'family': family, 'name': table}},
-            {'set': {'family': family, 'table': table, 'name': 'deny4'}},
+            {'set': {'family': family, 'table': table, 'name': name}},
             {'chain': {'family': family, 'table': table, 'name': 'ban', 'hook': hook, 'prio': -10}},
             {'rule': {'family': family, 'table': table, 'chain': 'ban', 'expr': [
-                {'match': {'op': '==', 'left': {'payload': {'protocol': 'ip', 'field': 'saddr'}}, 'right': '@deny4'}},
+                {'match': {'op': '==', 'left': {'payload': {'protocol': family, 'field': 'saddr'}}, 'right': '@'+name}},
                 {'drop': None}]}}]}
+
+    def test_nft_origin_sets_are_recognized_for_both_families_and_hooks(self):
+        self.file.write_text('mode: nftables\nnftables:\n  ipv4: {enabled: true}\n  ipv6: {enabled: true}\n')
+        before = self.file.read_bytes()
+        for family, table, base, label in (
+                ('ip', 'crowdsec', 'crowdsec-blacklists', 'IPv4'),
+                ('ip6', 'crowdsec6', 'crowdsec6-blacklists', 'IPv6')):
+            for hook in ('input', 'forward'):
+                for origin in ('CAPI', 'cscli', 'lists-community'):
+                    with self.subTest(family=family, hook=hook, origin=origin):
+                        self.tool('nft', json.dumps(self.nft_fixture(
+                            hook=hook, table=table, family=family, name=base+'-'+origin)))
+                        result = self.audit()
+                        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+                        self.assertIn(label+' '+hook.upper()+': 已发现', result.stdout)
+                        other = 'FORWARD' if hook == 'input' else 'INPUT'
+                        self.assertIn(label+' '+other+': 尚未发现', result.stdout)
+                        self.assertEqual(self.file.read_bytes(), before)
+
+    def test_nft_custom_origin_sets_require_matching_namespace_and_drop_rules(self):
+        self.file.write_text('mode: nftables\nblacklists_ipv4: deny4\nnftables:\n  ipv4: {enabled: true, table: custom}\n  ipv6: {enabled: false}\n')
+        for name, found in (('deny4-CAPI', True), ('deny4Extra-CAPI', False),
+                            ('other-deny4-CAPI', False), ('deny4-', False)):
+            with self.subTest(name=name):
+                self.tool('nft', json.dumps(self.nft_fixture(name=name)))
+                result = self.audit()
+                self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+                message = '已发现' if found else '尚未发现'
+                self.assertIn('IPv4 INPUT: '+message, result.stdout)
+        for mutation in ('missing_set', 'other_table', 'unhooked', 'destination', 'accept', 'negated'):
+            with self.subTest(mutation=mutation):
+                fixture = self.nft_fixture(name='deny4-CAPI')
+                rule = fixture['nftables'][-1]['rule']
+                if mutation == 'missing_set':
+                    del fixture['nftables'][1]
+                elif mutation == 'other_table':
+                    rule['table'] = 'other'
+                elif mutation == 'unhooked':
+                    del fixture['nftables'][2]['chain']['hook']
+                elif mutation == 'destination':
+                    rule['expr'][0]['match']['left']['payload']['field'] = 'daddr'
+                elif mutation == 'accept':
+                    rule['expr'][-1] = {'accept': None}
+                else:
+                    rule['expr'][0]['match']['op'] = '!='
+                self.tool('nft', json.dumps(fixture))
+                result = self.audit()
+                self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+                self.assertIn('IPv4 INPUT: 尚未发现', result.stdout)
 
     def test_nft_custom_table_set_and_hook_are_inspected(self):
         self.file.write_text('mode: nftables\nblacklists_ipv4: deny4\nnftables:\n  ipv4: {enabled: true, table: custom}\n  ipv6: {enabled: false}\n')
