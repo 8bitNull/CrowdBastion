@@ -2031,8 +2031,17 @@ show_startup_banner() {
 / /___/ /  / /_/ / |/ |/ / /_/ / /_/ / /_/ (__  ) /_/ / /_/ / / / /
 \____/_/   \____/|__/|__/\__,_/_____/\__,_/____/\__/_/\____/_/ /_/
 EOF
-    printf '%s%s' "$banner_reset" "$banner_green"
+    printf '\n%s%s' "$banner_reset" "$banner_green"
     cat <<'EOF'
+ ─────────────────────────────────────────────────────────────────
+                      C R O W D B A S T I O N
+
+                    SERVER DEFENSE & OPERATIONS
+
+                         Web / Relay / Node
+                        Powered by CrowdSec
+
+                  github.com/8bitNull/CrowdBastion
  ─────────────────────────────────────────────────────────────────
  >> CROWDBASTION v3.0 | Next-Gen Lightweight VPS Sentinel
  >> NPM Host Mode + nftables Kernel DROP + Mobile Telegram SOC
