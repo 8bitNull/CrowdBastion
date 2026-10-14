@@ -2015,8 +2015,36 @@ manage_integrations() {
     done
 }
 
+show_startup_banner() {
+    local banner_cyan='' banner_green='' banner_reset=''
+    if [[ -t 1 && "${TERM:-dumb}" != dumb && -z "${NO_COLOR+x}" ]] &&
+        command -v tput >/dev/null 2>&1 && tput setaf 6 >/dev/null 2>&1; then
+        banner_cyan=$'\033[1;36m'
+        banner_green=$'\033[1;32m'
+        banner_reset=$'\033[0m'
+    fi
+    printf '\n%s' "$banner_cyan"
+    cat <<'EOF'
+   ______                        ______             __  _
+  / ____/________ _      _______/ __  /____ ______/ /_(_)___  ____
+ / /   / ___/ __ \ | /| / / __  / __  / __ `/ ___/ __/ / __ \/ __ \
+/ /___/ /  / /_/ / |/ |/ / /_/ / /_/ / /_/ (__  ) /_/ / /_/ / / / /
+\____/_/   \____/|__/|__/\__,_/_____/\__,_/____/\__/_/\____/_/ /_/
+EOF
+    printf '%s%s' "$banner_reset" "$banner_green"
+    cat <<'EOF'
+ ─────────────────────────────────────────────────────────────────
+ >> CROWDBASTION v3.0 | Next-Gen Lightweight VPS Sentinel
+ >> NPM Host Mode + nftables Kernel DROP + Mobile Telegram SOC
+ >> 100% Pure Python 3.13 StdLib | Resident Memory < 16MB
+ ─────────────────────────────────────────────────────────────────
+EOF
+    printf '%s\n' "$banner_reset"
+}
+
 show_main_menu() {
     local choice
+    show_startup_banner
     while true; do
         printf '\nCrowdBastion 防护管理中心 — 首次安装 [1] → [1]，健康检查 [4] → [1]\n1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n0. 退出\n'
         prompt choice '请选择 [0-6]（Ctrl+D 退出）: ' || return 0
