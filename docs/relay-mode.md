@@ -23,7 +23,7 @@ labels:
 
 ## 只读证据与限制
 
-检查有效 Firewall Bouncer 配置与运行服务。iptables 模式检查配置集合是否存在，以及 INPUT/FORWARD/DOCKER-USER 中直接或经自定义链引用来源 IP 集合的 DROP/REJECT 规则；nftables 模式检查对应 IPv4/IPv6 表、集合及直接挂在 input/forward 上的来源 IP 阻断规则。集合名称读取官方 `blacklists_ipv4` / `blacklists_ipv6` 配置；不以任意名为 crowdsec 的表作为生效证据。
+检查有效 Firewall Bouncer 配置与运行服务。iptables 模式检查配置集合是否存在，以及 INPUT/FORWARD/DOCKER-USER 中直接或经自定义链引用来源 IP 集合的 DROP/REJECT 规则；nftables 模式检查对应 IPv4/IPv6 表、集合及直接挂在 input/forward 上的来源 IP 阻断规则。集合名称读取官方 `blacklists_ipv4` / `blacklists_ipv6` 配置；nftables 同时识别配置名称与官方按决策来源生成的集合，例如 `crowdsec-blacklists-CAPI`、`crowdsec-blacklists-cscli` 和 `crowdsec6-blacklists-CAPI`。仍要求集合实际存在于同一 family/table，并被来源 IP 匹配的 DROP/REJECT 规则引用；不以任意名为 crowdsec 的表作为生效证据。V2bX 诊断复用这项检查。
 
 IPv6 全局禁用或 nftables 分组未启用时明确显示。ipset 和 nftables set-only 的过滤规则由部署者接入。nftables 自定义跳转图、复杂表达式及非标准规则可能无法识别，报告“尚未发现”并不等于不存在防护。规则引用也不证明其匹配范围和执行顺序；iptables 提前 ACCEPT、已建立连接旁路、Docker 跳转顺序和其他规则管理器的更新都需在目标节点核验。
 
