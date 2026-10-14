@@ -176,10 +176,13 @@ remote_bouncer_change() (
 )
 
 remote_bouncer_status() {
+    health_expect remote
+    if [[ ! -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]]; then health_event remote missing; fi
     require_yaml && require_commands timeout || return 1
     REMOTE_CONFIG="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml"
-    remote_bouncer_tool status || return 1
-    systemctl is-active --quiet crowdsec-firewall-bouncer || { log_warn 'Firewall Bouncer 未运行。'; return 1; }
+    remote_bouncer_tool status || { health_event remote unknown; return 1; }
+    health_event remote ok
+    health_service bouncer crowdsec-firewall-bouncer || { log_warn 'Firewall Bouncer 未运行。'; return 1; }
     log_info '服务运行；不会自动采集 SSH 日志，状态输出不代表真实业务阻断已验证。'
 }
 

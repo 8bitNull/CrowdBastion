@@ -82,9 +82,14 @@ node_recommendation() {
     return 0
 }
 
-check_health_status() {
+check_health_status_raw() {
+    health_expect traffic
+    health_event traffic pending
     load_node_roles || return 1
     if [[ -z "$NODE_ROLES" ]]; then
+        health_expect core
+        health_expect logs
+        health_expect web
         local legacy=0
         check_web_health_status || legacy=$?
         node_recommendation
@@ -98,6 +103,9 @@ check_health_status() {
         log_warn '发现已部署的网站/AppSec 配置，本次仍核查这些组件，避免遗漏故障。'
     fi
     if node_has_role remote; then
+        health_expect remote
+        health_expect bouncer
+        health_expect rules
         log_info '远端执行节点：检测由中心负责，不要求本地 CrowdSec，不检查本地 LAPI 或 SSH 采集。'
         remote_bouncer_status || status=$?
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
@@ -106,6 +114,7 @@ check_health_status() {
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
         [[ "$result" == 0 ]] && result=2
         if [[ "$web" == true ]]; then
+            health_expect web
             # Inspect deployed components without querying local core/LAPI.
             status=0; check_appsec_status offline || status=$?
             [[ "$status" != 0 && "$status" != 2 ]] && result=1
@@ -113,12 +122,17 @@ check_health_status() {
             [[ "$status" != 0 && "$status" != 2 ]] && result=1
         fi
     elif [[ "$web" == true ]] || node_has_role relay || [[ -e "${CS_DIR}/config.yaml" || -L "${CS_DIR}/config.yaml" ]]; then
+        health_expect core
+        health_expect logs
+        [[ "$web" == true ]] && health_expect web
         status=0
         if [[ "$web" == true ]]; then check_web_health_status || status=$?
         else check_web_health_status system || status=$?; fi
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
         [[ "$result" == 0 && "$status" == 2 ]] && result=2
         if node_has_role relay || node_has_role node; then
+            health_expect bouncer
+            health_expect rules
             status=0; check_relay_status || status=$?
             [[ "$status" != 0 && "$status" != 2 ]] && result=1
             [[ "$result" == 0 && "$status" == 2 ]] && result=2
@@ -128,62 +142,16 @@ check_health_status() {
         result=2
     fi
     if node_has_role node; then
+        health_expect v2bx
+        health_expect v2bx_service
+        health_expect sockets
         status=0; diagnose_v2bx || status=$?
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
         [[ "$result" == 0 && "$status" == 2 ]] && result=2
     fi
-    case "$result" in
-        1) log_warn '本次结论：存在异常，请先处理上方异常项。' ;;
-        2) log_info '本次结论：仍有尚未验证项目；请按实际流量路径完成核验。' ;;
-        0) log_info '本次检查项通过。' ;;
-    esac
     node_recommendation
     return "$result"
 }
 
-interactive_health_check() {
-    local result=0 choice install_label repair_label path_label
-    check_health_status || result=$?
-    # Failed preferences must not produce a guessed installation action.
-    load_node_roles || { pause; return 1; }
-    if [[ ! -t 0 ]]; then return "$result"; fi
-    if node_has_role remote; then
-        install_label='安装或配置远端检测中心连接'; repair_label='修改远端连接配置'
-    elif node_has_role web || [[ -z "$NODE_ROLES" ]]; then
-        install_label='安装网站基础防护'; repair_label='进入网站基础修复'
-    else
-        install_label='安装本机系统/SSH 基础防护'; repair_label='修复防火墙与本地检测服务连接'
-    fi
-    path_label='检查连接来源和转发路径（只读）'
-    if ! node_has_role remote && { node_has_role web || node_web_deployed || [[ -z "$NODE_ROLES" ]]; }; then
-        path_label='排查网站'
-    fi
-    while true; do
-        printf '\n下一步（选择后执行）\n'
-        if ! node_core_present || node_has_role remote; then printf '1. %s\n' "$install_label"; fi
-        printf '2. %s\n' "$path_label"
-        printf '3. %s\n' "$repair_label"
-        node_has_role node && printf '4. 检查 V2bX 运行日志（只读）\n'
-        printf '0. 返回\n'
-        prompt choice '请选择下一步: ' || return 0
-        case "$choice" in
-            0) return 0 ;;
-            1)
-                if node_has_role remote; then locked_operation manage_remote_bouncer; return 0
-                elif node_core_present; then log_warn '基础服务已部署，请选择专项检查。'; continue
-                elif node_has_role web || [[ -z "$NODE_ROLES" ]]; then locked_operation install_crowdsec_core web
-                else locked_operation install_crowdsec_core relay; fi ;;
-            2)
-                if [[ "$path_label" == '排查网站' ]]; then manage_website_diagnostics; return 0
-                else check_relay_path; fi ;;
-            3)
-                if node_has_role remote; then locked_operation remote_bouncer_change configure
-                elif node_has_role web || [[ -z "$NODE_ROLES" ]]; then manage_basic_repairs; return 0
-                else locked_operation repair_firewall_bouncer; fi ;;
-            4) if node_has_role node; then check_v2bx_logs; else log_warn '无效选项。'; continue; fi ;;
-            *) log_warn '无效选项。'; continue ;;
-        esac
-        pause
-        return 0
-    done
-}
+check_health_status() { health_report overall "${1:-summary}"; }
+interactive_health_check() { health_report overall interactive; }

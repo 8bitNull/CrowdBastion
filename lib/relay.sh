@@ -16,6 +16,13 @@ prepare_relay_logs() {
 }
 
 check_relay_status() {
+    if [[ -n "${CROWDBASTION_HEALTH_EVENTS:-}" ]]; then check_relay_status_raw
+    else health_report relay "${1:-summary}"; fi
+}
+
+check_relay_status_raw() {
+    health_expect bouncer
+    health_expect rules
     require_yaml || return 1
     local action=audit
     load_node_roles || return 1

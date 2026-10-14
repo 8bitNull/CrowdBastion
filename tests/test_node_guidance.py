@@ -108,7 +108,7 @@ class Guidance(unittest.TestCase):
     def test_relay_status_skips_http_and_appsec_and_does_not_write(self):
         path = self.roles('relay')
         before = path.read_bytes()
-        p = self.run_shell('main --status', overrides='check_relay_status() { return 2; }')
+        p = self.run_shell('main --status-details', overrides='check_relay_status() { return 2; }')
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertNotIn('metrics show appsec', self.commands())
         self.assertNotIn('docker ', self.commands())
@@ -120,7 +120,7 @@ class Guidance(unittest.TestCase):
     def test_remote_status_does_not_require_or_query_local_core(self):
         self.roles('remote')
         (self.config/'config.yaml').unlink()
-        p = self.run_shell('main --status', overrides='remote_bouncer_status() { return 0; }; check_remote_firewall_status() { return 2; }')
+        p = self.run_shell('main --status-details', overrides='remote_bouncer_status() { return 0; }; check_remote_firewall_status() { return 2; }')
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertNotIn('cscli', self.commands())
         self.assertNotIn('crowdsec -t', self.commands())
@@ -130,7 +130,7 @@ class Guidance(unittest.TestCase):
     def test_node_without_core_still_diagnoses_v2bx(self):
         self.roles('node')
         (self.config/'config.yaml').unlink()
-        p = self.run_shell('main --status', overrides='diagnose_v2bx() { printf "V2bX diagnosis\n"; return 2; }')
+        p = self.run_shell('main --status-details', overrides='diagnose_v2bx() { printf "V2bX diagnosis\n"; return 2; }')
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertIn('V2bX diagnosis', p.stdout)
         self.assertNotIn('cscli', self.commands())
@@ -138,7 +138,7 @@ class Guidance(unittest.TestCase):
 
     def test_combination_keeps_abnormal_precedence(self):
         self.roles('remote', 'node')
-        p = self.run_shell('check_health_status', overrides='remote_bouncer_status() { return 1; }; check_remote_firewall_status() { return 2; }; diagnose_v2bx() { printf "node checked\n"; return 2; }')
+        p = self.run_shell('check_health_status details', overrides='remote_bouncer_status() { return 1; }; check_remote_firewall_status() { return 2; }; diagnose_v2bx() { printf "node checked\n"; return 2; }')
         self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
         self.assertIn('node checked', p.stdout)
 
@@ -154,7 +154,7 @@ class Guidance(unittest.TestCase):
         self.roles('relay')
         (self.config/'acquis.d').mkdir()
         (self.config/'acquis.d/crowdsec-1key-appsec.yaml').write_text('source: appsec\n')
-        p = self.run_shell('check_health_status', overrides='check_web_health_status() { if [[ "${1:-web}" == web ]]; then printf "web inspected\n"; return 1; fi; return 2; }; check_relay_status() { return 2; }')
+        p = self.run_shell('check_health_status details', overrides='check_web_health_status() { if [[ "${1:-web}" == web ]]; then printf "web inspected\n"; return 1; fi; return 2; }; check_relay_status() { return 2; }')
         self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
         self.assertIn('web inspected', p.stdout)
 
@@ -164,7 +164,7 @@ class Guidance(unittest.TestCase):
         active.mkdir()
         (self.config/'config.yaml.local').write_text('crowdsec_service:\n  acquisition_dir: '+str(active)+'\n')
         (active/'crowdsec-1key-log-repair.yaml').write_text('filenames: [/custom/access.log]\nlabels: {type: nginx}\n')
-        p = self.run_shell('check_health_status', overrides='check_web_health_status() { if [[ "${1:-web}" == web ]]; then printf "web inspected\n"; return 1; fi; return 2; }; check_relay_status() { return 2; }')
+        p = self.run_shell('check_health_status details', overrides='check_web_health_status() { if [[ "${1:-web}" == web ]]; then printf "web inspected\n"; return 1; fi; return 2; }; check_relay_status() { return 2; }')
         self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
         self.assertIn('web inspected', p.stdout)
 
@@ -349,7 +349,7 @@ locked_operation() { record lock "$@"; "$@"; }
 
     def test_combined_web_and_node_cover_both_checks(self):
         self.roles('web', 'node')
-        p = self.run_shell('check_health_status', overrides='''
+        p = self.run_shell('check_health_status details', overrides='''
 check_web_health_status() { printf 'web checked\n'; return 2; }
 check_relay_status() { return 2; }
 diagnose_v2bx() { printf 'node checked\n'; return 2; }

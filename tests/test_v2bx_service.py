@@ -228,6 +228,26 @@ class LandingService(unittest.TestCase):
         with sqlite3.connect(manager.state/'sing.sqlite') as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM events').fetchone()[0], 1)
 
+    def test_previous_helper_manifest_remains_owned_after_manager_update(self):
+        manager, calls = self.manager()
+        manager.install(self.config)
+        manifest_path = manager.code/'manifest.json'
+        manifest = json.loads(manifest_path.read_text())
+        manifest.pop('crowdbastion_health.py')
+        manifest_path.write_text(json.dumps(manifest))
+        reporter = manager.code/'crowdbastion_health.py'
+        reporter.write_text('# changed reporter\n')
+        with self.assertRaises(ValueError):
+            manager.managed()
+        reporter.unlink()
+        reporter.symlink_to(manager.code/'crowdsec_config.py')
+        with self.assertRaises(ValueError):
+            manager.managed()
+        reporter.unlink()
+        manager.managed()
+        manager.disable()
+        self.assertIn(('disable', '--now', self.mod.UNIT), calls)
+
     def test_runtime_dependency_failure_precedes_mutation(self):
         manager, calls = self.manager()
         def fail_runtime():raise RuntimeError('missing yaml')

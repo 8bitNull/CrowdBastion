@@ -19,6 +19,7 @@ import yaml
 
 from crowdsec_config import acquisition_locations, go_glob
 from crowdsec_relay_paths import endpoint
+from crowdbastion_health import emit
 
 CORES = {'xray', 'sing', 'hysteria2'}
 PROTOCOLS = {'vless', 'vmess', 'trojan', 'shadowsocks', 'hysteria', 'hysteria2',
@@ -426,8 +427,18 @@ def inspect(options):
     references = {family: {chain: False for chain in ('INPUT', 'FORWARD')}
                   for family in ('ipv4', 'ipv6')}
     try:
+        child_env = os.environ.copy()
+        firewall_config = Path(options.cs_dir)/'bouncers/crowdsec-firewall-bouncer.yaml'
+        if getattr(options, 'firewall_optional', False) and not any(p.exists() or p.is_symlink() for p in (firewall_config, Path(str(firewall_config)+'.local'))):
+            units, unit_status = command(['systemctl', 'list-unit-files', '--no-legend', '--no-pager', 'crowdsec-firewall-bouncer.service'])
+            installed = bool(shutil.which('crowdsec-firewall-bouncer') or re.search(r'^crowdsec-firewall-bouncer\.service\s', units or '', re.M))
+            if not installed:
+                child_env.pop('CROWDBASTION_HEALTH_EVENTS', None)
+                if unit_status != 'readable':
+                    emit('bouncer', 'required')
+                    emit('bouncer', 'unknown')
         checked = subprocess.run([sys.executable, str(audit), 'audit-remote' if bouncer_only else 'audit', options.cs_dir],
-                                 capture_output=True, text=True, timeout=20)
+                                 capture_output=True, text=True, timeout=20, env=child_env)
         bouncer = {0: 'local_references_present', 2: 'unverified'}.get(checked.returncode, 'check_failed')
         lines = set(checked.stdout.splitlines())
         for family, label in (('ipv4', 'IPv4'), ('ipv6', 'IPv6')):
@@ -488,6 +499,7 @@ def main(args):
     parser.add_argument('--config', help='明确选择本机配置文件')
     parser.add_argument('--cs-dir', default='/etc/crowdsec')
     parser.add_argument('--bouncer-only', action='store_true', help='不检查本地核心或采集，只检查本机 Bouncer')
+    parser.add_argument('--firewall-optional', action='store_true', help='独立落地观察时允许未部署防火墙；已部署组件仍检查')
     parser.add_argument('--unit', default='V2bX.service')
     parser.add_argument('--working-dir', help='相对 Include/日志路径的实际工作目录')
     parser.add_argument('--entries', default='', help='1:direct,2:relay-proxy；按 Nodes 顺序声明')
@@ -496,8 +508,32 @@ def main(args):
         options = parser.parse_args(args)
         report = inspect(options)
         code = 1 if report['runtime']['service_status'] in ('read_failed', 'too_large') or report['socket_status'] in ('read_failed', 'too_large') else 2
+        emit('v2bx', 'required')
+        emit('v2bx_service', 'required')
+        emit('sockets', 'required')
+        complete = bool(report['cores'] and report['nodes']) and all(n['config_status'] in ('local', 'local_include') for n in report['nodes'])
+        emit('v2bx', 'ok' if complete else 'unknown')
+        runtime_report = report['runtime']
+        if runtime_report['service_status'] != 'readable':
+            emit('v2bx_service', 'unknown')
+        elif runtime_report['load'] == 'not-found':
+            emit('v2bx_service', 'missing')
+        elif runtime_report['active'] in ('inactive', 'failed'):
+            emit('v2bx_service', 'fault')
+            code = 1
+        else:
+            emit('v2bx_service', 'ok' if runtime_report['active'] == 'active' else 'unknown')
+        emit('sockets', 'unknown' if report['socket_status'] != 'readable' else 'ok' if any(s['service_pid_match'] for s in report['sockets']) else 'pending')
+        enabled_logs = [log for log in report['logs'] if log['read_status'] != 'disabled']
+        if enabled_logs:
+            emit('v2bx_logs', 'required')
+            emit('v2bx_logs', 'ok' if all(log['read_status'] == 'readable' for log in enabled_logs) else 'unknown')
+        if report['acquisition_status'] != 'not_applicable':
+            emit('acquisition', 'required')
+            emit('acquisition', 'ok' if report['acquisition_status'] == 'readable' else 'unknown')
     except (InputError, OSError, ValueError, TypeError, KeyError, RecursionError) as error:
         report = {'config_status': str(error) if isinstance(error, InputError) else 'read_failed'}
+        emit('v2bx', 'missing' if report['config_status'] == 'missing' else 'fault' if report['config_status'] == 'invalid_config' else 'unknown')
         code = 1
     if '--json' in args:
         print(json.dumps(report, ensure_ascii=False, indent=2))

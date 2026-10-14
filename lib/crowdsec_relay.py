@@ -10,6 +10,7 @@ import subprocess
 import sys
 
 import yaml
+from crowdbastion_health import emit
 from crowdsec_config import acquisition_locations, go_escape, go_glob, merged_config, read, write
 
 
@@ -179,10 +180,13 @@ def report_paths(label, found):
 
 
 def audit(root, core_required=True):
+    emit('bouncer', 'required')
+    emit('rules', 'required')
     print('中转防护只读检查：未发送请求、未创建封禁、未修改防火墙。')
     print('用户态监听通常检查 INPUT；内核 NAT 检查 FORWARD；Docker bridge 需另核对实际路径。')
     path = Path(root)/'bouncers/crowdsec-firewall-bouncer.yaml'
     if not path.exists():
+        emit('bouncer', 'missing')
         print('[尚未验证] Firewall Bouncer 未安装或配置缺失。')
         return 2
     data = merged_config(path)
@@ -192,16 +196,22 @@ def audit(root, core_required=True):
     error = False
     services = ('crowdsec', 'crowdsec-firewall-bouncer') if core_required else ('crowdsec-firewall-bouncer',)
     for service in services:
+        key = 'core' if service == 'crowdsec' else 'bouncer'
+        emit(key, 'required')
         if not shutil.which('systemctl'):
+            emit(key, 'unknown')
             print('[尚未验证] 缺少 systemctl，无法检查服务。')
             break
         result = subprocess.run(['systemctl', 'is-active', '--quiet', service], capture_output=True, timeout=15)
         if result.returncode:
+            emit(key, 'fault' if result.returncode == 3 else 'missing' if result.returncode == 4 else 'unknown')
             print('[异常] '+service+' 未运行或无法读取状态。')
             error = True
         else:
+            emit(key, 'ok')
             print('[已发现] '+service+' 运行。')
     print('Bouncer 后端：'+mode)
+    rule_states = []
     if mode in ('iptables', 'ipset'):
         output = command(['ipset', 'list', '-name'])
         present = set(output.splitlines()) if output is not None else set()
@@ -220,7 +230,9 @@ def audit(root, core_required=True):
                     raise ValueError('Bouncer iptables chains 配置无效。')
                 print(label+' 配置链：'+', '.join(chains))
                 rules = command([binary, '-S'])
-                report_paths(label, iptables_paths(rules, names & present) if rules is not None else set())
+                found = iptables_paths(rules, names & present) if rules is not None else set()
+                report_paths(label, found)
+                rule_states.append(bool(chains) and set(chains) <= found)
     else:
         output = command(['nft', '-j', 'list', 'ruleset'])
         ruleset = json.loads(output) if output is not None else {'nftables': []}
@@ -244,6 +256,11 @@ def audit(root, core_required=True):
             for name in names:
                 found.update(nft_paths(ruleset, table, name, protocol))
             report_paths(label, found)
+            hooks = data.get('nftables_hooks', ['input', 'forward'])
+            if not isinstance(hooks, list) or any(not isinstance(hook, str) for hook in hooks):
+                raise ValueError('invalid nftables hooks')
+            rule_states.append(bool(hooks) and {hook.upper() for hook in hooks} <= found)
+    emit('rules', 'ok' if rule_states and all(rule_states) else 'unknown')
     print('[尚未验证] 实际业务阻断尚未验证；规则引用不证明顺序、匹配范围、LAPI 决策同步或已建立连接被阻断。')
     print('多跳/隧道节点可能只看到上游 IP；先核对来源，避免封禁整条链路。')
     print('此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。')
@@ -265,6 +282,7 @@ if __name__ == '__main__':
     try:
         sys.exit(main(sys.argv[1:]))
     except (ValueError, OSError, TypeError, KeyError, AttributeError, yaml.YAMLError, subprocess.TimeoutExpired):
+        emit('rules', 'unknown')
         # Never echo config values or untrusted tool output (including API keys).
         print('[ERROR] 中转采集配置无效或本地服务/防火墙读取失败，请核对配置、工具与权限。', file=sys.stderr)
         sys.exit(1)

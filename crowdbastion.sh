@@ -55,6 +55,8 @@ source "${SCRIPT_DIR}/lib/relay.sh"
 source "${SCRIPT_DIR}/lib/v2bx.sh"
 # shellcheck source=lib/remote_bouncer.sh
 source "${SCRIPT_DIR}/lib/remote_bouncer.sh"
+# shellcheck source=lib/health_summary.sh
+source "${SCRIPT_DIR}/lib/health_summary.sh"
 # shellcheck source=lib/node_guidance.sh
 source "${SCRIPT_DIR}/lib/node_guidance.sh"
 REMOTE_BINARY="/usr/local/bin/crowdsec-firewall-bouncer"
@@ -1023,17 +1025,20 @@ check_appsec_status() {
     require_yaml || return 1
     local addresses address sockets result=0
     addresses=$(yaml_tool appsec-listeners "$CS_DIR") || {
+        health_event appsec unknown
         log_err '无法读取有效 AppSec 数据源，健康状态无法确认。'
         return 1
     }
     if [[ -z "$addresses" ]]; then
         if [[ "${1:-}" == optional || "${1:-}" == offline ]]; then
+            health_event appsec optional
             log_info 'AppSec: 未部署（可选）。'
             return 0
         fi
         log_err '没有启用的 AppSec 数据源；请先运行 --install-appsec。'
         result=1
     else
+        health_expect appsec
         require_commands ss || return 1
         sockets=$(ss -H -lnt) || { log_err '无法读取 AppSec 监听状态。'; return 1; }
         while read -r address; do
@@ -1041,6 +1046,7 @@ check_appsec_status() {
                 log_info "AppSec 配置地址存在监听：${address}。"
             else
                 log_warn "AppSec 配置地址未监听：${address}。"
+                health_event appsec fault
                 result=1
             fi
         done <<< "$addresses"
@@ -1056,6 +1062,7 @@ check_appsec_status() {
         [[ ! -f "$file" ]] || appsec_audit_tool show "$file" || result=1
     done
     log_info '确认 Processed/Blocked 随测试请求变化，不能仅凭 HTTP 403 判断 WAF 生效。'
+    [[ "$result" == 0 && -n "$addresses" ]] && health_event appsec ok
     return "$result"
 }
 
@@ -1599,33 +1606,42 @@ manage_telegram() {
 }
 
 check_web_health_status() {
-    require_core || return 1
+    health_expect core
+    health_expect logs
+    if [[ ! -f "${CS_DIR}/config.yaml" ]]; then
+        health_event core missing
+        require_core
+        return 1
+    fi
+    require_core || { health_event core unknown; return 1; }
     local result=0 evidence=0 firewall_deployed=false units
     printf '\n核心服务:\n'
-    systemctl is-active crowdsec || result=1
+    health_service core crowdsec || result=1
     if [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" || -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.local" ]]; then
         firewall_deployed=true
     elif units=$(systemctl list-unit-files --no-legend --no-pager crowdsec-firewall-bouncer.service); then
         if grep -q '^crowdsec-firewall-bouncer\.service[[:space:]]' <<< "$units"; then firewall_deployed=true; fi
     else
         log_err '无法确认 Firewall Bouncer 是否已部署。'
+        health_event bouncer unknown
         firewall_deployed=unknown
         result=1
     fi
     if [[ "$firewall_deployed" == true ]]; then
-        systemctl is-active crowdsec-firewall-bouncer || result=1
+        health_service bouncer crowdsec-firewall-bouncer || result=1
     elif [[ "$firewall_deployed" == false ]]; then
+        if node_has_role relay; then health_event bouncer missing; else health_event bouncer optional; fi
         log_info 'Firewall Bouncer: 未部署（可选）。'
     fi
     printf '\nLAPI 登录:\n'
-    cscli lapi status || result=1
+    health_probe api unknown cscli lapi status || result=1
     printf '\n配置校验:\n'
-    crowdsec -t || result=1
+    health_probe config fault crowdsec -t || result=1
     printf '\n注册的 Bouncer 与 Machine:\n'
-    cscli bouncers list || result=1
-    cscli machines list || result=1
+    health_probe registry unknown cscli bouncers list || result=1
+    health_probe registry unknown cscli machines list || result=1
     printf '\n日志采集与解析指标:\n'
-    cscli metrics || result=1
+    health_probe metrics unknown cscli metrics || result=1
     if [[ "$firewall_deployed" == true ]]; then
         printf '\n防火墙规则:\n'
         firewall_status || result=1
@@ -1635,12 +1651,12 @@ check_web_health_status() {
     else
         log_info '[不适用] AppSec 网站接入：当前用途未部署网站防护。'
     fi
-    check_webui_status || result=1
+    check_webui_status || { health_event webui unknown; result=1; }
     printf '\n保护证据（正常 / 异常 / 尚未验证）:\n'
     if require_yaml; then
         if [[ "${1:-web}" == web ]]; then check_protection_evidence || evidence=$?
         else check_system_protection_evidence || evidence=$?; fi
-    else evidence=2; log_warn '[尚未验证] 缺少结构化检查依赖。'; fi
+    else evidence=2; health_event logs unknown; log_warn '[尚未验证] 缺少结构化检查依赖。'; fi
     [[ "$evidence" == 1 ]] && result=1
     [[ "$result" == 0 && "$evidence" == 2 ]] && result=2
     log_info '检查完成：退出码 1 表示异常，2 表示仍有尚未验证项目。未修改服务、账号或配置。'
@@ -2125,7 +2141,8 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 
 中转节点和远端检测中心：
   --install-relay      为纯中转节点安装系统和 SSH 检测、防火墙防护
-  --relay-status       检查中转节点的防火墙封禁规则
+  --relay-status       检查中转节点的防火墙封禁规则，显示简短结论
+  --relay-status-details 显示中转检查的技术详情
   --relay-path         检查连接来源、转发路径和防护位置
   --install-relay-bouncer   安装防火墙防护并连接远端检测中心
   --configure-relay-bouncer 修改远端检测中心地址和连接密钥
@@ -2133,7 +2150,8 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
   --remove-relay-bouncer    移除远端连接配置并停用防护（保留软件包）
 
 V2bX 落地节点：检查、记录日志和异常告警：
-  --diagnose-v2bx      检查 V2bX 三内核配置、日志、连接来源和封禁位置
+  --diagnose-v2bx      检查 V2bX 配置、日志、连接来源，显示简短结论
+  --diagnose-v2bx-details 显示落地检查的技术详情
   --v2bx-log-check     检查本机运行日志，隐去敏感信息并报告核验状态
   --v2bx-observe       保存脱敏日志样本（单次采集，不安装常驻服务）
   --install-v2bx-observer 开启持续日志记录（需私有 JSON 配置文件）
@@ -2162,7 +2180,8 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --reset-baseline     补齐基础检测规则，保留自定义规则和网站请求检测
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      确认后移除已知的网站和防火墙日志规则
-  --status             按已保存用途只读检查；未选择时沿用网站检查，不新增交互
+  --status             按已保存用途只读检查，显示简短结论与一个下一步
+  --status-details     显示整体检查结论与完整技术详情
   --check-logs         只读检查新增日志、漏采和重复采集
   --repair-logs        按实际网站配置补齐漏采的访问日志
   --repair-bouncer     修复防火墙与检测服务的连接地址
@@ -2199,8 +2218,10 @@ main_operation() {
         --relay-bouncer-status) remote_bouncer_status ;;
         --remove-relay-bouncer) remote_bouncer_change remove ;;
         --relay-status) check_relay_status ;;
+        --relay-status-details) check_relay_status details ;;
         --relay-path) check_relay_path ;;
         --diagnose-v2bx) diagnose_v2bx ;;
+        --diagnose-v2bx-details) diagnose_v2bx details ;;
         --v2bx-log-check) check_v2bx_logs ;;
         --v2bx-observe) observe_v2bx_logs ;;
         --install-v2bx-observer) v2bx_observer_service install ;;
@@ -2246,6 +2267,7 @@ main_operation() {
         --optimize) smart_audit_and_optimize ;;
         --enable-wal) enable_sqlite_wal ;;
         --status) check_health_status ;;
+        --status-details) check_health_status details ;;
         *) log_err "未知参数: $1"; show_help; return 1 ;;
     esac
 }
@@ -2253,7 +2275,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
+        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }
