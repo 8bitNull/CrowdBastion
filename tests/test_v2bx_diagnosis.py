@@ -78,6 +78,26 @@ class V2bXDiagnosis(unittest.TestCase):
         self.assertEqual(data['sockets'][0]['address'], '::')
         self.assertFalse(data['sockets'][0]['service_pid_match'])
 
+    def test_bouncer_only_skips_local_core_and_acquisition(self):
+        self.write_config()
+        (self.cs/'bouncers').mkdir()
+        (self.cs/'bouncers/crowdsec-firewall-bouncer.yaml').write_text('mode: nftables\n')
+        (self.cs/'config.yaml').write_text('invalid yaml: [')
+        self.command('nft', '{"nftables": []}')
+        data = self.report('--bouncer-only')
+        self.assertEqual(data['acquisition_status'], 'not_applicable')
+        self.assertTrue(all(log['acquisition_status'] == 'not_applicable' for log in data['logs']))
+        trace = self.trace.read_text()
+        self.assertIn('is-active --quiet crowdsec-firewall-bouncer', trace)
+        self.assertNotIn('is-active --quiet crowdsec\n', trace)
+
+    def test_bouncer_only_unresolved_log_path_does_not_check_acquisition(self):
+        self.write_config(cores=[{'Type': 'sing', 'Log': {'Output': 'relative.log'}}])
+        self.command('systemctl', 'LoadState=loaded\nActiveState=active\nMainPID=0\n')
+        data = self.report('--bouncer-only')
+        self.assertEqual(data['logs'][1]['read_status'], 'relative_path_unresolved')
+        self.assertEqual(data['logs'][1]['acquisition_status'], 'not_applicable')
+
     def test_secrets_never_echo_from_allowlisted_fields_or_logs(self):
         log = self.base / 'API_SECRET.log'
         log.write_text(json.dumps({'msg': 'client connected', 'addr': '[2001:db8::1]:5678',

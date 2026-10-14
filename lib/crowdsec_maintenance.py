@@ -133,6 +133,34 @@ def restore(destination):
                 path.unlink()
 
 
+def system_health_metrics(acquisition):
+    metrics = json.loads(Path(acquisition).read_text())
+    sources = metrics.get('acquisition', {})
+    if not isinstance(sources, dict):
+        raise ValueError('invalid acquisition metrics')
+    found = False
+    error = False
+    for name, source in sources.items():
+        lower = name.lower()
+        known = any(token in lower for token in ('/auth.log', '/secure', '/syslog', '/messages', 'ssh.service', 'sshd.service'))
+        if not known:
+            print('[尚未验证] 无法归类为系统/SSH 的采集来源：'+name)
+            continue
+        found = True
+        reads, parsed = source.get('reads', 0), source.get('parsed', 0)
+        if not reads:
+            print(f'[尚未验证] 系统/SSH 来源 {name}：reads={reads}，parsed={parsed}；可能空闲或刚重启。')
+        elif not parsed:
+            print(f'[异常] 系统/SSH 来源 {name}：reads={reads}，parsed=0；请核对格式、标签与解析器。')
+            error = True
+        else:
+            print(f'[正常] 系统/SSH 日志读取与解析 {name}：reads={reads}，parsed={parsed}。')
+    if not found:
+        print('[尚未验证] 未观察到可识别的系统/SSH 日志来源。')
+    print('[尚未验证] 攻击检测与实际业务阻断：日志读取、解析及累计计数不能证明检测场景或流量阻断通过。')
+    return 1 if error else 2
+
+
 def health_metrics(acquisition, appsec):
     metrics = json.loads(Path(acquisition).read_text())
     sources = metrics.get('acquisition', {})
@@ -197,6 +225,13 @@ def main(args):
         restore(args[0])
     elif action == 'health-metrics':
         return health_metrics(*args)
+    elif action == 'health-system':
+        return system_health_metrics(*args)
+    elif action == 'managed-web-deployed':
+        directory, single, _ = acquisition_locations(args[0])
+        names = ('web-sites.yaml', 'crowdsec-1key-log-repair.yaml', 'crowdsec-1key-appsec.yaml')
+        candidates = [Path(directory)/name for name in names]
+        return 0 if any(path.exists() or path.is_symlink() for path in candidates) else 1
     elif action == 'audit-acquisition':
         return int(audit_acquisition(args[0]))
     elif action == 'prune-snapshots':
@@ -259,4 +294,4 @@ if __name__ == '__main__':
         sys.exit(main(sys.argv[1:]))
     except (ValueError, OSError, KeyError, TypeError, yaml.YAMLError) as error:
         print('维护操作失败：'+str(error), file=sys.stderr)
-        sys.exit(2)
+        sys.exit(1 if sys.argv[1:2] == ['health-system'] else 2)
