@@ -33,6 +33,10 @@ python3 -m unittest discover -s tests
 
 专项命令使用同一环境，将 unittest 参数改为 `discover -s tests -p test_relay_verification.py`。
 
+## 交付
+
+实现提交 `fb0a89107c025a841039dab22c137f709f3f55ec` 已快进合并至 `main` 并推送；远端 `origin/main` 与本地提交 SHA 核对一致。合并后的代码与本轮完整回归所测代码相同。
+
 ## 范围
 
 测试使用临时配置、受控命令边界、规则 JSON、人工输入替身和本机 PTY。没有部署用户 VPS、重启生产服务或创建测试封禁。外部连接结果仍由操作者确认，集合计数可能包含其他流量；代码回归不能替代目标 VPS 的真实业务验收。通过只适用于声明入口的新连接，不代表其他入口、既有长连接、AppSec、专用行为检测或带宽清洗已验收。
