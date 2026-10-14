@@ -43,4 +43,4 @@ Files: `readme.md`, `docs/relay-mode.md`, `docs/cli-reference.md`, `docs/usage-g
 - [x] 文档说明进入方式、测试设备、人工证据、支持范围和单一验收结论；记录测试命令与真实 VPS 验收边界。
 - [x] 检查 Bash/Python 语法、ShellCheck、文档链接和 `git diff --check`。
 - [x] 运行完整 unittest，一次独立代码审查后处理必要反馈。
-- [ ] 按已有授权合并 main、推送并核对远程 SHA。
+- [x] 按已有授权合并 main、推送并核对远程 SHA。
