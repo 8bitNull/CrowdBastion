@@ -34,10 +34,14 @@ health_verification_help() {
         printf '从另一台设备访问你管理的网站；结合访问日志、真实来源 IP 和处理指标核对网站接入。\nAppSec 验证入口：--verify-appsec；执行前会说明请求并要求确认。\n'
     fi
     if node_has_role relay || node_has_role remote || node_has_role node; then
-        printf '1. 用 --relay-path 核对测试连接经过 INPUT 还是 FORWARD，以及本机看到的来源 IP。\n2. 准备独立的外部测试来源，先确认正常连接可用。\n3. 为测试来源设置短时封禁，对比新的连接与该规则计数变化，再撤销封禁并确认恢复。\n使用你管理的测试设备；保留当前管理连接，不封禁管理 IP 或共享中转 IP。\n'
+        printf '中转入口验证向导：--verify-relay，或菜单 [4] → [3] → [3]。\n先用 --relay-path 核对来源与 INPUT/FORWARD 路径；准备独立测试设备和正常对照来源。\n向导核对外部新连接对照、封禁集合与规则计数，给出本次入口的验收结论。\n'
     fi
     node_has_role node && printf 'V2bX 此检查只核对配置和运行证据；专用攻击检测需另外接入并验证。\n'
     printf '以上为操作说明，本次未发送测试请求或创建封禁。\n'
+    if { node_has_role relay || node_has_role remote; } && [[ -t 0 ]]; then
+        if confirm '现在进入中转入口验证向导？'; then verify_relay; return $?; fi
+    fi
+    return 0
 }
 
 health_recommended_action() {
@@ -56,7 +60,7 @@ health_recommended_action() {
 }
 
 health_report() (
-    local scope="$1" mode="${2:-summary}" work result=0 choice action label
+    local scope="$1" mode="${2:-summary}" context="${3:-}" work result=0 choice action label
     umask 077
     work=$(mktemp -d "${TMPDIR:-/tmp}/crowdbastion-health.XXXXXXXX") || { log_err '无法准备检查报告。'; return 1; }
     trap 'rm -rf -- "$work"' EXIT
@@ -66,7 +70,7 @@ health_report() (
     : > "$work/events"
     case "$scope" in
         overall) check_health_status_raw > "$work/details" 2>&1 || result=$? ;;
-        relay) check_relay_status_raw > "$work/details" 2>&1 || result=$? ;;
+        relay) check_relay_status_raw "$context" > "$work/details" 2>&1 || result=$? ;;
         node) diagnose_v2bx_raw > "$work/details" 2>&1 || result=$? ;;
     esac
     if [[ -z "$NODE_ROLES" && "$scope" != overall ]]; then

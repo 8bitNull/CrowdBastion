@@ -140,6 +140,8 @@ sudo cscli metrics
 
 安装入口是菜单 `1 → 5`；诊断入口是 `4 → 3 → 1` 和 `4 → 3 → 2`。安装补齐 linux、sshd、whitelist-good-actors，优先复用 `/var/log/auth.log`、`/var/log/secure` 或标准 SSH journal。自定义 SSH unit/日志需人工核对，使用 metrics 确认日志真的被读取与解析。
 
+安装成功后会自动检查中转服务与防火墙，终端中可选择进入 `--verify-relay`（菜单 `4 → 3 → 3`）引导验收。需要独立测试来源与正常对照设备；完整准备与四步流程见 [中转入口引导验收](relay-mode.md#中转入口引导验收)。
+
 此入口保留已有 Web/AppSec 组件，重复安装不会自动把完整版“瘦身”。纯中转缺少系统采集时重新执行 `--install-relay`；`--reset-baseline` 是网站基础集合入口，不适合作为中转精简重置。
 
 在 `--relay-path` 中声明节点角色、用户态/NAT/bridge 路径和 TCP/UDP 入口端口。宿主机 gost/realm 通常检查 INPUT，内核 DNAT/路由转发检查 FORWARD，Docker bridge 需核对实际钩子和跳转顺序。多跳入口看到的来源可能只有上游节点；封禁该来源会影响其所有用户。详见 [中转模式](relay-mode.md)。
@@ -169,6 +171,8 @@ sudo bash crowdbastion.sh --relay-bouncer-status
 
 接入不会安装本地 CrowdSec，也不会自动停用已有核心。本地核心产生的决策不会自动转发给中心。若要中心识别中转 SSH 攻击，另行配置可信日志集中采集，并确认中心解析到原始攻击来源 IP。
 
+首次接入成功后自动检查中转防火墙，随后可选择进入 `--verify-relay`；测试决策命令明确只在检测中心执行。向导不会访问中心或调用本地 cscli。
+
 ### 更换中心或密钥
 
 先在中心创建新账号，然后在对应中转执行：
@@ -181,6 +185,8 @@ sudo bash crowdbastion.sh --relay-bouncer-status
 确认真实同步和业务验证正常后，再在中心撤销旧账号。`--relay-bouncer-status` 不发起认证请求，状态正常不等于 URL/密钥已完成实际认证和业务阻断验证。中心账号也可用 `sudo cscli bouncers list` 检查拉取记录。
 
 ## 安装后的验证
+
+中转节点可先运行 `sudo bash crowdbastion.sh --verify-relay`，按提示完成正常连接、短时封禁、独立来源对照和恢复。结果分为本次入口通过（人工确认）、未通过与未完成，支持范围见 [验收说明](relay-mode.md#中转入口引导验收)。静态运行检查仍保留实际拦截待验证。
 
 对于本地核心，检查配置、服务和解析结果：
 
@@ -203,6 +209,7 @@ sudo cscli decisions list
 | `--status` 返回 `1` | 发现异常，按输出检查具体链路 |
 | `--status` 返回 `2` | 存在尚未验证项目，不能当作全链路通过 |
 | `--relay-status` / `--relay-path` 返回 `2` | 只取得静态/路径证据，还需真实业务验证；是这些入口的预期边界 |
+| `--verify-relay` 返回 `0` / `1` / `2` | 本次入口人工验收通过 / 已确认连接对照失败 / 未完成或缺少证据，不代表其他入口也通过 |
 | `--relay-bouncer-status` 返回 `0` | 托管配置与服务检查通过，未验证远端认证/业务阻断 |
 | 修改操作返回 `75` | 另一管理操作持锁，等其正常结束后重试 |
 | 安装/配置命令其他非零退出 | 本次操作未成功，保留诊断并检查恢复状态 |
