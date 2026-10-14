@@ -1,5 +1,12 @@
 # CrowdBastion
 
+[![Platform: Linux](https://img.shields.io/badge/platform-Linux-FCC624?logo=linux&logoColor=black)](docs/audit/2026-10-12-vps-compatibility.md)
+[![Shell: Bash](https://img.shields.io/badge/shell-Bash-4EAA25?logo=gnubash&logoColor=white)](docs/cli-reference.md)
+[![Python: 3](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)](docs/usage-guide.md#准备环境与下载)
+[![Powered by CrowdSec](https://img.shields.io/badge/powered_by-CrowdSec-6E43E7)](https://www.crowdsec.net/)
+[![GitHub Stars](https://img.shields.io/github/stars/8bitNull/CrowdBastion?style=flat)](https://github.com/8bitNull/CrowdBastion/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/8bitNull/CrowdBastion/main)](https://github.com/8bitNull/CrowdBastion/commits/main/)
+
 ```text
    ______                        ______             __  _
   / ____/________ _      _______/ __  /____ ______/ /_(_)___  ____
