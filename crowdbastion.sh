@@ -355,6 +355,7 @@ install_crowdsec_core() (
         log_info '请用 cscli metrics 核验 SSH 日志读取与解析；自定义 SSH unit/日志路径需人工核对。'
         log_info '使用 --relay-status 检查 INPUT/FORWARD 和 IPv4/IPv6 规则；实际中转业务阻断尚未验证。'
         log_info '此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。'
+        relay_after_install local
     fi
 )
 
@@ -2005,11 +2006,12 @@ manage_website_diagnostics() {
 manage_relay_diagnostics() {
     local choice
     while true; do
-        printf '\n检查中转节点\n1. 查看中转防护运行情况\n2. 检查连接来源和转发路径\n0. 返回\n'
-        prompt choice '请选择 [0-2]: ' || return 0
+        printf '\n检查中转节点\n1. 查看中转防护运行情况\n2. 检查连接来源和转发路径\n3. 引导验证中转入口拦截\n0. 返回\n'
+        prompt choice '请选择 [0-3]: ' || return 0
         case "$choice" in
             1) check_relay_status ;;
             2) check_relay_path ;;
+            3) verify_relay ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2144,6 +2146,7 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
   --relay-status       检查中转节点的防火墙封禁规则，显示简短结论
   --relay-status-details 显示中转检查的技术详情
   --relay-path         检查连接来源、转发路径和防护位置
+  --verify-relay       引导验收中转入口拦截（外部结果人工确认，本机只读）
   --install-relay-bouncer   安装防火墙防护并连接远端检测中心
   --configure-relay-bouncer 修改远端检测中心地址和连接密钥
   --relay-bouncer-status    查看远端检测中心连接和防护状态
@@ -2220,6 +2223,7 @@ main_operation() {
         --relay-status) check_relay_status ;;
         --relay-status-details) check_relay_status details ;;
         --relay-path) check_relay_path ;;
+        --verify-relay) verify_relay ;;
         --diagnose-v2bx) diagnose_v2bx ;;
         --diagnose-v2bx-details) diagnose_v2bx details ;;
         --v2bx-log-check) check_v2bx_logs ;;
@@ -2275,7 +2279,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
+        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

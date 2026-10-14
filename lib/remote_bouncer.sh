@@ -173,6 +173,7 @@ remote_bouncer_change() (
     fi
     success=true
     log_succ '远端 Firewall Bouncer 已配置；未修改 CrowdSec 核心或其他 Bouncer。'
+    [[ "$action" != install ]] || relay_after_install remote
 )
 
 remote_bouncer_status() {
