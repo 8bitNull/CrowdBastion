@@ -184,7 +184,7 @@ curl() { record curl "$@"; echo '{"status":"failed"}'; return 0; }''')
         self.assertNotRegex(self.commands(), r'systemctl (restart|reload)|machines (add|delete)')
 
     def test_health_core_only_does_not_require_optional_firewall(self):
-        p = self.run_shell('check_health_status', overrides='''systemctl() { record systemctl "$@"; [[ "$*" != 'is-active crowdsec-firewall-bouncer' ]]; }
+        p = self.run_shell('check_health_status details', overrides='''systemctl() { record systemctl "$@"; [[ "$*" != 'is-active crowdsec-firewall-bouncer' ]]; }
 firewall_status() { record firewall-status; return 1; }''')
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertIn('Firewall Bouncer: 未部署', p.stdout)
@@ -208,12 +208,12 @@ firewall_status() { record firewall-status; return 0; }''')
 
     def test_health_fails_when_effective_appsec_sources_cannot_be_read(self):
         (self.config/'config.yaml.local').write_text('- invalid config mapping\n')
-        p = self.run_shell('check_health_status', overrides='firewall_status() { return 0; }')
+        p = self.run_shell('check_health_status details', overrides='firewall_status() { return 0; }')
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('无法读取有效 AppSec 数据源', p.stdout+p.stderr)
 
     def test_health_fails_when_optional_firewall_deployment_is_unknown(self):
-        p = self.run_shell('check_health_status', overrides='''systemctl() { record systemctl "$@"; [[ "$1" != list-unit-files ]]; }
+        p = self.run_shell('check_health_status details', overrides='''systemctl() { record systemctl "$@"; [[ "$1" != list-unit-files ]]; }
 firewall_status() { return 0; }''')
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('无法确认 Firewall Bouncer', p.stdout+p.stderr)

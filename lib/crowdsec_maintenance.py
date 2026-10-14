@@ -1,6 +1,7 @@
 """Structured maintenance, health summaries and rule snapshots."""
 import hashlib
 import json
+import math
 import os
 import re
 from pathlib import Path
@@ -8,6 +9,7 @@ import shutil
 import stat
 import sys
 import yaml
+from crowdbastion_health import emit
 
 from crowdsec_realip_diagnose import http_directives
 from crowdsec_web import mount_path
@@ -133,11 +135,25 @@ def restore(destination):
                 path.unlink()
 
 
-def system_health_metrics(acquisition):
+def acquisition_metrics(acquisition):
     metrics = json.loads(Path(acquisition).read_text())
+    if not isinstance(metrics, dict):
+        raise ValueError('invalid acquisition metrics')
     sources = metrics.get('acquisition', {})
     if not isinstance(sources, dict):
         raise ValueError('invalid acquisition metrics')
+    for name, source in sources.items():
+        if not isinstance(name, str) or not isinstance(source, dict):
+            raise ValueError('invalid acquisition source')
+        for key in ('reads', 'parsed', 'unparsed'):
+            value = source.get(key, 0)
+            if type(value) not in (int, float) or (type(value) is float and not math.isfinite(value)) or value < 0:
+                raise ValueError('invalid acquisition count')
+    return sources
+
+
+def system_health_metrics(acquisition):
+    sources = acquisition_metrics(acquisition)
     found = False
     error = False
     for name, source in sources.items():
@@ -149,29 +165,34 @@ def system_health_metrics(acquisition):
         found = True
         reads, parsed = source.get('reads', 0), source.get('parsed', 0)
         if not reads:
+            emit('logs', 'pending')
             print(f'[尚未验证] 系统/SSH 来源 {name}：reads={reads}，parsed={parsed}；可能空闲或刚重启。')
         elif not parsed:
+            emit('logs', 'fault')
             print(f'[异常] 系统/SSH 来源 {name}：reads={reads}，parsed=0；请核对格式、标签与解析器。')
             error = True
         else:
+            emit('logs', 'ok')
             print(f'[正常] 系统/SSH 日志读取与解析 {name}：reads={reads}，parsed={parsed}。')
     if not found:
+        emit('logs', 'pending')
         print('[尚未验证] 未观察到可识别的系统/SSH 日志来源。')
     print('[尚未验证] 攻击检测与实际业务阻断：日志读取、解析及累计计数不能证明检测场景或流量阻断通过。')
     return 1 if error else 2
 
 
 def health_metrics(acquisition, appsec):
-    metrics = json.loads(Path(acquisition).read_text())
-    sources = metrics.get('acquisition', {})
+    sources = acquisition_metrics(acquisition)
     reads = sum(source.get('reads', 0) for source in sources.values())
     web = [source for name, source in sources.items() if 'access' in name or 'nginx' in name or '/sites/' in name]
     parsed = sum(source.get('parsed', 0) for source in web)
+    emit('logs', 'ok' if web and all(source.get('reads', 0) and source.get('parsed', 0) for source in web) else 'pending')
     if reads:
         print(f'[正常] 日志采集：已读 {reads} 行；HTTP 已解析 {parsed} 行。')
     else:
         print('[尚未验证] 日志采集：没有新行指标，可能空闲或刚重启。')
-    if any(source.get('reads', 0) and not source.get('parsed', 0) for name, source in sources.items() if 'access' in name):
+    if any(source.get('reads', 0) and not source.get('parsed', 0) for source in web):
+        emit('logs', 'fault')
         print('[异常] HTTP 日志有读取但无解析，请核对格式和标签。')
         return 1
     data = json.loads(Path(appsec).read_text()) if Path(appsec).is_file() else {}
@@ -208,6 +229,7 @@ def audit_acquisition(root):
     for name in duplicate:
         print('[异常] 重复采集：'+name)
     print(f'已配置现存文件 {len(files)} 个，重复 {len(duplicate)} 个。')
+    emit('acquisition', 'fault' if duplicate else 'ok')
     return bool(duplicate)
 
 
@@ -293,5 +315,9 @@ if __name__ == '__main__':
     try:
         sys.exit(main(sys.argv[1:]))
     except (ValueError, OSError, KeyError, TypeError, yaml.YAMLError) as error:
+        if sys.argv[1:2] in (['health-system'], ['health-metrics']):
+            emit('logs', 'unknown')
+        elif sys.argv[1:2] == ['audit-acquisition']:
+            emit('acquisition', 'unknown')
         print('维护操作失败：'+str(error), file=sys.stderr)
         sys.exit(1 if sys.argv[1:2] == ['health-system'] else 2)

@@ -596,7 +596,7 @@ finally:
 
     def test_diagnostics_read_only_actions_do_not_take_mutation_lock(self):
         overrides = ('locked_operation() { record unexpected-lock; return 1; }\n'
-                     'check_health_status() { record health; }\n'
+                     'interactive_health_check() { record health; }\n'
                      'check_log_inventory() { record logs; }\n'
                      'check_appsec_status() { record appsec; }\n'
                      'diagnose_self_report() { record self-report; }')

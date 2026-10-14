@@ -27,8 +27,10 @@ bash crowdbastion.sh --help
 | `--relay-bouncer-status` | 只读检查托管远端配置和服务，不验证远端认证或业务阻断 |
 | `--remove-relay-bouncer` | 移除托管远端配置并停用，保留基础配置、包、二进制和 unit |
 | `--install-relay` | 纯中转节点精简安装：系统/SSH 规则与采集，保留已有 Web/AppSec |
-| `--relay-status` | 只读检查中转 INPUT/FORWARD、IPv4/IPv6 规则引用；异常 1、尚未验证 2 |
+| `--relay-status` | 只读检查中转 INPUT/FORWARD、IPv4/IPv6 规则引用，输出简短结论 |
+| `--relay-status-details` | 显示中转结论和完整技术详情；退出码与简短模式一致 |
 | `--relay-path` | 交互声明节点角色/流量路径，选择 TCP/UDP 端口，读取 socket/NAT 与 Bouncer 证据 |
+| `--diagnose-v2bx-details` | 显示 V2bX 检查结论和完整技术详情 |
 | `--diagnose-v2bx` | 只读核查 V2bX 三内核配置、日志、混合入口声明和本地 Bouncer；详见 [V2bX 指南](v2bx-guide.md)，未验证端到端保护返回 2 |
 | `--v2bx-log-check` | 只读检查三内核日志样本；菜单 `4 → 4 → 2`，用 `V2BX_LOG_FILE/CORE/TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT` 指定输入；返回 2 表示生产未验证，见 [V2bX 指南](v2bx-guide.md) |
 | `--v2bx-observe` | 持久保存固定观察投影、恢复游标与采集指标，可导出一次性快照；仅命令行，不安装常驻服务或规则；参数见下方说明及 [V2bX 指南](v2bx-guide.md) |
@@ -74,7 +76,8 @@ bash crowdbastion.sh --help
 | `--custom-bot` | 可选交互机器人配置/更新、只读检查及独立停用 |
 | `--optimize` | 诊断后逐项选择基础规则、日志采集和指标，汇总确认后统一加载 |
 | `--enable-wal` | 确认本地 SQLite 后启用官方 WAL 配置 |
-| `--status` | 按保存的节点用途只读检查并输出建议；未选择用途时沿用原网站检查，不弹出选择或执行修复 |
+| `--status` | 按用途只读检查，显示一个结论与一个推荐下一步；不显示交互菜单 |
+| `--status-details` | 显示整体检查结论与完整技术详情；未选择用途时检查网站范围 |
 | `--help`、`-h` | 帮助，不需要 root |
 
 每次仅指定一个操作。`--update-hub` 可无人值守执行；其他安装/配置入口仍保留必要的输入与确认。
@@ -102,7 +105,7 @@ bash crowdbastion.sh --help
 
 ## 状态与退出码
 
-`--status` 用“正常 / 异常 / 尚未验证”区分已有证据与未验证链路：退出 `1` 表示异常，`2` 表示仍有未验证项目。正常运行的服务和累计 AppSec 计数不代表所有公网站点已验证阻断。
+`--status`、`--relay-status`、`--diagnose-v2bx` 默认显示简短总结，区分运行通过但拦截待验证、发现问题、部署未完成与检查未完成。退出 `1` 表示发现异常或读取失败，`2` 表示部署／证据不全或实际拦截待验证；组合用途中 `1` 优先。详情参数沿用相同判断和退出码。服务、规则引用和累计 AppSec 计数不代表所有公网站点已验证阻断。
 
 健康检查与专项 AppSec 状态共用有效数据源检查，每次读取一次监听列表；WebUI 共用部署就绪检查，每次只核对一次容器健康、实际端口的 HTTP 健康响应及独立 LAPI 登录，未配置端口时使用默认 3000。可选组件未部署不会作为异常。
 

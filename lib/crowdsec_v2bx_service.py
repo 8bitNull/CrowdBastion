@@ -21,7 +21,7 @@ from crowdsec_v2bx_logs import InputError, offset_zone, relay_networks
 UNIT = 'crowdsec-v2bx-observer.service'
 HELPERS = ('crowdsec_v2bx_service.py', 'crowdsec_v2bx_observe.py',
            'crowdsec_v2bx_logs.py', 'crowdsec_v2bx.py',
-           'crowdsec_config.py', 'crowdsec_relay_paths.py')
+           'crowdsec_config.py', 'crowdsec_relay_paths.py', 'crowdbastion_health.py')
 
 
 def safe_regular(path, private=False):
@@ -212,8 +212,13 @@ class Manager:
         self.guard(self.code);self.guard(self.unit);self.guard(self.state)
         manifest = read_json(self.code/'manifest.json')
         expected = set(HELPERS) | {'config.json', 'unit'}
-        if not isinstance(manifest, dict) or set(manifest) != expected:
+        # Previous managed bundles predate the optional diagnostic reporter.
+        # Keep checking every recorded file hash, including the service unit.
+        if not isinstance(manifest, dict) or set(manifest) not in (expected, expected - {'crowdbastion_health.py'}):
             raise ValueError('foreign_installation')
+        reporter = self.code/'crowdbastion_health.py'
+        if 'crowdbastion_health.py' not in manifest and (reporter.exists() or reporter.is_symlink()):
+            raise ValueError('installation_changed')
         for name, expected_hash in manifest.items():
             target = self.unit if name == 'unit' else self.code/name
             fd = safe_regular(target, private=True)

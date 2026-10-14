@@ -134,12 +134,14 @@ update_hub_logged() {
 }
 
 check_system_protection_evidence() (
+    health_expect acquisition
     local work result=0 status=0
     work=$(mktemp -d) || return 1
     trap 'rm -rf -- "$work"' EXIT
     if cscli metrics show acquisition -o json > "$work/acquisition"; then
         maintenance_tool health-system "$work/acquisition" || result=$?
     else
+        health_event logs unknown
         log_err '[异常] 无法读取系统/SSH 采集指标。'
         result=1
     fi
@@ -188,6 +190,7 @@ check_offline_web_containers() {
     while IFS= read -r name; do
         [[ -n "$name" ]] || continue
         if [[ "$observed" != *$'\n'"$name"$'\n'* ]]; then
+            health_event web_container fault
             log_err "[异常] 已登记的网站容器 ${name} 未出现在运行列表。"
             result=1
         fi
@@ -196,7 +199,8 @@ check_offline_web_containers() {
 }
 
 check_protection_evidence() (
-    local work result=0 id name status service
+    health_expect web
+    local work result=0 status service
     work=$(mktemp -d) || return 1
     trap 'rm -rf -- "$work"' EXIT
     if [[ "${1:-}" == offline ]]; then
@@ -205,6 +209,7 @@ check_protection_evidence() (
         if cscli metrics show acquisition -o json > "$work/acquisition" && cscli metrics show appsec -o json > "$work/appsec"; then
             maintenance_tool health-metrics "$work/acquisition" "$work/appsec" || result=1
         else
+            health_event logs unknown
             log_err '[异常] 无法读取保护指标。'
             result=1
         fi
@@ -220,16 +225,8 @@ check_protection_evidence() (
             result=1
         fi
     done
-    if [[ "${1:-}" == offline ]]; then
-        check_offline_web_containers "$work" || result=1
-    elif command -v docker >/dev/null 2>&1; then
-        while read -r id name; do
-            [[ -n "$id" && -n "$name" ]] || continue
-            if docker exec "$id" nginx -T > "$work/effective" 2>/dev/null && docker inspect --format '{{json .Mounts}}' "$id" > "$work/mounts"; then
-                request_audit_tool status "$IP_VERIFICATIONS" "$name" "$work/effective" "$WEB_INSTALLS" "$work/mounts" || { status=$?; [[ "$status" == 2 ]] || result=1; }
-            fi
-        done < <(docker ps --format '{{.ID}} {{.Names}}')
-    fi
-    [[ "$result" == 0 ]] && return 2
+    check_offline_web_containers "$work" || result=1
+    if [[ "$result" == 0 ]]; then health_event web ok; return 2; fi
+    health_event web unknown
     return 1
 )

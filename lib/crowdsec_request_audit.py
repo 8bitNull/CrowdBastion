@@ -10,6 +10,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 
 from crowdsec_realip_diagnose import client_address, http_directives
 from crowdsec_web import check_install, directives, mount_path, read_state, save_state
+from crowdbastion_health import emit
 
 HOST_APPSEC_URL = 'http://127.0.0.1:7422'
 
@@ -190,6 +191,15 @@ def status(state_file, name, effective_file, installs, mounts_file, host_config=
             hook_sha = hashlib.sha256((Path(entry['host_assets'])/'access.lua').read_bytes()).hexdigest()
     except (ValueError, OSError, KeyError):
         hook_sha = None
+    registered = read_state(installs).get(name, {}) if not host_config else {}
+    deployed = (bool(registered) or
+                bool(host_config and (Path(host_config).exists() or Path(host_config).is_symlink())) or
+                any(words and words[0].startswith('access_by_lua') and any('crowdsec' in word.lower() or 'cs.Allow' in word for word in words) for _, words, _ in directives(effective)))
+    if deployed:
+        emit('web', 'required')
+        emit('web', 'ok' if hook_sha and names else 'unknown')
+    else:
+        emit('web', 'optional')
     unknown = False
     for site in sorted(names):
         record = records.get(site, {})

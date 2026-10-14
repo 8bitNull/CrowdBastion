@@ -1,11 +1,21 @@
 #!/usr/bin/env bash
 # No service/config/decision changes. Optional selectors are operator declarations.
 diagnose_v2bx() {
+    if [[ -n "${CROWDBASTION_HEALTH_EVENTS:-}" ]]; then diagnose_v2bx_raw
+    else health_report node "${1:-summary}"; fi
+}
+
+diagnose_v2bx_raw() {
+    health_expect v2bx
+    health_expect v2bx_service
+    health_expect sockets
     require_yaml || return 1
     load_node_roles || return 1
     local args=(--cs-dir "$CS_DIR" --unit "${V2BX_UNIT:-V2bX.service}" --entries "${V2BX_ENTRIES:-}")
-    if node_has_role remote || { node_has_role node && [[ ! -f "${CS_DIR}/config.yaml" ]]; }; then
+    if node_has_role remote; then
         args+=(--bouncer-only)
+    elif [[ ! -f "${CS_DIR}/config.yaml" ]] && { node_has_role node || [[ -z "$NODE_ROLES" ]]; }; then
+        args+=(--bouncer-only --firewall-optional)
     fi
     [[ -z "${V2BX_CONFIG:-}" ]] || args+=(--config "$V2BX_CONFIG")
     [[ -z "${V2BX_WORKING_DIR:-}" ]] || args+=(--working-dir "$V2BX_WORKING_DIR")
