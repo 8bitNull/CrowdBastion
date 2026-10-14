@@ -300,6 +300,8 @@ def acquisitions(root):
 
 
 def acquisition_report(path, unit, docs, state):
+    if state == 'not_applicable':
+        return 0, 'not_applicable'
     if state != 'readable':
         return 0, 'unverified'
     matches = 0
@@ -369,7 +371,7 @@ def logs_report(data, cores, unit, journal, journal_status, working_dir, docs, a
         else:
             source = 'journal_candidate'
             text, state = journal, journal_status
-        matches, acquired = (0, 'not_applicable') if disabled else acquisition_report(path, unit, docs, acquisition_status) if source != 'file' or path else (0, 'unverified')
+        matches, acquired = (0, 'not_applicable') if disabled or acquisition_status == 'not_applicable' else acquisition_report(path, unit, docs, acquisition_status) if source != 'file' or path else (0, 'unverified')
         logs.append({'config_ref': ref, 'core': core, 'source': source,
                      'read_status': state, 'acquisition_matches': matches,
                      'acquisition_status': acquired, 'sample': sample_report(text),
@@ -416,14 +418,15 @@ def inspect(options):
     if versions:
         current['version'] = versions[-1]
         current['version_status'] = 'journal_candidate'
-    docs, acquisition_status = acquisitions(options.cs_dir)
+    bouncer_only = getattr(options, 'bouncer_only', False)
+    docs, acquisition_status = ([], 'not_applicable') if bouncer_only else acquisitions(options.cs_dir)
     sockets, socket_status = socket_report(current['main_pid'])
     # Reuse existing local-only Bouncer audit; discard all raw output.
     audit = Path(__file__).with_name('crowdsec_relay.py')
     references = {family: {chain: False for chain in ('INPUT', 'FORWARD')}
                   for family in ('ipv4', 'ipv6')}
     try:
-        checked = subprocess.run([sys.executable, str(audit), 'audit', options.cs_dir],
+        checked = subprocess.run([sys.executable, str(audit), 'audit-remote' if bouncer_only else 'audit', options.cs_dir],
                                  capture_output=True, text=True, timeout=20)
         bouncer = {0: 'local_references_present', 2: 'unverified'}.get(checked.returncode, 'check_failed')
         lines = set(checked.stdout.splitlines())
@@ -464,6 +467,8 @@ def display(report):
     for s in report['sockets']:
         if s['service_pid_match']:
             print(f"  服务 PID 匹配：{s['network']} {s['address']}:{s['port']}；节点归属尚未验证")
+    if report['acquisition_status'] == 'not_applicable':
+        print('[不适用] 本地 CrowdSec 采集：当前仅检查执行节点；检测由中心或其他明确部署的组件负责。')
     for log in report['logs']:
         sample = log['sample']
         print(f"日志 {log['config_ref']}：{log['source']}/{log['read_status']}；采集={log['acquisition_status']}（匹配 {log['acquisition_matches']}）")
@@ -482,6 +487,7 @@ def main(args):
     parser = Parser(description='V2bX 只读诊断；未进行端到端验证时返回 2。')
     parser.add_argument('--config', help='明确选择本机配置文件')
     parser.add_argument('--cs-dir', default='/etc/crowdsec')
+    parser.add_argument('--bouncer-only', action='store_true', help='不检查本地核心或采集，只检查本机 Bouncer')
     parser.add_argument('--unit', default='V2bX.service')
     parser.add_argument('--working-dir', help='相对 Include/日志路径的实际工作目录')
     parser.add_argument('--entries', default='', help='1:direct,2:relay-proxy；按 Nodes 顺序声明')

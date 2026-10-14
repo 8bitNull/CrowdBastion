@@ -133,17 +133,83 @@ update_hub_logged() {
     run_hub_update 2>&1 | tee -a "$UPDATE_LOG"
 }
 
+check_system_protection_evidence() (
+    local work result=0 status=0
+    work=$(mktemp -d) || return 1
+    trap 'rm -rf -- "$work"' EXIT
+    if cscli metrics show acquisition -o json > "$work/acquisition"; then
+        maintenance_tool health-system "$work/acquisition" || result=$?
+    else
+        log_err '[异常] 无法读取系统/SSH 采集指标。'
+        result=1
+    fi
+    maintenance_tool audit-acquisition "$CS_DIR" || status=$?
+    [[ "$status" != 0 ]] && result=1
+    [[ "$result" == 0 ]] && result=2
+    return "$result"
+)
+
+check_offline_web_containers() {
+    local work="$1" records containers id image name state _path _target status result=0
+    local managed=$'\n' observed=$'\n'
+    if [[ -f "$WEB_INSTALLS" ]]; then
+        records=$(web_tool list "$WEB_INSTALLS") || return 1
+        while IFS=$'\t' read -r name state; do
+            [[ "$state" == installed ]] && managed+="$name"$'\n'
+        done <<< "$records"
+    fi
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then
+        records=$(yaml_tool docker-appsec-links "$APPSEC_DOCKER_LINKS") || return 1
+        while IFS=$'\t' read -r name _path _target; do
+            [[ -n "$name" ]] && managed+="$name"$'\n'
+        done <<< "$records"
+    fi
+    if ! command -v docker >/dev/null 2>&1; then
+        [[ "$managed" == $'\n' ]] && return 0
+        log_err '[异常] 已登记容器网站防护，但 Docker 命令不可用。'
+        return 1
+    fi
+    if ! containers=$(docker ps --no-trunc --format '{{.ID}} {{.Image}} {{.Names}}'); then
+        log_err '[异常] Docker 网站容器列表读取失败。'
+        return 1
+    fi
+    while read -r id image name; do
+        [[ -n "$id" && -n "$name" ]] || continue
+        # Older managed links store a container ID instead of a name.
+        observed+="$name"$'\n'"$id"$'\n'"${id:0:12}"$'\n'
+        if [[ "$image" != *nginx* && "$image" != *openresty* && "$managed" != *$'\n'"$name"$'\n'* && "$managed" != *$'\n'"$id"$'\n'* && "$managed" != *$'\n'"${id:0:12}"$'\n'* ]]; then continue; fi
+        if docker exec "$id" nginx -T > "$work/effective" 2>/dev/null && docker inspect --format '{{json .Mounts}}' "$id" > "$work/mounts"; then
+            request_audit_tool status "$IP_VERIFICATIONS" "$name" "$work/effective" "$WEB_INSTALLS" "$work/mounts" || { status=$?; [[ "$status" == 2 ]] || result=1; }
+        else
+            log_err "[异常] 网站容器 ${name} 的有效配置或挂载无法读取。"
+            result=1
+        fi
+    done <<< "$containers"
+    while IFS= read -r name; do
+        [[ -n "$name" ]] || continue
+        if [[ "$observed" != *$'\n'"$name"$'\n'* ]]; then
+            log_err "[异常] 已登记的网站容器 ${name} 未出现在运行列表。"
+            result=1
+        fi
+    done <<< "$managed"
+    return "$result"
+}
+
 check_protection_evidence() (
     local work result=0 id name status service
     work=$(mktemp -d) || return 1
     trap 'rm -rf -- "$work"' EXIT
-    if cscli metrics show acquisition -o json > "$work/acquisition" && cscli metrics show appsec -o json > "$work/appsec"; then
-        maintenance_tool health-metrics "$work/acquisition" "$work/appsec" || result=1
+    if [[ "${1:-}" == offline ]]; then
+        maintenance_tool audit-acquisition "$CS_DIR" || result=1
     else
-        log_err '[异常] 无法读取保护指标。'
-        result=1
+        if cscli metrics show acquisition -o json > "$work/acquisition" && cscli metrics show appsec -o json > "$work/appsec"; then
+            maintenance_tool health-metrics "$work/acquisition" "$work/appsec" || result=1
+        else
+            log_err '[异常] 无法读取保护指标。'
+            result=1
+        fi
+        check_log_inventory || { status=$?; [[ "$status" == 2 ]] || result=1; }
     fi
-    check_log_inventory || { status=$?; [[ "$status" == 2 ]] || result=1; }
     for service in nginx openresty; do
         command -v "$service" >/dev/null 2>&1 || continue
         if "$service" -T > "$work/effective" 2>/dev/null; then
@@ -154,7 +220,9 @@ check_protection_evidence() (
             result=1
         fi
     done
-    if command -v docker >/dev/null 2>&1; then
+    if [[ "${1:-}" == offline ]]; then
+        check_offline_web_containers "$work" || result=1
+    elif command -v docker >/dev/null 2>&1; then
         while read -r id name; do
             [[ -n "$id" && -n "$name" ]] || continue
             if docker exec "$id" nginx -T > "$work/effective" 2>/dev/null && docker inspect --format '{{json .Mounts}}' "$id" > "$work/mounts"; then

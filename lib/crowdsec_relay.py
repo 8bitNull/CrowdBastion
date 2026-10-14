@@ -178,7 +178,7 @@ def report_paths(label, found):
         print(f'{label} DOCKER-USER: 已发现规则引用，需另核对 FORWARD 跳转顺序。')
 
 
-def audit(root):
+def audit(root, core_required=True):
     print('中转防护只读检查：未发送请求、未创建封禁、未修改防火墙。')
     print('用户态监听通常检查 INPUT；内核 NAT 检查 FORWARD；Docker bridge 需另核对实际路径。')
     path = Path(root)/'bouncers/crowdsec-firewall-bouncer.yaml'
@@ -190,7 +190,8 @@ def audit(root):
     if mode not in ('iptables', 'nftables', 'ipset'):
         raise ValueError('Firewall Bouncer mode 无效。')
     error = False
-    for service in ('crowdsec', 'crowdsec-firewall-bouncer'):
+    services = ('crowdsec', 'crowdsec-firewall-bouncer') if core_required else ('crowdsec-firewall-bouncer',)
+    for service in services:
         if not shutil.which('systemctl'):
             print('[尚未验证] 缺少 systemctl，无法检查服务。')
             break
@@ -255,6 +256,8 @@ def main(args):
         return 0
     if len(args) == 2 and args[0] == 'audit':
         return audit(args[1])
+    if len(args) == 2 and args[0] == 'audit-remote':
+        return audit(args[1], core_required=False)
     raise ValueError('未知中转操作。')
 
 

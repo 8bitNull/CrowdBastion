@@ -2,7 +2,11 @@
 # No service/config/decision changes. Optional selectors are operator declarations.
 diagnose_v2bx() {
     require_yaml || return 1
+    load_node_roles || return 1
     local args=(--cs-dir "$CS_DIR" --unit "${V2BX_UNIT:-V2bX.service}" --entries "${V2BX_ENTRIES:-}")
+    if node_has_role remote || { node_has_role node && [[ ! -f "${CS_DIR}/config.yaml" ]]; }; then
+        args+=(--bouncer-only)
+    fi
     [[ -z "${V2BX_CONFIG:-}" ]] || args+=(--config "$V2BX_CONFIG")
     [[ -z "${V2BX_WORKING_DIR:-}" ]] || args+=(--working-dir "$V2BX_WORKING_DIR")
     python3 "${SCRIPT_DIR}/lib/crowdsec_v2bx.py" "${args[@]}"
@@ -62,10 +66,10 @@ manage_v2bx_node() {
         case "$choice" in
             1) diagnose_v2bx ;;
             2) check_v2bx_logs ;;
-            3) manage_v2bx_observer ;;
-            4) manage_v2bx_alerts ;;
+            3) manage_v2bx_observer; continue ;;
+            4) manage_v2bx_alerts; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -87,7 +91,7 @@ manage_v2bx_observer() {
             2) v2bx_observer_service status ;;
             3) locked_operation v2bx_observer_service disable ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -103,7 +107,7 @@ manage_v2bx_alerts() {
             2) v2bx_alert_service status ;;
             3) locked_operation v2bx_alert_service disable ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done

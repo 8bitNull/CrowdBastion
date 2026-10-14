@@ -17,7 +17,15 @@ prepare_relay_logs() {
 
 check_relay_status() {
     require_yaml || return 1
-    python3 "${SCRIPT_DIR}/lib/crowdsec_relay.py" audit "$CS_DIR"
+    local action=audit
+    load_node_roles || return 1
+    node_has_role remote && action=audit-remote
+    python3 "${SCRIPT_DIR}/lib/crowdsec_relay.py" "$action" "$CS_DIR"
+}
+
+check_remote_firewall_status() {
+    require_yaml || return 1
+    python3 "${SCRIPT_DIR}/lib/crowdsec_relay.py" audit-remote "$CS_DIR"
 }
 
 check_relay_path() {

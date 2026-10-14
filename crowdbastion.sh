@@ -7,6 +7,8 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 MANAGER_FILE="${BASH_SOURCE[0]}"
 CONFIG_HELPER="${SCRIPT_DIR}/lib/crowdsec_config.py"
 CS_DIR="/etc/crowdsec"
+NODE_ROLES_FILE="/var/lib/crowdbastion/node-roles.json"
+NODE_ROLES=''
 WEBUI_DIR="/opt/crowdsec-web-ui"
 CRON_FILE="/etc/cron.d/crowdsec-autoupdate"
 # 保留旧版运行标识，以复用已有配置、服务、锁、备份及托管资源。
@@ -53,6 +55,8 @@ source "${SCRIPT_DIR}/lib/relay.sh"
 source "${SCRIPT_DIR}/lib/v2bx.sh"
 # shellcheck source=lib/remote_bouncer.sh
 source "${SCRIPT_DIR}/lib/remote_bouncer.sh"
+# shellcheck source=lib/node_guidance.sh
+source "${SCRIPT_DIR}/lib/node_guidance.sh"
 REMOTE_BINARY="/usr/local/bin/crowdsec-firewall-bouncer"
 REMOTE_UNIT="/etc/systemd/system/crowdsec-firewall-bouncer.service"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
@@ -142,7 +146,11 @@ yaml_tool() {
 require_core() {
     require_commands crowdsec cscli systemctl || return 1
     if [[ ! -f "${CS_DIR}/config.yaml" ]]; then
-        log_err '请先通过菜单 [1] → [1] 安装 CrowdSec 核心。'
+        if node_has_role relay || { node_has_role node && ! node_has_role web; }; then
+            log_err '请先通过菜单 [1] → [5] 或 --install-relay 安装本机系统/SSH 基础防护。'
+        else
+            log_err '请先通过菜单 [1] → [1] 或 --install-core 安装 CrowdSec 核心。'
+        fi
         return 1
     fi
 }
@@ -346,7 +354,6 @@ install_crowdsec_core() (
         log_info '使用 --relay-status 检查 INPUT/FORWARD 和 IPv4/IPv6 规则；实际中转业务阻断尚未验证。'
         log_info '此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。'
     fi
-    pause
 )
 
 configure_log_acquis() {
@@ -780,7 +787,7 @@ manage_web_ui() {
             4) reset_webui_credentials ;;
             5) check_and_clean_redundant_instances ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1012,14 +1019,15 @@ setup_appsec() (
 )
 
 check_appsec_status() {
-    require_core && require_yaml || return 1
+    if [[ "${1:-}" != offline ]]; then require_core || return 1; fi
+    require_yaml || return 1
     local addresses address sockets result=0
     addresses=$(yaml_tool appsec-listeners "$CS_DIR") || {
         log_err '无法读取有效 AppSec 数据源，健康状态无法确认。'
         return 1
     }
     if [[ -z "$addresses" ]]; then
-        if [[ "${1:-}" == optional ]]; then
+        if [[ "${1:-}" == optional || "${1:-}" == offline ]]; then
             log_info 'AppSec: 未部署（可选）。'
             return 0
         fi
@@ -1037,8 +1045,12 @@ check_appsec_status() {
             fi
         done <<< "$addresses"
     fi
-    diagnose_appsec_containers || result=1
-    cscli appsec-configs list && cscli metrics show appsec || return 1
+    if [[ "${1:-}" != offline ]]; then
+        diagnose_appsec_containers || result=1
+        cscli appsec-configs list && cscli metrics show appsec || return 1
+    else
+        log_info '[尚未验证] 仅检查已部署 AppSec 的配置与监听；请求处理指标由检测中心核验。'
+    fi
     local file
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
         [[ ! -f "$file" ]] || appsec_audit_tool show "$file" || result=1
@@ -1184,13 +1196,13 @@ manage_waf_rules() {
         printf '\n检测规则\n1. 添加检测规则\n2. 查看已安装的规则\n3. 更新检测规则\n4. 补齐基础检测规则\n5. 删除不再使用的规则\n0. 返回\n'
         prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
-            1) manage_rule_installation ;;
+            1) manage_rule_installation; continue ;;
             2) cscli collections list ;;
-            3) manage_rule_updates ;;
+            3) manage_rule_updates; continue ;;
             4) reset_waf_to_core_baseline ;;
-            5) manage_rule_removal ;;
+            5) manage_rule_removal; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1206,7 +1218,7 @@ manage_rule_installation() {
             2) install_collections crowdsecurity/wordpress && reload_core_rules ;;
             3) install_collections crowdsecurity/iptables && reload_core_rules ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1219,9 +1231,9 @@ manage_rule_updates() {
         prompt choice '请选择 [0-2]: ' || return 0
         case "$choice" in
             1) update_hub_logged ;;
-            2) manage_auto_update ;;
+            2) manage_auto_update; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1236,7 +1248,7 @@ manage_rule_removal() {
             1) uninstall_specific_waf_collection ;;
             2) uninstall_all_waf_extensions ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1277,7 +1289,7 @@ manage_auto_update() {
             3) rm -f "$CRON_FILE" && log_succ '定时更新已关闭。' ;;
             4) if [[ -f "$CRON_FILE" ]]; then cat "$CRON_FILE"; else log_info '尚未启用。'; fi ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1352,7 +1364,7 @@ manage_admin_allowlist() {
                     python3 "${SCRIPT_DIR}/lib/crowdsec_safety.py" record-admin "$CS_DIR" remove "$address" || return 1
                 fi ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
     done
 }
@@ -1455,10 +1467,10 @@ manage_firewall_ops() {
             5) firewall_status ;;
             6) cscli metrics ;;
             7) repair_firewall_bouncer ;;
-            8) manage_admin_allowlist ;;
+            8) manage_admin_allowlist; continue ;;
             9) diagnose_self_report ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1578,15 +1590,15 @@ manage_telegram() {
             2) test_telegram_notification ;;
             3) check_telegram_settings ;;
             4) disable_telegram_notification ;;
-            5) manage_custom_bot ;;
+            5) manage_custom_bot; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
 }
 
-check_health_status() {
+check_web_health_status() {
     require_core || return 1
     local result=0 evidence=0 firewall_deployed=false units
     printf '\n核心服务:\n'
@@ -1618,10 +1630,17 @@ check_health_status() {
         printf '\n防火墙规则:\n'
         firewall_status || result=1
     fi
-    check_appsec_status optional || result=1
+    if [[ "${1:-web}" == web ]]; then
+        check_appsec_status optional || result=1
+    else
+        log_info '[不适用] AppSec 网站接入：当前用途未部署网站防护。'
+    fi
     check_webui_status || result=1
     printf '\n保护证据（正常 / 异常 / 尚未验证）:\n'
-    if require_yaml; then check_protection_evidence || evidence=$?; else evidence=2; log_warn '[尚未验证] 缺少结构化检查依赖。'; fi
+    if require_yaml; then
+        if [[ "${1:-web}" == web ]]; then check_protection_evidence || evidence=$?
+        else check_system_protection_evidence || evidence=$?; fi
+    else evidence=2; log_warn '[尚未验证] 缺少结构化检查依赖。'; fi
     [[ "$evidence" == 1 ]] && result=1
     [[ "$result" == 0 && "$evidence" == 2 ]] && result=2
     log_info '检查完成：退出码 1 表示异常，2 表示仍有尚未验证项目。未修改服务、账号或配置。'
@@ -1859,7 +1878,7 @@ manage_uninstall_center() {
             1) uninstall_crowdsec_all ;;
             2) audit_crowdsec_residuals ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1872,13 +1891,13 @@ manage_installation() {
         prompt choice '请选择 [0-6]: ' || return 0
         case "$choice" in
             1) install_crowdsec_core ;;
-            2) manage_website_protection ;;
-            3) manage_real_ip ;;
+            2) manage_website_protection; continue ;;
+            3) manage_real_ip; continue ;;
             4) configure_docker_endpoints ;;
             5) install_crowdsec_core relay ;;
-            6) manage_remote_bouncer ;;
+            6) manage_remote_bouncer; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1898,7 +1917,7 @@ manage_website_protection() {
             6) disable_appsec ;;
             7) remove_docker_web_bouncer ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1925,7 +1944,7 @@ manage_real_ip() {
                 3) locked_operation verify_real_ip_request "${runtime[@]}" ;;
                 4) locked_operation repair_cloudflare_real_ip remove "${runtime[@]}" ;;
                 0) break ;;
-                *) log_warn '无效选项。' ;;
+                *) log_warn '无效选项。'; continue ;;
             esac
             pause
         done
@@ -1938,13 +1957,13 @@ manage_diagnostics() {
         printf '\n检查与修复\n1. 检查整体运行情况\n2. 排查网站问题\n3. 检查中转节点\n4. 管理 V2bX 落地节点\n5. 修复基础配置\n0. 返回\n'
         prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
-            1) check_health_status ;;
-            2) manage_website_diagnostics ;;
-            3) manage_relay_diagnostics ;;
-            4) manage_v2bx_node ;;
-            5) manage_basic_repairs ;;
+            1) interactive_health_check; continue ;;
+            2) manage_website_diagnostics; continue ;;
+            3) manage_relay_diagnostics; continue ;;
+            4) manage_v2bx_node; continue ;;
+            5) manage_basic_repairs; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1958,10 +1977,10 @@ manage_website_diagnostics() {
         case "$choice" in
             1) check_log_inventory ;;
             2) check_appsec_status ;;
-            3) manage_real_ip ;;
+            3) manage_real_ip; continue ;;
             4) locked_operation repair_log_acquis ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1976,7 +1995,7 @@ manage_relay_diagnostics() {
             1) check_relay_status ;;
             2) check_relay_path ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -1993,7 +2012,7 @@ manage_basic_repairs() {
             3) locked_operation smart_audit_and_optimize ;;
             4) locked_operation enable_sqlite_wal ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -2005,11 +2024,11 @@ manage_integrations() {
         printf '\n控制台与通知\n1. 网页管理面板\n2. 绑定 CrowdSec 在线控制台\n3. Telegram 通知\n0. 返回\n'
         prompt choice '请选择 [0-3]: ' || return 0
         case "$choice" in
-            1) manage_web_ui ;;
+            1) manage_web_ui; continue ;;
             2) bind_crowdsec_console ;;
-            3) manage_telegram ;;
+            3) manage_telegram; continue ;;
             0) return 0 ;;
-            *) log_warn '无效选项。' ;;
+            *) log_warn '无效选项。'; continue ;;
         esac
         pause
     done
@@ -2052,22 +2071,33 @@ EOF
 }
 
 show_main_menu() {
-    local choice
+    local choice roles_status=0
     show_startup_banner
+    load_node_roles || roles_status=$?
+    if [[ "$roles_status" == 0 && -z "$NODE_ROLES" && -t 0 ]]; then
+        locked_operation select_node_roles
+    fi
     while true; do
-        printf '\nCrowdBastion 防护管理中心 — 首次安装 [1] → [1]，健康检查 [4] → [1]\n1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n0. 退出\n'
-        prompt choice '请选择 [0-6]（Ctrl+D 退出）: ' || return 0
+        if load_node_roles; then
+            printf '\nCrowdBastion 防护管理中心 — 节点用途：%s\n' "$(node_role_label)"
+            node_recommendation
+        else
+            log_warn '用途配置不可用，请选择 [7] 重新设置；现有专项操作仍可使用。'
+        fi
+        printf '1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n7. 设置节点用途\n8. 按用途检查并选择下一步\n0. 退出\n'
+        prompt choice '请选择 [0-8]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
-            1) locked_operation manage_installation ;;
-            2) locked_operation manage_waf_rules ;;
-            3) locked_operation manage_firewall_ops ;;
-            4) manage_diagnostics ;;
-            5) locked_operation manage_integrations ;;
-            6) locked_operation manage_uninstall_center ;;
+            1) locked_operation manage_installation; continue ;;
+            2) locked_operation manage_waf_rules; continue ;;
+            3) locked_operation manage_firewall_ops; continue ;;
+            4) manage_diagnostics; continue ;;
+            5) locked_operation manage_integrations; continue ;;
+            6) locked_operation manage_uninstall_center; continue ;;
+            7) locked_operation select_node_roles ;;
+            8) interactive_health_check ;;
             0) return 0 ;;
             *) log_warn '无效选项，请输入菜单编号。' ;;
         esac
-        pause
     done
 }
 
@@ -2079,7 +2109,8 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 不带参数进入交互菜单。命令行保留交互确认，失败返回非零状态。
 主菜单：1 安装与接入；2 检测规则；3 IP 封禁与放行；
         4 检查与修复；5 控制台与通知；6 卸载与清理。
-首次安装：1 → 1；只读健康检查：4 → 1。原命令行操作参数保持兼容。
+节点用途：7（可组合）；按用途检查与下一步：8 或 4 → 1。
+首次终端运行显示用途引导；选择只保存偏好。原命令行操作参数保持兼容。
 
 安装和网站接入：
   --install-core       安装检测服务和防火墙防护
@@ -2131,7 +2162,7 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --reset-baseline     补齐基础检测规则，保留自定义规则和网站请求检测
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      确认后移除已知的网站和防火墙日志规则
-  --status             只读健康检查
+  --status             按已保存用途只读检查；未选择时沿用网站检查，不新增交互
   --check-logs         只读检查新增日志、漏采和重复采集
   --repair-logs        按实际网站配置补齐漏采的访问日志
   --repair-bouncer     修复防火墙与检测服务的连接地址
