@@ -11,6 +11,6 @@
 - [x] Squash-integrate `codex/tg-reliability-submit-20261020` and reconcile bot navigation, health checks, documentation, and tests with the source snapshot. Preserve review fixes from `70f4dfe`, `6365f02`, and the subsequent worker-respawn follow-up; keep the original commits under local archive refs.
 - [x] Run focused Telegram, firewall, policy, and Nginx regressions, then the complete unittest suite, shell syntax, Python AST checks, ShellCheck, whitespace checks, and documentation link checks. Record exact results and optional skips.
 - [x] Request an independent read-only review of the final change; resolve substantive findings and repeat affected checks.
-- [ ] Commit the consolidated result and validation record. Fetch the remote again and fast-forward `main`, then push without force. Verify the remote SHA and clean local checkout. Retain backups of intermediate development work before removing superseded worktree registrations and branches.
+- [x] Commit the consolidated result and validation record. Fetch the remote again and fast-forward `main`, then push without force. Verify the remote SHA and clean local checkout. Retain backups of intermediate development work before removing superseded worktree registrations and branches.
 
 The user confirmed integration, regression testing, and push after the initial cleanup. Execute inline; use a separate reviewer for the final review as required by `requesting-code-review`.
