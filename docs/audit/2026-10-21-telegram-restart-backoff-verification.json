@@ -1,0 +1,70 @@
+{
+  "date_utc": "2026-10-21",
+  "tested_main": "c5c194e829973ba06c7999809c689ffdfac911a8",
+  "original_fix": "2059356677f8b233952359d9d9ee8e8f028f3b8e",
+  "integration_commit": "fc395ad64d87bc4e8b974d6321028c0eb9eba2b0",
+  "production_code_changed_this_verification": false,
+  "mutation_check": {
+    "temporary_copy_only": true,
+    "removed": "startup wait_for_retry(get_api_client().retry_delay())",
+    "expected_failures": 1,
+    "actual_failures": 1,
+    "errors": 0,
+    "retry_after": 120,
+    "restart_after_seconds": 10,
+    "expected_remaining_wait": 110,
+    "mutated_request_time": 1010,
+    "fixed_request_time": 1120
+  },
+  "tests": {
+    "full": {
+      "tests": 1063,
+      "seconds": 325.075,
+      "skipped": 39,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "49341228c6136873412b57e8968efffea42a5f764f6e07c0dc32c1b2adaccd0a"
+    },
+    "telegram": {
+      "tests": 162,
+      "seconds": 7.543,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "5e9cc4ed2b4f358a267ae70bf6c5b2c7fe57b39d83ea062175981a6f927f4b4e"
+    },
+    "runtime_and_official_telegram": {
+      "tests": 35,
+      "seconds": 64.896,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "41efade1c6f11a4b1fc9ee971cd1e48910d6a642811530ca210e1a19b2ae901e"
+    },
+    "nginx_reload": {
+      "tests": 5,
+      "seconds": 45.249,
+      "skipped": 0,
+      "failures": 0,
+      "errors": 0,
+      "log_sha256": "c18ba5cb2d11b4e04dd1f9d8bdeb004cf71db406c257d21db5d38d4341c9ad8f"
+    }
+  },
+  "unique_suite_after_supplemental_checks": {
+    "tests": 1063,
+    "passed": 1058,
+    "skipped": 5,
+    "failures": 0,
+    "errors": 0
+  },
+  "remaining_optional_skips": {
+    "official_gost_binary": 1,
+    "pycdlib_iso_media": 4
+  },
+  "source_sha256": {
+    "lib/crowdsec_bot.py": "dda9e1c4d7a44610d96f36cee21a3afb46093c4ef8259e2d0ead99c9a1b4b907",
+    "lib/crowdsec_bot_api.py": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588",
+    "tests/test_custom_bot_flow.py": "e64a57c161cdbe20712e864e2ca28d444ae336f4881324f5e263498c8c863ccf"
+  },
+  "scope": "Committed main in isolated worktree; original uncommitted card-copy changes excluded. No production deployment or real Telegram calls."
+}
