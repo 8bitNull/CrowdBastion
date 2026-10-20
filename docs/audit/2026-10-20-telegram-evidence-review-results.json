@@ -1,0 +1,93 @@
+{
+  "success": true,
+  "verified_at": "2026-10-20T05:25:45.648456+00:00",
+  "hashes": {
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": "dda9e1c4d7a44610d96f36cee21a3afb46093c4ef8259e2d0ead99c9a1b4b907",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": "6ea2387d495d7fd04f46aedf5885bc846598adebc06e81b25d074ea4ce5fd2a3",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052",
+    "/etc/crowdsec/crowdsec-1key-bot.json": "7b0e446968847b212ce9c256eed2ade8295e0721e9c9e0abd87ef6ee5392ef0e",
+    "/etc/systemd/system/crowdsec-1key-bot.service": "76eadd050af5c47f024b2ff800302fbf029af767e743b5a85dbdab37911d4a89",
+    "/etc/crowdsec/crowdsec-1key-web-installs.json": "2758127a93a54f769803d3816a6bdb7ae7151fd27004084f2f998c4e311adb92",
+    "/home/docker/npm/data/crowdsec-1key/bouncer.conf": "00fc0b53c8c66da7b1099031442ffa67e0e1872c93c14a1beed372599efbe468",
+    "/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml": "56a9de7dfc837d1113515dc94fd409c1e40ec1eb353939188da3f31497b2ecd9",
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": "2c432262b084bb328d6db53afe0ae7d55cf362b7182f715627a13fcd2a369344",
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": "3d9e6e9fd165c41f98790c3f399fc1ff3ad298b9979e8f61686d42813d0a627f"
+  },
+  "services": {
+    "crowdsec": {
+      "MainPID": "1186183",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2061335",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  },
+  "sole_bot_process": 2061335,
+  "poll_status": "healthy",
+  "appsec_failure_action": "deny",
+  "cards": [
+    {
+      "alert_id": 1982,
+      "web_state": "observed",
+      "web_receipts": 17,
+      "logs_read": 33,
+      "truncated_files": 5,
+      "read_errors": 0,
+      "scan_limited": false,
+      "firewall_membership": "present"
+    },
+    {
+      "alert_id": 1983,
+      "web_state": "empty",
+      "web_receipts": 0,
+      "logs_read": 33,
+      "truncated_files": 5,
+      "read_errors": 0,
+      "scan_limited": false,
+      "firewall_membership": "present"
+    }
+  ],
+  "known_absent_membership": "absent",
+  "journal_tracebacks": 0,
+  "journal_telegram_api_errors": 0,
+  "existing_3x3_menu_preserved": true,
+  "settings_credentials_and_firewall_configuration_preserved": true,
+  "official_notification_template_unchanged": true,
+  "actual_firewall_packet_drops_verified": false,
+  "tests": {
+    "execution_evidence": 17,
+    "custom_bot": 162,
+    "telegram": 22,
+    "total": 201,
+    "failures": 0
+  },
+  "resolved_findings": [
+    {
+      "severity": "important",
+      "issue": "address_family_enabled_priority",
+      "resolved": true
+    },
+    {
+      "severity": "important",
+      "issue": "same_name_table_or_set_recreation_negative_result",
+      "resolved": true
+    }
+  ],
+  "unresolved_critical_or_important": 0,
+  "backup_dir": "/var/backups/crowdbastion/telegram-update-20261020T052459Z",
+  "review_telegram_messages_sent": 0,
+  "kernel_recreation_race_test": "controlled metadata responses, not production mutation"
+}

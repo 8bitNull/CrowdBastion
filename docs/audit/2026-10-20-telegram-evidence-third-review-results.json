@@ -1,0 +1,151 @@
+{
+  "review": "third-review",
+  "verified_at": "2026-10-20T06:21:07.660173+00:00",
+  "critical_findings": 0,
+  "important_findings": 0,
+  "minor_findings": [
+    {
+      "id": "set-only-inet-support",
+      "description": "set-only configured in inet table is outside current reader family support; can return unavailable",
+      "affects_current_vps": false,
+      "status": "documented limitation; no product change in this review"
+    },
+    {
+      "id": "nft-output-byte-bound",
+      "description": "nft subprocess has a shared timeout but no hard stdout/stderr byte limit",
+      "confirmed_current_fault": false,
+      "status": "documented robustness improvement; no product change in this review"
+    }
+  ],
+  "tests": [
+    {
+      "pattern": "test_execution_evidence.py",
+      "exit_code": 0,
+      "count": 21,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_custom_bot*.py",
+      "exit_code": 0,
+      "count": 162,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_telegram.py",
+      "exit_code": 0,
+      "count": 22,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_web_bouncer_runtime.py",
+      "exit_code": 0,
+      "count": 13,
+      "summary": "OK"
+    }
+  ],
+  "total_tests": 218,
+  "skips": 0,
+  "vps": {
+    "success": true,
+    "verified_at": "2026-10-20T06:21:07.660173+00:00",
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2061827",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "sole_bot_process": 2061827,
+    "poll_status": "healthy",
+    "appsec_failure_action": "deny",
+    "cards": [
+      {
+        "alert_id": 1982,
+        "web_state": "observed",
+        "web_receipts": 17,
+        "logs_read": 33,
+        "truncated_files": 5,
+        "read_errors": 0,
+        "scan_limited": false,
+        "firewall_membership": "present"
+      },
+      {
+        "alert_id": 1983,
+        "web_state": "empty",
+        "web_receipts": 0,
+        "logs_read": 33,
+        "truncated_files": 5,
+        "read_errors": 0,
+        "scan_limited": false,
+        "firewall_membership": "present"
+      }
+    ],
+    "known_absent_membership": "absent",
+    "journal_tracebacks": 0,
+    "journal_telegram_api_errors": 0,
+    "existing_3x3_menu_preserved": true,
+    "settings_credentials_and_firewall_configuration_preserved": true,
+    "official_notification_template_unchanged": true,
+    "actual_firewall_packet_drops_verified": false
+  },
+  "web_hooks": {
+    "success": true,
+    "resource_manifest_valid": true,
+    "resources_checked": 28,
+    "access_hook_active": true,
+    "log_hook_active": true,
+    "host_container_byte_identity": [
+      "access.lua",
+      "log.lua",
+      "lib/crowdsec_1key/execution.lua",
+      "lib/crowdsec_1key/crowdsec.lua"
+    ],
+    "reloads_or_rule_changes": 0
+  },
+  "nft_configuration_scope": {
+    "success": true,
+    "mode": "nftables",
+    "address_families": {
+      "ipv4": {
+        "set_only": false,
+        "configured_table_families": [
+          "ip"
+        ]
+      },
+      "ipv6": {
+        "set_only": false,
+        "configured_table_families": [
+          "ip6"
+        ]
+      }
+    },
+    "same_name_cross_family_tables": false
+  },
+  "local_deployed_code": {
+    "success": true,
+    "files_matching": [
+      "crowdsec_bot.py",
+      "crowdsec_safety.py",
+      "crowdsec_execution.py",
+      "crowdsec_bot_actions.py",
+      "crowdsec_bot_api.py",
+      "crowdsec_bot_health.py",
+      "crowdbastion_health.py",
+      "crowdbastion_node.py"
+    ]
+  },
+  "service_restarts_in_review": 0,
+  "telegram_messages_sent_in_review": 0,
+  "production_firewall_or_decision_mutations": 0,
+  "actual_user_callback_verified_in_review": false
+}
