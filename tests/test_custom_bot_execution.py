@@ -18,6 +18,7 @@ class ExecutionCards(unittest.TestCase):
         self.bot = importlib.util.module_from_spec(spec); spec.loader.exec_module(self.bot)
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
         self.base = Path(self.tmp.name); self.bot.NPM_LOG_DIR = str(self.base)
+        self.bot.CSCLI_CONFIG = str(self.base/'config.yaml')
         self.alert = dict(id=42, source={'value': '192.0.2.10'}, scenario='qa/<scan>',
                           start_at='2026-10-19T00:00:00Z', simulated=False, decisions=[])
 
@@ -36,7 +37,7 @@ class ExecutionCards(unittest.TestCase):
         self.assertIn('exp:42', [b['callback_data'] for row in kb['inline_keyboard'] for b in row])
         (self.base/'proxy-host-1_error.log').write_text(receipt(time=time.time()-1, cause='appsec_failure'))
         text, kb = self.card()
-        self.assertIn('已观测到同源 Web 拒绝', text)
+        self.assertIn('已记录同源 Web 拒绝', text)
         self.assertIn('AppSec 故障策略拒绝', text)
         self.assertIn('不能证明原触发请求', text)
         self.assertNotIn('本告警已拦截', text)
@@ -44,10 +45,37 @@ class ExecutionCards(unittest.TestCase):
         self.assertIn('exp:42', [b['callback_data'] for row in kb['inline_keyboard'] for b in row])
 
     def test_unavailable_and_zero_observations_have_distinct_messages(self):
-        text, _ = self.card(); self.assertIn('日志不可用', text)
+        text, _ = self.card(); self.assertIn('回执查询不可用', text)
         (self.base/'proxy-host-1_error.log').write_text('business returned 403\n')
-        text, _ = self.card(); self.assertIn('尚未观测到', text)
+        text, _ = self.card(); self.assertIn('本次未找到该来源的拒绝记录', text)
+        self.assertIn('截尾 0 个文件；读取错误 0', text)
+        self.assertNotIn('链路未接入', text)
+        self.assertIn('防火墙集合同步: 查询不可用', text)
+        self.assertIn('防火墙实际丢包: 本卡未核验', text)
         self.assertNotIn('拦截失败', text)
+
+    def test_firewall_local_override_is_loaded_without_claiming_packet_drops(self):
+        folder = self.base/'bouncers'; folder.mkdir()
+        config = folder/'crowdsec-firewall-bouncer.yaml'
+        config.write_text('mode: nftables\nnftables:\n  ipv4:\n    enabled: true\n')
+        Path(str(config)+'.local').write_text('mode: iptables\n')
+        text, _ = self.card()
+        self.assertIn('当前后端或地址族不支持', text)
+        self.assertIn('集合成员状态不能证明实际丢包', text)
+
+    def test_real_nft_reply_renders_membership_as_sync_evidence_only(self):
+        import subprocess
+        folder = self.base/'bouncers'; folder.mkdir()
+        (folder/'crowdsec-firewall-bouncer.yaml').write_text('mode: nftables\n')
+        metadata = json.dumps({'nftables': [{'set': {'family': 'ip', 'table': 'crowdsec',
+            'name': 'crowdsec-blacklists-cscli', 'type': 'ipv4_addr'}}]})
+        replies = [subprocess.CompletedProcess([], 0, metadata, ''),
+                   subprocess.CompletedProcess([], 0, 'elements = { 192.0.2.10 timeout 4h }', '')]
+        with patch('subprocess.run', side_effect=replies):
+            text, _ = self.card()
+        self.assertIn('防火墙集合同步: 已进入配置的封禁集合', text)
+        self.assertIn('防火墙实际丢包: 本卡未核验', text)
+        self.assertNotIn('已成功拦截', text)
 
     def test_simulated_alert_cannot_become_execution_claim(self):
         self.alert['simulated'] = True

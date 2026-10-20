@@ -115,7 +115,7 @@ def telegram_template(chat):
 {{- if gt (len $counts) 10 -}}{{- $text = printf "%s\n另有 %d 种规则未展开" $text (sub (len $counts) 10) -}}{{- end -}}
 {{- $text = printf "%s\n取证仅展示前 %d 条告警；完整记录请用 cscli alerts list / inspect 查询。" $text (min $detailLimit (len .)) -}}
 {{- end -}}
-{{- $text = printf "%s\n执行核验: 推送时未验证 Bouncer 实际拦截；使用 /inspect 调阅告警后点击“执行核验”查询真实 Web 拒绝记录。" $text -}}
+{{- $text = printf "%s\n执行核验: 本条通知未查询执行回执；使用 /inspect 调阅告警后点击“执行核验”查看 Web 拒绝记录与防火墙集合同步状态。集合成员状态不代表已验证实际丢包。" $text -}}
 {{- range $index, $alert := . -}}{{- if lt $index $detailLimit -}}
 {{- if gt .ID 0 -}}{{- $text = printf "%s\n\n【Alert #%d】" $text .ID -}}{{- else -}}{{- $text = printf "%s\n\n【实时告警】" $text -}}{{- end -}}
 {{- $text = printf "%s\n场景: %s" $text (.Scenario | toJson | fromJson | trunc 100) -}}

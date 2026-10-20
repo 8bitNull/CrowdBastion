@@ -549,7 +549,7 @@ def module_forensics(alert_id=None):
             txt += '决策: '+', '.join(esc(d.get('type'), 20)+' / '+esc(d.get('duration'), 20) for d in decisions[:3])+'\n'
         else:
             txt += '决策: 本告警未附带处置决策\n'
-        txt += '执行状态: 待核验；点击下方“执行核验”读取真实 Web 拒绝记录。\n'
+        txt += '执行回执: 本页未查询；点击下方“执行核验”查看 Web 拒绝记录和防火墙集合同步状态。\n'
         samples = request_samples(alert)
         for index, (path, ua, method) in enumerate(samples, 1):
             description = '未记录 UA' if ua is None else ('请求未提供 UA' if not ua else ua)
@@ -612,7 +612,7 @@ def module_execution(alert_id):
                           for d in decisions[:3]) if decisions else '未查到')+'\n'
     except (RuntimeError, ValueError, TypeError):
         text += '当前决策: 查询不可用\n'
-    text += '决策存在只表示处置要求；防火墙实际丢包未在本卡核验。\n'
+    text += '决策存在只表示处置要求。\n'
     now = time.time()
     since = now-86400
     try:
@@ -628,21 +628,34 @@ def module_execution(alert_id):
         spec.loader.exec_module(reader)
         evidence = reader.query(EXECUTION_LOG_DIRS or [NPM_LOG_DIR], ip, since, now=now)
         if evidence['state'] == 'observed':
-            text += f"✅ 已观测到同源 Web 拒绝: {evidence['count']} 条（日志抽样）\n"
+            text += f"✅ 已记录同源 Web 拒绝: {evidence['count']} 条（日志抽样）\n"
             text += '原因: '+'、'.join(reader.CAUSES[k]+f' {v} 条' for k,v in evidence['causes'].items())+'\n'
             last = evidence['records'][0]
             date = datetime.fromtimestamp(last['time'], timezone.utc).strftime('%m-%d %H:%M:%S UTC')
             text += f"最后记录: {date} / HTTP {last['status']} / 未访问业务上游\n请求 ID: <code>{last['request_id']}</code>\n"
         elif evidence['state'] == 'empty':
-            text += '⏳ 尚未观测到该来源的 Web 拒绝；可能无后续命中或记录链路未接入，不能据此判断漏防。\n'
+            text += '⏳ Web 回执: 本次未找到该来源的拒绝记录，不能据此判断拦截成功或漏防。\n'
         else:
-            text += '⚠️ 证据日志不可用，无法判断实际拦截。\n'
+            text += '⚠️ Web 回执查询不可用，本次结果未知。\n'
         start = datetime.fromtimestamp(evidence['since'], timezone.utc).strftime('%m-%d %H:%M UTC')
         text += f"查询窗口: {start} 至今（最多24小时）；读取 {evidence['logs_read']} 个日志尾部。\n"
+        text += f"读取情况: 截尾 {evidence['truncated_files']} 个文件；读取错误 {evidence['errors']}。\n"
+        if evidence['scan_limited']:
+            text += '扫描达到文件或目录条目上限。\n'
         if evidence['truncated'] or evidence['errors']:
-            text += '覆盖有限: 日志被截尾、轮转或部分不可读；条数不代表全量。\n'
+            text += '覆盖有限: 以上条数仅为本次抽样，不代表全量；扫描范围不是拦截次数。\n'
     except (OSError, ValueError, TypeError, ImportError, KeyError, OverflowError):
-        text += '⚠️ 证据日志不可用或核验模块未安装，无法判断实际拦截。\n'
+        text += '⚠️ Web 回执查询不可用（日志或核验模块异常），本次结果未知。\n'
+    try:
+        config_path = Path(CSCLI_CONFIG).parent/'bouncers/crowdsec-firewall-bouncer.yaml'
+        firewall = sibling('crowdsec_execution').firewall_membership(sibling('crowdsec_safety').load(config_path), ip)
+        labels = {'present': '已进入配置的封禁集合', 'absent': '本次未在配置的封禁集合中查到',
+                  'unavailable': '查询不可用，本次结果未知', 'unsupported': '未核验（当前后端或地址族不支持）'}
+        text += '防火墙集合同步: '+labels[firewall['state']]+'。\n'
+    except Exception:
+        # Optional evidence must not hide the independent Web receipt result.
+        text += '防火墙集合同步: 查询不可用，本次结果未知。\n'
+    text += '防火墙实际丢包: 本卡未核验；集合成员状态不能证明实际丢包。\n'
     text += '关联范围: 来源 IP 与时间窗；不能证明原触发请求或本告警某条决策已执行。'
     return text, keyboard
 

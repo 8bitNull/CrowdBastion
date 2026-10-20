@@ -176,7 +176,7 @@ class TelegramRendering(unittest.TestCase):
     def test_decision_is_not_reported_as_verified_bouncer_enforcement(self):
         text = self.render({'scenario': 'http-test', 'decisions': [{'type': 'ban', 'duration': '4h'}]})
         self.assertIn('ban / 4h', text)
-        self.assertIn('未验证 Bouncer 实际拦截', text)
+        self.assertIn('本条通知未查询执行回执', text)
         self.assertNotIn('DROP', text)
 
     def test_missing_decision_and_simulation_are_explicit(self):

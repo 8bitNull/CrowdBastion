@@ -1,0 +1,598 @@
+{
+  "target": "179.255.121.95:53322",
+  "observed_at_utc": "2026-10-20T04:40:07.911197+00:00",
+  "followup_at_utc": "2026-10-20T04:42:48.214957+00:00",
+  "claim_assessment": "The interpretation of an empty per-source Web receipt result is correct. It must not be generalized to the whole VPS: real Web denials were observed.",
+  "exact_feedback_alert_identified": false,
+  "installed_bot_sha256": "fd97c93b8e1e5bd560214bcae13ff53050dfb900eeb7a7d7de4e24c476ab1c8f",
+  "installed_reader_sha256": "2c50f6e03295f0dbe7af5c4cce09ca7001c97ab27bc3015219e3a6e7bc07f18a",
+  "services_before": {
+    "crowdsec": {
+      "MainPID": "1186183",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2058676",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  },
+  "services_after": {
+    "crowdsec": {
+      "MainPID": "1186183",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2058676",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  },
+  "telegram_runtime": {
+    "status": "healthy",
+    "poll_error": null,
+    "send_error": null,
+    "api_error": null
+  },
+  "appsec_failure_action": "deny",
+  "execution_pipeline": {
+    "bot_log_dirs": [
+      "/home/docker/npm/data/logs"
+    ],
+    "explicit_execution_dirs": null,
+    "access_and_log_hooks_present": true,
+    "mounted_module_hashes_match": true,
+    "emitter_hook_present": true,
+    "vendor_marker_calls_present": 2,
+    "emitter_log_level": "error",
+    "proxy_host_log_level": "warn",
+    "active_error_log_paths": [
+      {
+        "container_path": "/data/logs/fallback_error.log",
+        "host_path": "/home/docker/npm/data/logs/fallback_error.log",
+        "directive": "error_log /data/logs/fallback_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/fallback_http_error.log",
+        "host_path": "/home/docker/npm/data/logs/fallback_http_error.log",
+        "directive": "error_log /data/logs/fallback_http_error.log warn;"
+      },
+      {
+        "container_path": "/dev/null",
+        "host_path": null,
+        "directive": "error_log /dev/null crit;"
+      },
+      {
+        "container_path": "/data/logs/default-host_error.log",
+        "host_path": "/home/docker/npm/data/logs/default-host_error.log",
+        "directive": "error_log /data/logs/default-host_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-10_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-10_error.log",
+        "directive": "error_log /data/logs/proxy-host-10_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-11_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-11_error.log",
+        "directive": "error_log /data/logs/proxy-host-11_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-12_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-12_error.log",
+        "directive": "error_log /data/logs/proxy-host-12_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-13_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-13_error.log",
+        "directive": "error_log /data/logs/proxy-host-13_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-14_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-14_error.log",
+        "directive": "error_log /data/logs/proxy-host-14_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-15_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-15_error.log",
+        "directive": "error_log /data/logs/proxy-host-15_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-16_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-16_error.log",
+        "directive": "error_log /data/logs/proxy-host-16_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-17_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-17_error.log",
+        "directive": "error_log /data/logs/proxy-host-17_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-18_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-18_error.log",
+        "directive": "error_log /data/logs/proxy-host-18_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-19_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-19_error.log",
+        "directive": "error_log /data/logs/proxy-host-19_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-21_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-21_error.log",
+        "directive": "error_log /data/logs/proxy-host-21_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-22_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-22_error.log",
+        "directive": "error_log /data/logs/proxy-host-22_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-23_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-23_error.log",
+        "directive": "error_log /data/logs/proxy-host-23_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-24_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-24_error.log",
+        "directive": "error_log /data/logs/proxy-host-24_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-25_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-25_error.log",
+        "directive": "error_log /data/logs/proxy-host-25_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-26_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-26_error.log",
+        "directive": "error_log /data/logs/proxy-host-26_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-3_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-3_error.log",
+        "directive": "error_log /data/logs/proxy-host-3_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-5_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-5_error.log",
+        "directive": "error_log /data/logs/proxy-host-5_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-6_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-6_error.log",
+        "directive": "error_log /data/logs/proxy-host-6_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-7_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-7_error.log",
+        "directive": "error_log /data/logs/proxy-host-7_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-8_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-8_error.log",
+        "directive": "error_log /data/logs/proxy-host-8_error.log warn;"
+      },
+      {
+        "container_path": "/data/logs/proxy-host-9_error.log",
+        "host_path": "/home/docker/npm/data/logs/proxy-host-9_error.log",
+        "directive": "error_log /data/logs/proxy-host-9_error.log warn;"
+      }
+    ],
+    "error_log_discard_context": [
+      {
+        "file": "/etc/nginx/conf.d/default.conf",
+        "server_names": [
+          "localhost-nginx-proxy-manager",
+          "localhost"
+        ],
+        "locations": [
+          "/ "
+        ]
+      }
+    ]
+  },
+  "bounded_log_snapshot": {
+    "matched_files": 33,
+    "read_files": 33,
+    "errors": [],
+    "truncated_files": 5,
+    "valid_receipts_24h": 110,
+    "receipt_causes": {
+      "lapi_ban": 92,
+      "appsec_rule": 18
+    },
+    "receipt_distinct_ips": 26,
+    "receipt_latest_time": 1792469339.162,
+    "marker_rejections": {},
+    "error_signature_counts": {
+      "CB_EXEC_V1": 110
+    }
+  },
+  "scan_limits": {
+    "tail_bytes_per_error_file": 65536,
+    "max_error_files": 128,
+    "max_log_directories": 4,
+    "window_hours_max": 24,
+    "only_error_log_names_and_optional_dot_1_rotation": true,
+    "gzip_and_older_rotations_not_scanned": true
+  },
+  "per_alert_samples": [
+    {
+      "alert_id": 1983,
+      "alert_start": "2026-10-20T04:35:33Z",
+      "alert_created_at": "2026-10-20T04:35:39Z",
+      "current_decisions": [
+        {
+          "id": 2325521,
+          "type": "ban",
+          "duration": "3h52m53s",
+          "origin": "crowdsec"
+        }
+      ],
+      "firewall_membership": [
+        {
+          "set": "crowdsec-blacklists-crowdsec",
+          "member": true,
+          "exit_code": 0
+        },
+        {
+          "set": "crowdsec-blacklists-cscli",
+          "member": false,
+          "exit_code": 1
+        },
+        {
+          "set": "crowdsec-blacklists-CAPI",
+          "member": false,
+          "exit_code": 1
+        }
+      ],
+      "execution_state": "empty",
+      "receipt_count_in_first_snapshot": 0,
+      "receipt_causes_in_first_snapshot": {},
+      "receipt_samples": [],
+      "access_logs": {
+        "matched_access_since_alert": 3,
+        "access_strictly_after_alert_creation": 0,
+        "last_access_time": 1792470939.0,
+        "access_status_counts": {
+          "400": 3
+        }
+      }
+    },
+    {
+      "alert_id": 1982,
+      "alert_start": "2026-10-20T04:08:53Z",
+      "alert_created_at": "2026-10-20T04:08:56Z",
+      "current_decisions": [
+        {
+          "id": 2325520,
+          "type": "ban",
+          "duration": "3h26m9s",
+          "origin": "crowdsec"
+        }
+      ],
+      "firewall_membership": [
+        {
+          "set": "crowdsec-blacklists-crowdsec",
+          "member": true,
+          "exit_code": 0
+        },
+        {
+          "set": "crowdsec-blacklists-cscli",
+          "member": false,
+          "exit_code": 1
+        },
+        {
+          "set": "crowdsec-blacklists-CAPI",
+          "member": false,
+          "exit_code": 1
+        }
+      ],
+      "execution_state": "observed",
+      "receipt_count_in_first_snapshot": 17,
+      "receipt_causes_in_first_snapshot": {
+        "lapi_ban": 17
+      },
+      "receipt_samples": [
+        {
+          "time": 1792469339.162,
+          "status": 403,
+          "cause": "lapi_ban",
+          "upstream": "",
+          "request_id": "8b563c10479f83e165d39b381e61044d"
+        },
+        {
+          "time": 1792469338.79,
+          "status": 403,
+          "cause": "lapi_ban",
+          "upstream": "",
+          "request_id": "866ade91e942dbebcb7919d2872819c3"
+        },
+        {
+          "time": 1792469338.423,
+          "status": 403,
+          "cause": "lapi_ban",
+          "upstream": "",
+          "request_id": "a73b54769abcf2c236c6907e4fec9405"
+        }
+      ],
+      "access_logs": {
+        "matched_access_since_alert": 33,
+        "access_strictly_after_alert_creation": 12,
+        "last_access_time": 1792469339.0,
+        "access_status_counts": {
+          "403": 17,
+          "301": 16
+        }
+      }
+    },
+    {
+      "alert_id": 1978,
+      "alert_start": "2026-10-20T03:16:27Z",
+      "alert_created_at": "2026-10-20T03:16:27Z",
+      "current_decisions": [],
+      "firewall_membership": [
+        {
+          "set": "crowdsec-blacklists-crowdsec",
+          "member": false,
+          "exit_code": 1
+        },
+        {
+          "set": "crowdsec-blacklists-cscli",
+          "member": false,
+          "exit_code": 1
+        },
+        {
+          "set": "crowdsec-blacklists-CAPI",
+          "member": false,
+          "exit_code": 1
+        }
+      ],
+      "execution_state": "observed",
+      "receipt_count_in_first_snapshot": 1,
+      "receipt_causes_in_first_snapshot": {
+        "appsec_rule": 1
+      },
+      "receipt_samples": [
+        {
+          "time": 1792466187.302,
+          "status": 403,
+          "cause": "appsec_rule",
+          "upstream": "",
+          "request_id": "c64434cd92e7624193aea88812297af9"
+        }
+      ],
+      "access_logs": {
+        "matched_access_since_alert": 5,
+        "access_strictly_after_alert_creation": 4,
+        "last_access_time": 1792466189.0,
+        "access_status_counts": {
+          "403": 4,
+          "200": 1
+        }
+      }
+    }
+  ],
+  "firewall_rules_projection": {
+    "sets": [
+      {
+        "name": "crowdsec-blacklists-CAPI",
+        "type": "ipv4_addr",
+        "flags": [
+          "timeout"
+        ]
+      },
+      {
+        "name": "crowdsec-blacklists-crowdsec",
+        "type": "ipv4_addr",
+        "flags": [
+          "timeout"
+        ]
+      },
+      {
+        "name": "crowdsec-blacklists-cscli",
+        "type": "ipv4_addr",
+        "flags": [
+          "timeout"
+        ]
+      }
+    ],
+    "chains": [
+      {
+        "name": "crowdsec-chain-input",
+        "hook": "input",
+        "prio": -10,
+        "type": "filter"
+      },
+      {
+        "name": "crowdsec-chain-forward",
+        "hook": "forward",
+        "prio": -10,
+        "type": "filter"
+      }
+    ],
+    "rules": [
+      {
+        "chain": "crowdsec-chain-input",
+        "expression": [
+          {
+            "counter": "processed"
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-input",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-CAPI"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-CAPI"
+          },
+          {
+            "drop": null
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-input",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-crowdsec"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-crowdsec"
+          },
+          {
+            "drop": null
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-input",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-cscli"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-cscli"
+          },
+          {
+            "drop": null
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-forward",
+        "expression": [
+          {
+            "counter": "processed"
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-forward",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-CAPI"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-CAPI"
+          },
+          {
+            "drop": null
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-forward",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-crowdsec"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-crowdsec"
+          },
+          {
+            "drop": null
+          }
+        ]
+      },
+      {
+        "chain": "crowdsec-chain-forward",
+        "expression": [
+          {
+            "match": {
+              "op": "==",
+              "left": {
+                "payload": {
+                  "protocol": "ip",
+                  "field": "saddr"
+                }
+              },
+              "right": "@crowdsec-blacklists-cscli"
+            }
+          },
+          {
+            "counter": "crowdsec-blacklists-cscli"
+          },
+          {
+            "drop": null
+          }
+        ]
+      }
+    ]
+  },
+  "scope": {
+    "configuration_modified": false,
+    "services_restarted": false,
+    "new_decisions_created": false,
+    "test_packets_or_web_requests_sent": false,
+    "telegram_messages_sent": false,
+    "individual_firewall_drop_proven": false,
+    "all_traffic_or_all_sites_verified": false
+  },
+  "limitations": [
+    "The user did not provide an alert ID or source IP for the quoted feedback; sampled alerts are independent evidence, not a confirmed identification of that card.",
+    "Log tail reads and IP/time matching do not prove the original trigger request or a specific decision was executed.",
+    "Firewall set membership and DROP rules do not identify a packet dropped for the sampled IP.",
+    "No subsequent access in the bounded sample cannot distinguish no retries from early packet dropping."
+  ]
+}
