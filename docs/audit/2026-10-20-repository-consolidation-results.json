@@ -270,5 +270,12 @@
     "No VPS deployment or live Telegram API messages. Official plugin tests use a local loopback receiver.",
     "Docker and systemd boundaries use fixtures; Nginx master/worker and Lua checks use real processes.",
     "Kernel enforcement, external business traffic, and optional gost/ISO checks were not run in this consolidation."
-  ]
+  ],
+  "repository_sync": {
+    "verified_at": "2026-10-20T02:14:34.440958+00:00",
+    "published_code_commit": "fc395ad64d87bc4e8b974d6321028c0eb9eba2b0",
+    "local_main_matches_remote": true,
+    "working_tree_clean": true,
+    "code_matches_full_tested_candidate": true
+  }
 }
