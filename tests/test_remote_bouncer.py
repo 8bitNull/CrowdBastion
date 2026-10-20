@@ -227,7 +227,8 @@ systemctl() {{
         self.assertIn('systemctl enable crowdsec-firewall-bouncer',self.commands())
         self.assertTrue((self.base/'usr/local/bin/crowdsec-firewall-bouncer').exists())
         self.assertTrue((self.base/'etc/systemd/system/crowdsec-firewall-bouncer.service').exists())
-        self.assertIn('mode: nftables',self.file.read_text())
+        self.assertIn('mode: iptables',self.file.read_text())
+        self.assertIn('packages iptables ipset',self.commands())
         import yaml
         local=yaml.safe_load(Path(str(self.file)+'.local').read_text())
         self.assertEqual(local['nftables_hooks'],['input','forward'])

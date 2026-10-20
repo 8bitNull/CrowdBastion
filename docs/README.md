@@ -32,6 +32,8 @@
 
 [验证记录](verification.md)保存各轮检查方法和结果；[验收索引](audit/README.md)指向报告及证据。系统试用放行以 [VPS 修复进度](audit/2026-10-12-vps-repair-progress.md)和 [兼容性矩阵](audit/2026-10-12-vps-compatibility.md)为准，不能用源码测试数量替代目标系统验收。
 
+2026-10-20 [仓库整合验收](audit/2026-10-20-repository-consolidation.md)记录脚本修复、Web 执行证据及 Telegram 九宫格的统一回归、本地归档和仓库同步；本轮未部署 VPS。
+
 最近的 V2bX [混合入口实验](audit/2026-10-13-v2bx-mixed-ingress.md)已取得基础组合的双账号、IPv4/IPv6 和 TCP/UDP 应用载荷证据；生产观察仍未部署。历史报告记录当时的版本、配置与检测缺口，后续变化以对应新报告为准。
 
 实施计划位于 `superpowers/plans/`，设计位于 `superpowers/specs/`；V2bX 的后续顺序见 [防护路线](superpowers/plans/2026-10-13-v2bx-protection-roadmap.md)。旧的安装设计、功能审计和实施计划保留作历史背景，不替代当前使用指南。

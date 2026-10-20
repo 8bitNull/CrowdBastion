@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Optional interactive bot; official HTTP notifications retain their own lifecycle.
+CUSTOM_BOT_HELPERS=(crowdsec_safety.py crowdsec_execution.py crowdsec_bot_actions.py
+    crowdsec_bot_api.py crowdsec_bot_health.py crowdbastion_health.py crowdbastion_node.py)
 
 custom_bot_owned() {
     [[ -f "$CUSTOM_BOT_UNIT" && ! -L "$CUSTOM_BOT_UNIT" ]] &&
@@ -71,7 +73,11 @@ setup_custom_bot() {
     require_core && require_yaml || return 1
     check_custom_bot_ownership || return 1
     custom_bot_conflicts || return 1
-    local token chat admin npm endpoint python_bin
+    local token chat admin npm endpoint python_bin helper target
+    local -a helper_paths=()
+    for helper in "${CUSTOM_BOT_HELPERS[@]}"; do
+        helper_paths+=("$(dirname "$CUSTOM_BOT_SCRIPT")/$helper")
+    done
     log_info '官方通知继续自动推送；本组件只处理查询/按钮，不覆盖旧 /usr/local/bin/crowdsec_bot.py。'
     log_info '留空沿用已保存配置；首次可导入旧脚本中的静态参数。群组 Chat ID 与管理员个人 ID 分别填写。'
     read -r -s -p 'Bot Token（隐藏输入）: ' token || return 1
@@ -86,7 +92,12 @@ setup_custom_bot() {
     [[ ! -L "$CUSTOM_BOT_CONFIG" && ! -L "$CUSTOM_BOT_SCRIPT" && ! -L "$CUSTOM_BOT_UNIT" ]] || {
         log_err '受管理文件不能为符号链接。'; return 1;
     }
-    begin_config_change "$CUSTOM_BOT_CONFIG" "$CUSTOM_BOT_SCRIPT" "$CUSTOM_BOT_UNIT" || return 1
+    for target in "${helper_paths[@]}"; do
+        if [[ -L "$target" ]] || { [[ -e "$target" ]] && { [[ ! -f "$target" ]] || ! custom_bot_owned; }; }; then
+            log_err '机器人模块归属或文件类型未知，未覆盖。'; return 1
+        fi
+    done
+    begin_config_change "$CUSTOM_BOT_CONFIG" "$CUSTOM_BOT_SCRIPT" "$CUSTOM_BOT_UNIT" "${helper_paths[@]}" || return 1
     if ! printf '%s\n' "$token" "$chat" "$admin" "$npm" "$endpoint" |
         python3 "${SCRIPT_DIR}/lib/crowdsec_bot_settings.py" configure "$CUSTOM_BOT_CONFIG" "$CS_DIR" "$CUSTOM_BOT_STATE" "$CUSTOM_BOT_LEGACY"; then
         restore_config_change; return 1
@@ -96,6 +107,12 @@ setup_custom_bot() {
         ! chmod 700 "$CUSTOM_BOT_STATE" || ! cp "${SCRIPT_DIR}/lib/crowdsec_bot.py" "$CUSTOM_BOT_SCRIPT" || ! chmod 755 "$CUSTOM_BOT_SCRIPT"; then
         restore_config_change; return 1
     fi
+    for helper in "${CUSTOM_BOT_HELPERS[@]}"; do
+        target="$(dirname "$CUSTOM_BOT_SCRIPT")/$helper"
+        if ! cp "${SCRIPT_DIR}/lib/$helper" "$target" || ! chmod 600 "$target"; then
+            restore_config_change; return 1
+        fi
+    done
     if ! cat > "$CUSTOM_BOT_UNIT" <<EOF
 # crowdsec-1key-managed-interactive-bot
 [Unit]
@@ -126,10 +143,14 @@ EOF
 
 check_custom_bot() {
     if [[ ! -f "$CUSTOM_BOT_CONFIG" ]]; then log_info '交互机器人：未配置（可选）。'; return 2; fi
-    python3 "${SCRIPT_DIR}/lib/crowdsec_bot.py" --config "$CUSTOM_BOT_CONFIG" --check-config || return 1
-    systemctl is-active crowdsec-1key-bot.service || return 1
+    local service_status=0 runtime_status=0
+    python3 "$CUSTOM_BOT_SCRIPT" --config "$CUSTOM_BOT_CONFIG" --check-config || return 1
+    systemctl is-active crowdsec-1key-bot.service || service_status=1
+    python3 "$CUSTOM_BOT_SCRIPT" --config "$CUSTOM_BOT_CONFIG" --runtime-status || runtime_status=$?
     log_info '自动告警：关闭，由官方通道推送；轮询及按钮操作请在 TG 实测。'
     custom_bot_conflicts || return 1
+    [[ "$service_status" == 0 && "$runtime_status" != 1 ]] || return 1
+    [[ "$runtime_status" == 0 ]] && return 0
     return 2
 }
 
@@ -145,8 +166,11 @@ purge_custom_bot() {
     [[ -e "$CUSTOM_BOT_UNIT" || -L "$CUSTOM_BOT_UNIT" ]] || return 0
     check_custom_bot_ownership || return 1
     if custom_bot_owned; then
+        local helper
+        local -a paths=("$CUSTOM_BOT_UNIT" "$CUSTOM_BOT_SCRIPT")
+        for helper in "${CUSTOM_BOT_HELPERS[@]}"; do paths+=("$(dirname "$CUSTOM_BOT_SCRIPT")/$helper"); done
         systemctl disable --now crowdsec-1key-bot.service || return 1
-        rm -f -- "$CUSTOM_BOT_UNIT" "$CUSTOM_BOT_SCRIPT" || return 1
+        rm -f -- "${paths[@]}" || return 1
         rm -rf -- "$CUSTOM_BOT_STATE" || return 1
     fi
 }

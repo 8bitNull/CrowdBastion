@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-19T14:10:50.554481+00:00",
+  "scope": "Local source regression, real Nginx/Lua HTTP requests, simulated package/configuration branches",
+  "python_version": "3.11.2",
+  "unittest": {
+    "total": 902,
+    "passed": 881,
+    "skipped": 21,
+    "failed": 0,
+    "duration_seconds": 306.375,
+    "log_path": "/tmp/crowdbastion-vps-hardening-final.log",
+    "log_sha256": "2f1d9ba7bf102d729fa8acfc14e010290f949eb67637a19474834859dfbd1e5c",
+    "skipped_cases": [
+      {
+        "test": "test_relay_benchmark.Benchmark.test_persistent_gost_udp_concurrency",
+        "reason": "'optional official gost binary'"
+      },
+      {
+        "test": "test_telegram.TelegramReceipts.test_cli_exit_zero_without_delivery_is_not_success",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official receipt checks'"
+      },
+      {
+        "test": "test_telegram.TelegramReceipts.test_http_rejection_fails_even_if_official_cli_exits_successfully",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official receipt checks'"
+      },
+      {
+        "test": "test_telegram.TelegramReceipts.test_official_plugin_single_message_has_verified_api_receipt",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official receipt checks'"
+      },
+      {
+        "test": "test_telegram.TelegramReceipts.test_ok_false_overrides_http_200_and_clears_prior_success",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official receipt checks'"
+      },
+      {
+        "test": "test_telegram.TelegramReceipts.test_successful_receipt_expires_on_configuration_change_or_after_24_hours",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official receipt checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_alert_context_is_fallback_when_events_are_absent",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_context_from_different_path_is_not_paired_with_event",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_decision_is_not_reported_as_verified_bouncer_enforcement",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_empty_first_event_does_not_hide_later_evidence",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_false_simulation_flag_is_not_treated_as_a_truthy_pointer",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_missing_data_and_empty_ua_are_distinguished",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_missing_decision_and_simulation_are_explicit",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_real_appsec_context_completes_matching_event_evidence",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_real_event_meta_paths_and_ua_are_rendered_and_json_escaped",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_request_samples_keep_path_ua_pairs_and_bound_message_size",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_telegram.TelegramRendering.test_zero_id_is_not_presented_as_persistent_alert_id",
+        "reason": "'set CROWDSEC_TEST_RELEASE for official plugin checks'"
+      },
+      {
+        "test": "test_vps_seed.SeedTests.test_arm_cold_core_seed_is_self_contained_and_immutable",
+        "reason": "'pycdlib required for media validation'"
+      },
+      {
+        "test": "test_vps_seed.SeedTests.test_remote_and_existing_core_scopes_have_distinct_seed_control",
+        "reason": "'pycdlib required for media validation'"
+      },
+      {
+        "test": "test_vps_seed.SeedTests.test_seed_payloads_keep_both_entry_points_runnable",
+        "reason": "'pycdlib required for media validation'"
+      },
+      {
+        "test": "test_vps_seed.SeedTests.test_soak_seed_packs_manifest_and_sources",
+        "reason": "'pycdlib required for media validation'"
+      }
+    ],
+    "real_nginx_lua_methods_passed": 13
+  },
+  "fixture_matrix": {
+    "total": 109,
+    "passed": 109,
+    "failed": 0,
+    "validation_level": "fixture",
+    "report_sha256": "109afed9983625e658c3885896a4fb98264bc9f283b2a27c6e1d830a7c7b435c"
+  },
+  "syntax_checks": {
+    "bash_n_files": 25,
+    "python_ast_files": 181
+  },
+  "diff_whitespace_check": "passed",
+  "shellcheck": "not run: tool unavailable",
+  "changed_source_sha256": {
+    "crowdbastion.sh": "1f3f3a1684baa2bd2526017c7989de19d07b769ed84b007ee10784f960a7266e",
+    "lib/appsec_audit.sh": "8e4cef9fb03aacd66579f87638d068fb1a3bfa5e7baa1c51d4af568fb0807e49",
+    "lib/crowdbastion_health.py": "67480fcca08a58d7986acecbd89d2f83c0691a27dd68c149eb9e3ee582ae597d",
+    "lib/crowdsec_appsec.py": "b4d6bb07e315c5c36b05c44336e0a2f7c39b6422c247edae3695766c1c5acc1b",
+    "lib/crowdsec_firewall.py": "b79ea42a5443366ce942c29e7bd4a8be6d646e0df04992fd42bc11a072bd097c",
+    "lib/crowdsec_relay.py": "045fbe66ef28a917b429cf5c8cdbb7f3bfa99f1c29d45a2e0141f4fd1fe3e3d7",
+    "lib/crowdsec_web.py": "a71c4a8b445f00e4c648812a1932951797f49cfa37f56ab466536a5203f9d69e",
+    "lib/native_web_bouncer.sh": "c0a92a2040965c51457585e5cb812da1cd57398886afc0c0a9df70f1e73ed25c",
+    "lib/remote_bouncer.sh": "ad54d5515302c95dc2628472d221b26950e767d06f9f93b5cd75a4ed0d669cce",
+    "tests/test_health_summary.py": "e4ca990642d984d28dca675c4a99fc5e6ef2303c39c3e58b09ae17f105435975",
+    "tests/test_host_environment.py": "8c2054bbb1a13464b7fb1e03e0ab92475db0daa8619b0700c07a0799889ba31c",
+    "tests/test_remote_bouncer.py": "b4ab9c0fbcade625eaeb1d613b57386046de7994cb301790f193076d6d9d7186",
+    "tests/test_vps_hardening.py": "5f1b4983bb352fbb0d5454bea0b5c9f442cef5a22ff6c29aae80a520092cf4c5",
+    "tests/test_web_bouncer_runtime.py": "d20eba441f06f0685c35a506e21aa069f2fc3426bb47436e9426325b47f7b2a6",
+    "tests/test_web_install.py": "4acb3199deffffddbfa3ae69ec28c7aa39a58b5e9eebe6abef2e6f74f86cb292",
+    "tests/verify_vps_matrix.py": "7e14a58973e0fb3f5667d60797cd550755f8105d04ab0a5f55a3c012cebe3e9d"
+  },
+  "vps_deployment_performed": false,
+  "kernel_firewall_enforcement_tested_this_round": false
+}

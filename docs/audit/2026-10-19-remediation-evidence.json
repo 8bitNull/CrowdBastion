@@ -1,0 +1,443 @@
+{
+  "date": "2026-10-19",
+  "scope": "Approved scheduler cleanup, AppSec failure-denial HTTP status repair, isolated concurrency/notification investigation",
+  "production_verified_at_utc": "2026-10-19T12:06:53.565457+00:00",
+  "scheduler": {
+    "timestamp_utc": "2026-10-19T11:50:15.351374+00:00",
+    "backup_dir": "/var/backups/crowdbastion/scheduler-20261019T115015Z",
+    "root_entries_disabled": 2,
+    "crond_entries_disabled": 1,
+    "unrelated_content_preserved": true,
+    "services_unchanged": true,
+    "rollback_script": "/var/backups/crowdbastion/scheduler-20261019T115015Z/rollback.py"
+  },
+  "scheduler_readback": {
+    "root_after_matches": true,
+    "crond_after_matches": true,
+    "root_disabled_entries": 2,
+    "crond_disabled_entries": 1,
+    "timer_enabled": "enabled",
+    "timer_active": "active",
+    "timer": "NextElapseUSecRealtime=Tue 2026-10-20 00:01:45 PDT\nLastTriggerUSec=Mon 2026-10-19 00:02:09 PDT\n",
+    "last_update_result": "Result=success\nExecMainStatus=0\n"
+  },
+  "status_fix": {
+    "timestamp_utc": "2026-10-19T12:05:45.684353+00:00",
+    "backup_dir": "/var/backups/crowdbastion/appsec-status-20261019T120542Z",
+    "lua_before_sha256": "408d775d9af44a6eed8ebb0a97f5f625d01c356bc1f7f1309078608f51b388b6",
+    "lua_after_sha256": "abac44efea21ffcc1b8b041ccc702eb5ac526347df1a8ef5b2ffdca082ab972a",
+    "nginx_config_test": "passed",
+    "nginx_reload": "graceful",
+    "nginx_master_unchanged": true,
+    "new_workers_observed": true,
+    "crowdsec_services_unchanged": true,
+    "policy": "passthrough",
+    "policy_file_unchanged": true,
+    "managed_install_check": "passed",
+    "rollback_script": "/var/backups/crowdbastion/appsec-status-20261019T120542Z/rollback.py"
+  },
+  "runtime_regression": {
+    "local_runtime": "Debian 12 Nginx 1.22.1, ngx_lua 0.10.23, OpenResty LuaJIT; staged pinned Bouncer 1.2.3 and resty-http 0.17.1",
+    "production_binary_isolated_runtime": "Separate loopback-only OpenResty 1.31.1.1 processes inside existing NPM container; temporary configs/prefixes; fake LAPI/AppSec and counted business upstream",
+    "baseline_exit": 1,
+    "baseline_200_instead_of_403_failures": 3,
+    "patched_exit": 0,
+    "methods": 3,
+    "request_cases": 7,
+    "deny_cases": [
+      {
+        "appsec_fault": "connection refused",
+        "before_status": 200,
+        "after_status": 403,
+        "before_business_upstream_requests": 0,
+        "after_business_upstream_requests": 0
+      },
+      {
+        "appsec_fault": "read timeout",
+        "before_status": 200,
+        "after_status": 403,
+        "before_business_upstream_requests": 0,
+        "after_business_upstream_requests": 0
+      },
+      {
+        "appsec_fault": "HTTP 503",
+        "before_status": 200,
+        "after_status": 403,
+        "before_business_upstream_requests": 0,
+        "after_business_upstream_requests": 0
+      }
+    ],
+    "passthrough_cases": "All three failures return business upstream HTTP 200, one upstream request each",
+    "healthy_case": "deny failure policy with healthy AppSec returns business upstream HTTP 200, one upstream request",
+    "production_processes_unchanged_by_isolated_tests": true,
+    "final_temporary_prefixes": [],
+    "final_temporary_nginx_processes": []
+  },
+  "isolated_appsec": {
+    "started_utc": "2026-10-19T12:04:02.185740+00:00",
+    "finished_utc": "2026-10-19T12:06:33.355648+00:00",
+    "version": "version: v1.8.1-909b5157",
+    "engine_rules": "Copied production AppSec default config, 217 inband rules, 2 outofband rules; no production credentials or traffic",
+    "environment": "Local CPU affinity restricted to one CPU; full independent LAPI/SQLite and official HTTP notification plugin, local HTTP fixture; runtime build differs from VPS Debian build (same source commit 909b5157)",
+    "design": "2 runner counts x 2 notification fixture delays (0/500ms), repeated in reverse order; each condition four 512-request bursts, concurrency up to 64, 200ms between batches; half benign, half synthetic blocking path; HTTP notifier control required before load",
+    "conditions": [
+      {
+        "runners": 1,
+        "notification_delay_ms": 0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.5322269429452717,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 25.496252812445164,
+          "p95": 43.31472399644554,
+          "p99": 50.64890696667135,
+          "max": 55.06050796248019
+        },
+        "initial_memory": {
+          "VmHWM": "128224 kB",
+          "VmRSS": "128224 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "146400 kB",
+          "VmRSS": "146400 kB"
+        },
+        "notification_calls": 6,
+        "plugin_channel_warnings": 170,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 1,
+        "notification_delay_ms": 500.0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.8419743040576577,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 35.506878048181534,
+          "p95": 54.090037010610104,
+          "p99": 60.85953093133867,
+          "max": 62.26121284998953
+        },
+        "initial_memory": {
+          "VmHWM": "126948 kB",
+          "VmRSS": "126948 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "145712 kB",
+          "VmRSS": "144608 kB"
+        },
+        "notification_calls": 7,
+        "plugin_channel_warnings": 216,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 2,
+        "notification_delay_ms": 500.0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.7452509731519967,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 31.890146899968386,
+          "p95": 47.89561498910189,
+          "p99": 51.25922616571188,
+          "max": 57.23781883716583
+        },
+        "initial_memory": {
+          "VmHWM": "129500 kB",
+          "VmRSS": "129500 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "148884 kB",
+          "VmRSS": "148884 kB"
+        },
+        "notification_calls": 5,
+        "plugin_channel_warnings": 211,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 2,
+        "notification_delay_ms": 0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.4917381319683045,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 24.34464218094945,
+          "p95": 36.00239800289273,
+          "p99": 46.8483439181,
+          "max": 48.212704015895724
+        },
+        "initial_memory": {
+          "VmHWM": "128668 kB",
+          "VmRSS": "128668 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "148884 kB",
+          "VmRSS": "148884 kB"
+        },
+        "notification_calls": 7,
+        "plugin_channel_warnings": 199,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 2,
+        "notification_delay_ms": 0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 2.063752388814464,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 41.00740095600486,
+          "p95": 68.53667483665049,
+          "p99": 73.35194805637002,
+          "max": 81.58545102924109
+        },
+        "initial_memory": {
+          "VmHWM": "128952 kB",
+          "VmRSS": "128952 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "146792 kB",
+          "VmRSS": "146792 kB"
+        },
+        "notification_calls": 8,
+        "plugin_channel_warnings": 210,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 2,
+        "notification_delay_ms": 500.0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.5300522020552307,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 25.11538192629814,
+          "p95": 40.747330989688635,
+          "p99": 47.03158303163946,
+          "max": 56.14801007322967
+        },
+        "initial_memory": {
+          "VmHWM": "130252 kB",
+          "VmRSS": "130252 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "150840 kB",
+          "VmRSS": "150840 kB"
+        },
+        "notification_calls": 7,
+        "plugin_channel_warnings": 186,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 1,
+        "notification_delay_ms": 500.0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.5474897718522698,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 25.555111933499575,
+          "p95": 35.82872892729938,
+          "p99": 38.47709996625781,
+          "max": 42.1024220995605
+        },
+        "initial_memory": {
+          "VmHWM": "127020 kB",
+          "VmRSS": "125048 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "147404 kB",
+          "VmRSS": "147404 kB"
+        },
+        "notification_calls": 5,
+        "plugin_channel_warnings": 202,
+        "cpu_affinity_count": 1
+      },
+      {
+        "runners": 1,
+        "notification_delay_ms": 0,
+        "requests": 2048,
+        "concurrency": 64,
+        "duration_seconds": 1.9440106260590255,
+        "statuses": {
+          "403": 1024,
+          "200": 1024
+        },
+        "unexpected_responses": 0,
+        "responses_over_500ms": 0,
+        "latency_ms": {
+          "p50": 40.55354092270136,
+          "p95": 53.000617073848844,
+          "p99": 61.52042211033404,
+          "max": 92.51276892609894
+        },
+        "initial_memory": {
+          "VmHWM": "127708 kB",
+          "VmRSS": "127708 kB"
+        },
+        "post_burst_memory": {
+          "VmHWM": "144220 kB",
+          "VmRSS": "144220 kB"
+        },
+        "notification_calls": 5,
+        "plugin_channel_warnings": 224,
+        "cpu_affinity_count": 1
+      }
+    ],
+    "requests": 16384,
+    "unexpected_responses": 0,
+    "responses_over_500ms": 0,
+    "max_elapsed_ms": 92.51276892609894,
+    "conclusion": "Notification queue warnings also occur without a 500ms AppSec response. Production timeouts were not reproduced. No causal attribution or production capacity/runner tuning claim follows.",
+    "limitations": [
+      "Synthetic small requests and copied rules are not a replay of production payloads, log parsers/scenarios, notifications or VPS CPU contention.",
+      "CPU affinity limits available cores, not equivalence of CPU speed, steal time, scheduling or memory pressure.",
+      "HTTP elapsed time includes local client and server work; queue waiting was not separately instrumented.",
+      "RSS readings are snapshots of CrowdSec, not whole-stack peak memory. No memory limit was enforced.",
+      "Plugin warning counts cover each observed run window; notification delivery completion was not an acceptance target."
+    ],
+    "production_tuning_applied": false,
+    "remaining_local_processes": [],
+    "access_log_replay": {
+      "started_utc": "2026-10-19T12:10:36.897325+00:00",
+      "finished_utc": "2026-10-19T12:11:14.060106+00:00",
+      "available_methods": {
+        "GET": 1078,
+        "POST": 53
+      },
+      "eligible_GET_samples": 1078,
+      "conditions": [
+        {
+          "runners": 1,
+          "notification_delay_ms": 500.0,
+          "requests": 2048,
+          "concurrency": 64,
+          "duration_seconds": 1.4934904042165726,
+          "statuses": {
+            "200": 1517,
+            "403": 531
+          },
+          "responses_over_500ms": 0,
+          "latency_ms": {
+            "p50": 24.081672076135874,
+            "p95": 35.679289139807224,
+            "p99": 42.31585212983191,
+            "max": 49.31792593561113
+          },
+          "initial_memory": {
+            "VmHWM": "126864 kB",
+            "VmRSS": "125096 kB"
+          },
+          "post_burst_memory": {
+            "VmHWM": "142692 kB",
+            "VmRSS": "142692 kB"
+          },
+          "notification_calls": 4,
+          "plugin_channel_warnings": 187,
+          "cpu_affinity_count": 1
+        },
+        {
+          "runners": 2,
+          "notification_delay_ms": 500.0,
+          "requests": 2048,
+          "concurrency": 64,
+          "duration_seconds": 1.4179550248663872,
+          "statuses": {
+            "200": 1517,
+            "403": 531
+          },
+          "responses_over_500ms": 0,
+          "latency_ms": {
+            "p50": 22.80604187399149,
+            "p95": 35.05470906384289,
+            "p99": 44.36940187588334,
+            "max": 57.1557991206646
+          },
+          "initial_memory": {
+            "VmHWM": "129816 kB",
+            "VmRSS": "129816 kB"
+          },
+          "post_burst_memory": {
+            "VmHWM": "146476 kB",
+            "VmRSS": "146476 kB"
+          },
+          "notification_calls": 5,
+          "plugin_channel_warnings": 166,
+          "cpu_affinity_count": 1
+        }
+      ],
+      "requests": 4096,
+      "responses_over_500ms": 0,
+      "max_elapsed_ms": 57.1557991206646,
+      "limits": "Only method, URI and Host from bounded completion-time windows; other request headers and all bodies unavailable. 53 POST samples not replayed. Samples cycled into 2048 requests per runner setting; no original arrival pacing, source IPs, business destinations or external requests. HTTP 200/403 counts are engine results, not attack-detection ground truth."
+    }
+  },
+  "repository_verification": {
+    "exit_code": 0,
+    "tests_run": 44,
+    "skips": 0,
+    "result": "OK",
+    "timestamp_utc": "2026-10-19T12:06:43.312980+00:00"
+  },
+  "production_final": {
+    "crowdsec": "active/running",
+    "firewall_bouncer": "active/running",
+    "both_service_pids_unchanged": true,
+    "both_service_restart_counts": 0,
+    "web": {
+      "managed_install_check": "passed",
+      "lua_sha256": "abac44efea21ffcc1b8b041ccc702eb5ac526347df1a8ef5b2ffdca082ab972a",
+      "failure_policy": [
+        "APPSEC_FAILURE_ACTION=passthrough"
+      ],
+      "container_running": "true",
+      "config_test_exit": 0
+    },
+    "vps_cpu_count": 1
+  },
+  "remaining_work": [
+    "Observe next retained update timer run; no future trigger has been observed.",
+    "Choose AppSec outage policy. Production currently preserves passthrough; deploying the status repair does not select deny.",
+    "Identify production burst timeout cause with request timing and resource evidence; this isolation run did not reproduce it.",
+    "Complete website/CDN normal-ban-revoke from an independent source; management egress was not banned.",
+    "LAPI lookup failure behavior remains independently fail open in pinned live.lua; the AppSec failure status fix does not change it."
+  ]
+}

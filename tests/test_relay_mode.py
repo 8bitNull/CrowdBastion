@@ -266,6 +266,33 @@ class RelayAudit(unittest.TestCase):
         self.assertIn('仅管理集合', result.stdout)
         self.assertNotIn('已发现封禁', result.stdout)
 
+    def test_iptables_official_indexed_sets_are_recognized_for_both_families(self):
+        self.file.write_text('mode: iptables\niptables_chains: [INPUT, FORWARD]\n')
+        self.tool('ipset', 'crowdsec-blacklists-0\ncrowdsec-blacklists-1\ncrowdsec6-blacklists-0')
+        for binary, name in (('iptables', 'crowdsec-blacklists-1'), ('ip6tables', 'crowdsec6-blacklists-0')):
+            self.tool(binary, '-A INPUT -j CROWDSEC_CHAIN\n-A FORWARD -j CROWDSEC_CHAIN\n'
+                      '-A CROWDSEC_CHAIN -m set --match-set '+name+' src -j DROP -m comment --comment "CrowdSec: cscli"')
+        result = self.audit()
+        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+        for label in ('IPv4', 'IPv6'):
+            self.assertIn(label+' 封禁集合：已发现', result.stdout)
+            for chain in ('INPUT', 'FORWARD'):
+                self.assertIn(label+' '+chain+': 已发现', result.stdout)
+
+    def test_iptables_indexed_custom_sets_require_exact_base_and_real_membership(self):
+        self.file.write_text('mode: iptables\nblacklists_ipv4: deny4\ndisable_ipv6: true\n')
+        for name, expected in (('deny4-0', '已发现'), ('deny4-12', '已发现'),
+                               ('deny4Extra-0', '尚未发现'), ('deny4-', '尚未发现'),
+                               ('deny4-other', '尚未发现'), ('other-deny4-0', '尚未发现')):
+            with self.subTest(name=name):
+                self.tool('ipset', name)
+                self.tool('iptables', '-A INPUT -m set --match-set '+name+' src -j DROP')
+                result = self.audit()
+                self.assertIn('IPv4 INPUT: '+expected, result.stdout)
+        self.tool('ipset', 'deny4-1')
+        self.tool('iptables', '-A INPUT -m set --match-set deny4-0 src -j DROP')
+        self.assertIn('IPv4 INPUT: 尚未发现', self.audit().stdout)
+
     def nft_fixture(self, hook='input', table='custom', family='ip', name='deny4'):
         return {'nftables': [
             {'table': {'family': family, 'name': table}},

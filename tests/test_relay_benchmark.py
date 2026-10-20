@@ -38,7 +38,15 @@ class Benchmark(unittest.TestCase):
             child = subprocess.Popen([sys.executable,script,'--echo',protocol,str(port),'128'],stderr=subprocess.DEVNULL)
             try:
                 import time
-                time.sleep(.1)
+                deadline = time.monotonic()+5
+                while time.monotonic() < deadline:
+                    self.assertIsNone(child.poll(), 'echo server exited before readiness')
+                    probe = load('127.0.0.1', port, protocol, .01, 1, 128)
+                    if probe['ok'] and not probe['errors']:
+                        break
+                    time.sleep(.02)
+                else:
+                    self.fail('echo server did not become ready')
                 result = load('127.0.0.1',port,protocol,.2,2,128)
                 self.assertGreater(result['ok'],0)
                 self.assertEqual(result['errors'],0)

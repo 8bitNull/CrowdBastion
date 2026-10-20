@@ -128,8 +128,11 @@ systemctl() {
         assertions={'no_secret_output':all(secret not in result.stdout+result.stderr+trace for secret in (SECRET,'unrelated-original-key','unmanaged-private-key'))}
         package_commands=[c for c in commands if c.startswith(('apt-get ','dnf ','yum '))]
         if scenario=='package_backend':
-            package='crowdsec-firewall-bouncer-'+('nftables' if backend=='nftables' else 'iptables')
-            expected_packages='nftables '+package if backend=='nftables' else 'iptables ipset '+package
+            # A fresh install now selects iptables even when nft is available;
+            # existing configurations still retain their effective backend.
+            selected_backend='iptables' if case['install_state']=='fresh' else backend
+            package='crowdsec-firewall-bouncer-'+('nftables' if selected_backend=='nftables' else 'iptables')
+            expected_packages='nftables '+package if selected_backend=='nftables' else 'iptables ipset '+package
             expected_command=('apt-get install -y --no-upgrade ' if manager=='apt-get' else manager+' install -y ')+expected_packages
             assertions.update({'correct_backend_and_manager':package_commands==[expected_command], 'configuration_preserved':before==after,'no_core_package':all(not re.search(r'(?<![\w-])crowdsec(?![\w-])',c) for c in package_commands)})
         elif scenario=='package_skip': assertions.update({'installed_packages_not_reinstalled':not package_commands,'configuration_preserved':before==after})

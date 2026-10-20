@@ -1,0 +1,2023 @@
+{
+  "scope": "Second user-authorized VPS; read-only production inspection; host, business domains, administrator addresses and credentials omitted",
+  "collection_start_utc": "2026-10-19T12:23:04.324137+00:00",
+  "collection_end_start_utc": "2026-10-19T12:27:24.922701+00:00",
+  "commands_used": {
+    "services": [
+      "systemctl",
+      "show",
+      "crowdsec.service",
+      "crowdsec-firewall-bouncer.service",
+      "-p",
+      "Id",
+      "-p",
+      "ActiveState",
+      "-p",
+      "SubState",
+      "-p",
+      "Result",
+      "-p",
+      "MainPID",
+      "-p",
+      "NRestarts",
+      "-p",
+      "ExecMainStartTimestamp",
+      "-p",
+      "ExecMainStatus",
+      "-p",
+      "FragmentPath"
+    ],
+    "container_stats": [
+      "docker",
+      "stats",
+      "--no-stream",
+      "--format",
+      "{{json .}}"
+    ],
+    "version": [
+      "cscli",
+      "version"
+    ],
+    "bouncers": [
+      "cscli",
+      "bouncers",
+      "list",
+      "-o",
+      "json"
+    ],
+    "decisions": [
+      "cscli",
+      "decisions",
+      "list",
+      "-o",
+      "json"
+    ],
+    "metrics": [
+      "cscli",
+      "metrics"
+    ],
+    "vmstat": [
+      "vmstat",
+      "1",
+      "4"
+    ],
+    "nft": [
+      "nft",
+      "-j",
+      "list",
+      "ruleset"
+    ]
+  },
+  "system": {
+    "os": "Debian GNU/Linux 13.7",
+    "cpu_count": 3,
+    "initial_memory": "               total        used        free      shared  buff/cache   available\nMem:            5921        3015         164         132        3168        2906\nSwap:           4095           5        4090\n",
+    "end_memory": "               total        used        free      shared  buff/cache   available\nMem:            5921        2582         618         132        3148        3339\nSwap:           4095          30        4065\n",
+    "root_disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       127G   31G   91G  26% /\n",
+    "initial_uptime": " 20:23:04 up 3 days, 23:33,  3 users,  load average: 10.19, 10.05, 7.79\n",
+    "end_uptime": " 20:27:24 up 3 days, 23:37,  3 users,  load average: 3.83, 8.34, 7.77\n",
+    "initial_vmstat": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n11  1   5556 148848 401104 2845108    0    0    12   446 1570    4  6  1 93  0  0  0\n10  0   5556 148716 401112 2845172    0    0     0   220 6616 7132 92  8  0  0  0  0\n11  0   5556 151276 401136 2845320    0    0     0   532 7151 8910 89 11  0  0  0  0\n10  0   5556 168784 401144 2845324    0    0     0   328 6878 8124 89 11  0  0  0  0\n",
+    "end_vmstat": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 1  0  31628 630692 349652 2874152    0    0    12   447 1573    4  6  1 93  0  0  0\n 0  0  31628 633224 349652 2874180    0    0     0     4 1467 1274  1  0 99  0  0  0\n 0  0  31628 633224 349652 2874180    0    0     0     0  942  671  0  0 100  0  0  0\n",
+    "initial_container_stats": [
+      {
+        "Name": "crowdsec-web-ui",
+        "CPUPerc": "0.00%",
+        "MemUsage": "276.3MiB / 5.783GiB",
+        "PIDs": "16"
+      },
+      {
+        "Name": "dujiao-next",
+        "CPUPerc": "0.04%",
+        "MemUsage": "36.96MiB / 5.783GiB",
+        "PIDs": "10"
+      },
+      {
+        "Name": "redis",
+        "CPUPerc": "0.17%",
+        "MemUsage": "9.789MiB / 5.783GiB",
+        "PIDs": "6"
+      },
+      {
+        "Name": "php84",
+        "CPUPerc": "273.03%",
+        "MemUsage": "1.514GiB / 5.783GiB",
+        "PIDs": "12"
+      },
+      {
+        "Name": "mysql",
+        "CPUPerc": "19.65%",
+        "MemUsage": "838.7MiB / 5.783GiB",
+        "PIDs": "44"
+      },
+      {
+        "Name": "openresty",
+        "CPUPerc": "0.10%",
+        "MemUsage": "70.9MiB / 5.783GiB",
+        "PIDs": "4"
+      }
+    ],
+    "end_container_stats": [
+      {
+        "Name": "crowdsec-web-ui",
+        "CPUPerc": "0.00%",
+        "MemUsage": "282MiB / 5.783GiB",
+        "PIDs": "16"
+      },
+      {
+        "Name": "dujiao-next",
+        "CPUPerc": "0.10%",
+        "MemUsage": "38.56MiB / 5.783GiB",
+        "PIDs": "10"
+      },
+      {
+        "Name": "redis",
+        "CPUPerc": "0.20%",
+        "MemUsage": "9.797MiB / 5.783GiB",
+        "PIDs": "6"
+      },
+      {
+        "Name": "php84",
+        "CPUPerc": "0.01%",
+        "MemUsage": "1.226GiB / 5.783GiB",
+        "PIDs": "5"
+      },
+      {
+        "Name": "mysql",
+        "CPUPerc": "0.30%",
+        "MemUsage": "813.7MiB / 5.783GiB",
+        "PIDs": "43"
+      },
+      {
+        "Name": "openresty",
+        "CPUPerc": "0.70%",
+        "MemUsage": "69.46MiB / 5.783GiB",
+        "PIDs": "4"
+      }
+    ],
+    "oom_query": {
+      "returncode": 1,
+      "stdout": "-- No entries --\n",
+      "stderr": ""
+    },
+    "psi_available": false
+  },
+  "services": {
+    "before": [
+      {
+        "MainPID": "1508",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 20:49:58 CST",
+        "ExecMainStatus": "0",
+        "Id": "crowdsec.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "FragmentPath": "/usr/lib/systemd/system/crowdsec.service"
+      },
+      {
+        "MainPID": "1749",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Thu 2026-10-15 20:50:00 CST",
+        "ExecMainStatus": "0",
+        "Id": "crowdsec-firewall-bouncer.service",
+        "ActiveState": "active",
+        "SubState": "running",
+        "FragmentPath": "/etc/systemd/system/crowdsec-firewall-bouncer.service"
+      }
+    ],
+    "after": [
+      {
+        "MainPID": "1508",
+        "NRestarts": "0",
+        "Id": "crowdsec.service",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      {
+        "MainPID": "1749",
+        "NRestarts": "0",
+        "Id": "crowdsec-firewall-bouncer.service",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    ]
+  },
+  "crowdsec": {
+    "version": "version: v1.8.1-debian-pragmatic-amd64-909b5157\nCodename: alphaga\nBuildDate: 2026-09-03_10:57:01\nGoVersion: 1.26.3\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.1-debian-pragmatic-amd64-909b5157-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: cscli_setup, datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite\n",
+    "config": {
+      "api_listen": "127.0.0.1:8080",
+      "prometheus": {
+        "enabled": true,
+        "level": "full",
+        "listen_addr": "127.0.0.1",
+        "listen_port": 6060
+      },
+      "common": {
+        "log_media": "file",
+        "log_level": "info",
+        "log_dir": "/var/log/"
+      },
+      "acquisition_path": "/etc/crowdsec/acquis.yaml",
+      "acquisition_dir": "/etc/crowdsec/acquis.d"
+    },
+    "bouncers": [
+      {
+        "revoked": false,
+        "type": "crowdsec-firewall-bouncer",
+        "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56",
+        "last_pull": "2026-10-19T12:23:00.423108867Z"
+      },
+      {
+        "revoked": false,
+        "type": "crowdsec-openresty-bouncer",
+        "version": "v1.2.3",
+        "last_pull": "2026-10-19T12:22:56.068566603Z"
+      }
+    ],
+    "journal_warning_query_result": "-- No entries --\n",
+    "app_log_last_1h": {
+      "tail_bytes": 2097152,
+      "levels": {
+        "info": 41,
+        "error": 101
+      },
+      "warning_error_messages": [
+        [
+          "Failed to process request body",
+          101
+        ]
+      ],
+      "tail_range_utc": [
+        "2026-10-16T08:48:26+00:00",
+        "2026-10-19T12:24:57+00:00"
+      ]
+    }
+  },
+  "firewall": {
+    "config": {
+      "mode": "nftables",
+      "update_frequency": "10s",
+      "api_url": "http://127.0.0.1:8080/",
+      "disable_ipv6": false,
+      "deny_action": "DROP",
+      "blacklists_ipv4": "crowdsec-blacklists",
+      "blacklists_ipv6": "crowdsec6-blacklists",
+      "iptables_chains": [
+        "INPUT"
+      ],
+      "nftables": {
+        "ipv4": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec",
+          "chain": "crowdsec-chain",
+          "priority": -10
+        },
+        "ipv6": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain",
+          "priority": -10
+        }
+      }
+    },
+    "nft_structure_and_counters": [
+      {
+        "table": {
+          "family": "ip",
+          "name": "crowdsec",
+          "handle": 12
+        }
+      },
+      {
+        "chain": {
+          "family": "ip",
+          "table": "crowdsec",
+          "name": "crowdsec-chain-input",
+          "handle": 1,
+          "type": "filter",
+          "hook": "input",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "chain": {
+          "family": "ip",
+          "table": "crowdsec",
+          "name": "crowdsec-chain-forward",
+          "handle": 4,
+          "type": "filter",
+          "hook": "forward",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "processed",
+          "table": "crowdsec",
+          "handle": 2,
+          "packets": 15487974,
+          "bytes": 57152535875
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-CAPI",
+          "table": "crowdsec",
+          "handle": 7,
+          "packets": 7923,
+          "bytes": 383423
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-crowdsec",
+          "table": "crowdsec",
+          "handle": 11,
+          "packets": 1195,
+          "bytes": 122806
+        }
+      },
+      {
+        "set": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-CAPI",
+          "table": "crowdsec",
+          "type": "ipv4_addr",
+          "handle": 6,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 17282
+        }
+      },
+      {
+        "set": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-crowdsec",
+          "table": "crowdsec",
+          "type": "ipv4_addr",
+          "handle": 10,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 7
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 3,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 8,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 12,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 5,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 9,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 13,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "table": {
+          "family": "ip6",
+          "name": "crowdsec6",
+          "handle": 13
+        }
+      },
+      {
+        "chain": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "name": "crowdsec6-chain-input",
+          "handle": 1,
+          "type": "filter",
+          "hook": "input",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "chain": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "name": "crowdsec6-chain-forward",
+          "handle": 4,
+          "type": "filter",
+          "hook": "forward",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "counter": {
+          "family": "ip6",
+          "name": "processed",
+          "table": "crowdsec6",
+          "handle": 2,
+          "packets": 809335,
+          "bytes": 281298177
+        }
+      },
+      {
+        "counter": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-CAPI",
+          "table": "crowdsec6",
+          "handle": 7,
+          "packets": 0,
+          "bytes": 0
+        }
+      },
+      {
+        "counter": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-crowdsec",
+          "table": "crowdsec6",
+          "handle": 11,
+          "packets": 0,
+          "bytes": 0
+        }
+      },
+      {
+        "set": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-CAPI",
+          "table": "crowdsec6",
+          "type": "ipv6_addr",
+          "handle": 6,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 528
+        }
+      },
+      {
+        "set": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-crowdsec",
+          "table": "crowdsec6",
+          "type": "ipv6_addr",
+          "handle": 10,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 0
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-input",
+          "handle": 3,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-input",
+          "handle": 8,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-input",
+          "handle": 12,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-forward",
+          "handle": 5,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-forward",
+          "handle": 9,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-forward",
+          "handle": 13,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      }
+    ],
+    "ip_decision_checks": [
+      {
+        "timestamp_utc": "2026-10-19T12:25:08.960996+00:00",
+        "checks": [
+          {
+            "ip_sha256_12": "97ac8e4ba0e6",
+            "created": "2026-10-19T12:24:55Z",
+            "duration": "3h59m40s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 2,
+            "lapi_durations": [
+              "3h59m35s",
+              "3h59m39s"
+            ]
+          },
+          {
+            "ip_sha256_12": "2406eaecb8b3",
+            "created": "2026-10-19T12:21:56Z",
+            "duration": "3h56m41s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": false,
+              "CAPI": true
+            },
+            "lapi_returned_count": 2,
+            "lapi_durations": [
+              "3h56m40s",
+              "62h6m51s"
+            ]
+          },
+          {
+            "ip_sha256_12": "b5dabc92b730",
+            "created": "2026-10-19T11:44:30Z",
+            "duration": "3h19m14s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 3,
+            "lapi_durations": [
+              "3h19m12s",
+              "3h19m14s",
+              "3h19m14s"
+            ]
+          },
+          {
+            "ip_sha256_12": "11f7dcbb2cf3",
+            "created": "2026-10-19T11:26:44Z",
+            "duration": "3h1m28s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 3,
+            "lapi_durations": [
+              "3h1m22s",
+              "3h1m24s",
+              "3h1m27s"
+            ]
+          },
+          {
+            "ip_sha256_12": "a761f3c25707",
+            "created": "2026-10-19T11:07:41Z",
+            "duration": "2h42m26s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": false,
+              "CAPI": true
+            },
+            "lapi_returned_count": 2,
+            "lapi_durations": [
+              "2h42m25s",
+              "63h6m51s"
+            ]
+          },
+          {
+            "ip_sha256_12": "93dc00b2ea3d",
+            "created": "2026-10-19T09:48:08Z",
+            "duration": "1h22m52s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 3,
+            "lapi_durations": [
+              "1h22m47s",
+              "1h22m51s",
+              "1h22m51s"
+            ]
+          },
+          {
+            "ip_sha256_12": "051605fa27a1",
+            "created": "2026-10-19T09:24:47Z",
+            "duration": "59m31s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 1,
+            "lapi_durations": [
+              "59m30s"
+            ]
+          },
+          {
+            "ip_sha256_12": "3b45004fe29f",
+            "created": "2026-10-19T09:21:11Z",
+            "duration": "55m56s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 2,
+            "lapi_durations": [
+              "55m39s",
+              "55m54s"
+            ]
+          },
+          {
+            "ip_sha256_12": "01d8ac3c5157",
+            "created": "2026-10-19T09:10:53Z",
+            "duration": "45m38s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": true,
+              "CAPI": false
+            },
+            "lapi_returned_count": 3,
+            "lapi_durations": [
+              "45m31s",
+              "45m35s",
+              "45m37s"
+            ]
+          },
+          {
+            "ip_sha256_12": "ea1cb1fbdb1a",
+            "created": "2026-10-19T09:09:21Z",
+            "duration": "44m5s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": false,
+              "CAPI": true
+            },
+            "lapi_returned_count": 2,
+            "lapi_durations": [
+              "44m4s",
+              "165h6m50s"
+            ]
+          },
+          {
+            "ip_sha256_12": "1132ac50536a",
+            "created": "2026-10-19T08:30:24Z",
+            "duration": "5m9s",
+            "origin": "crowdsec",
+            "sets": {
+              "crowdsec": false,
+              "CAPI": false
+            },
+            "lapi_returned_count": 1,
+            "lapi_durations": [
+              "5m7s"
+            ]
+          }
+        ]
+      },
+      {
+        "timestamp_utc": "2026-10-19T12:26:30.330564+00:00",
+        "checks": [
+          {
+            "ip_sha256_12": "97ac8e4ba0e6",
+            "duration": "3h58m20s",
+            "created": "2026-10-19T12:24:55Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "2406eaecb8b3",
+            "duration": "3h55m21s",
+            "created": "2026-10-19T12:21:56Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "b5dabc92b730",
+            "duration": "3h17m55s",
+            "created": "2026-10-19T11:44:30Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "11f7dcbb2cf3",
+            "duration": "3h0m9s",
+            "created": "2026-10-19T11:26:44Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "a761f3c25707",
+            "duration": "2h41m6s",
+            "created": "2026-10-19T11:07:41Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "93dc00b2ea3d",
+            "duration": "1h21m33s",
+            "created": "2026-10-19T09:48:08Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "051605fa27a1",
+            "duration": "58m12s",
+            "created": "2026-10-19T09:24:47Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "3b45004fe29f",
+            "duration": "54m36s",
+            "created": "2026-10-19T09:21:11Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "01d8ac3c5157",
+            "duration": "44m18s",
+            "created": "2026-10-19T09:10:53Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "ea1cb1fbdb1a",
+            "duration": "42m46s",
+            "created": "2026-10-19T09:09:21Z",
+            "origin": "crowdsec",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "1132ac50536a",
+            "duration": "3m49s",
+            "created": "2026-10-19T08:30:24Z",
+            "origin": "crowdsec",
+            "matched_sets": []
+          }
+        ]
+      },
+      {
+        "timestamp_utc": "2026-10-19T12:27:24.922701+00:00",
+        "checks": [
+          {
+            "ip_sha256_12": "97ac8e4ba0e6",
+            "remaining": "3h57m28s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "2406eaecb8b3",
+            "remaining": "3h54m29s",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "b5dabc92b730",
+            "remaining": "3h17m3s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "11f7dcbb2cf3",
+            "remaining": "2h59m16s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "a761f3c25707",
+            "remaining": "2h40m14s",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "93dc00b2ea3d",
+            "remaining": "1h20m40s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "051605fa27a1",
+            "remaining": "57m20s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "3b45004fe29f",
+            "remaining": "53m44s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "01d8ac3c5157",
+            "remaining": "43m26s",
+            "matched_sets": [
+              "crowdsec-blacklists-crowdsec"
+            ]
+          },
+          {
+            "ip_sha256_12": "ea1cb1fbdb1a",
+            "remaining": "41m54s",
+            "matched_sets": [
+              "crowdsec-blacklists-CAPI"
+            ]
+          },
+          {
+            "ip_sha256_12": "1132ac50536a",
+            "remaining": "2m57s",
+            "matched_sets": []
+          }
+        ]
+      }
+    ],
+    "limitation": "Set membership and static rules do not establish end-to-end packet blocking or recovery. Three addresses are in CAPI sets rather than the local-origin set; one remains absent from both at each verified snapshot."
+  },
+  "web": {
+    "nginx_config_test": {
+      "args": [
+        "docker",
+        "exec",
+        "openresty",
+        "nginx",
+        "-t"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful\n"
+    },
+    "bouncer_options": {
+      "ENABLED": "true",
+      "MODE": "live",
+      "CACHE_EXPIRATION": "1",
+      "UPDATE_FREQUENCY": "10",
+      "ENABLE_INTERNAL": "false",
+      "APPSEC_FAILURE_ACTION": "passthrough",
+      "APPSEC_DROP_UNREADABLE_BODY": "false",
+      "ALWAYS_SEND_TO_APPSEC": "false",
+      "APPSEC_CONNECT_TIMEOUT": "",
+      "APPSEC_SEND_TIMEOUT": "",
+      "APPSEC_PROCESS_TIMEOUT": ""
+    },
+    "bouncer_local_override_present": false,
+    "appsec_deny_branch_source": "if runtime.conf[\"APPSEC_FAILURE_ACTION\"] == DENY then\n    ok = false\n    remediation = runtime.conf[\"FALLBACK_REMEDIATION\"]\n  end",
+    "appsec_deny_fallback_initial_status": 200,
+    "appsec_deny_fallback_sets_status": false,
+    "lapi_failure_behavior": "Installed live.lua returns allow on request failure and HTTP status other than 200; no fault injection performed",
+    "access_log_summaries": [
+      {
+        "size": 1383537,
+        "bytes_read": 1383537,
+        "tail_truncated": false,
+        "counts": {
+          "lines_seen": 5114
+        },
+        "range_utc": [
+          "2026-10-06T02:11:17+00:00",
+          "2026-10-19T11:09:04+00:00"
+        ],
+        "last_15m_statuses": {},
+        "last_15m_top_routes": [],
+        "last_15m_route_statuses": [],
+        "last_15m_top_ip_hashes": [],
+        "last_15m_unique_ip_hashes": 0,
+        "last_15m_filter_routes": {},
+        "per_minute_last_1h": {},
+        "path": "/opt/1panel/www/sites/site-C/log/access.log",
+        "last_15m_query_keys": []
+      },
+      {
+        "size": 141254878,
+        "bytes_read": 4194198,
+        "tail_truncated": true,
+        "counts": {
+          "lines_seen": 10550,
+          "last_1h": 8185,
+          "with_query_1h": 7689,
+          "last_15m": 1089,
+          "last_5m": 255,
+          "last_1m": 59
+        },
+        "range_utc": [
+          "2026-10-19T10:44:19+00:00",
+          "2026-10-19T12:23:59+00:00"
+        ],
+        "last_15m_statuses": {
+          "499": 1081,
+          "403": 4,
+          "200": 4
+        },
+        "last_15m_top_routes": [
+          [
+            "/favicon.ico",
+            499
+          ],
+          [
+            "/shop",
+            385
+          ],
+          [
+            "/",
+            47
+          ],
+          [
+            "/wp-cron.php",
+            26
+          ],
+          [
+            "/post/2719.html",
+            9
+          ],
+          [
+            "/news5c/assets/images/logo.svg",
+            7
+          ],
+          [
+            "/favicon-32x32.png",
+            7
+          ],
+          [
+            "/main.c6d13be3ea6fc9cb.js",
+            6
+          ],
+          [
+            "/wp-json/oembed/1.0/embed",
+            6
+          ],
+          [
+            "/post/4152.html",
+            6
+          ],
+          [
+            "/icons/favicon.ico",
+            5
+          ],
+          [
+            "/fzh",
+            5
+          ]
+        ],
+        "last_15m_route_statuses": [
+          [
+            "/favicon.ico",
+            "499",
+            498
+          ],
+          [
+            "/shop",
+            "499",
+            385
+          ],
+          [
+            "/",
+            "499",
+            46
+          ],
+          [
+            "/wp-cron.php",
+            "499",
+            26
+          ],
+          [
+            "/post/2719.html",
+            "499",
+            9
+          ],
+          [
+            "/news5c/assets/images/logo.svg",
+            "499",
+            7
+          ],
+          [
+            "/favicon-32x32.png",
+            "499",
+            7
+          ],
+          [
+            "/main.c6d13be3ea6fc9cb.js",
+            "499",
+            6
+          ],
+          [
+            "/wp-json/oembed/1.0/embed",
+            "499",
+            6
+          ],
+          [
+            "/icons/favicon.ico",
+            "499",
+            5
+          ],
+          [
+            "/fzh",
+            "499",
+            5
+          ],
+          [
+            "/fwc",
+            "499",
+            5
+          ]
+        ],
+        "last_15m_top_ip_hashes": [
+          [
+            "b9a4c28abb57",
+            26
+          ],
+          [
+            "0272bc7a4eec",
+            13
+          ],
+          [
+            "8660f488dd1d",
+            12
+          ],
+          [
+            "15bf17137828",
+            9
+          ],
+          [
+            "55925d5f262e",
+            9
+          ],
+          [
+            "75955669b818",
+            7
+          ],
+          [
+            "687621a9b7fd",
+            6
+          ],
+          [
+            "b4ae5226cd1d",
+            6
+          ],
+          [
+            "099aaf9f9fb0",
+            6
+          ],
+          [
+            "ac43628e8302",
+            4
+          ]
+        ],
+        "last_15m_unique_ip_hashes": 880,
+        "last_15m_filter_routes": {},
+        "per_minute_last_1h": {
+          "11:24": 51,
+          "11:25": 80,
+          "11:26": 139,
+          "11:27": 70,
+          "11:28": 86,
+          "11:29": 74,
+          "11:30": 78,
+          "11:31": 52,
+          "11:32": 49,
+          "11:33": 45,
+          "11:34": 57,
+          "11:35": 65,
+          "11:36": 62,
+          "11:37": 64,
+          "11:38": 66,
+          "11:39": 61,
+          "11:40": 67,
+          "11:41": 62,
+          "11:42": 46,
+          "11:43": 50,
+          "11:44": 50,
+          "11:45": 50,
+          "11:46": 47,
+          "11:47": 35,
+          "11:48": 57,
+          "11:49": 40,
+          "11:50": 54,
+          "11:51": 438,
+          "11:52": 125,
+          "11:53": 95,
+          "11:54": 72,
+          "11:55": 78,
+          "11:56": 77,
+          "11:57": 65,
+          "11:58": 62,
+          "11:59": 47,
+          "12:00": 54,
+          "12:01": 47,
+          "12:02": 51,
+          "12:03": 76,
+          "12:04": 852,
+          "12:05": 1990,
+          "12:06": 963,
+          "12:07": 308,
+          "12:08": 39,
+          "12:09": 142,
+          "12:10": 58,
+          "12:11": 43,
+          "12:12": 41,
+          "12:13": 50,
+          "12:14": 47,
+          "12:15": 53,
+          "12:16": 149,
+          "12:17": 123,
+          "12:18": 128,
+          "12:19": 54,
+          "12:20": 43,
+          "12:21": 52,
+          "12:22": 47,
+          "12:23": 59
+        },
+        "path": "/opt/1panel/www/sites/site-A/log/access.log",
+        "last_15m_query_keys": [
+          [
+            "w",
+            488
+          ],
+          [
+            "h",
+            488
+          ],
+          [
+            "q",
+            488
+          ],
+          [
+            "m",
+            488
+          ],
+          [
+            "f",
+            488
+          ],
+          [
+            "u",
+            488
+          ],
+          [
+            "products-order",
+            354
+          ],
+          [
+            "products-orderby",
+            354
+          ],
+          [
+            "products-sc_collection[2]",
+            344
+          ],
+          [
+            "products-sc_collection[1]",
+            330
+          ],
+          [
+            "products-sc_collection[0]",
+            269
+          ],
+          [
+            "products-page",
+            182
+          ],
+          [
+            "products-sc_collection[3]",
+            162
+          ],
+          [
+            "products-sc_collection[4]",
+            72
+          ],
+          [
+            "doing_wp_cron",
+            26
+          ],
+          [
+            "p",
+            22
+          ],
+          [
+            "add-to-cart",
+            21
+          ],
+          [
+            "products-sc_collection[5]",
+            13
+          ],
+          [
+            "v",
+            7
+          ],
+          [
+            "format",
+            6
+          ]
+        ]
+      },
+      {
+        "size": 14354650,
+        "bytes_read": 4194262,
+        "tail_truncated": true,
+        "counts": {
+          "lines_seen": 24823,
+          "last_1h": 259,
+          "with_query_1h": 78,
+          "last_15m": 24,
+          "last_5m": 9,
+          "last_1m": 3
+        },
+        "range_utc": [
+          "2026-10-15T06:36:23+00:00",
+          "2026-10-19T12:24:01+00:00"
+        ],
+        "last_15m_statuses": {
+          "499": 24
+        },
+        "last_15m_top_routes": [
+          [
+            "/",
+            11
+          ],
+          [
+            "/industries-2/",
+            8
+          ],
+          [
+            "/wp-login.php",
+            3
+          ],
+          [
+            "/wp-cron.php",
+            2
+          ]
+        ],
+        "last_15m_route_statuses": [
+          [
+            "/",
+            "499",
+            11
+          ],
+          [
+            "/industries-2/",
+            "499",
+            8
+          ],
+          [
+            "/wp-login.php",
+            "499",
+            3
+          ],
+          [
+            "/wp-cron.php",
+            "499",
+            2
+          ]
+        ],
+        "last_15m_top_ip_hashes": [
+          [
+            "518e6fc58019",
+            8
+          ],
+          [
+            "0b77d7075b3c",
+            7
+          ],
+          [
+            "b9a4c28abb57",
+            2
+          ],
+          [
+            "839c18a4e628",
+            1
+          ],
+          [
+            "a0d160679617",
+            1
+          ],
+          [
+            "6864ccc844ff",
+            1
+          ],
+          [
+            "23504a97482e",
+            1
+          ],
+          [
+            "8e2959ab6277",
+            1
+          ],
+          [
+            "cbe01ef88337",
+            1
+          ],
+          [
+            "97ac8e4ba0e6",
+            1
+          ]
+        ],
+        "last_15m_unique_ip_hashes": 10,
+        "last_15m_filter_routes": {},
+        "per_minute_last_1h": {
+          "11:24": 2,
+          "11:25": 4,
+          "11:26": 2,
+          "11:27": 2,
+          "11:28": 4,
+          "11:29": 2,
+          "11:30": 2,
+          "11:31": 7,
+          "11:32": 2,
+          "11:33": 2,
+          "11:34": 2,
+          "11:35": 3,
+          "11:36": 9,
+          "11:37": 8,
+          "11:38": 11,
+          "11:39": 8,
+          "11:40": 9,
+          "11:41": 9,
+          "11:42": 8,
+          "11:43": 9,
+          "11:44": 23,
+          "11:45": 12,
+          "11:46": 8,
+          "11:47": 9,
+          "11:48": 10,
+          "11:49": 6,
+          "11:50": 9,
+          "11:51": 7,
+          "11:52": 9,
+          "11:53": 10,
+          "11:54": 2,
+          "11:55": 3,
+          "11:56": 2,
+          "11:57": 2,
+          "11:58": 2,
+          "11:59": 3,
+          "12:00": 2,
+          "12:01": 2,
+          "12:02": 2,
+          "12:03": 2,
+          "12:05": 2,
+          "12:06": 2,
+          "12:08": 1,
+          "12:10": 1,
+          "12:12": 2,
+          "12:13": 1,
+          "12:14": 1,
+          "12:15": 2,
+          "12:16": 1,
+          "12:17": 4,
+          "12:18": 3,
+          "12:19": 3,
+          "12:20": 2,
+          "12:21": 1,
+          "12:23": 3
+        },
+        "path": "/opt/1panel/www/sites/site-B/log/access.log",
+        "last_15m_query_keys": [
+          [
+            "doing_wp_cron",
+            2
+          ]
+        ]
+      },
+      {
+        "size": 1689371,
+        "bytes_read": 1689371,
+        "tail_truncated": false,
+        "counts": {
+          "lines_seen": 6294
+        },
+        "range_utc": [
+          "2026-10-10T12:35:24+00:00",
+          "2026-10-19T03:11:40+00:00"
+        ],
+        "last_15m_statuses": {},
+        "last_15m_top_routes": [],
+        "last_15m_route_statuses": [],
+        "last_15m_top_ip_hashes": [],
+        "last_15m_unique_ip_hashes": 0,
+        "last_15m_filter_routes": {},
+        "per_minute_last_1h": {},
+        "path": "/opt/1panel/www/sites/site-D/log/access.log",
+        "last_15m_query_keys": []
+      },
+      {
+        "size": 912231,
+        "bytes_read": 912231,
+        "tail_truncated": false,
+        "counts": {
+          "lines_seen": 5550,
+          "unparsed": 369,
+          "last_1h": 4,
+          "last_15m": 2,
+          "with_query_1h": 1,
+          "last_5m": 1
+        },
+        "range_utc": [
+          "2026-10-05T15:02:26+00:00",
+          "2026-10-19T12:22:29+00:00"
+        ],
+        "last_15m_statuses": {
+          "404": 1,
+          "200": 1
+        },
+        "last_15m_top_routes": [
+          [
+            "/shell",
+            1
+          ],
+          [
+            "/",
+            1
+          ]
+        ],
+        "last_15m_route_statuses": [
+          [
+            "/shell",
+            "404",
+            1
+          ],
+          [
+            "/",
+            "200",
+            1
+          ]
+        ],
+        "last_15m_top_ip_hashes": [
+          [
+            "195ebeee41a3",
+            1
+          ],
+          [
+            "240ed443dc97",
+            1
+          ]
+        ],
+        "last_15m_unique_ip_hashes": 2,
+        "last_15m_filter_routes": {},
+        "per_minute_last_1h": {
+          "11:30": 1,
+          "12:00": 1,
+          "12:11": 1,
+          "12:22": 1
+        },
+        "path": "/opt/1panel/apps/openresty/openresty/log/access.log",
+        "last_15m_query_keys": []
+      }
+    ],
+    "error_log_summaries": [
+      {
+        "size": 125581,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 55,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 0,
+          "php_memory": 0,
+          "php_warning": 0
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/www/sites/site-C/log/error.log"
+      },
+      {
+        "size": 78877074,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 0,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 0,
+          "php_memory": 0,
+          "php_warning": 4944
+        },
+        "last_1h_counts_in_tail": {
+          "php_warning": 51
+        },
+        "samples": [],
+        "path": "/opt/1panel/www/sites/site-A/log/error.log"
+      },
+      {
+        "size": 10103977,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 0,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 4,
+          "php_memory": 0,
+          "php_warning": 0
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/www/sites/site-B/log/error.log"
+      },
+      {
+        "size": 1586,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 2,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 2,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 0,
+          "php_memory": 0,
+          "php_warning": 0
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/www/sites/site-D/log/error.log"
+      },
+      {
+        "size": 812196,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 0,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 0,
+          "php_memory": 0,
+          "php_warning": 0
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/apps/openresty/openresty/log/error.log"
+      },
+      {
+        "size": 20311798,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 0,
+          "php_max_children": 0,
+          "php_slow": 0,
+          "php_fatal": 0,
+          "php_memory": 0,
+          "php_warning": 0
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/runtime/php/php84/log/fpm.slow.log"
+      },
+      {
+        "size": 45872627,
+        "bounded_tail_bytes": 2097152,
+        "counts_tail": {
+          "appsec_error": 0,
+          "appsec_bad_request": 0,
+          "lapi_failure": 0,
+          "bouncer_error": 0,
+          "lua_runtime": 0,
+          "cache_full": 0,
+          "upstream_timeout": 0,
+          "upstream_refused": 0,
+          "php_max_children": 15,
+          "php_slow": 1119,
+          "php_fatal": 4,
+          "php_memory": 0,
+          "php_warning": 6675
+        },
+        "last_1h_counts_in_tail": {},
+        "samples": [],
+        "path": "/opt/1panel/runtime/php/php84/log/fpm.error.log"
+      }
+    ]
+  },
+  "php": {
+    "pool": "www shared by two WordPress sites",
+    "pm": "dynamic",
+    "max_children": 10,
+    "request_slowlog_timeout_seconds": 3,
+    "request_terminate_timeout_seconds": 0,
+    "fastcgi_read_timeout_seconds": 3600,
+    "slow_log_tail_bytes": 2097152,
+    "last_1h_script_counts": {
+      "/www/sites/site-A/index/wordpress/index.php": 486,
+      "/www/sites/site-B/index/wordpress/index.php": 2
+    },
+    "last_1h_top_frames": [
+      [
+        "load_template() /www/sites/site-A/index/wordpress/wp-includes/template.php:749",
+        302
+      ],
+      [
+        "apply_filters() /www/sites/site-A/index/wordpress/wp-includes/plugin.php:205",
+        294
+      ],
+      [
+        "apply_filters() /www/sites/site-A/index/wordpress/wp-includes/class-wp-hook.php:365",
+        275
+      ],
+      [
+        "[INCLUDE_OR_EVAL]() /www/sites/site-A/index/wordpress/wp-includes/template.php:816",
+        254
+      ],
+      [
+        "render() /www/sites/site-A/index/wordpress/wp-includes/blocks.php:2383",
+        247
+      ],
+      [
+        "render_block() /www/sites/site-A/index/wordpress/wp-includes/blocks.php:2466",
+        232
+      ],
+      [
+        "apply_filters() /www/sites/site-A/index/wordpress/wp-includes/post-template.php:256",
+        227
+      ],
+      [
+        "do_action() /www/sites/site-A/index/wordpress/wp-includes/plugin.php:522",
+        220
+      ],
+      [
+        "do_blocks() /www/sites/site-A/index/wordpress/wp-includes/class-wp-hook.php:341",
+        219
+      ],
+      [
+        "the_content() /www/sites/site-A/index/wordpress/wp-content/themes/astra/template-parts/single/content-header.php:37",
+        216
+      ],
+      [
+        "locate_template() /www/sites/site-A/index/wordpress/wp-includes/general-template.php:206",
+        215
+      ],
+      [
+        "json_encode() /www/sites/site-A/index/wordpress/wp-includes/functions.php:4386",
+        183
+      ],
+      [
+        "toArray() /www/sites/site-A/index/wordpress/wp-content/plugins/surecart/app/src/Models/Model.php:1173",
+        177
+      ],
+      [
+        "jsonSerialize() /www/sites/site-A/index/wordpress/wp-includes/functions.php:4386",
+        177
+      ],
+      [
+        "getAttribute() /www/sites/site-A/index/wordpress/wp-content/plugins/surecart/app/src/Models/Model.php:1234",
+        168
+      ]
+    ],
+    "fpm_error_last_1h_counts": {
+      "warning": 172,
+      "slow": 488,
+      "max_children": 3
+    },
+    "last_sample_slow_warning_count": 511,
+    "slow_duration_semantics": "3-4 second warnings are the time when slowlog was triggered, not completed request latency"
+  },
+  "scheduler": {
+    "cron": "# CrowdSec 每日规则库与黑名单自动同步\n30 3 * * * root /usr/bin/cscli hub update >/dev/null 2>&1 && /usr/bin/cscli hub upgrade >/dev/null 2>&1 && /bin/systemctl reload crowdsec >/dev/null 2>&1\n",
+    "timer_status": {
+      "returncode": 0,
+      "stdout": "NextElapseUSecRealtime=Tue 2026-10-20 00:04:48 CST\nLastTriggerUSec=Mon 2026-10-19 00:04:54 CST\nResult=success\nId=crowdsec-hubupdate.timer\nActiveState=active\n\nResult=success\nExecMainStartTimestamp=Mon 2026-10-19 00:04:54 CST\nExecMainStatus=0\nId=crowdsec-hubupdate.service\nActiveState=inactive\n",
+      "stderr": ""
+    },
+    "timer_service": {
+      "returncode": 0,
+      "stdout": "# /usr/lib/systemd/system/crowdsec-hubupdate.service\n[Unit]\nDescription=CrowdSec Hub update\n\n[Service]\nType=oneshot\nEnvironment=LC_ALL=C LANG=C PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nExecStart=/usr/libexec/crowdsec/hubupdate.sh\n\n",
+      "stderr": ""
+    },
+    "timer_script": {
+      "returncode": 0,
+      "stdout": "#!/bin/sh\n\nset -eu\n\ntest -x /usr/bin/cscli || exit 0\n\n/usr/bin/cscli --error hub update >/dev/null\n\nupgraded=\"$(/usr/bin/cscli --error hub upgrade)\"\nif [ -n \"$upgraded\" ]; then\n  systemctl reload crowdsec.service\nfi\n",
+      "stderr": ""
+    }
+  },
+  "webui": {
+    "listener": "all interfaces TCP/3000",
+    "external_probe": {
+      "timestamp_utc": "2026-10-19T12:26:25.698547+00:00",
+      "port": 3000,
+      "protocol": "http",
+      "source": "current workspace network",
+      "reachable": false,
+      "error_type": "TimeoutError"
+    },
+    "limitation": "Timeout from current source does not establish public reachability or absence of exposure from other sources"
+  },
+  "preservation": {
+    "initial_crowdsec_config_files_compared": 6,
+    "initial_crowdsec_config_hashes_equal": true,
+    "web_runtime_files_compared": 26,
+    "web_runtime_hashes_equal": true,
+    "service_pids_equal": true,
+    "production_config_writes": false,
+    "service_restarts_requested": false,
+    "decision_changes_requested": false,
+    "telegram_messages_sent": false,
+    "remote_script_execution": "Python collectors streamed through SSH stdin; no collector source installed on VPS"
+  },
+  "private_artifact_sha256": {
+    "collect-private.json": "98cf4c5666dbc53c0d0b9b76e8a1579b57a07817f1c61c7570369255fcda54d6",
+    "detail-private.json": "ee94fc2fdcfb504d687806f89ede9eec57e4d539d5f1523ad8f4525e047c76bf",
+    "end-private.json": "880dddcdbbd82a31fd84f5d2f8a9a05cd39a37f61f1ff62adf7cc3cd05dc06fb",
+    "finalcheck-private.json": "5f2e55cf5c46e6d36d690ac7925cd49fa1e63e20bac7a825f5eea6aaf9d8f582",
+    "followup-private.json": "18ba3a18dd52334c18a91e71a6c8d22b29c87d4bb17abd251893c9141e8feed8",
+    "webui-exposure-private.json": "d87965b849ac7aa3d4854c9e6380024f5a3842aa7774ed3db49f6d88ce87dec9"
+  },
+  "limitations": [
+    "Bounded file tails and time-window filters; counts may undercount longer windows if tails are truncated",
+    "499 denotes client disconnect before response completion; logs alone do not establish client intent or full cause",
+    "SureCart and WordPress frames identify slow execution paths; no plugin change or controlled replay performed",
+    "Kernel OOM grep returned code 1 with No entries; unavailable PSI prevents pressure analysis",
+    "No controlled ban/unban, external CDN source, IPv6/UDP/forwarding traffic acceptance, reboot, service restart, stress test or repair performed"
+  ]
+}

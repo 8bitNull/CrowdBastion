@@ -13,8 +13,98 @@ class AuditOps(unittest.TestCase):
     commands = test_workflows.Workflows.commands
     web_log = test_workflows.Workflows.web_log
     make_webui = test_workflows.Workflows.make_webui
+    webui_docker = test_workflows.Workflows.webui_docker
     def helper(self, *args):
         return subprocess.run(['python3', str(ROOT/'lib/crowdsec_config.py'), *map(str, args)], text=True, capture_output=True)
+
+    def active_host_credentials(self, login='active-host'):
+        path = self.config/'active-credentials.yaml'
+        path.write_text('url: http://127.0.0.1:8181/\nlogin: '+login+'\npassword: active-test-password\n')
+        (self.config/'config.yaml.local').write_text(yaml.safe_dump({'api': {'client': {'credentials_path': str(path)}}}))
+        return path
+
+    def test_cleanup_protects_effective_host_credentials(self):
+        self.active_host_credentials()
+        result = self.run_shell('check_and_clean_redundant_instances', 'active-host\ny\n')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn('machines delete', self.commands())
+
+    def test_machine_cleanup_passes_option_like_name_as_one_literal_argument(self):
+        self.active_host_credentials()
+        result = self.run_shell('check_and_clean_redundant_instances', '--all\ny\n')
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('cscli machines delete -- --all\n', self.commands())
+
+    def test_webui_uninstall_passes_saved_machine_name_as_literal(self):
+        ui = self.make_webui()
+        (ui/'data/webui_api_credentials.yaml').write_text('url: http://127.0.0.1:8080/\nlogin: --all\npassword: test-password\n')
+        result = self.run_shell('uninstall_web_ui', 'y\n')
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('cscli machines delete -- --all\n', self.commands())
+
+    def test_webui_uninstall_protects_effective_host_credentials(self):
+        ui = self.make_webui()
+        self.active_host_credentials('webui-owned')
+        result = self.run_shell('uninstall_web_ui', 'y\n')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn('machines delete', self.commands())
+        self.assertNotIn('docker rm', self.commands())
+        self.assertTrue(ui.exists())
+
+    def test_webui_deploy_protects_effective_host_credentials(self):
+        ui = self.make_webui()
+        self.active_host_credentials('webui-owned')
+        before = (ui/'docker-compose.yml').read_bytes()
+        result = self.run_shell('deploy_web_ui', '3000\ny\n', self.webui_docker())
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((ui/'docker-compose.yml').read_bytes(), before)
+        self.assertNotIn('machines delete', self.commands())
+        self.assertNotIn('systemctl restart crowdsec', self.commands())
+
+    def test_webui_deploy_uses_effective_lapi_url(self):
+        ui = self.make_webui()
+        self.active_host_credentials()
+        result = self.run_shell('deploy_web_ui', '3000\ny\n', self.webui_docker())
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        compose = yaml.safe_load((ui/'docker-compose.yml').read_text())
+        self.assertEqual(compose['services']['crowdsec-web-ui']['environment']['CONFIG_INSTANCE_LAPI_URL'], 'http://127.0.0.1:8181')
+
+    def test_firewall_repair_uses_effective_lapi_url(self):
+        self.active_host_credentials()
+        config = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
+        config.parent.mkdir()
+        config.write_text('mode: nftables\napi_url: http://127.0.0.1:8080/\napi_key: 0123456789abcdef0123456789abcdef\n')
+        self.run_shell('repair_firewall_bouncer')
+        self.assertEqual(yaml.safe_load(config.with_name(config.name+'.local').read_text())['api_url'], 'http://127.0.0.1:8181/')
+        self.assertEqual(yaml.safe_load(config.read_text())['api_url'], 'http://127.0.0.1:8080/')
+        self.assertIn('http://127.0.0.1:8181/v1/decisions', self.commands())
+
+    def test_client_credentials_path_uses_base_config(self):
+        path = self.active_host_credentials()
+        (self.config/'config.yaml.local').unlink()
+        config = self.config/'config.yaml'
+        data = yaml.safe_load(config.read_text())
+        data['api']['client']['credentials_path'] = str(path)
+        config.write_text(yaml.safe_dump(data))
+        result = self.helper('client-credentials-path', config)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), str(path))
+
+    def test_unreadable_effective_credentials_blocks_machine_cleanup(self):
+        local = self.config/'config.yaml.local'
+        for value in ('relative.yaml', str(self.config/'missing.yaml'), None):
+            with self.subTest(value=value):
+                local.write_text(yaml.safe_dump({'api': {'client': {'credentials_path': value}}}))
+                self.trace.write_text('')
+                result = self.run_shell('check_and_clean_redundant_instances', 'active-host\ny\n')
+                self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn('machines delete', self.commands())
+
+    def test_unreadable_local_config_blocks_machine_cleanup(self):
+        (self.config/'config.yaml.local').symlink_to(self.config/'unavailable-config')
+        result = self.run_shell('check_and_clean_redundant_instances', 'active-host\ny\n')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn('machines delete', self.commands())
 
     def test_empty_local_metrics_and_wal(self):
         config = self.config/'config.yaml'
@@ -103,7 +193,7 @@ class AuditOps(unittest.TestCase):
         self.make_webui()
         p = self.run_shell('deploy_web_ui', '3000\ny\n', 'docker() { record docker "$@"; if [[ "$1 $2" == "image inspect" ]]; then printf "sha256:%064d\n" 0; return 0; fi; [[ "$*" == *State.Running* ]] && echo true; return 0; }; curl() { record curl "$@"; echo 503; }')
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
-        self.assertNotIn('machines delete webui-owned', self.commands())
+        self.assertNotIn('machines delete -- webui-owned', self.commands())
 
     def test_webui_public_exposure_requires_confirmation(self):
         self.make_webui()
@@ -133,7 +223,7 @@ cscli() {
 }'''
         p = self.run_shell('deploy_web_ui rotate', '3000\ny\n', override)
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
-        self.assertNotIn('machines delete webui-owned', self.commands())
+        self.assertNotIn('machines delete -- webui-owned', self.commands())
         self.assertEqual(yaml.safe_load((self.base/'opt/crowdsec-web-ui/data/webui_api_credentials.yaml').read_text())['login'], 'webui-owned')
 
     def test_health_fails_for_deployed_exited_webui(self):

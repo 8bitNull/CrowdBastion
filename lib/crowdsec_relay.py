@@ -4,6 +4,7 @@ import glob
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import shutil
 import subprocess
@@ -11,6 +12,7 @@ import sys
 
 import yaml
 from crowdbastion_health import emit
+from crowdsec_firewall import assess as assess_firewall_backend
 from crowdsec_config import acquisition_locations, go_escape, go_glob, merged_config, read, write
 
 
@@ -211,6 +213,11 @@ def audit(root, core_required=True):
             emit(key, 'ok')
             print('[已发现] '+service+' 运行。')
     print('Bouncer 后端：'+mode)
+    renewal, message = assess_firewall_backend(path)
+    emit('renewal', 'required')
+    emit('renewal', renewal)
+    print({'ok': '[已检查] ', 'fault': '[异常] ', 'unknown': '[尚未验证] '}[renewal]+message)
+    error = error or renewal == 'fault'
     rule_states = []
     if mode in ('iptables', 'ipset'):
         output = command(['ipset', 'list', '-name'])
@@ -222,15 +229,18 @@ def audit(root, core_required=True):
                 print('IPv6: 配置未启用（disable_ipv6）。')
                 report_paths(label, set())
                 continue
-            names = set_names(data, family)
-            print(label+' 封禁集合：'+('已发现' if names & present else '尚未发现'))
+            bases = set_names(data, family)
+            # Official iptables/ipset backends allocate <blacklist>-<index>.
+            names = {name for name in present if any(
+                re.fullmatch(re.escape(base)+r'(?:-[0-9]+)?', name) for base in bases)}
+            print(label+' 封禁集合：'+('已发现' if names else '尚未发现'))
             if mode == 'iptables':
                 chains = data.get('iptables_v4_chains' if family == 'ipv4' else 'iptables_v6_chains', data.get('iptables_chains', ['INPUT']))
                 if not isinstance(chains, list) or any(not isinstance(chain, str) for chain in chains):
                     raise ValueError('Bouncer iptables chains 配置无效。')
                 print(label+' 配置链：'+', '.join(chains))
                 rules = command([binary, '-S'])
-                found = iptables_paths(rules, names & present) if rules is not None else set()
+                found = iptables_paths(rules, names) if rules is not None else set()
                 report_paths(label, found)
                 rule_states.append(bool(chains) and set(chains) <= found)
     else:

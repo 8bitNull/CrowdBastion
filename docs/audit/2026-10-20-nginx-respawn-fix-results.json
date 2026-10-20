@@ -1,0 +1,60 @@
+{
+  "baseline": "ca857af",
+  "scope": "Reject Nginx old-cycle worker respawns as successful reloads, using fresh attributable master cohort evidence.",
+  "focused_tests": {
+    "total": 118,
+    "passed": 118,
+    "skipped": 0,
+    "failed": 0,
+    "seconds": 171.994,
+    "real_nginx_lua": 18
+  },
+  "red_regressions": [
+    "real rejected reload with old-cycle respawns previously returned success",
+    "shared log with colliding container master PID previously returned acceptance"
+  ],
+  "static": {
+    "isolated_bash_syntax": 26,
+    "isolated_python_ast": 185,
+    "shellcheck_version": "0.11.0",
+    "shellcheck_files": [
+      "lib/nginx_reload.sh"
+    ],
+    "diff_whitespace": "passed",
+    "source_bash_syntax": 26,
+    "source_python_ast": 193
+  },
+  "independent_review": {
+    "confirmed_finding": "shared inode with colliding container master log PID",
+    "fixed": true,
+    "remaining_actionable_findings": 0
+  },
+  "limitations": [
+    "Readable regular main error_log at notice/info/debug required and already loaded.",
+    "Direct absolute main-file log directive required; stderr only supported when redirected to a regular file.",
+    "Unknown log attribution, hidden proc metadata, unsupported sinks or incomplete logs reject automatic verification.",
+    "No VPS, real Docker daemon/systemd deployment or kernel enforcement acceptance."
+  ],
+  "sha256": {
+    "lib/nginx_reload.sh": "e05fbe5072587be6ffce6c2d94aef4d2856c3b6ff3bc788d898cccb20329f066",
+    "lib/crowdsec_nginx_reload.py": "b702d56fc8231c0785b8a5b373b9f369a8cabb59c6d5b536b060cdb57e89ffde",
+    "tests/test_workflows.py": "f185b69aeb0a25028750c22d8a6448ec95f82c3b329291b6b26273e2adb482d3",
+    "tests/test_nginx_reload.py": "388dc892ba9e34d33017b41ac52004f58a4c80d3517d26c6539c9c77cf90d327",
+    "tests/test_nginx_reload_log.py": "026fec346b6558d19ef45bc6aad837d6a79b032738c16443cbeb30860deaee58"
+  },
+  "logs": {
+    "/tmp/crowdbastion-respawn-fix-red.log": "ff1e7fa6aff948fd2510e1b0e7f3754ca225571ba647f86acdde51eb1beaba94",
+    "/tmp/crowdbastion-respawn-fix-shared-log-red.log": "404c76896cea86c7c63658d6d893144a153b9d962fce211556848114a08a965a",
+    "/tmp/crowdbastion-respawn-fix-focused-final.log": "1d68bf66bbdad56524564c01486b7b5c3230c49a12379df269104735b44ee5c2",
+    "/tmp/crowdbastion-respawn-fix-log-tests.log": "87c8d0a35a3a06136c6efdc9f4146695966c8cf1414f242d3557420881605c71",
+    "/tmp/crowdbastion-respawn-fix-source-full.log": "f243d8aa939a791962d008f4c6e491f47c1bf8dd3cb19cecab2a1b9686b2e266"
+  },
+  "full_source_tests": {
+    "total": 1026,
+    "passed": 1005,
+    "skipped": 21,
+    "failed": 0,
+    "seconds": 370.351,
+    "real_nginx_lua": 18
+  }
+}

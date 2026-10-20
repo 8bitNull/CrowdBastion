@@ -57,6 +57,90 @@ class AlertManagement(unittest.TestCase):
         self.assertEqual(self.profiles.read_bytes(), self.original)
         self.assertFalse(self.manager.acquisition.exists());self.assertFalse(self.manager.unit.exists())
 
+    def test_local_profiles_override_receives_guard_and_restores_on_disable(self):
+        active = self.cs/'active-profiles.yaml'
+        active.write_bytes(self.original)
+        (self.cs/'config.yaml.local').write_text('api:\n  server:\n    profiles_path: '+str(active)+'\n')
+        self.manager.enable()
+        self.assertTrue(active.read_bytes().startswith(self.mod.GUARD))
+        self.assertEqual(self.profiles.read_bytes(), self.original)
+        self.manager.check_managed()
+        self.manager.disable()
+        self.assertEqual(active.read_bytes(), self.original)
+
+    def test_profiles_local_runs_before_base_and_receives_guard(self):
+        local = self.cs/'profiles.yaml.local'
+        local.write_bytes(self.original.replace(b'existing', b'earlier_ban'))
+        original_local = local.read_bytes()
+        self.manager.enable()
+        self.assertTrue(local.read_bytes().startswith(self.mod.GUARD))
+        self.assertEqual(self.profiles.read_bytes(), self.original)
+        self.manager.check_managed()
+        self.manager.disable()
+        self.assertEqual(local.read_bytes(), original_local)
+
+    def test_adding_profiles_local_after_enable_blocks_publication(self):
+        self.manager.enable()
+        (self.cs/'profiles.yaml.local').write_bytes(self.original)
+        with self.assertRaises(ValueError):self.manager.check_managed()
+
+    def test_removing_guarded_profiles_local_blocks_publication(self):
+        local = self.cs/'profiles.yaml.local'
+        local.write_bytes(self.original)
+        self.manager.enable()
+        local.unlink()
+        with self.assertRaises(ValueError):self.manager.check_managed()
+
+    def test_symlink_profiles_local_is_rejected_before_installation(self):
+        for target in (self.profiles, self.cs/'missing-profile'):
+            with self.subTest(target=target):
+                local = self.cs/'profiles.yaml.local'
+                local.symlink_to(target)
+                try:
+                    with self.assertRaises(ValueError):self.manager.enable()
+                    self.assertFalse(self.manager.code.exists())
+                    self.assertEqual(self.profiles.read_bytes(), self.original)
+                finally:local.unlink()
+
+    def test_failed_validation_restores_profiles_local(self):
+        local = self.cs/'profiles.yaml.local'
+        local.write_bytes(self.original)
+        def fail(*args):raise RuntimeError('validation failed')
+        self.manager.command = fail
+        with self.assertRaises(RuntimeError):self.manager.enable()
+        self.assertEqual(local.read_bytes(), self.original)
+        self.assertEqual(self.profiles.read_bytes(), self.original)
+        self.assertFalse(self.manager.code.exists())
+
+    def test_local_acquisition_override_is_rejected_before_installation(self):
+        other = self.cs/'other-acquisition'
+        other.mkdir()
+        (self.cs/'config.yaml.local').write_text('crowdsec_service:\n  acquisition_dir: '+str(other)+'\n')
+        with self.assertRaises(ValueError):self.manager.enable()
+        self.assertFalse(self.manager.code.exists())
+        self.assertEqual(self.profiles.read_bytes(), self.original)
+
+    def test_local_profile_change_after_enable_invalidates_publication_guard(self):
+        self.manager.enable()
+        active = self.cs/'unguarded.yaml'
+        active.write_bytes(self.original)
+        (self.cs/'config.yaml.local').write_text('api:\n  server:\n    profiles_path: '+str(active)+'\n')
+        with self.assertRaises(ValueError):self.manager.check_managed()
+
+    def test_existing_local_configuration_change_is_detected(self):
+        local = self.cs/'config.yaml.local'
+        local.write_text('prometheus:\n  enabled: true\n')
+        self.manager.enable()
+        local.write_text('prometheus:\n  enabled: false\n')
+        with self.assertRaises(ValueError):self.manager.check_managed()
+
+    def test_symlink_local_configuration_is_rejected_before_installation(self):
+        source = self.cs/'other.yaml'
+        source.write_text('{}\n')
+        (self.cs/'config.yaml.local').symlink_to(source)
+        with self.assertRaises(ValueError):self.manager.enable()
+        self.assertFalse(self.manager.code.exists())
+
     def test_existing_acquisition_wildcard_rejected_before_changes(self):
         (self.cs/'acquis.d/other.yaml').write_text('filenames: ["'+str(self.manager.state/'*.ndjson')+'"]\nlabels: {type: syslog}\n')
         with self.assertRaises(ValueError):self.manager.enable()

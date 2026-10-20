@@ -1,0 +1,294 @@
+{
+  "target": "third-vps",
+  "deployment_started_utc": "2026-10-19T13:14:30.610679+00:00",
+  "verified_utc": "2026-10-19T13:15:41.509291+00:00",
+  "status": "deployed",
+  "backup_on_target": "/var/backups/crowdbastion/third-vps-remediation-20261019T131430Z",
+  "failure_policies": {
+    "CACHE_EXPIRATION": "1",
+    "FALLBACK_REMEDIATION": "ban",
+    "MODE": "live",
+    "APPSEC_FAILURE_ACTION": "deny",
+    "ALWAYS_SEND_TO_APPSEC": "false",
+    "LAPI_FAILURE_ACTION": "deny"
+  },
+  "no_local_override": true,
+  "patch_markers": {
+    "lapi_immediate403": true,
+    "appsec_status403": true
+  },
+  "runtime_validation": {
+    "actual_openresty_isolated": true,
+    "test_methods": 8,
+    "baseline_failed_assertions": 5,
+    "patched_returncode": 0,
+    "production_processes_unchanged_during_fault_tests": true,
+    "remaining_temp_prefixes": []
+  },
+  "actual_endpoint_authentication": {
+    "before": {
+      "lapi_status": 200,
+      "appsec_status": 200,
+      "appsec_action": "allow"
+    },
+    "after_core_reload": {
+      "lapi_status": 200,
+      "appsec_status": 200,
+      "appsec_action": "allow"
+    },
+    "after_nginx_reload": {
+      "lapi_status": 200,
+      "appsec_status": 200,
+      "appsec_action": "allow"
+    }
+  },
+  "protected_https_before_after": [
+    200,
+    200
+  ],
+  "install_check": {
+    "passed": true,
+    "resource_count": 26
+  },
+  "changed_file_count": 5,
+  "all_changed_file_hashes_match": true,
+  "acquisition": {
+    "added_files": 12,
+    "sites": [
+      {
+        "site": "site-A",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 2,
+            "reads": 2,
+            "whitelisted": 4
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-B",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 50,
+            "pour": 10,
+            "reads": 50,
+            "whitelisted": 4
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-C",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 143207,
+            "pour": 6057,
+            "reads": 143218,
+            "unparsed": 11,
+            "whitelisted": 12
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-D",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 5,
+            "reads": 5,
+            "whitelisted": 4
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-E",
+        "https_head_before": 302,
+        "https_head_after": 302,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 13,
+            "pour": 8,
+            "reads": 13,
+            "whitelisted": 2
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-F",
+        "https_head_before": 405,
+        "https_head_after": 405,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 1,
+            "reads": 1,
+            "whitelisted": 2
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-G",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 1,
+            "reads": 1,
+            "whitelisted": 2
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-H",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 1,
+            "reads": 1,
+            "whitelisted": 2
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-I",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 1862,
+            "pour": 669,
+            "reads": 1862,
+            "whitelisted": 4
+          }
+        },
+        "error_log_configured_once": true
+      },
+      {
+        "site": "site-J",
+        "https_head_before": 200,
+        "https_head_after": 200,
+        "status_unchanged": true,
+        "access_log": {
+          "acquisition_matches": 1,
+          "metrics": {
+            "parsed": 1,
+            "reads": 1,
+            "whitelisted": 2
+          }
+        },
+        "error_log_configured_once": true
+      }
+    ],
+    "every_site_access_log_parsed": true,
+    "every_site_log_configured_exactly_once": true
+  },
+  "update_schedule": {
+    "retained": "managed cron 03:30 Asia/Shanghai",
+    "root_duplicate_commented": true,
+    "unrelated_root_cron_preserved": true,
+    "managed_cron_unchanged": true,
+    "system_timer": [
+      "ActiveState=inactive",
+      "UnitFileState=disabled"
+    ]
+  },
+  "services": [
+    "MainPID=2554128",
+    "NRestarts=0",
+    "Id=crowdsec.service",
+    "ActiveState=active",
+    "SubState=running",
+    "",
+    "MainPID=1870758",
+    "NRestarts=0",
+    "Id=crowdsec-firewall-bouncer.service",
+    "ActiveState=active",
+    "SubState=running",
+    "",
+    "MainPID=42684",
+    "NRestarts=0",
+    "Id=fail2ban.service",
+    "ActiveState=active",
+    "SubState=running",
+    "",
+    "MainPID=386",
+    "NRestarts=0",
+    "Id=cron.service",
+    "ActiveState=active",
+    "SubState=running"
+  ],
+  "existing_local_ban_membership": [
+    {
+      "ip_sha256_12": "a27cb37c7e6b",
+      "version": 4,
+      "matched_sets": [
+        "crowdsec"
+      ]
+    }
+  ],
+  "cpu": {
+    "code_workspace_container_percent": 6.38,
+    "vmstat_interval_idle_percent": [
+      90,
+      87,
+      64
+    ],
+    "load_average": [
+      1.12,
+      0.94,
+      1.72
+    ],
+    "resource_caps_changed": false
+  },
+  "local_validation": {
+    "runtime_methods": 8,
+    "installer_methods": 17,
+    "rollback_retry_and_conflict_tests": 3
+  },
+  "limitations": [
+    "Live decision lookup failures only; stream mode unchanged.",
+    "A valid allow cache entry remains valid until its normal expiration (configured 1 second).",
+    "Production faults were not injected; failure semantics tested in isolated instances using the actual OpenResty binary.",
+    "Local HTTPS probes do not verify CDN real-IP propagation or external ban enforcement.",
+    "One existing local IPv4 ban sampled; no IPv6 decision sample."
+  ],
+  "private_evidence_sha256": {
+    "deploy-private.json": "9f6f84e3a8e48f6bc62591aaa209313b0586b3eac85d2c47263e8eb1c6e79417",
+    "verify-private.json": "77ead3473198e0455de87e181fefed1d74d99a2e5b5c4417b6e5e6acdf9b3fe9",
+    "validate_remote-private.json": "0f0fa927eea43b5b6bdd12ab51a9fcc6ffabef0d465cc28489d0c93cb11f6cd7",
+    "endpoint_preflight-private.json": "7601321b6a3aeb5bfa4514707f629581cc82eac4ea716a2c02e7d89f334580a5",
+    "deploy.py": "7fadc36ab0a7756db9c661da3df8355bd4f50e9af5e7029421163649fae58e96"
+  }
+}

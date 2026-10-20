@@ -19,6 +19,43 @@ select_native_container() {
     return 1
 }
 
+upgrade_native_execution() (
+    local name=$1 mounts=$2 entry=$3 assets target updated effective committed=false changed=false
+    assets=$(web_tool get "$entry" host_assets) || return 1
+    target=$(web_tool get "$entry" host_target) || return 1
+    effective=$(mktemp) || return 1
+    # shellcheck disable=SC2329 # invoked by EXIT trap
+    execution_upgrade_exit() {
+        local status=$?
+        trap - EXIT INT TERM
+        if [[ "$changed" == true && "$committed" != true ]]; then
+            if ! restore_config_change || ! nginx_reload_verified docker "$name" ||
+                ! { docker exec "$name" nginx -T > "$effective" 2>&1 &&
+                    web_tool active-hooks "$WEB_INSTALLS" "$name" "$mounts" "$effective" >/dev/null; }; then
+                log_err '执行记录升级恢复不完整；修改前备份已保留，请人工核对资源、安装记录及 Nginx 运行状态。'
+            fi
+            [[ "$status" != 0 ]] || status=1
+        fi
+        rm -f -- "$effective"
+        exit "$status"
+    }
+    trap execution_upgrade_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    begin_config_change "$target" "$WEB_INSTALLS" "$assets/target.conf" "$assets/log.lua" \
+        "$assets/lib/crowdsec_1key/crowdsec.lua" "$assets/lib/crowdsec_1key/execution.lua" \
+        "$assets/lib/crowdsec_1key/plugins/crowdsec/config.lua" || return 1
+    changed=true
+    updated=$(web_tool upgrade-execution "$WEB_INSTALLS" "$name" "$mounts") || return 1
+    if [[ "$updated" == updated ]]; then
+        nginx_reload_verified docker "$name" || return 1
+        docker exec "$name" nginx -T > "$effective" 2>&1 &&
+            web_tool active-hooks "$WEB_INSTALLS" "$name" "$mounts" "$effective" >/dev/null || return 1
+        log_succ '已更新受管理 Web Bouncer：真实拒绝记录、AppSec 403 与 LAPI 故障策略支持；已有策略与账号保留。'
+    fi
+    committed=true
+)
+
 install_docker_web_bouncer() (
     require_core && require_yaml && require_commands docker curl ss || return 1
     appsec_default_listener_ready || { log_err '请先配置 AppSec 引擎，确认 127.0.0.1:7422 监听。'; return 1; }
@@ -81,6 +118,7 @@ install_docker_web_bouncer() (
         assets=$(web_tool get "$work/existing" host_assets) || return 1
         remote_assets=$(web_tool get "$work/existing" container_assets) || return 1
         appsec_guard_config "${assets}/bouncer.conf" "$NATIVE_ID" "${remote_assets}/bouncer.conf" || return 1
+        upgrade_native_execution "$NATIVE_NAME" "$work/mounts" "$work/existing" || return 1
         log_info '已有本工具 Web Bouncer，复用原账号；可用接入已有 Docker Web Bouncer 恢复 AppSec 地址。'
         return 0
     fi
@@ -93,6 +131,7 @@ install_docker_web_bouncer() (
     appsec_guard_config "${assets}/bouncer.conf" "$NATIVE_ID" "${remote_assets}/bouncer.conf" || return 1
     log_info "持久化配置：${target}；资源：${assets}"
     log_info '安装官方固定版本 Bouncer；原 WAF 先执行，保留原日志钩子。'
+    log_warn '本次新装采用安全优先：AppSec 与 LAPI 故障均拒绝（403），故障期间正常访客也可能被拒绝；已有允许缓存按原有效期到期。'
     confirm "为 ${NATIVE_NAME} 首次安装 Web Bouncer、接入 AppSec 并重载？" || return 0
     curl -fL --retry 2 --connect-timeout 15 --max-time 120 \
         https://github.com/crowdsecurity/cs-openresty-bouncer/releases/download/v1.2.3/crowdsec-openresty-bouncer.tgz -o "$work/bouncer.tgz" || return 1

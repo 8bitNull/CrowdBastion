@@ -1,0 +1,905 @@
+{
+  "scope": "Authorized read-only re-review; no production configuration changes, restarts or new ban probes during this round.",
+  "compiled_at_utc": "2026-10-19T11:31:19.525022+00:00",
+  "target": {
+    "description": "用户已授权的 VPS；连接标识仅保存在本地私有审计目录"
+  },
+  "sources_private_sha256": {
+    "runtime-private.json": "eb2ecbfe69d28a918e2c3f16646bcccd37f4f54e6833602a38570e09f837350f",
+    "log-and-options.json": "eb1b16e624b112c2e933cf5cd1c9d5d9401a70a2584fb7050a9d29ca5eb76d45",
+    "appsec-error-correlation-final.json": "d2a7957d428a148363d50ba62bfa5a690869bbe4580cb99615c4303acc3f6b4c",
+    "final-state.json": "8fd99bab1c9300e01a507d2d2fd1de8dbe74cecf8cde19849ee581d45767ebbc",
+    "read_review.py": "cbc97a92aa83ea6a00c02169132effad3dae6d9796379da196b98f5008c96fef",
+    "read_appsec_errors.py": "bf92b8d2d758b048822a28f18fdee8b7b366da20c56fbe2e63aa72a26a7d7d75",
+    "read_final_state.py": "f282e7588850989ebf201b0d5e2267957cfdc1cf46eeaaa915eff7f3806d6a38",
+    "local-override.json": "6df1590f1dabee41403ebd1606c7e5e4fbb33c8229ff69b61de43d99af80aa95",
+    "read_local_override.py": "f915f1e6ede535028ef9bff70cc04132f84df9a7014b7944df628ca2416f085e"
+  },
+  "appsec_correlation": {
+    "timestamp_utc": "2026-10-19T11:28:05.782071+00:00",
+    "error_categories": {
+      "timeout": 137,
+      "connection_refused": 1
+    },
+    "error_day_counts_local": {
+      "2026-10-19": 138
+    },
+    "error_range_utc": [
+      "2026-10-19T05:51:42+00:00",
+      "2026-10-19T11:00:12+00:00"
+    ],
+    "error_timestamps_in_range_count": 138,
+    "timestamp_unparsed": 0,
+    "access_log_timezone_offsets": {
+      "+0000": 16478
+    },
+    "mutually_unique_candidate_matches_15s": 78,
+    "errors_with_multiple_access_candidates": 30,
+    "one_access_candidate_but_shared_response": 0,
+    "all_candidate_edges": 149,
+    "matched_statuses": {
+      "301": 2,
+      "200": 31,
+      "404": 42,
+      "302": 1,
+      "405": 2
+    },
+    "matched_upstream_statuses": {
+      "301": 2,
+      "200": 31,
+      "404": 42,
+      "302": 1,
+      "405": 2
+    },
+    "match_limit": "same file prefix, client, host, method, URI and time within 15s; exactly one access candidate and one candidate error per response, reverse degree computed over all candidates. No shared request ID: correlation, not exact tracing. Errors do not by themselves prove an attack or an active IP decision.",
+    "selected_200_samples": [
+      {
+        "timestamp_utc": "2026-10-19T11:00:12+00:00",
+        "response_timestamp_utc": "2026-10-19T11:00:12+00:00",
+        "file": "proxy-host-12_error.log",
+        "method": "GET",
+        "kind": "connection_refused",
+        "status": 200,
+        "upstream_status": "200",
+        "scheme": "https"
+      },
+      {
+        "timestamp_utc": "2026-10-19T06:42:16+00:00",
+        "response_timestamp_utc": "2026-10-19T06:42:17+00:00",
+        "file": "proxy-host-19_error.log",
+        "method": "GET",
+        "kind": "timeout",
+        "status": 200,
+        "upstream_status": "200",
+        "scheme": "https"
+      },
+      {
+        "timestamp_utc": "2026-10-19T09:21:00+00:00",
+        "response_timestamp_utc": "2026-10-19T09:21:00+00:00",
+        "file": "proxy-host-19_error.log",
+        "method": "GET",
+        "kind": "timeout",
+        "status": 200,
+        "upstream_status": "200",
+        "scheme": "https"
+      }
+    ],
+    "matched_error_categories": {
+      "timeout": 77,
+      "connection_refused": 1
+    },
+    "matched_200_error_categories": {
+      "connection_refused": 1,
+      "timeout": 30
+    },
+    "matched_response_delay_seconds": {
+      "1": 13,
+      "0": 65
+    }
+  },
+  "current_ban_log_correlation": {
+    "max_bytes_per_file": 1048576,
+    "files_checked": 33,
+    "bytes_read": 4147502,
+    "counts": {
+      "lines_seen": 16930,
+      "unparsed": 539,
+      "parsed_within_24h": 16391,
+      "parsed_within_1h": 713,
+      "current_banned_ip_within_24h": 478
+    },
+    "statuses_before_grace": {
+      "403": 391,
+      "502": 1,
+      "404": 61,
+      "400": 25
+    },
+    "statuses_after_grace": {},
+    "samples_after_grace": [],
+    "parsed_timestamp_range_utc": [
+      "2026-10-19T02:23:48+00:00",
+      "2026-10-19T11:24:10+00:00"
+    ],
+    "max_age_seconds": 86400,
+    "grace_seconds": 120
+  },
+  "current_unique_local_banned_ips": 9,
+  "bouncer_options": {
+    "ENABLED": "true",
+    "CACHE_EXPIRATION": "1",
+    "REQUEST_TIMEOUT": "3000",
+    "UPDATE_FREQUENCY": "10",
+    "ENABLE_INTERNAL": "false",
+    "MODE": "live",
+    "SCENARIOS_CONTAINING": "",
+    "SCENARIOS_NOT_CONTAINING": "",
+    "APPSEC_FAILURE_ACTION": "passthrough",
+    "APPSEC_CONNECT_TIMEOUT": "",
+    "APPSEC_SEND_TIMEOUT": "",
+    "APPSEC_PROCESS_TIMEOUT": "",
+    "ALWAYS_SEND_TO_APPSEC": "false",
+    "APPSEC_DROP_UNREADABLE_BODY": "false"
+  },
+  "other_bounded_error_counts": {
+    "files_checked": 33,
+    "max_bytes_per_file": 262144,
+    "characters_read": 501216,
+    "counts": {
+      "lapi_query_failure": 0,
+      "bouncer_error": 0,
+      "appsec_check_error": 138,
+      "appsec_bad_request": 0,
+      "lua_runtime_error": 0,
+      "cache_full": 0,
+      "crowdsec_denial": 1414
+    },
+    "limit": "bounded tails, mixed ages; no full-history or incident-time assertion"
+  },
+  "nginx_static_projection": {
+    "captured_at_utc": "2026-10-19T11:22:51.040632+00:00",
+    "test_returncode": 0,
+    "dump_sha256": "7213b1d7bb8886890766ece5420ed4fc59ec62e7e2ee0b96a928eefb4c733d95",
+    "proxy_file_count": 22,
+    "limitation": "nginx -T parses disk configuration; existing worker loaded configuration not proven by this dump.",
+    "proxy_server_trust": {
+      "header": "CF-Connecting-IP",
+      "explicit_cidrs": 22,
+      "provider": "Cloudflare",
+      "each_proxy_file_includes_server_proxy": true,
+      "expanded_proxy_config_count": 22
+    },
+    "crowdsec_variable_references": []
+  },
+  "installed_source_evidence": [
+    {
+      "container_path": "/data/crowdsec-1key/lib/crowdsec_1key/plugins/crowdsec/live.lua",
+      "sha256": "af6c76aba2fae6f3e94a15013b7f66277ee3d10e9445e53c81fe537466d92449",
+      "excerpts": [
+        {
+          "line": 34,
+          "text": "function live:live_query_api(ip, api_url, timeout, cache_expiration, api_key_header, api_key, user_agent, ssl_verify, bouncing_on_type, scenarios_containing, scenarios_not_containing)"
+        },
+        {
+          "line": 35,
+          "text": "  local link = api_url .. \"/v1/decisions?ip=\" .. ip .. utils.scenario_filters(scenarios_containing, scenarios_not_containing)"
+        },
+        {
+          "line": 36,
+          "text": "  local res, err = utils.get_remediation_http_request(link, timeout, api_key_header, api_key, user_agent, ssl_verify)"
+        },
+        {
+          "line": 37,
+          "text": ""
+        },
+        {
+          "line": 38,
+          "text": "  if not res then"
+        },
+        {
+          "line": 39,
+          "text": "    ngx.log(ngx.ERR, \"failed to query LAPI \" .. link .. \": \".. err)"
+        },
+        {
+          "line": 40,
+          "text": "    return true, nil, nil, \"request failed: \".. err"
+        },
+        {
+          "line": 41,
+          "text": "  end"
+        },
+        {
+          "line": 42,
+          "text": ""
+        },
+        {
+          "line": 43,
+          "text": "  return self:live_query_process(res, ip, cache_expiration, bouncing_on_type, link)"
+        },
+        {
+          "line": 85,
+          "text": "function live:live_query_process(res, ip, cache_expiration, bouncing_on_type, link)"
+        },
+        {
+          "line": 86,
+          "text": "  local status = res.status"
+        },
+        {
+          "line": 87,
+          "text": "  local body = res.body"
+        },
+        {
+          "line": 88,
+          "text": "  if status~=200 then"
+        },
+        {
+          "line": 89,
+          "text": "    return true, nil, nil, \"Http error \" .. status .. \" while talking to LAPI (\" .. link .. \")\""
+        },
+        {
+          "line": 90,
+          "text": "  end"
+        },
+        {
+          "line": 91,
+          "text": ""
+        },
+        {
+          "line": 92,
+          "text": "  --- TODO (after metrics merge) see if following code can be refactored"
+        },
+        {
+          "line": 93,
+          "text": "  if body == \"null\" then -- no result from API, no decision for this IP"
+        },
+        {
+          "line": 94,
+          "text": "    -- set ip in cache and DON'T block it"
+        },
+        {
+          "line": 95,
+          "text": "    local key,_ = utils.item_to_string(ip, \"ip\")"
+        },
+        {
+          "line": 96,
+          "text": "    if key == nil then"
+        },
+        {
+          "line": 97,
+          "text": "      ngx.log(ngx.WARN, \"[Crowdsec] Failed to parse IP address for caching: \" .. tostring(ip) .. \" - skipping cache\")"
+        },
+        {
+          "line": 98,
+          "text": "      return true, nil, nil, nil"
+        },
+        {
+          "line": 99,
+          "text": "    end"
+        },
+        {
+          "line": 100,
+          "text": "    local succ, err, forcible = live.cache:set(\"decision_cache/\" .. key, \"none\", cache_expiration, 1)"
+        },
+        {
+          "line": 101,
+          "text": "    --"
+        },
+        {
+          "line": 102,
+          "text": "    ngx.log(ngx.DEBUG, \"[CACHE] Adding '\" .. key .. \"' in cache for '\" .. cache_expiration .. \"' seconds\") --debug"
+        },
+        {
+          "line": 103,
+          "text": "    if not succ then"
+        },
+        {
+          "line": 104,
+          "text": "      ngx.log(ngx.ERR, \"failed to add ip '\" .. ip .. \"' in cache: \".. err)"
+        },
+        {
+          "line": 105,
+          "text": "    end"
+        },
+        {
+          "line": 106,
+          "text": "    if forcible then"
+        },
+        {
+          "line": 107,
+          "text": "      ngx.log(ngx.ERR, \"Lua shared dict (crowdsec cache) is full, please increase dict size in config\")"
+        },
+        {
+          "line": 108,
+          "text": "    end"
+        },
+        {
+          "line": 109,
+          "text": "    return true, nil, nil, nil"
+        }
+      ]
+    },
+    {
+      "container_path": "/data/crowdsec-1key/lib/crowdsec_1key/crowdsec.lua",
+      "sha256": "408d775d9af44a6eed8ebb0a97f5f625d01c356bc1f7f1309078608f51b388b6",
+      "excerpts": [
+        {
+          "line": 105,
+          "text": "function csmod.init(configFile, userAgent)"
+        },
+        {
+          "line": 106,
+          "text": "  local conf, err = config.loadConfig(configFile, true)"
+        },
+        {
+          "line": 107,
+          "text": "  if conf == nil then"
+        },
+        {
+          "line": 108,
+          "text": "    return nil, err"
+        },
+        {
+          "line": 109,
+          "text": "  end"
+        },
+        {
+          "line": 110,
+          "text": "  local localConf, _ = config.loadConfig(configFile .. \".local\", false)"
+        },
+        {
+          "line": 111,
+          "text": "  if localConf ~= nil then"
+        },
+        {
+          "line": 112,
+          "text": "    for k, v in pairs(localConf) do"
+        },
+        {
+          "line": 113,
+          "text": "      conf[k] = v"
+        },
+        {
+          "line": 114,
+          "text": "    end"
+        },
+        {
+          "line": 115,
+          "text": "  end"
+        },
+        {
+          "line": 116,
+          "text": "  runtime.conf = conf"
+        },
+        {
+          "line": 570,
+          "text": "    local decision_string, flag_id = runtime.cache:get(\"decision_cache/\" .. item)"
+        },
+        {
+          "line": 571,
+          "text": "    ngx.log(ngx.DEBUG, \"[CACHE] Looking for '\" .. key .. \"' in cache\")"
+        },
+        {
+          "line": 572,
+          "text": "    if decision_string ~= nil then -- we have it in cache"
+        },
+        {
+          "line": 573,
+          "text": "      if decision_string == \"none\" then"
+        },
+        {
+          "line": 574,
+          "text": "        ngx.log(ngx.DEBUG, \"[CACHE]'\" .. key .. \"' is in cache with value'\" .. decision_string .. \"'\")"
+        },
+        {
+          "line": 575,
+          "text": "        return true, nil, nil"
+        },
+        {
+          "line": 576,
+          "text": "      end"
+        },
+        {
+          "line": 577,
+          "text": "      ngx.log(ngx.DEBUG, \"'\" .. key .. \"' is in cache with value'\" .. decision_string .. \"'\")"
+        },
+        {
+          "line": 578,
+          "text": "      local  t = utils.split_on_delimiter(decision_string,\"/\")"
+        },
+        {
+          "line": 579,
+          "text": "      if t == nil then"
+        },
+        {
+          "line": 580,
+          "text": "        return true, nil, \"Failed to split decision string\""
+        },
+        {
+          "line": 581,
+          "text": "      end"
+        },
+        {
+          "line": 582,
+          "text": "      local remediation = \"\""
+        },
+        {
+          "line": 583,
+          "text": "      if t[2] ~= nil then"
+        },
+        {
+          "line": 584,
+          "text": "        ngx.log(ngx.DEBUG, \"'\" .. \"ipversion: \" .. ip_version .. \" origin: \" .. t[2] .. \"' is counted\")"
+        },
+        {
+          "line": 585,
+          "text": "        metrics:increment(\"dropped\", 1, {ip_type=ip_version, origin=t[2]}) -- origin: at this point we are pretty sure there's one"
+        },
+        {
+          "line": 586,
+          "text": "        -- and that the decision is a blocking"
+        },
+        {
+          "line": 587,
+          "text": "      end"
+        },
+        {
+          "line": 588,
+          "text": "      if t[1] ~= nil then"
+        },
+        {
+          "line": 589,
+          "text": "        remediation = t[1] -- remediation"
+        },
+        {
+          "line": 590,
+          "text": "      end"
+        },
+        {
+          "line": 591,
+          "text": "      -- flag_id is 1 if the decision is a not blocking one"
+        },
+        {
+          "line": 592,
+          "text": "      return flag_id == 1, remediation, nil"
+        },
+        {
+          "line": 593,
+          "text": "    end"
+        },
+        {
+          "line": 594,
+          "text": "  end"
+        },
+        {
+          "line": 595,
+          "text": ""
+        },
+        {
+          "line": 596,
+          "text": "  -- if live mode, query lapi"
+        },
+        {
+          "line": 597,
+          "text": "  if runtime.conf[\"MODE\"] == \"live\" then"
+        },
+        {
+          "line": 598,
+          "text": "    ngx.log(ngx.DEBUG, \"live mode\")"
+        },
+        {
+          "line": 669,
+          "text": "  local ok, remediation, status_code = true, \"allow\", 200"
+        },
+        {
+          "line": 670,
+          "text": "  if runtime.conf[\"APPSEC_FAILURE_ACTION\"] == DENY then"
+        },
+        {
+          "line": 671,
+          "text": "    ok = false"
+        },
+        {
+          "line": 672,
+          "text": "    remediation = runtime.conf[\"FALLBACK_REMEDIATION\"]"
+        },
+        {
+          "line": 673,
+          "text": "  end"
+        },
+        {
+          "line": 674,
+          "text": ""
+        },
+        {
+          "line": 675,
+          "text": "  local method = \"GET\""
+        },
+        {
+          "line": 676,
+          "text": ""
+        },
+        {
+          "line": 677,
+          "text": "  local body, body_len, unreadable_body, close_body = get_body()"
+        },
+        {
+          "line": 678,
+          "text": "  if unreadable_body and runtime.conf[\"APPSEC_DROP_UNREADABLE_BODY\"] then"
+        },
+        {
+          "line": 679,
+          "text": "    ngx.log(ngx.WARN, \"Dropping request because body is unreadable and APPSEC_DROP_UNREADABLE_BODY is enabled\")"
+        },
+        {
+          "line": 680,
+          "text": "    return false, runtime.conf[\"FALLBACK_REMEDIATION\"], ngx.HTTP_FORBIDDEN, {}, nil"
+        },
+        {
+          "line": 707,
+          "text": "  if err ~= nil then"
+        },
+        {
+          "line": 708,
+          "text": "    -- the appsec stops reading at max_body_size (and after body_read_timeout), answers and closes"
+        },
+        {
+          "line": 709,
+          "text": "    -- the connection: on a large body we are still sending at that point and end up here"
+        },
+        {
+          "line": 710,
+          "text": "    ngx.log(ngx.ERR, \"Fallback because of err: \" .. err .. \" (body: \" .. body_len .. \" bytes)\")"
+        },
+        {
+          "line": 711,
+          "text": "    return ok, remediation, status_code, {}, err"
+        },
+        {
+          "line": 785,
+          "text": "    ok, remediation, err = csmod.allowIp(ip)"
+        },
+        {
+          "line": 786,
+          "text": "    if err ~= nil then"
+        },
+        {
+          "line": 787,
+          "text": "      ngx.log(ngx.ERR, \"[Crowdsec] bouncer error: \" .. err)"
+        },
+        {
+          "line": 788,
+          "text": "    end"
+        },
+        {
+          "line": 874,
+          "text": "  if is_appsec_enabled() and (ok == true or is_always_send_to_appsec())  then"
+        },
+        {
+          "line": 875,
+          "text": "    local appsecOk, appsecRemediation, status_code, appsec_resp, err = csmod.AppSecCheck(ip)"
+        },
+        {
+          "line": 876,
+          "text": "    if err ~= nil then"
+        },
+        {
+          "line": 877,
+          "text": "      ngx.log(ngx.ERR, \"AppSec check: \" .. err)"
+        },
+        {
+          "line": 878,
+          "text": "    end"
+        },
+        {
+          "line": 879,
+          "text": "    if appsecOk == false then"
+        },
+        {
+          "line": 880,
+          "text": "      ok = false"
+        },
+        {
+          "line": 881,
+          "text": "      remediationSource = flag.APPSEC_SOURCE"
+        },
+        {
+          "line": 882,
+          "text": "      remediation = appsecRemediation"
+        },
+        {
+          "line": 883,
+          "text": "      ret_code = status_code"
+        },
+        {
+          "line": 884,
+          "text": "      appsec_response = appsec_resp"
+        },
+        {
+          "line": 885,
+          "text": "    end"
+        }
+      ]
+    },
+    {
+      "container_path": "/data/crowdsec-1key/lib/crowdsec_1key/plugins/crowdsec/config.lua",
+      "sha256": "6f52efea7d5725957a9381e750114f9833229ba7b523c224111e4cb6aa29b680",
+      "excerpts": [
+        {
+          "line": 22,
+          "text": "    ['APPSEC_URL'] = \"\","
+        },
+        {
+          "line": 23,
+          "text": "    ['APPSEC_CONNECT_TIMEOUT'] = 100,"
+        },
+        {
+          "line": 24,
+          "text": "    ['APPSEC_SEND_TIMEOUT'] = 100,"
+        },
+        {
+          "line": 25,
+          "text": "    ['APPSEC_PROCESS_TIMEOUT'] = 500,"
+        },
+        {
+          "line": 26,
+          "text": "    ['APPSEC_FAILURE_ACTION'] = \"passthrough\","
+        },
+        {
+          "line": 27,
+          "text": "    ['SSL_VERIFY'] = \"true\","
+        },
+        {
+          "line": 28,
+          "text": "    ['ALWAYS_SEND_TO_APPSEC'] = \"false\","
+        },
+        {
+          "line": 29,
+          "text": "    ['APPSEC_DROP_UNREADABLE_BODY'] = \"false\","
+        },
+        {
+          "line": 30,
+          "text": "    ['CAPTCHA_RET_CODE'] = 0,"
+        },
+        {
+          "line": 31,
+          "text": "    ['CACHE_EXPIRATION'] = 1,"
+        },
+        {
+          "line": 147,
+          "text": "        elseif has_value(valid_int_params, key) then"
+        },
+        {
+          "line": 148,
+          "text": "            conf[key] = tonumber(value)"
+        },
+        {
+          "line": 149,
+          "text": "        else"
+        },
+        {
+          "line": 150,
+          "text": "            ngx.log(ngx.ERR, \"unsupported configuration '\" .. key .. \"'\")"
+        },
+        {
+          "line": 151,
+          "text": "        end"
+        },
+        {
+          "line": 152,
+          "text": "        end"
+        },
+        {
+          "line": 153,
+          "text": "    end"
+        },
+        {
+          "line": 154,
+          "text": "    if default then"
+        },
+        {
+          "line": 155,
+          "text": "        for k, v in pairs(default_values) do"
+        },
+        {
+          "line": 156,
+          "text": "            if conf[k] == nil then"
+        },
+        {
+          "line": 157,
+          "text": "                conf[k] = v"
+        },
+        {
+          "line": 158,
+          "text": "            end"
+        },
+        {
+          "line": 159,
+          "text": "        end"
+        }
+      ]
+    },
+    {
+      "container_path": "/data/crowdsec-1key/lib/crowdsec_1key/plugins/crowdsec/ban.lua",
+      "sha256": "6e14cc2bdfdb31906002efa7c671c0b316cf4bec0f2f27b5fc570624af62ed40",
+      "excerpts": [
+        {
+          "line": 45,
+          "text": "function M.apply(...)"
+        },
+        {
+          "line": 46,
+          "text": "    local args = {...}"
+        },
+        {
+          "line": 47,
+          "text": "    local ret_code = args[1]"
+        },
+        {
+          "line": 48,
+          "text": ""
+        },
+        {
+          "line": 49,
+          "text": "    ngx.log(ngx.DEBUG, \"args:\" .. tostring(args[1]))"
+        },
+        {
+          "line": 50,
+          "text": ""
+        },
+        {
+          "line": 51,
+          "text": "    local status = 0"
+        },
+        {
+          "line": 52,
+          "text": "    if ret_code ~= nil then"
+        },
+        {
+          "line": 53,
+          "text": "        status = ret_code"
+        },
+        {
+          "line": 54,
+          "text": "    else"
+        },
+        {
+          "line": 55,
+          "text": "        status = M.ret_code"
+        },
+        {
+          "line": 56,
+          "text": "    end"
+        },
+        {
+          "line": 63,
+          "text": "    if M.template_str ~= \"\" then"
+        },
+        {
+          "line": 64,
+          "text": "        ngx.header.content_type = \"text/html\""
+        },
+        {
+          "line": 65,
+          "text": "        ngx.header.cache_control = \"no-cache\""
+        },
+        {
+          "line": 66,
+          "text": "        ngx.status = status"
+        },
+        {
+          "line": 67,
+          "text": "        ngx.say(M.template_str)"
+        },
+        {
+          "line": 68,
+          "text": "        ngx.exit(status)"
+        },
+        {
+          "line": 69,
+          "text": "        return"
+        },
+        {
+          "line": 70,
+          "text": "    end"
+        },
+        {
+          "line": 71,
+          "text": " "
+        },
+        {
+          "line": 72,
+          "text": "    ngx.exit(status)"
+        },
+        {
+          "line": 73,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "container_path": "/data/crowdsec-1key/worker.lua",
+      "sha256": "5467091ce2a4723c825c411830f4ba0dff9de340b06a0a08f06aec71e3cd8478",
+      "excerpts": [
+        {
+          "line": 1,
+          "text": "-- crowdsec-1key: original WAF runs first"
+        },
+        {
+          "line": 2,
+          "text": "local cs = require \"crowdsec_1key.crowdsec\""
+        },
+        {
+          "line": 3,
+          "text": "if string.lower(cs.get_mode()) == \"stream\" then cs.SetupStream() end"
+        },
+        {
+          "line": 4,
+          "text": "if ngx.worker.id() == 0 then cs.SetupMetrics() end"
+        }
+      ]
+    }
+  ],
+  "final_state": {
+    "timestamp_utc": "2026-10-19T11:26:54.297994+00:00",
+    "services": "MainPID=1186183\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1170352\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+    "remaining_test_decisions": 0,
+    "test_namespaces": [],
+    "test_interfaces": [],
+    "bouncers": [
+      {
+        "type": "crowdsec-firewall-bouncer",
+        "revoked": false,
+        "last_pull": "2026-10-19T11:26:49.064651308Z",
+        "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56"
+      },
+      {
+        "type": "crowdsec-openresty-bouncer",
+        "revoked": false,
+        "last_pull": "2026-10-19T11:26:40.053991811Z",
+        "version": "v1.2.3"
+      }
+    ],
+    "appsec_listening": true
+  },
+  "conclusions": {
+    "previous_controlled_input_test": "supported; scope unchanged",
+    "production_appsec_errors": "138 parsed errors; current passthrough policy and associated upstream responses support forwarding after unsuccessful AppSec calls",
+    "active_ban_bypass": "not established; no eligible post-ban samples in bounded current-local-IP-ban join",
+    "lapi_fail_open": "confirmed installed source behavior; no matching LAPI failure events in examined bounded tails",
+    "cache_window": "live negative-decision cache configured to 1 second; distinct from firewall 10-second polling",
+    "deny_fallback_status": "static conditional issue: AppSec error deny branch propagates fallback 200; current passthrough does not exercise it"
+  },
+  "configuration_override_check": {
+    "timestamp_utc": "2026-10-19T11:31:05.694178+00:00",
+    "files": [
+      {
+        "name": "bouncer.conf",
+        "exists": true,
+        "is_symlink": false,
+        "sha256": "f4f85fa17465471c3101e925e63e5e79ad254e62f8cebb152774f6af50ac5355",
+        "selected_options": {
+          "ENABLED": "true",
+          "CACHE_EXPIRATION": "1",
+          "REQUEST_TIMEOUT": "3000",
+          "UPDATE_FREQUENCY": "10",
+          "ENABLE_INTERNAL": "false",
+          "MODE": "live",
+          "SCENARIOS_CONTAINING": "",
+          "SCENARIOS_NOT_CONTAINING": "",
+          "APPSEC_FAILURE_ACTION": "passthrough",
+          "APPSEC_CONNECT_TIMEOUT": "",
+          "APPSEC_SEND_TIMEOUT": "",
+          "APPSEC_PROCESS_TIMEOUT": "",
+          "ALWAYS_SEND_TO_APPSEC": "false",
+          "APPSEC_DROP_UNREADABLE_BODY": "false"
+        }
+      },
+      {
+        "name": "bouncer.conf.local",
+        "exists": false,
+        "is_symlink": false
+      }
+    ],
+    "container_local_override": "absent",
+    "container_check_returncode": 0
+  }
+}

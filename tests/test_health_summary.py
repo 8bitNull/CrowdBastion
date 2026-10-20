@@ -96,6 +96,7 @@ cscli() {
  return 0
 }
 check_relay_status() { health_event rules ok; return 2; }
+check_firewall_backend() { health_event renewal ok; return 0; }
 nft() { record nft "$@"; if [[ "$*" == 'list tables' ]]; then echo 'table ip crowdsec'; return 0; fi; return 1; }
 ''')
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
@@ -297,7 +298,7 @@ class RealObservations(unittest.TestCase):
         self.assertEqual(report['verdict'], '检查未完成，暂时无法判断')
         self.assertEqual(report['action'], 'details')
 
-    def test_origin_suffixed_rules_produce_static_pass_but_not_traffic_pass(self):
+    def test_origin_suffixed_rules_do_not_hide_unknown_renewal_status(self):
         import test_relay_mode
         import crowdbastion_health as health
         fixture = test_relay_mode.RelayAudit()
@@ -316,7 +317,8 @@ class RealObservations(unittest.TestCase):
         p = subprocess.run([sys.executable, str(ROOT/'lib/crowdsec_relay.py'), 'audit', str(fixture.config)], env=env, capture_output=True, text=True)
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         report = health.summarize([line.split('\t') for line in events.read_text().splitlines()], p.returncode, 'relay', 'relay')
-        self.assertEqual(report['verdict'], '运行检查通过，实际拦截待验证')
+        self.assertEqual(report['verdict'], '检查未完成，暂时无法判断')
+        self.assertIn('续封', report['attention'])
         self.assertIn('封禁规则', report['confirmed'])
         # Missing the configured FORWARD path must lose the pass verdict.
         fixture.tool('nft', json.dumps({'nftables': records[:-2]}))

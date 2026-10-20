@@ -165,8 +165,7 @@ class AppSecAudit(unittest.TestCase):
         self.assertIn('docker exec web123 nginx -s reload', self.commands())
 
     def test_docker_policy_reload_failure_restores_original(self):
-        stub = test_workflows.Workflows.appsec_docker_stub(self, mounted=True)
-        stub = stub.replace('-s) return 0;;', '-s) return 1;;')
+        stub = test_workflows.Workflows.appsec_docker_stub(self, mounted=True, reload_succeeds=False)
         file = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
         original = file.read_text()
         result = self.run_shell('configure_appsec_policy docker true deny web123', 'y\n', stub)

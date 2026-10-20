@@ -1,0 +1,332 @@
+{
+  "compiled_at_utc": "2026-10-19T11:45:28.705663+00:00",
+  "scope": "Authorized read-only AppSec diagnosis. No scheduler/configuration changes, new decisions, service reloads or tests against business applications.",
+  "private_source_sha256": {
+    "read_diagnostics.py": "0cc3bc7a9b433cbb12f3262ac01d0320bd4bdbbac6f46d48514191553070a0c4",
+    "diagnostics-private.json": "1f032d19d972c6581b0598227e80f694717f9440c6bb8235570384f77f36f507",
+    "read_scheduler.py": "c279cc3b729bd75532405748a4cc2f722a733bc8216b189e24230ce9464c5baa",
+    "scheduler-private.json": "9da0792fe4a22faf19bc96a231b7399893176b89ddbb1242a7e58f4510d9c20a",
+    "read_history.py": "b9e5a5ac92048be7a74d08f1300d968cd3bd7fd89ba4aec6942b8bfb4841770d",
+    "history-private.json": "b21786b063cd2e10cadb4f83b8513f85149c5a8d058dbea60653f2f4d438168e",
+    "history-projection.json": "c245b18380b957b3ad219d70bb8f1d069829693ec9bb1566656800ad51418893",
+    "read_update_provenance.py": "a3d45755f8d01c0b7f1e8add656b5b09668b427450c04ea48623f17617aeb9ae",
+    "update-provenance-private.json": "361ed2e3c5e5788303c0eca1431fb5718b5746ccee6618a18fb69d1655aaf79c",
+    "read_update_script.py": "48bf511de1526b010efe5206c7b2f589300442d6016236b1a81393bd3bf9d3ef",
+    "update-script-and-final-state.json": "5e72c95bd3513eae6e1b9cb2693b48790c4f0f7cfea42cdd2344a972c19b0af7",
+    "packaged-update-result.json": "1ae3bcc4da22aa11ab1e60403e421368310a024e2b5d1cd60a0b8f01f5366e91"
+  },
+  "timezone": "Timezone=America/Los_Angeles",
+  "daily_cron_commands": {
+    "etc_cron_d": "# CrowdSec 每日规则库与黑名单自动同步\n30 3 * * * root /usr/bin/cscli hub update >/dev/null 2>&1 && /usr/bin/cscli hub upgrade >/dev/null 2>&1 && /bin/systemctl reload crowdsec >/dev/null 2>&1\n",
+    "root_crontab_crowdsec_lines": [
+      "0 4 * * * /usr/bin/cscli hub update && /usr/bin/cscli hub upgrade --force && /bin/systemctl reload crowdsec > /dev/null 2>&1",
+      "30 4 * * * /usr/bin/cscli hub update && /usr/bin/cscli hub upgrade && /bin/systemctl reload crowdsec > /dev/null 2>&1"
+    ],
+    "timezone_assignment_lines": []
+  },
+  "cron_execution_events": [
+    {
+      "timestamp_utc": "2026-10-19T10:30:01.848059+00:00",
+      "command": "(root) CMD (/usr/bin/cscli hub update >/dev/null 2>&1 && /usr/bin/cscli hub upgrade >/dev/null 2>&1 && /bin/systemctl reload crowdsec >/dev/null 2>&1)"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:01.085189+00:00",
+      "command": "(root) CMD (/usr/bin/cscli hub update && /usr/bin/cscli hub upgrade --force && /bin/systemctl reload crowdsec > /dev/null 2>&1)"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:01.109645+00:00",
+      "command": "(root) CMD (/usr/bin/cscli hub update && /usr/bin/cscli hub upgrade && /bin/systemctl reload crowdsec > /dev/null 2>&1)"
+    }
+  ],
+  "core_lifecycle": [
+    {
+      "timestamp_utc": "2026-10-19T10:30:09+00:00",
+      "message": "SIGHUP received, reloading"
+    },
+    {
+      "timestamp_utc": "2026-10-19T10:30:09+00:00",
+      "message": "Crowdsec engine shutting down"
+    },
+    {
+      "timestamp_utc": "2026-10-19T10:30:19+00:00",
+      "message": "Created 1 appsec runners"
+    },
+    {
+      "timestamp_utc": "2026-10-19T10:30:19+00:00",
+      "message": "Reload is finished"
+    },
+    {
+      "timestamp_utc": "2026-10-19T10:30:19+00:00",
+      "message": "Appsec listening on <ip>:7422"
+    },
+    {
+      "timestamp_utc": "2026-10-19T10:30:19+00:00",
+      "message": "Appsec Runner ready to process event"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:10+00:00",
+      "message": "SIGHUP received, reloading"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:10+00:00",
+      "message": "Crowdsec engine shutting down"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:20+00:00",
+      "message": "Created 1 appsec runners"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:20+00:00",
+      "message": "Reload is finished"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:20+00:00",
+      "message": "Appsec listening on <ip>:7422"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:00:20+00:00",
+      "message": "Appsec Runner ready to process event"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:08+00:00",
+      "message": "SIGHUP received, reloading"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:08+00:00",
+      "message": "Crowdsec engine shutting down"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:13+00:00",
+      "message": "Created 1 appsec runners"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:13+00:00",
+      "message": "Reload is finished"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:14+00:00",
+      "message": "Appsec listening on <ip>:7422"
+    },
+    {
+      "timestamp_utc": "2026-10-19T11:30:14+00:00",
+      "message": "Appsec Runner ready to process event"
+    }
+  ],
+  "appsec_errors_by_second": [
+    {
+      "time_utc": "2026-10-19T05:51:42Z",
+      "kind": "timeout",
+      "count": 56
+    },
+    {
+      "time_utc": "2026-10-19T05:51:43Z",
+      "kind": "timeout",
+      "count": 5
+    },
+    {
+      "time_utc": "2026-10-19T06:42:15Z",
+      "kind": "timeout",
+      "count": 24
+    },
+    {
+      "time_utc": "2026-10-19T06:42:16Z",
+      "kind": "timeout",
+      "count": 9
+    },
+    {
+      "time_utc": "2026-10-19T09:21:00Z",
+      "kind": "timeout",
+      "count": 40
+    },
+    {
+      "time_utc": "2026-10-19T09:21:01Z",
+      "kind": "timeout",
+      "count": 3
+    },
+    {
+      "time_utc": "2026-10-19T11:00:12Z",
+      "kind": "connection_refused",
+      "count": 1
+    },
+    {
+      "time_utc": "2026-10-19T11:30:12Z",
+      "kind": "connection_refused",
+      "count": 1
+    }
+  ],
+  "nginx_socket_error_categories": {
+    "read_timeout": 137,
+    "connect_refused": 2
+  },
+  "burst_access_windows": [
+    {
+      "center_utc": "2026-10-19T05:51:42+00:00",
+      "counts_by_offset_second": {
+        "-1": 35,
+        "0": 48,
+        "1": 238,
+        "2": 107,
+        "3": 14,
+        "4": 7
+      },
+      "unique_clients_in_21s": 1,
+      "methods_in_21s": {
+        "GET": 417,
+        "POST": 32
+      }
+    },
+    {
+      "center_utc": "2026-10-19T06:42:15+00:00",
+      "counts_by_offset_second": {
+        "-7": 1,
+        "-3": 1,
+        "2": 55,
+        "5": 1,
+        "9": 1,
+        "-1": 35,
+        "0": 14,
+        "1": 59,
+        "3": 56,
+        "4": 20
+      },
+      "unique_clients_in_21s": 6,
+      "methods_in_21s": {
+        "GET": 238,
+        "POST": 5
+      }
+    },
+    {
+      "center_utc": "2026-10-19T09:21:00+00:00",
+      "counts_by_offset_second": {
+        "-8": 1,
+        "-4": 1,
+        "0": 42,
+        "4": 108,
+        "8": 3,
+        "-2": 3,
+        "-1": 35,
+        "1": 42,
+        "2": 123,
+        "3": 59,
+        "5": 15,
+        "6": 3,
+        "7": 3,
+        "9": 1
+      },
+      "unique_clients_in_21s": 6,
+      "methods_in_21s": {
+        "GET": 423,
+        "POST": 16
+      }
+    }
+  ],
+  "core_log_tail_range_utc": [
+    "2026-10-17T23:01:44+00:00",
+    "2026-10-19T11:42:01+00:00"
+  ],
+  "burst_core_log_levels": {
+    "2026-10-19T05:51:42+00:00": {
+      "info": 219,
+      "warning": 2
+    },
+    "2026-10-19T06:42:15+00:00": {
+      "error": 2,
+      "info": 173,
+      "warning": 2
+    },
+    "2026-10-19T09:21:00+00:00": {
+      "info": 178,
+      "warning": 2
+    }
+  },
+  "histogram_aggregates": {
+    "cs_appsec_inband_parsing_time_seconds_bucket": {
+      "0.0001": 216.0,
+      "0.00025": 2229.0,
+      "0.0005": 59979.0,
+      "0.001": 123874.0,
+      "0.0025": 126644.0,
+      "0.005": 126991.0,
+      "0.01": 127130.0,
+      "0.025": 127158.0,
+      "0.05": 127168.0,
+      "0.1": 127169.0,
+      "0.25": 127183.0,
+      "+Inf": 127183.0
+    },
+    "cs_appsec_inband_parsing_time_seconds_sum": {
+      "total": 74.7206184629999
+    },
+    "cs_appsec_inband_parsing_time_seconds_count": {
+      "total": 127183.0
+    },
+    "cs_appsec_outband_parsing_time_seconds_bucket": {
+      "0.0001": 121638.0,
+      "0.00025": 126186.0,
+      "0.0005": 126772.0,
+      "0.001": 127028.0,
+      "0.0025": 127121.0,
+      "0.005": 127151.0,
+      "0.01": 127164.0,
+      "0.025": 127174.0,
+      "0.05": 127182.0,
+      "0.1": 127183.0,
+      "0.25": 127183.0,
+      "+Inf": 127183.0
+    },
+    "cs_appsec_outband_parsing_time_seconds_sum": {
+      "total": 7.598349036000058
+    },
+    "cs_appsec_outband_parsing_time_seconds_count": {
+      "total": 127183.0
+    },
+    "cs_appsec_parsing_time_seconds_bucket": {
+      "0.0001": 0.0,
+      "0.00025": 514.0,
+      "0.0005": 15579.0,
+      "0.001": 121023.0,
+      "0.0025": 125957.0,
+      "0.005": 126523.0,
+      "0.01": 126728.0,
+      "0.025": 126807.0,
+      "0.05": 126869.0,
+      "0.1": 127124.0,
+      "0.25": 127182.0,
+      "+Inf": 127183.0
+    },
+    "cs_appsec_parsing_time_seconds_sum": {
+      "total": 115.77101241399964
+    },
+    "cs_appsec_parsing_time_seconds_count": {
+      "total": 127183.0
+    }
+  },
+  "burst_notification_warning": "Cannot send alert to Plugin channel (try: 0) observed at 05:51:42/44, 06:42:15/17, 09:20:59/09:21:03 UTC. Correlation only; causal chain not established.",
+  "appsec_runner_count": 1,
+  "packaged_update_units": "# /usr/lib/systemd/system/crowdsec-hubupdate.service\n[Unit]\nDescription=CrowdSec Hub update\n\n[Service]\nType=oneshot\nEnvironment=LC_ALL=C LANG=C PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nExecStart=/usr/libexec/crowdsec/hubupdate.sh\n\n\n# /usr/lib/systemd/system/crowdsec-hubupdate.timer\n[Unit]\nDescription=Daily CrowdSec Hub update\n\n[Timer]\nOnCalendar=daily\nRandomizedDelaySec=5min\nPersistent=true\n\n[Install]\nWantedBy=timers.target\n",
+  "packaged_update_script": "#!/bin/sh\n\nset -eu\n\ntest -x /usr/bin/cscli || exit 0\n\n/usr/bin/cscli --error hub update >/dev/null\n\nupgraded=\"$(/usr/bin/cscli --error hub upgrade)\"\nif [ -n \"$upgraded\" ]; then\n  systemctl reload crowdsec.service\nfi\n",
+  "packaged_update_last_result": {
+    "captured_at_utc": "2026-10-19T11:44:04.824398+00:00",
+    "returncode": 0,
+    "data": "Result=success\nExecMainStartTimestamp=Mon 2026-10-19 00:02:09 PDT\nExecMainExitTimestamp=Mon 2026-10-19 00:02:15 PDT\nExecMainStatus=0\n",
+    "stderr": ""
+  },
+  "final_state": {
+    "returncode": 0,
+    "stdout": "MainPID=1186183\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1170352\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+    "stderr": ""
+  },
+  "limits": [
+    "Bounded file tails and sampled current metrics; no complete historical resource data.",
+    "Nginx access logs record response completion time, so burst counts are not exact request arrival rates.",
+    "Single runner, bursts and notification backpressure are hypotheses to test; individual timeout cause not isolated.",
+    "Duplicate scheduled reloads explain observed connection refusal windows; active ban bypass remains unproven."
+  ],
+  "proposed_change_not_applied": {
+    "remove_redundant_daily_cron": 3,
+    "retain": "crowdsec-hubupdate.timer and packaged conditional reload script",
+    "preserve_other_crontab_entries": true,
+    "immediate_core_reload_required": false,
+    "followup": "Verify fail-open/deny status behavior, queue handling and CDN Web enforcement in an isolated environment before changing production policy."
+  }
+}

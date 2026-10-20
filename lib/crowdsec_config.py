@@ -115,7 +115,7 @@ def telegram_template(chat):
 {{- if gt (len $counts) 10 -}}{{- $text = printf "%s\n另有 %d 种规则未展开" $text (sub (len $counts) 10) -}}{{- end -}}
 {{- $text = printf "%s\n取证仅展示前 %d 条告警；完整记录请用 cscli alerts list / inspect 查询。" $text (min $detailLimit (len .)) -}}
 {{- end -}}
-{{- $text = printf "%s\n执行状态: 本通知未验证 Bouncer 实际拦截" $text -}}
+{{- $text = printf "%s\n执行核验: 推送时未验证 Bouncer 实际拦截；使用 /inspect 调阅告警后点击“执行核验”查询真实 Web 拒绝记录。" $text -}}
 {{- range $index, $alert := . -}}{{- if lt $index $detailLimit -}}
 {{- if gt .ID 0 -}}{{- $text = printf "%s\n\n【Alert #%d】" $text .ID -}}{{- else -}}{{- $text = printf "%s\n\n【实时告警】" $text -}}{{- end -}}
 {{- $text = printf "%s\n场景: %s" $text (.Scenario | toJson | fromJson | trunc 100) -}}
@@ -184,7 +184,7 @@ def merged_config(path):
             else:
                 left[key] = value
     local = Path(str(path)+'.local')
-    if local.exists():
+    if local.exists() or local.is_symlink():
         merge(data, read_mapping(local))
     return data
 
@@ -468,6 +468,11 @@ def main(args):
     action, *args = args
     if action == 'get':
         get(*args)
+    elif action == 'client-credentials-path':
+        path = merged_config(args[0])['api']['client']['credentials_path']
+        if not isinstance(path, str) or not Path(path).is_absolute() or any(c in path for c in '\r\n\t'):
+            raise ValueError('api.client.credentials_path 必须为绝对路径')
+        print(path)
     elif action == 'notification-paths':
         profiles, notification = notification_locations(args[0])
         print(notification)

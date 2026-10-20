@@ -120,6 +120,8 @@ bash crowdbastion.sh --help
 
 Machine 是 LAPI 客户端凭据，名字相似不代表重复的防御引擎；脚本不会根据名称、日期或版本自动重建宿主机身份，也不会批量删除所有 `webui-*` 或其他 Bouncer。
 
+Machine 清理、WebUI 部署／卸载及防火墙 Bouncer 修复按 `config.yaml` 与 `.local` 合并后的 `api.client.credentials_path` 读取宿主机身份和 LAPI 地址。凭据路径须为绝对路径；配置覆盖或所需凭据无法读取时停止操作，避免误注销宿主机身份或连接旧 LAPI。
+
 菜单编号已调整，原命令行操作参数保持兼容。`--reset-56` 和卸载别名仍可使用。
 
 ## V2bX 持久观察样本

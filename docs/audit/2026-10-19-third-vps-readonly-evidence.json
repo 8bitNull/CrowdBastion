@@ -1,0 +1,1754 @@
+{
+  "schema_version": 1,
+  "scope": "User-authorized additional VPS inspection; SSH key authorized by user. Target IP, business domains, credentials and private command output omitted.",
+  "collection_start_utc": "2026-10-19T12:49:27.511296+00:00",
+  "collection_end_start_utc": "2026-10-19T12:54:15.080206+00:00",
+  "phase_start_times_utc": {
+    "baseline": "2026-10-19T12:49:27.511296+00:00",
+    "detail": "2026-10-19T12:51:03.086310+00:00",
+    "finalcheck": "2026-10-19T12:52:50.663533+00:00",
+    "resources": "2026-10-19T12:53:27.721653+00:00",
+    "end": "2026-10-19T12:54:15.080206+00:00"
+  },
+  "commands_used": {
+    "baseline": {
+      "clock": {
+        "args": [
+          "date",
+          "-u",
+          "--iso-8601=seconds"
+        ],
+        "returncode": 0
+      },
+      "os": {
+        "args": [
+          "cat",
+          "/etc/os-release"
+        ],
+        "returncode": 0
+      },
+      "uptime": {
+        "args": [
+          "uptime"
+        ],
+        "returncode": 0
+      },
+      "cpu": {
+        "args": [
+          "nproc"
+        ],
+        "returncode": 0
+      },
+      "memory": {
+        "args": [
+          "free",
+          "-m"
+        ],
+        "returncode": 0
+      },
+      "disk": {
+        "args": [
+          "df",
+          "-h",
+          "/"
+        ],
+        "returncode": 0
+      },
+      "vmstat": {
+        "args": [
+          "vmstat",
+          "1",
+          "4"
+        ],
+        "returncode": 0
+      },
+      "services": {
+        "args": [
+          "systemctl",
+          "show",
+          "crowdsec.service",
+          "crowdsec-firewall-bouncer.service",
+          "fail2ban.service",
+          "-p",
+          "Id",
+          "-p",
+          "ActiveState",
+          "-p",
+          "SubState",
+          "-p",
+          "Result",
+          "-p",
+          "MainPID",
+          "-p",
+          "NRestarts",
+          "-p",
+          "ExecMainStartTimestamp",
+          "-p",
+          "ExecMainStatus"
+        ],
+        "returncode": 0
+      },
+      "units": {
+        "args": [
+          "systemctl",
+          "list-unit-files",
+          "--no-pager",
+          "--no-legend"
+        ],
+        "returncode": 0
+      },
+      "failed": {
+        "args": [
+          "systemctl",
+          "--failed",
+          "--no-pager"
+        ],
+        "returncode": 0
+      },
+      "timers": {
+        "args": [
+          "systemctl",
+          "list-timers",
+          "--all",
+          "--no-pager"
+        ],
+        "returncode": 0
+      },
+      "listeners": {
+        "args": [
+          "ss",
+          "-lntup"
+        ],
+        "returncode": 0
+      },
+      "processes": {
+        "args": [
+          "ps",
+          "-eo",
+          "pid,ppid,comm,pcpu,pmem,rss,state,wchan:24",
+          "--sort=-pcpu"
+        ],
+        "returncode": 0
+      },
+      "containers": {
+        "args": [
+          "docker",
+          "ps",
+          "--format",
+          "{{json .}}"
+        ],
+        "returncode": 0
+      },
+      "container_stats": {
+        "args": [
+          "docker",
+          "stats",
+          "--no-stream",
+          "--format",
+          "{{json .}}"
+        ],
+        "returncode": 0
+      },
+      "version": {
+        "args": [
+          "cscli",
+          "version"
+        ],
+        "returncode": 0
+      },
+      "bouncers": {
+        "args": [
+          "cscli",
+          "bouncers",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "machines": {
+        "args": [
+          "cscli",
+          "machines",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "decisions": {
+        "args": [
+          "cscli",
+          "decisions",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "metrics": {
+        "args": [
+          "cscli",
+          "metrics"
+        ],
+        "returncode": 0
+      },
+      "collections": {
+        "args": [
+          "cscli",
+          "collections",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "allowlists": {
+        "args": [
+          "cscli",
+          "allowlists",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "journal_warning": {
+        "args": [
+          "journalctl",
+          "-u",
+          "crowdsec",
+          "-u",
+          "crowdsec-firewall-bouncer",
+          "--since",
+          "24 hours ago",
+          "-p",
+          "warning",
+          "-n",
+          "300",
+          "--no-pager",
+          "-o",
+          "short-iso"
+        ],
+        "returncode": 0
+      },
+      "kernel_oom": {
+        "args": [
+          "journalctl",
+          "-k",
+          "--since",
+          "7 days ago",
+          "--grep",
+          "Out of memory|oom-kill|Killed process",
+          "-n",
+          "100",
+          "--no-pager",
+          "-o",
+          "short-iso"
+        ],
+        "returncode": 1
+      },
+      "cron": {
+        "args": [
+          "crontab",
+          "-l"
+        ],
+        "returncode": 0
+      },
+      "fail2ban": {
+        "args": [
+          "fail2ban-client",
+          "status"
+        ],
+        "returncode": 0
+      },
+      "nft": {
+        "args": [
+          "nft",
+          "-j",
+          "list",
+          "ruleset"
+        ],
+        "returncode": 0
+      },
+      "container_mounts": {
+        "args": [
+          "docker",
+          "inspect",
+          "--format",
+          "{{.Name}} {{json .Mounts}}",
+          "HA",
+          "xiangly-scheduler-1",
+          "xiangly-ingress-1",
+          "xiangly-app-1",
+          "xiangly-postgres-1",
+          "xiangly-redis-1",
+          "crowdsec-web-ui",
+          "codeg-server",
+          "cloudflared",
+          "openvscode-gateway",
+          "openvscode-server",
+          "busy_gauss",
+          "arena-brawl",
+          "watchtower",
+          "openresty"
+        ],
+        "returncode": 0
+      }
+    },
+    "detail": {
+      "nginx_test": {
+        "args": [
+          "docker",
+          "exec",
+          "openresty",
+          "nginx",
+          "-t"
+        ],
+        "returncode": 0
+      },
+      "nginx_config": {
+        "args": [
+          "docker",
+          "exec",
+          "openresty",
+          "nginx",
+          "-T"
+        ],
+        "returncode": 0
+      },
+      "timer_status": {
+        "args": [
+          "systemctl",
+          "show",
+          "crowdsec-hubupdate.timer",
+          "crowdsec-hubupdate.service",
+          "-p",
+          "Id",
+          "-p",
+          "ActiveState",
+          "-p",
+          "SubState",
+          "-p",
+          "UnitFileState",
+          "-p",
+          "LastTriggerUSec",
+          "-p",
+          "NextElapseUSecRealtime",
+          "-p",
+          "Result",
+          "-p",
+          "ExecMainStatus"
+        ],
+        "returncode": 0
+      },
+      "timer_script": {
+        "args": [
+          "cat",
+          "/usr/libexec/crowdsec/hubupdate.sh"
+        ],
+        "returncode": 0
+      },
+      "iptables": {
+        "args": [
+          "iptables-save"
+        ],
+        "returncode": 0
+      },
+      "ip6tables": {
+        "args": [
+          "ip6tables-save"
+        ],
+        "returncode": 0
+      },
+      "fail2ban_sshd": {
+        "args": [
+          "fail2ban-client",
+          "status",
+          "sshd"
+        ],
+        "returncode": 0
+      },
+      "ssh_effective": {
+        "args": [
+          "sshd",
+          "-T"
+        ],
+        "returncode": 0
+      },
+      "container_state": {
+        "args": [
+          "docker",
+          "inspect",
+          "--format",
+          "{{.Name}} {{json .State}} {{json .HostConfig.PortBindings}} {{.HostConfig.NetworkMode}}",
+          "openresty",
+          "crowdsec-web-ui",
+          "HA"
+        ],
+        "returncode": 0
+      },
+      "webui_loopback": {
+        "args": [
+          "curl",
+          "--silent",
+          "--show-error",
+          "--noproxy",
+          "*",
+          "--max-time",
+          "5",
+          "--output",
+          "/dev/null",
+          "--write-out",
+          "%{http_code} %{redirect_url}\n",
+          "http://127.0.0.1:3000/"
+        ],
+        "returncode": 0
+      },
+      "decisions": {
+        "args": [
+          "cscli",
+          "decisions",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      }
+    },
+    "finalcheck": {
+      "services": {
+        "args": [
+          "systemctl",
+          "show",
+          "crowdsec",
+          "crowdsec-firewall-bouncer",
+          "fail2ban",
+          "-p",
+          "Id",
+          "-p",
+          "MainPID",
+          "-p",
+          "ActiveState",
+          "-p",
+          "SubState",
+          "-p",
+          "NRestarts",
+          "-p",
+          "Result"
+        ],
+        "returncode": 0
+      },
+      "uptime": {
+        "args": [
+          "uptime"
+        ],
+        "returncode": 0
+      },
+      "memory": {
+        "args": [
+          "free",
+          "-m"
+        ],
+        "returncode": 0
+      },
+      "disk": {
+        "args": [
+          "df",
+          "-h",
+          "/"
+        ],
+        "returncode": 0
+      },
+      "vmstat": {
+        "args": [
+          "vmstat",
+          "1",
+          "3"
+        ],
+        "returncode": 0
+      },
+      "bouncers": {
+        "args": [
+          "cscli",
+          "bouncers",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      },
+      "metrics": {
+        "args": [
+          "cscli",
+          "metrics"
+        ],
+        "returncode": 0
+      },
+      "nginx_test": {
+        "args": [
+          "docker",
+          "exec",
+          "openresty",
+          "nginx",
+          "-t"
+        ],
+        "returncode": 0
+      },
+      "nginx_config": {
+        "args": [
+          "docker",
+          "exec",
+          "openresty",
+          "nginx",
+          "-T"
+        ],
+        "returncode": 0
+      },
+      "decisions": {
+        "args": [
+          "cscli",
+          "decisions",
+          "list",
+          "-o",
+          "json"
+        ],
+        "returncode": 0
+      }
+    },
+    "resources": {
+      "uptime": {
+        "args": [
+          "uptime"
+        ],
+        "returncode": 0
+      },
+      "container_stats": {
+        "args": [
+          "docker",
+          "stats",
+          "--no-stream",
+          "--format",
+          "{{json .}}"
+        ],
+        "returncode": 0
+      },
+      "vmstat": {
+        "args": [
+          "vmstat",
+          "1",
+          "4"
+        ],
+        "returncode": 0
+      },
+      "memory": {
+        "args": null,
+        "returncode": 0
+      }
+    },
+    "end": {
+      "services": {
+        "args": [
+          "systemctl",
+          "show",
+          "crowdsec",
+          "crowdsec-firewall-bouncer",
+          "fail2ban",
+          "-p",
+          "Id",
+          "-p",
+          "MainPID",
+          "-p",
+          "ActiveState",
+          "-p",
+          "SubState",
+          "-p",
+          "NRestarts",
+          "-p",
+          "Result"
+        ],
+        "returncode": 0
+      },
+      "uptime": {
+        "args": [
+          "uptime"
+        ],
+        "returncode": 0
+      },
+      "vmstat": {
+        "args": [
+          "vmstat",
+          "1",
+          "3"
+        ],
+        "returncode": 0
+      }
+    }
+  },
+  "system": {
+    "os": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.7\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+    "vcpus": 4,
+    "baseline_memory_mib": "               total        used        free      shared  buff/cache   available\nMem:           19996        6422        1775         449       12607       13574\nSwap:           4095         285        3810\n",
+    "last_memory_mib": "               total        used        free      shared  buff/cache   available\nMem:           19996        6414        1472         449       12919       13582\nSwap:           4095         285        3810\n",
+    "root_disk": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       196G   66G  121G  36% /\n",
+    "uptime_snapshots": {
+      "baseline": " 20:49:27 up 15 days,  8:42,  5 users,  load average: 3.72, 2.91, 2.63\n",
+      "finalcheck": " 20:52:50 up 15 days,  8:46,  5 users,  load average: 4.96, 4.08, 3.16\n",
+      "resources": " 20:53:27 up 15 days,  8:46,  5 users,  load average: 5.64, 4.34, 3.28\n",
+      "end": " 20:54:15 up 15 days,  8:47,  5 users,  load average: 5.77, 4.59, 3.42\n"
+    },
+    "vmstat_samples": {
+      "baseline": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 1  0 292352 1818472 1739176 11171268    0    0    31   625 1838    5  3  1 96  0  0  0\n 1  0 292352 1829152 1739176 11181708    0    0     0     0 13767 21910 35  8 56  0  0  0\n 2  0 292352 1829132 1739176 11165504    0    0     0    40 10852 17563 30  9 60  0  0  0\n 0  0 292352 1862316 1739176 11174064    0    0     0     0 8167 10593 18  5 77  0  1  0\n",
+      "finalcheck": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 9  0 292296 1523336 1758592 11455140    0    0    31   625 1839    5  3  1 96  0  0  0\n 5  0 292296 1493928 1758592 11456112    0    0     0  3088 16412 283333 76 15  9  0  0  0\n 7  0 292296 1482932 1758592 11456780    0    0     0  3288 36832 301534 75 17  8  0  0  0\n",
+      "resources": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 3  0 292296 1527976 1758644 11489880    0    0    31   625 1840    5  3  1 96  0  0  0\n 4  0 292296 1535668 1758644 11486872    0    0     0   720 10119 353443 81  9  9  0  0  0\n 7  0 292296 1522780 1758644 11487032    0    0     0  1176 10308 272960 79 12  8  0  0  0\n 6  0 292296 1532580 1758644 11487120    0    0     0   864 10506 268021 84  8  7  0  1  0\n",
+      "end": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 5  0 292296 1345044 1758696 11502916    0    0    31   625 1840    5  3  1 95  0  0  0\n 6  0 292296 1224836 1758696 11514516    0    0     0  2028 11739 143835 69 11 20  0  0  0\n 2  0 292296 1684272 1758700 11497756    0    0     0  4020 10975 55951 60 11 28  0  1  0\n"
+    },
+    "pressure_files_available": [],
+    "failed_units_output": "  UNIT LOAD ACTIVE SUB DESCRIPTION\n\n0 loaded units listed.\n",
+    "kernel_oom_search": {
+      "args": [
+        "journalctl",
+        "-k",
+        "--since",
+        "7 days ago",
+        "--grep",
+        "Out of memory|oom-kill|Killed process",
+        "-n",
+        "100",
+        "--no-pager",
+        "-o",
+        "short-iso"
+      ],
+      "returncode": 1,
+      "stdout": "-- No entries --\n",
+      "stderr": "",
+      "interpretation": "exit 1 with -- No entries --: no matching retained journal entries within the requested 7-day window"
+    },
+    "cpu_heaviest_container_sample": [
+      {
+        "Name": "codeg-server",
+        "CPUPerc": "361.24%",
+        "MemUsage": "2.978GiB / 19.53GiB",
+        "PIDs": "538"
+      }
+    ],
+    "cpu_process_sample": {
+      "sample_seconds": 2.013449822086841,
+      "top_processes": [
+        {
+          "name": "python",
+          "ppid": 433882,
+          "rss_kib": 673032,
+          "pid": 433883,
+          "cpu_percent_one_core": 93.37
+        },
+        {
+          "name": "python",
+          "ppid": 459955,
+          "rss_kib": 22388,
+          "pid": 459957,
+          "cpu_percent_one_core": 2.98
+        },
+        {
+          "name": "codex",
+          "ppid": 370561,
+          "rss_kib": 178488,
+          "pid": 370568,
+          "cpu_percent_one_core": 0.99
+        },
+        {
+          "name": "crowdsec",
+          "ppid": 1,
+          "rss_kib": 634336,
+          "pid": 2554128,
+          "cpu_percent_one_core": 0.99
+        },
+        {
+          "name": "hermes",
+          "ppid": 3836805,
+          "rss_kib": 478072,
+          "pid": 3836941,
+          "cpu_percent_one_core": 0.99
+        },
+        {
+          "name": "containerd",
+          "ppid": 1,
+          "rss_kib": 53504,
+          "pid": 16728,
+          "cpu_percent_one_core": 0.5
+        }
+      ],
+      "python_process_cgroup_matches_codeg_container": true,
+      "specific_python_task_identified": false
+    }
+  },
+  "services": {
+    "baseline": {
+      "crowdsec.service": {
+        "MainPID": "2554128",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Sun 2026-10-11 19:33:25 CST",
+        "ExecMainStatus": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "crowdsec-firewall-bouncer.service": {
+        "MainPID": "1870758",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Sun 2026-10-11 01:50:23 CST",
+        "ExecMainStatus": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "fail2ban.service": {
+        "MainPID": "42684",
+        "Result": "success",
+        "NRestarts": "0",
+        "ExecMainStartTimestamp": "Sun 2026-10-04 12:30:19 CST",
+        "ExecMainStatus": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    },
+    "end": {
+      "crowdsec.service": {
+        "MainPID": "2554128",
+        "Result": "success",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "crowdsec-firewall-bouncer.service": {
+        "MainPID": "1870758",
+        "Result": "success",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "fail2ban.service": {
+        "MainPID": "42684",
+        "Result": "success",
+        "NRestarts": "0",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    }
+  },
+  "crowdsec": {
+    "version": "version: v1.8.1-debian-pragmatic-amd64-909b5157",
+    "api_listen": "127.0.0.1:8080",
+    "prometheus": {
+      "enabled": true,
+      "level": "full",
+      "listen_addr": "127.0.0.1",
+      "listen_port": 6060
+    },
+    "bouncers": [
+      {
+        "type": "crowdsec-firewall-bouncer",
+        "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56",
+        "revoked": false,
+        "last_pull": "2026-10-19T12:52:43.320458822Z"
+      },
+      {
+        "type": "crowdsec-openresty-bouncer",
+        "version": "v1.2.3",
+        "revoked": false,
+        "last_pull": "2026-10-19T12:52:05.93065187Z"
+      }
+    ],
+    "application_warnings": {
+      "bounded_tail_bytes": 2097152,
+      "tail_truncated": true,
+      "last_24h_counts_in_tail": {
+        "grok 'NGCACHESTATUS' already registred": 3,
+        "grok 'NUM_OR_DASH' already registred": 3,
+        "grok 'NO_DOUBLE_QUOTE' already registred": 3,
+        "grok 'USER_NOT_FOUND' already registred": 3,
+        "grok 'PASSWORD_MISMATCH' already registred": 3,
+        "grok 'IPv4_WORKAROUND' already registred": 3,
+        "grok 'IP_WORKAROUND' already registred": 3,
+        "No matching files for pattern /var/log/messages": 3,
+        "No matching files for pattern /var/log/secure": 3,
+        "SIGHUP received, reloading": 1
+      },
+      "range_utc": [
+        "2026-10-18T19:30:02+00:00",
+        "2026-10-18T20:30:06+00:00"
+      ]
+    },
+    "journal_warning_output": "-- No entries --\n"
+  },
+  "log_coverage": {
+    "loaded_business_site_count": 10,
+    "acquired_site_access_log_count": 4,
+    "missing_site_access_log_count": 6,
+    "sites": [
+      {
+        "site": "site-A",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 8,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-17T09:41:31+00:00",
+          "2026-10-19T12:28:11+00:00"
+        ]
+      },
+      {
+        "site": "site-B",
+        "acquired": true,
+        "file_exists": true,
+        "last_1h_records_in_tail": 0,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-07T09:49:38+00:00",
+          "2026-10-18T00:11:51+00:00"
+        ]
+      },
+      {
+        "site": "site-C",
+        "acquired": true,
+        "file_exists": true,
+        "last_1h_records_in_tail": 1759,
+        "last_15m_records_in_tail": 383,
+        "last_15m_statuses_in_tail": {
+          "200": 377,
+          "404": 6
+        },
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": true,
+        "range_utc": [
+          "2026-10-18T22:32:42+00:00",
+          "2026-10-19T12:50:55+00:00"
+        ]
+      },
+      {
+        "site": "site-D",
+        "acquired": true,
+        "file_exists": true,
+        "last_1h_records_in_tail": 0,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-05T13:06:27+00:00",
+          "2026-10-13T09:54:00+00:00"
+        ]
+      },
+      {
+        "site": "site-E",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 546,
+        "last_15m_records_in_tail": 131,
+        "last_15m_statuses_in_tail": {
+          "200": 131
+        },
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-17T15:16:47+00:00",
+          "2026-10-19T12:50:49+00:00"
+        ]
+      },
+      {
+        "site": "site-F",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 0,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-16T12:07:50+00:00",
+          "2026-10-19T04:52:19+00:00"
+        ]
+      },
+      {
+        "site": "site-G",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 0,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": []
+      },
+      {
+        "site": "site-H",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 256,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-15T07:29:27+00:00",
+          "2026-10-19T12:01:38+00:00"
+        ]
+      },
+      {
+        "site": "site-I",
+        "acquired": true,
+        "file_exists": true,
+        "last_1h_records_in_tail": 0,
+        "last_15m_records_in_tail": 0,
+        "last_15m_statuses_in_tail": {},
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-10T03:49:45+00:00",
+          "2026-10-19T04:39:04+00:00"
+        ]
+      },
+      {
+        "site": "site-J",
+        "acquired": false,
+        "file_exists": true,
+        "last_1h_records_in_tail": 88,
+        "last_15m_records_in_tail": 14,
+        "last_15m_statuses_in_tail": {
+          "200": 14
+        },
+        "tail_limit_bytes": 4194304,
+        "tail_truncated": false,
+        "range_utc": [
+          "2026-10-19T00:56:44+00:00",
+          "2026-10-19T12:50:00+00:00"
+        ]
+      }
+    ],
+    "interpretation": "Unacquired access logs reduce log-based scenario coverage; global Web Bouncer/AppSec wiring is a separate layer."
+  },
+  "firewall": {
+    "config": {
+      "mode": "nftables",
+      "update_frequency": "10s",
+      "api_url": "http://127.0.0.1:8080/",
+      "disable_ipv6": false,
+      "deny_action": "DROP",
+      "supported_decisions_types": [
+        "ban"
+      ],
+      "blacklists_ipv4": "crowdsec-blacklists",
+      "blacklists_ipv6": "crowdsec6-blacklists",
+      "iptables_chains": [
+        "INPUT"
+      ],
+      "nftables": {
+        "ipv4": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec",
+          "chain": "crowdsec-chain",
+          "priority": -10
+        },
+        "ipv6": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain",
+          "priority": -10
+        }
+      }
+    },
+    "nft_rules_and_counts": [
+      {
+        "table": {
+          "family": "ip",
+          "name": "crowdsec",
+          "handle": 73
+        }
+      },
+      {
+        "chain": {
+          "family": "ip",
+          "table": "crowdsec",
+          "name": "crowdsec-chain-input",
+          "handle": 1,
+          "type": "filter",
+          "hook": "input",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "chain": {
+          "family": "ip",
+          "table": "crowdsec",
+          "name": "crowdsec-chain-forward",
+          "handle": 4,
+          "type": "filter",
+          "hook": "forward",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "processed",
+          "table": "crowdsec",
+          "handle": 2,
+          "packets": 37140091,
+          "bytes": 55059170993
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-crowdsec",
+          "table": "crowdsec",
+          "handle": 7,
+          "packets": 1130,
+          "bytes": 100559
+        }
+      },
+      {
+        "counter": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-CAPI",
+          "table": "crowdsec",
+          "handle": 11,
+          "packets": 42498,
+          "bytes": 1932880
+        }
+      },
+      {
+        "set": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-crowdsec",
+          "table": "crowdsec",
+          "type": "ipv4_addr",
+          "handle": 6,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 1
+        }
+      },
+      {
+        "set": {
+          "family": "ip",
+          "name": "crowdsec-blacklists-CAPI",
+          "table": "crowdsec",
+          "type": "ipv4_addr",
+          "handle": 10,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 17332
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 3,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 8,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-input",
+          "handle": 12,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 5,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 9,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-crowdsec"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-crowdsec"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip",
+          "table": "crowdsec",
+          "chain": "crowdsec-chain-forward",
+          "handle": 13,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "table": {
+          "family": "ip6",
+          "name": "crowdsec6",
+          "handle": 74
+        }
+      },
+      {
+        "chain": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "name": "crowdsec6-chain-input",
+          "handle": 1,
+          "type": "filter",
+          "hook": "input",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "chain": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "name": "crowdsec6-chain-forward",
+          "handle": 4,
+          "type": "filter",
+          "hook": "forward",
+          "prio": -10,
+          "policy": "accept"
+        }
+      },
+      {
+        "counter": {
+          "family": "ip6",
+          "name": "processed",
+          "table": "crowdsec6",
+          "handle": 2,
+          "packets": 6935359,
+          "bytes": 5813780987
+        }
+      },
+      {
+        "counter": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-CAPI",
+          "table": "crowdsec6",
+          "handle": 7,
+          "packets": 0,
+          "bytes": 0
+        }
+      },
+      {
+        "set": {
+          "family": "ip6",
+          "name": "crowdsec6-blacklists-CAPI",
+          "table": "crowdsec6",
+          "type": "ipv6_addr",
+          "handle": 6,
+          "flags": [
+            "timeout"
+          ],
+          "element_count": 529
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-input",
+          "handle": 3,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-input",
+          "handle": 8,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-forward",
+          "handle": 5,
+          "expr": [
+            {
+              "counter": "processed"
+            }
+          ]
+        }
+      },
+      {
+        "rule": {
+          "family": "ip6",
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain-forward",
+          "handle": 9,
+          "expr": [
+            {
+              "match": {
+                "op": "==",
+                "left": {
+                  "payload": {
+                    "protocol": "ip6",
+                    "field": "saddr"
+                  }
+                },
+                "right": "@crowdsec6-blacklists-CAPI"
+              }
+            },
+            {
+              "counter": "crowdsec6-blacklists-CAPI"
+            },
+            {
+              "drop": null
+            }
+          ]
+        }
+      }
+    ],
+    "sync_snapshots": [
+      {
+        "time_utc": "2026-10-19T12:51:03.086310+00:00",
+        "checks": [
+          {
+            "ip_sha256_12": "a27cb37c7e6b",
+            "version": 4,
+            "origin": "crowdsec",
+            "duration": "1h27m32s",
+            "matched_sets": [
+              "crowdsec"
+            ]
+          }
+        ]
+      },
+      {
+        "time_utc": "2026-10-19T12:52:50.663533+00:00",
+        "checks": [
+          {
+            "ip_sha256_12": "a27cb37c7e6b",
+            "duration": "1h25m43s",
+            "version": 4,
+            "matched_sets": [
+              "crowdsec"
+            ]
+          }
+        ]
+      }
+    ],
+    "controlled_block_and_restore_test_performed": false
+  },
+  "web": {
+    "nginx_test": {
+      "returncode": 0,
+      "output": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful\n"
+    },
+    "config": {
+      "ENABLED": "true",
+      "API_URL": "http://127.0.0.1:8080/",
+      "CACHE_EXPIRATION": "1",
+      "MODE": "live",
+      "EXCLUDE_LOCATION": "",
+      "BAN_TEMPLATE_PATH": "/usr/local/openresty/1pwaf/data/crowdsec-1key/templates/ban.html",
+      "APPSEC_URL": "http://127.0.0.1:7422",
+      "APPSEC_FAILURE_ACTION": "passthrough",
+      "APPSEC_CONNECT_TIMEOUT": "",
+      "APPSEC_SEND_TIMEOUT": "",
+      "APPSEC_PROCESS_TIMEOUT": "",
+      "SSL_VERIFY": "true"
+    },
+    "bouncer_conf_local_exists": false,
+    "appsec_deny_branch_updates_status_code": false,
+    "appsec_deny_branch_source": "if runtime.conf[\"APPSEC_FAILURE_ACTION\"] == DENY then\n    ok = false\n    remediation = runtime.conf[\"FALLBACK_REMEDIATION\"]\n  end",
+    "lapi_request_error_returns_allow": true,
+    "lapi_non200_returns_allow": true,
+    "http_level_access_wrapper": "original 1Panel WAF, then cs.Allow(ngx.var.remote_addr)",
+    "real_ip_header_static": "X-Forwarded-For",
+    "real_ip_recursive_static": true,
+    "trusted_cloudflare_cidr_count": 22,
+    "runtime_failure_injection_performed": false,
+    "error_log_summaries": [
+      {
+        "source": "site-A",
+        "size": 0,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-B",
+        "size": 1896,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {
+          "upstream_refused": 4
+        },
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-C",
+        "size": 277387,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {
+          "upstream_timeout": 1,
+          "upstream_refused": 541,
+          "lapi_failure": 4,
+          "bouncer_error": 4,
+          "appsec_error": 24
+        },
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": [
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "lapi_failure",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "bouncer_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "lapi_failure",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "bouncer_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "lapi_failure",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "bouncer_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "lapi_failure",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "bouncer_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:13:34+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:15:02+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:15:24+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:18:09+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          }
+        ]
+      },
+      {
+        "source": "site-D",
+        "size": 734,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-E",
+        "size": 7698,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {
+          "upstream_refused": 2,
+          "upstream_timeout": 2
+        },
+        "time_filtered_counts_in_tail": {
+          "upstream_refused_24h": 2,
+          "upstream_timeout_24h": 2
+        },
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-F",
+        "size": 10081,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {
+          "upstream_refused": 17
+        },
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-G",
+        "size": 0,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-H",
+        "size": 470305,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "site-I",
+        "size": 14386,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {
+          "upstream_refused": 32,
+          "appsec_error": 5
+        },
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": [
+          {
+            "time_utc": "2026-10-11T01:21:28+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T01:21:29+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:43:51+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:43:52+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          },
+          {
+            "time_utc": "2026-10-11T10:43:53+00:00",
+            "type": "appsec_error",
+            "detail": "refused"
+          }
+        ]
+      },
+      {
+        "source": "site-J",
+        "size": 0,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "error.log",
+        "size": 409637,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "other-nginx-error-log",
+        "size": 972,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "crowdsec-firewall-bouncer.log",
+        "size": 121784,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": false,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      },
+      {
+        "source": "crowdsec.log",
+        "size": 7855780,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": true,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {
+          "warning": 28
+        },
+        "samples": []
+      },
+      {
+        "source": "crowdsec_api.log",
+        "size": 18545213,
+        "tail_limit_bytes": 2097152,
+        "tail_truncated": true,
+        "counts_tail": {},
+        "time_filtered_counts_in_tail": {},
+        "severity_24h_in_tail": {},
+        "samples": []
+      }
+    ],
+    "active_local_ban_post_creation_120s_access_samples": 0
+  },
+  "scheduler": {
+    "root_cron_hub_update_jobs": 1,
+    "managed_cron_present": true,
+    "managed_cron_schedule": "30 3 * * *",
+    "root_cron_schedule": "30 4 * * *",
+    "server_timezone": "CST +08:00",
+    "timer_status": "NextElapseUSecRealtime=Tue 2026-10-20 00:03:38 CST\nLastTriggerUSec=Mon 2026-10-19 00:02:23 CST\nResult=success\nId=crowdsec-hubupdate.timer\nActiveState=active\nSubState=waiting\nUnitFileState=enabled\n\nResult=success\nExecMainStatus=0\nId=crowdsec-hubupdate.service\nActiveState=inactive\nSubState=dead\nUnitFileState=static\n",
+    "timer_script": "#!/bin/sh\n\nset -eu\n\ntest -x /usr/bin/cscli || exit 0\n\n/usr/bin/cscli --error hub update >/dev/null\n\nupgraded=\"$(/usr/bin/cscli --error hub upgrade)\"\nif [ -n \"$upgraded\" ]; then\n  systemctl reload crowdsec.service\nfi\n",
+    "scheduler_changed": false
+  },
+  "management": {
+    "ssh_effective": {
+      "permitrootlogin": "yes",
+      "pubkeyauthentication": "yes",
+      "passwordauthentication": "yes"
+    },
+    "webui_host_network": true,
+    "webui_port_3000_binds_all_interfaces": true,
+    "webui_loopback_status": 200,
+    "hermes_published_port_9119_binds_all_interfaces": true,
+    "workspace_origin_probes": [
+      {
+        "port": 3000,
+        "error": "URLError: <urlopen error timed out>"
+      },
+      {
+        "port": 9119,
+        "error": "URLError: <urlopen error timed out>"
+      }
+    ],
+    "external_reachability_from_independent_source_verified": false
+  },
+  "preservation": {
+    "baseline_config_count": 7,
+    "baseline_config_hashes_match_final": true,
+    "baseline_config_hashes_match_end": true,
+    "web_asset_count": 26,
+    "web_asset_hashes_match_final": true,
+    "nginx_expanded_config_unchanged": true,
+    "web_install_integrity": {
+      "openresty": {
+        "target_hash_matches": true,
+        "recorded_resource_count": 26,
+        "resource_changes": []
+      }
+    },
+    "service_pids_unchanged": true,
+    "production_config_changes_requested": false,
+    "restart_or_reload_requested": false,
+    "decisions_added_or_removed": false,
+    "telegram_messages_sent": false,
+    "collectors_installed_remotely": false
+  },
+  "private_artifact_sha256": {
+    "baseline-private.json": "df492e3728017073c68e26300be2bf6fd6afccd27de8a22511a3a9b9f6f3affe",
+    "detail-private.json": "17d3be78db3a8472554350491e271ee6ccc96fd18ce3f69da35ab07497cc38a3",
+    "end-private.json": "65fffb6b6f3fa29879c946fd8060b5fbfc2db0d24b4b68c13ecab95308318d87",
+    "finalcheck-private.json": "a840d0e49ccae1eed10dfc5fe6c1e1872ea409a04fb1e8c14367cee9fcc5a4c7",
+    "resources-private.json": "5a17a4d8842782d09e698bb3a1c5a5b14cea8489d712cafcc90ddafd990ee8b3",
+    "workspace-probes-private.json": "bc34be35390e0b80cdcf27a3d513e2f2f2314d88e71f5c9a1a12d495b05d2b7c"
+  },
+  "collector_sha256": {
+    "baseline.py": "d871a52100222972c5d3ccd6778e0b749b656acbafcf5a1c8082fcf944a2fb85",
+    "detail.py": "25992778adaf5a71eb15c59dedacf9f2d4f75dcc140e4b1d8e094c588b7abf73",
+    "finalcheck.py": "d6d722fe1dde3506b358eee27222f0b84d683dbfb32bb9c542bd36b8215b507d",
+    "resources.py": "2a2731ef5e0926a2fb270a6c449d273abd529cc1a9613cdc1e8e1ce896abdd72",
+    "end.py": "8486d02153ebcb85bc3a9ff48ab8c3359f29a70e7122a28f621cd9e1ac4a95e8"
+  },
+  "limitations": [
+    "Log parsing is bounded to 4 MiB per access log and 2 MiB per error/application log. Time filters do not imply complete historical coverage.",
+    "No independent-source ban/unban, CDN real-IP association, IPv6/UDP or restart/upgrade/failure-recovery traffic acceptance was performed.",
+    "One active local IPv4 IP-ban sample was checked twice; this is not all community/range decisions or end-to-end proof.",
+    "nginx -T shows disk config; it does not read existing worker memory.",
+    "Root key authorization was added by the user before inspection. OS audit and access logs may be written by normal read-only access.",
+    "CPU samples cover seconds/minutes and do not determine a long-term capacity limit or the specific task causing all load."
+  ]
+}

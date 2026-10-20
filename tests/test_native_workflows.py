@@ -27,6 +27,8 @@ class NativeWorkflows(unittest.TestCase):
         return '''docker() {
 record docker "$@"
 case "$*" in
+ 'top '*) nginx_test_processes;;
+ 'exec '*' nginx -s reload') nginx_test_reload;;
  'ps --format '*) echo 'cid 1panel/openresty:1 openresty';;
  'inspect --format {{.HostConfig.NetworkMode}} '*) echo host;;
  'inspect --format {{.State.Running}} '*) echo true;;
@@ -59,6 +61,94 @@ else cp /tmp/crowdsec-official-openresty.tgz "$out"; fi
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(before, self.commands().count('bouncers add '))
         self.assertNotIn('0123456789abcdef', result.stdout+result.stderr)
+
+    def test_execution_upgrade_reload_failure_restores_all_legacy_files(self):
+        from test_web_install import WebInstall
+        fixture = WebInstall(); fixture.setUp(); self.addCleanup(fixture.doCleanups)
+        plan, state = fixture.legacy_install()
+        mounts = self.base/'upgrade-mounts.json'; mounts.write_text(json.dumps(fixture.mounts))
+        entry = self.base/'upgrade-entry.json'; entry.write_text(json.dumps(fixture.web.read_state(state)['openresty']))
+        assets = Path(plan['host_assets'])
+        before = {str(p):p.read_bytes() for p in assets.rglob('*') if p.is_file()}
+        target_before = fixture.waf.read_bytes(); state_before = state.read_bytes()
+        overrides = 'WEB_INSTALLS='+shlex.quote(str(state))+"""
+docker() {
+ record docker "$@"
+ if [[ "$1" == top ]]; then nginx_test_processes; return; fi
+ if [[ "$*" == 'exec openresty nginx -s reload' && ! -e "$TRACE.reload" ]]; then
+  touch "$TRACE.reload"; record reload_failed; return 1
+ fi
+ if [[ "$*" == *"nginx -s reload" ]]; then nginx_test_reload; fi
+ return 0
+}
+"""
+        action = 'upgrade_native_execution openresty '+shlex.quote(str(mounts))+' '+shlex.quote(str(entry))
+        result = self.run_shell(action, '', overrides)
+        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertIn('reload_failed', self.commands())
+        self.assertEqual(before, {str(p):p.read_bytes() for p in assets.rglob('*') if p.is_file()})
+        self.assertEqual(fixture.waf.read_bytes(), target_before)
+        self.assertEqual(state.read_bytes(), state_before)
+        self.assertNotIn('bouncers delete', self.commands())
+
+    def rejected_upgrade(self, recover):
+        from test_web_install import WebInstall
+        fixture = WebInstall(); fixture.setUp(); self.addCleanup(fixture.doCleanups)
+        plan, state = fixture.legacy_install()
+        mounts = self.base/'upgrade-mounts.json'; mounts.write_text(json.dumps(fixture.mounts))
+        entry = self.base/'upgrade-entry.json'; entry.write_text(json.dumps(fixture.web.read_state(state)['openresty']))
+        assets = Path(plan['host_assets'])
+        before = {str(p): p.read_bytes() for p in assets.rglob('*') if p.is_file()}
+        target_before, state_before = fixture.waf.read_bytes(), state.read_bytes()
+        overrides = 'WEB_INSTALLS='+shlex.quote(str(state))+'\nRECOVER='+str(recover).lower()+'''
+sleep() { command sleep "$@"; }
+docker() {
+ record docker "$@"
+ case "$*" in
+  'top '*) nginx_test_processes;;
+  'exec openresty nginx -s reload')
+   if [[ -e "$TRACE.reload" && "$RECOVER" == true ]]; then nginx_test_reload; fi
+   touch "$TRACE.reload";;
+  'exec openresty nginx -T')
+   printf '# configuration file %s:\n' '''+shlex.quote(REMOTE_WAF)+'''
+   cat '''+shlex.quote(str(fixture.waf))+''';;
+ esac
+ return 0
+}
+'''
+        action = 'upgrade_native_execution openresty '+shlex.quote(str(mounts))+' '+shlex.quote(str(entry))
+        result = self.run_shell(action, overrides=overrides, timeout=25)
+        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(before, {str(p): p.read_bytes() for p in assets.rglob('*') if p.is_file()})
+        self.assertEqual(fixture.waf.read_bytes(), target_before)
+        self.assertEqual(state.read_bytes(), state_before)
+        self.assertTrue(list((self.base/'var/backups/crowdsec-1key').glob('change.*')))
+        self.assertEqual('恢复不完整' in result.stderr, not recover, result.stderr)
+
+    def test_silent_upgrade_reload_rejection_restores_legacy_state(self):
+        self.rejected_upgrade(recover=True)
+
+    def test_upgrade_reports_incomplete_recovery_when_old_workers_never_reload(self):
+        self.rejected_upgrade(recover=False)
+
+    def test_policy_interruption_restores_config_and_ownership_manifest(self):
+        overrides = self.fixture()
+        result = self.run_shell('install_docker_web_bouncer', 'openresty\ny\n', overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        (self.base/'effective').write_text('# configuration file '+REMOTE_WAF+':\n'+self.waf.read_text())
+        config = self.base/'web/data/crowdsec-1key/bouncer.conf'
+        before_config, before_state = config.read_bytes(), self.state.read_bytes()
+        overrides += '''
+eval "$(declare -f appsec_audit_tool | sed '1s/appsec_audit_tool/appsec_audit_tool_base/')"
+appsec_audit_tool() {
+ appsec_audit_tool_base "$@" || return 1
+ if [[ "$1" == record-policy ]]; then kill -TERM "$BASHPID"; fi
+}
+'''
+        result = self.run_shell('locked_operation configure_appsec_policy docker false passthrough cid passthrough', 'y\n', overrides)
+        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(config.read_bytes(), before_config)
+        self.assertEqual(self.state.read_bytes(), before_state)
 
     def test_cancel_before_account_or_file_changes(self):
         result = self.run_shell('install_docker_web_bouncer', 'openresty\nn\n', self.fixture())

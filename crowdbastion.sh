@@ -41,6 +41,7 @@ UPDATE_LOG='/var/log/crowdsec-1key-update.log'
 CORE_RULES_CHANGED=false
 source "${SCRIPT_DIR}/lib/maintenance.sh"
 # shellcheck source=lib/native_web_bouncer.sh
+source "${SCRIPT_DIR}/lib/nginx_reload.sh"
 source "${SCRIPT_DIR}/lib/native_web_bouncer.sh"
 # shellcheck source=lib/host_web_bouncer.sh
 source "${SCRIPT_DIR}/lib/host_web_bouncer.sh"
@@ -260,17 +261,20 @@ install_bouncer_package() {
     local config="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" mode=''
     if [[ -f "$config" ]]; then
         mode=$(yaml_tool bouncer-mode "$config") || return 1
+        python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "$config" || return 1
         case "$mode" in
             nftables) install_packages nftables crowdsec-firewall-bouncer-nftables; return $? ;;
             iptables|ipset) install_packages iptables ipset crowdsec-firewall-bouncer-iptables; return $? ;;
             *) log_err '已有 Bouncer 的 mode 无效，未自动更换防火墙后端。'; return 1 ;;
         esac
     fi
-    if command -v nft >/dev/null 2>&1 || modprobe nf_tables 2>/dev/null; then
-        install_packages nftables crowdsec-firewall-bouncer-nftables
-    else
-        install_packages iptables ipset crowdsec-firewall-bouncer-iptables
-    fi
+    log_info '新装使用 iptables/ipset，规避已确认的 nftables 续封缺陷；iptables 可使用 nf_tables 兼容层。'
+    install_packages iptables ipset crowdsec-firewall-bouncer-iptables
+}
+
+check_firewall_backend() {
+    require_yaml || return 1
+    python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" audit "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml"
 }
 
 detect_admin_ip() {
@@ -286,6 +290,10 @@ install_crowdsec_core() (
     local profile="${1:-web}" acquisition_paths=()
     case "$profile" in web|relay) ;; *) log_err '未知安装模式。'; return 1 ;; esac
     remote_bouncer_local_core_guard || return 1
+    if [[ -f "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" ]]; then
+        require_yaml || return 1
+        python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" || return 1
+    fi
     CORE_CONFIG_TRACKING=true
     CORE_CONFIG_PENDING=false
     trap hub_workflow_exit EXIT
@@ -585,10 +593,11 @@ check_and_clean_redundant_instances() {
         docker ps -a --filter "name=crowdsec-web-ui" --format 'table {{.Names}}\t{{.Status}}\t{{.Image}}' || return 1
     fi
     log_info '只删除你明确选择的凭据；宿主机及当前 WebUI 凭据受保护。'
-    local target host active=''
+    local target host credentials active=''
     prompt target '需注销的 Machine 名称（留空取消）: ' || return 0
     [[ -z "$target" ]] && return 0
-    host=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" login) || return 1
+    credentials=$(yaml_tool client-credentials-path "${CS_DIR}/config.yaml") || return 1
+    host=$(yaml_tool get "$credentials" login) || return 1
     if [[ -f "${WEBUI_DIR}/data/webui_api_credentials.yaml" ]]; then
         active=$(yaml_tool get "${WEBUI_DIR}/data/webui_api_credentials.yaml" login) || return 1
     fi
@@ -597,7 +606,7 @@ check_and_clean_redundant_instances() {
         return 1
     fi
     confirm "确认注销 Machine ${target}？" || return 0
-    cscli machines delete "$target" || return 1
+    cscli machines delete -- "$target" || return 1
     log_succ "已注销 ${target}；其他凭据与容器未受影响。"
 }
 
@@ -655,7 +664,7 @@ rollback_webui() {
     elif [[ "$created" == true ]]; then
         docker rm -f crowdsec-web-ui >/dev/null 2>&1 || true
     fi
-    if [[ "$created" == true ]]; then cscli machines delete "$machine" || log_warn '新建 Machine 注销失败，请手动核验。'; fi
+    if [[ "$created" == true ]]; then cscli machines delete -- "$machine" || log_warn '新建 Machine 注销失败，请手动核验。'; fi
     if [[ "$core_changed" == true ]]; then
         if ! crowdsec -t || ! systemctl restart crowdsec; then log_err 'WebUI 回滚后核心恢复失败。'; fi
     fi
@@ -664,7 +673,7 @@ rollback_webui() {
 deploy_web_ui() (
     require_core && require_yaml && require_commands docker curl ss || return 1
     if ! systemctl is-active --quiet crowdsec || ! cscli lapi status; then log_err 'CrowdSec/LAPI 尚未就绪。'; return 1; fi
-    local port=3000 url machine password host created=false creds compose previous=false previous_image='' old_machine='' rotation="${1:-}"
+    local port=3000 url machine password host host_creds created=false creds compose previous=false previous_image='' old_machine='' rotation="${1:-}"
     local changed=false committed=false
     webui_deploy_exit() {
         local result=$?
@@ -703,8 +712,9 @@ deploy_web_ui() (
     if ! docker image inspect --format '{{json .RepoDigests}}' "$WEBUI_IMAGE" > "$image_metadata" || ! pinned_image=$(maintenance_tool webui-image "$image_metadata"); then rm -f -- "$image_metadata"; return 1; fi
     rm -f -- "$image_metadata"
     log_info "目标镜像固定为：${pinned_image}；旧镜像：${previous_image:-无}"
-    url=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" url) || return 1
-    host=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" login) || return 1
+    host_creds=$(yaml_tool client-credentials-path "${CS_DIR}/config.yaml") || return 1
+    url=$(yaml_tool get "$host_creds" url) || return 1
+    host=$(yaml_tool get "$host_creds" login) || return 1
     creds="${WEBUI_DIR}/data/webui_api_credentials.yaml"
     compose="${WEBUI_DIR}/docker-compose.yml"
     mkdir -p "${WEBUI_DIR}/data" || return 1
@@ -746,7 +756,7 @@ deploy_web_ui() (
     touch "${WEBUI_DIR}/.crowdsec-1key-managed" || return 1
     committed=true
     if [[ "$rotation" == rotate && -n "$old_machine" && "$old_machine" != "$machine" ]]; then
-        cscli machines delete "$old_machine" || log_warn "新 WebUI 已运行，但旧 Machine ${old_machine} 注销失败，请人工核验。"
+        cscli machines delete -- "$old_machine" || log_warn "新 WebUI 已运行，但旧 Machine ${old_machine} 注销失败，请人工核验。"
     fi
     log_succ "WebUI 容器健康、HTTP 与 LAPI 均已就绪，访问 http://服务器地址:${port}。"
     log_warn '按上游镜像实际认证功能配置访问保护；建议通过 HTTPS 反向代理访问。'
@@ -755,16 +765,17 @@ deploy_web_ui() (
 uninstall_web_ui() {
     confirm '删除本工具 WebUI 容器、持久化目录及其独立 Machine？' || return 0
     webui_owned || { log_err '未找到本工具管理的 WebUI。'; return 1; }
-    local machine='' host=''
+    local machine='' host='' credentials
     if [[ -f "${WEBUI_DIR}/data/webui_api_credentials.yaml" ]]; then
         machine=$(yaml_tool get "${WEBUI_DIR}/data/webui_api_credentials.yaml" login) || return 1
-        host=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" login) || return 1
+        credentials=$(yaml_tool client-credentials-path "${CS_DIR}/config.yaml") || return 1
+        host=$(yaml_tool get "$credentials" login) || return 1
         [[ "$machine" != "$host" ]] || { log_err '检测到宿主机凭据，已停止卸载。'; return 1; }
     fi
     if command -v docker >/dev/null 2>&1 && docker container inspect crowdsec-web-ui >/dev/null 2>&1; then
         docker rm -f crowdsec-web-ui || return 1
     fi
-    if [[ -n "$machine" ]]; then cscli machines delete "$machine" || return 1; fi
+    if [[ -n "$machine" ]]; then cscli machines delete -- "$machine" || return 1; fi
     rm -rf -- "$WEBUI_DIR" || return 1
     log_succ '本工具 WebUI 已删除；其他 Machine 和容器未受影响。'
 }
@@ -1401,7 +1412,7 @@ diagnose_self_report() {
 repair_firewall_bouncer() (
     require_core && require_yaml && require_commands curl || return 1
     systemctl is-active --quiet crowdsec || { log_err '核心未运行，请先排查核心服务。'; return 1; }
-    local cfg="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" key='' url docker_chain=false new_name=''
+    local cfg="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" key='' url credentials docker_chain=false new_name=''
     local changed=false committed=false
     firewall_repair_exit() {
         local result=$? cleanup_account=true
@@ -1421,7 +1432,9 @@ repair_firewall_bouncer() (
     trap 'exit 130' INT
     trap 'exit 143' TERM
     [[ -s "$cfg" ]] || { log_err '缺少官方 Bouncer 配置，请先安装对应软件包。'; return 1; }
-    url=$(yaml_tool get "${CS_DIR}/local_api_credentials.yaml" url) || return 1
+    python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "$cfg" || return 1
+    credentials=$(yaml_tool client-credentials-path "${CS_DIR}/config.yaml") || return 1
+    url=$(yaml_tool get "$credentials" url) || return 1
     key=$(yaml_tool bouncer-key "$cfg" 2>/dev/null) || key=''
     if [[ -z "$key" || "$key" == '<API_KEY>' ]]; then
         new_name="crowdsec-1key-firewall-$(python3 -c 'import secrets; print(secrets.token_hex(6))')"
@@ -1645,6 +1658,10 @@ check_web_health_status() {
     health_probe metrics unknown cscli metrics || result=1
     if [[ "$firewall_deployed" == true ]]; then
         printf '\n防火墙规则:\n'
+        local backend_status=0
+        check_firewall_backend || backend_status=$?
+        if [[ "$backend_status" == 1 ]]; then result=1
+        elif [[ "$backend_status" == 2 && "$result" == 0 ]]; then result=2; fi
         firewall_status || result=1
     fi
     if [[ "${1:-web}" == web ]]; then
@@ -2081,7 +2098,7 @@ EOF
                   github.com/8bitNull/CrowdBastion
  ─────────────────────────────────────────────────────────────────
  >> CROWDBASTION v3.0 | Next-Gen Lightweight VPS Sentinel
- >> NPM Host Mode + nftables Kernel DROP + Mobile Telegram SOC
+ >> NPM Host Mode + Firewall Enforcement + Mobile Telegram SOC
  >> 100% Pure Python 3.13 StdLib | Resident Memory < 16MB
  ─────────────────────────────────────────────────────────────────
 EOF
@@ -2137,7 +2154,7 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
   --configure-docker-endpoints  设置容器访问检测服务的私有地址（需事先准备）
   --appsec-status      查看网站请求检测的日志、监听和运行状态
   --verify-appsec      确认后发送测试请求，验证网站请求检测是否生效
-  --appsec-policy      设置请求正文无法读取或检测故障时的处理方式
+  --appsec-policy      设置正文及 AppSec/LAPI 故障策略（核对模块能力）
   --disable-appsec     停用本工具的网站请求检测
   --remove-web-bouncer  移除本工具安装的容器网站拦截组件，保留原有网站防护
 

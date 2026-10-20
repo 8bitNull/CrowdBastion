@@ -1,0 +1,627 @@
+{
+  "scope": "Second authorized VPS, read-only settings and enforcement review; target, administrator addresses and business domains omitted",
+  "review_snapshot_utc": "2026-10-19T12:34:02.944745+00:00",
+  "corroboration_snapshot_utc": "2026-10-19T12:35:23.126667+00:00",
+  "installed_integrity": {
+    "openresty": {
+      "status": "installed",
+      "mode": "1panel",
+      "target_hash_matches": true,
+      "resource_count": 26,
+      "resource_changes": []
+    }
+  },
+  "nginx_disk_config": {
+    "access_hooks": [
+      [
+        "access_by_lua_file",
+        "/usr/local/openresty/1pwaf/data/crowdsec-1key/access.lua"
+      ]
+    ],
+    "satisfy_any": false,
+    "crowdsec_override_variables_present": false,
+    "real_ip_headers": [
+      "CF-Connecting-IP"
+    ],
+    "trusted_proxy_cidr_count": 22,
+    "broad_proxy_trust_present": false,
+    "limitation": "nginx -T inspects disk configuration; it does not read worker memory or establish external request identity"
+  },
+  "lapi_allowlists": [],
+  "custom_rule_sources": {
+    "/etc/crowdsec/scenarios/local-aomway-shop-filter-crawl.yaml": "type: leaky\nname: local/aomway-shop-filter-crawl\ndescription: Detect robots enumerating aomway shop filter combinations\nfilter: >-\n  evt.Meta.log_type == 'http_access-log' &&\n  evt.Meta.datasource_path == '/opt/1panel/www/sites/site-A/log/access.log' &&\n  evt.Meta.http_verb in ['GET', 'HEAD'] &&\n  (evt.Meta.http_path startsWith '/shop?' || evt.Meta.http_path startsWith '/shop/?') &&\n  evt.Meta.http_path contains 'products-' &&\n  evt.Meta.http_user_agent matches '(?i)(bot|crawler|spider)'\n# Keep the full query string; the standard parser strips it from file_name.\ndistinct: evt.Meta.http_path\ngroupby: evt.Meta.source_ip\ncapacity: 20\nleakspeed: 5s\nblackhole: 5m\ncache_size: 5\nlabels:\n  service: http\n  behavior: http:crawl\n  confidence: 2\n  spoofable: 0\n  label: Aomway shop filter enumeration\n  remediation: true\n",
+    "/etc/crowdsec/parsers/s02-enrich/99-admin-whitelist.yaml": "name: custom/admin-whitelist\ndescription: Admin and internal networks\nwhitelist:\n  reason: Administrator protection\n  ip:\n  - 127.0.0.1\n  - ::1\n  cidr:\n  - 10.0.0.0/8\n  - 172.16.0.0/12\n  - 192.168.0.0/16\n  - 100.64.0.0/10\n",
+    "/etc/crowdsec/appsec-configs/appsec-default.yaml": "name: crowdsecurity/appsec-default\ndefault_remediation: ban\ninband_rules:\n - crowdsecurity/base-config \n - crowdsecurity/vpatch-*\n - crowdsecurity/generic-*\noutofband_rules:\n - crowdsecurity/experimental-*\n - crowdsecurity/appsec-generic-test\n"
+  },
+  "shop_rule_coverage": {
+    "counts": {
+      "shop_filter_records": 4395,
+      "custom_rule_ua_excluded": 4328,
+      "custom_rule_ua_eligible": 67
+    },
+    "unique_ips": 4242,
+    "ua_eligible_unique_ips": 12,
+    "statuses": {
+      "499": 4199,
+      "200": 106,
+      "503": 89,
+      "403": 1
+    },
+    "ua_eligible_statuses": {
+      "200": 31,
+      "499": 36
+    },
+    "max_per_ip_per_minute": 6,
+    "top_user_agents": [
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        598
+      ],
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+        539
+      ],
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+        536
+      ],
+      [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+        518
+      ],
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+        518
+      ],
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+        516
+      ],
+      [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+        512
+      ],
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+        483
+      ]
+    ],
+    "max_tail_bytes": 8388608,
+    "note": "Eligibility evaluates the installed User-Agent expression only; no assertion that each record satisfied every other parser/scenario condition or was malicious"
+  },
+  "excluded_fraction": 0.9847554038680318,
+  "current_nft_membership": [
+    {
+      "ip_sha256_12": "97ac8e4ba0e6",
+      "duration": "3h50m51s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "2406eaecb8b3",
+      "duration": "3h47m53s",
+      "matched_sets": [
+        "crowdsec-blacklists-CAPI"
+      ]
+    },
+    {
+      "ip_sha256_12": "b5dabc92b730",
+      "duration": "3h10m26s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "11f7dcbb2cf3",
+      "duration": "2h52m40s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "a761f3c25707",
+      "duration": "2h33m37s",
+      "matched_sets": [
+        "crowdsec-blacklists-CAPI"
+      ]
+    },
+    {
+      "ip_sha256_12": "93dc00b2ea3d",
+      "duration": "1h14m4s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "051605fa27a1",
+      "duration": "50m43s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "3b45004fe29f",
+      "duration": "47m7s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "01d8ac3c5157",
+      "duration": "36m50s",
+      "matched_sets": [
+        "crowdsec-blacklists-crowdsec"
+      ]
+    },
+    {
+      "ip_sha256_12": "ea1cb1fbdb1a",
+      "duration": "35m17s",
+      "matched_sets": [
+        "crowdsec-blacklists-CAPI"
+      ]
+    }
+  ],
+  "historical_ban_access": [
+    {
+      "path_private": "/opt/1panel/www/sites/site-C/log/access.log",
+      "bytes_read": 1383537,
+      "max_tail_bytes": 8388608,
+      "tail_truncated": false,
+      "counts": {
+        "lines_seen": 5114
+      },
+      "range_utc": [
+        "2026-10-06T02:11:17+00:00",
+        "2026-10-19T11:09:04+00:00"
+      ],
+      "statuses_within_conservative_ban_windows": {},
+      "samples": []
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-A/log/access.log",
+      "bytes_read": 8388381,
+      "max_tail_bytes": 8388608,
+      "tail_truncated": true,
+      "counts": {
+        "lines_seen": 23093
+      },
+      "range_utc": [
+        "2026-10-19T05:50:30+00:00",
+        "2026-10-19T12:34:04+00:00"
+      ],
+      "statuses_within_conservative_ban_windows": {
+        "403": 18
+      },
+      "samples": [
+        {
+          "time_utc": "2026-10-19T09:00:23+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/paypal/transparent/requestSecureToken",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/wp-content/plugins/bookit/readme.txt",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/api/stripe/webhook",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:43:38+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:52:32+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/api/v1/repo/exists",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:52:32+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/js/zimbraMail/share/model/ZmSettings.js",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:52:33+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/js/zimbraMail/share/model/ZmSettings.js",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:52:35+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/mftp/application/api/api.php",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:53:36+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/mftp/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:53:36+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/loginok.html",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:53:36+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:53:36+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/dir.html",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:54:52+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/wp-json/post-smtp/v1/connect-app",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:54:52+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "POST",
+          "path": "/wp-json/post-smtp/v1/connect-app",
+          "status": 403
+        },
+        {
+          "time_utc": "2026-10-19T10:54:52+00:00",
+          "ip_sha256_12": "1132ac50536a",
+          "method": "GET",
+          "path": "/wp-json/post-smtp/v1/get-log",
+          "status": 403
+        }
+      ]
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-B/log/access.log",
+      "bytes_read": 8388598,
+      "max_tail_bytes": 8388608,
+      "tail_truncated": true,
+      "counts": {
+        "lines_seen": 48539
+      },
+      "range_utc": [
+        "2026-10-11T09:02:07+00:00",
+        "2026-10-19T12:33:35+00:00"
+      ],
+      "statuses_within_conservative_ban_windows": {},
+      "samples": []
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-D/log/access.log",
+      "bytes_read": 1689371,
+      "max_tail_bytes": 8388608,
+      "tail_truncated": false,
+      "counts": {
+        "lines_seen": 6294
+      },
+      "range_utc": [
+        "2026-10-10T12:35:24+00:00",
+        "2026-10-19T03:11:40+00:00"
+      ],
+      "statuses_within_conservative_ban_windows": {},
+      "samples": []
+    },
+    {
+      "path_private": "/opt/1panel/apps/openresty/openresty/log/access.log",
+      "bytes_read": 912890,
+      "max_tail_bytes": 8388608,
+      "tail_truncated": false,
+      "counts": {
+        "lines_seen": 5553,
+        "unparsed": 369
+      },
+      "range_utc": [
+        "2026-10-05T15:02:26+00:00",
+        "2026-10-19T12:31:53+00:00"
+      ],
+      "statuses_within_conservative_ban_windows": {},
+      "samples": []
+    }
+  ],
+  "web_error_log_evidence": [
+    {
+      "path_private": "/opt/1panel/www/sites/site-C/log/error.log",
+      "max_tail_bytes": 8388608,
+      "range_utc": [
+        "2026-10-06T02:11:17+00:00",
+        "2026-10-19T09:42:57+00:00"
+      ],
+      "denied_ip_count": 21,
+      "prior_missing_ip_denial_count": 0,
+      "prior_missing_ip_denial_samples": [],
+      "last_24h_failure_counts_in_tail": {},
+      "failure_samples": []
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-A/log/error.log",
+      "max_tail_bytes": 8388608,
+      "range_utc": [
+        "2026-10-15T13:09:40+00:00",
+        "2026-10-19T12:34:16+00:00"
+      ],
+      "denied_ip_count": 322,
+      "prior_missing_ip_denial_count": 144,
+      "prior_missing_ip_denial_samples": [
+        {
+          "timestamp_utc": "2026-10-18T22:53:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:58:39+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:58:49+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:59:50+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:59:50+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T07:59:50+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:00:45+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:00:57+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:00+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:01+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:02+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:02+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:02+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:02+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:02+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        },
+        {
+          "timestamp_utc": "2026-10-19T08:01:03+00:00",
+          "source": "CrowdSec unspecified"
+        }
+      ],
+      "last_24h_failure_counts_in_tail": {},
+      "failure_samples": []
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-B/log/error.log",
+      "max_tail_bytes": 8388608,
+      "range_utc": [
+        "2026-10-07T15:47:33+00:00",
+        "2026-10-19T12:25:08+00:00"
+      ],
+      "denied_ip_count": 142,
+      "prior_missing_ip_denial_count": 0,
+      "prior_missing_ip_denial_samples": [],
+      "last_24h_failure_counts_in_tail": {},
+      "failure_samples": []
+    },
+    {
+      "path_private": "/opt/1panel/www/sites/site-D/log/error.log",
+      "max_tail_bytes": 8388608,
+      "range_utc": [
+        "2026-10-11T02:23:34+00:00",
+        "2026-10-11T02:23:35+00:00"
+      ],
+      "denied_ip_count": 0,
+      "prior_missing_ip_denial_count": 0,
+      "prior_missing_ip_denial_samples": [],
+      "last_24h_failure_counts_in_tail": {},
+      "failure_samples": []
+    },
+    {
+      "path_private": "/opt/1panel/apps/openresty/openresty/log/error.log",
+      "max_tail_bytes": 8388608,
+      "range_utc": [
+        "2026-10-05T14:12:13+00:00",
+        "2026-10-19T12:11:46+00:00"
+      ],
+      "denied_ip_count": 40,
+      "prior_missing_ip_denial_count": 0,
+      "prior_missing_ip_denial_samples": [],
+      "last_24h_failure_counts_in_tail": {},
+      "failure_samples": []
+    }
+  ],
+  "original_waf_source_inspection": {
+    "waf.lua": {
+      "returncode": 0,
+      "size_characters": 7420,
+      "binary_or_compiled": true
+    },
+    "init.lua": {
+      "returncode": 0,
+      "size_characters": 124,
+      "binary_or_compiled": false
+    },
+    "lib/crowdsec.lua": {
+      "returncode": 1,
+      "size_characters": 0,
+      "binary_or_compiled": false
+    }
+  },
+  "preservation": {
+    "four_selected_hashes_equal": true,
+    "files_compared": [
+      "/etc/crowdsec/config.yaml",
+      "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml",
+      "/opt/1panel/apps/openresty/openresty/1pwaf/data/crowdsec-1key/access.lua",
+      "/opt/1panel/apps/openresty/openresty/1pwaf/data/crowdsec-1key/bouncer.conf"
+    ],
+    "services_before": {
+      "returncode": 0,
+      "stdout": "MainPID=1508\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1749\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+      "stderr": ""
+    },
+    "services_after": {
+      "returncode": 0,
+      "stdout": "MainPID=1508\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1749\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+      "stderr": ""
+    },
+    "production_config_writes_requested": false,
+    "service_reload_or_restart_requested": false,
+    "decisions_added_or_deleted": false,
+    "messages_sent": false
+  },
+  "prior_firewall_anomaly": {
+    "ip_sha256_12": "1132ac50536a",
+    "prior_report": "2026-10-19-second-vps-readonly-acceptance.md",
+    "previously_missing_while_valid": true,
+    "absent_from_current_decision_list": true,
+    "interpretation": "Prior decision expired; current 10/10 membership does not prove that anomaly was repaired"
+  },
+  "failure_policy_reference": {
+    "source_evidence": "2026-10-19-second-vps-readonly-evidence.json",
+    "appsec_failure_action": "passthrough",
+    "lapi_request_failure": "allow in installed live.lua",
+    "appsec_deny_status_fix_in_current_installer": true,
+    "appsec_deny_status_fix_present_in_installed_fallback_branch": false
+  },
+  "limitations": [
+    "User-Agent eligibility checks one required expression against access records; these are not malicious-request ground truth or a full engine replay",
+    "Access status 403 and separate CrowdSec denial messages are supporting observations, not a per-request unique-ID correlation or a controlled ban/recovery test",
+    "18 qualified historical requests occurred earlier than the 12:25-12:27 firewall membership anomaly; they do not establish behavior during that anomaly",
+    "8 MiB maximum tail per access/error file; matching log timestamps may span different ranges; no complete 24-hour guarantee",
+    "Compiled proprietary WAF access code could not be reviewed as source",
+    "No injected Lua trace, controlled ban/unban, production fault injection, CDN-source validation, repair or deploy performed"
+  ],
+  "private_artifact_sha256": {
+    "corroborate-private.json": "a600a641334295490309b8d228dbef1f97134972567938a22d6436e3b090e006",
+    "prior-windows-private.json": "eaa2e8e7edd175add5dd23714884c477d4ebb427b58cbd84746635dfad108bc2",
+    "review-private.json": "4c8d7ce5f80fb5aac378d1afbc2b30b0b33d7c02e955dbeed31e574054fc1563"
+  }
+}

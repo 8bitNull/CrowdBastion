@@ -12,7 +12,9 @@ def load(path):
     result = {}
     for item in (Path(path), Path(str(path)+'.local')):
         if item.exists() or item.is_symlink():
-            data = yaml.safe_load(item.read_text()) or {}
+            data = yaml.safe_load(item.read_text())
+            if data is None:
+                data = {}
             if not isinstance(data, dict):
                 raise ValueError(f'{item}: expected mapping')
             def merge(a, b):
@@ -48,6 +50,8 @@ def firewall_spec(path):
 
 def guard(target, directory, current, interfaces):
     def canonical(value):
+        if not isinstance(value, str):
+            raise ValueError('address records must contain IP strings')
         parsed = ipaddress.ip_address(value)
         return getattr(parsed, 'ipv4_mapped', None) or parsed
     address = canonical(target)
@@ -56,20 +60,34 @@ def guard(target, directory, current, interfaces):
     protected = []
     if current:
         protected.append(current)
-    for record in json.loads(interfaces):
-        protected.extend(x['local'] for x in record.get('addr_info', []) if 'local' in x)
+    records = json.loads(interfaces)
+    if not isinstance(records, list):
+        raise ValueError('interface records must be a list')
+    for record in records:
+        if not isinstance(record, dict) or not isinstance(record.get('addr_info'), list):
+            raise ValueError('invalid interface addresses')
+        for item in record['addr_info']:
+            if not isinstance(item, dict) or not isinstance(item.get('local'), str):
+                raise ValueError('invalid interface address')
+            protected.append(item['local'])
     admin = load(Path(directory)/'parsers/s02-enrich/99-admin-whitelist.yaml')
-    protected.extend(admin.get('whitelist', {}).get('ip', []) or [])
+    rules = admin.get('whitelist', {})
+    if not isinstance(rules, dict) or not isinstance(rules.get('ip', []), list):
+        raise ValueError('invalid administrator whitelist')
+    protected.extend(rules.get('ip', []))
     # Optional explicit own-address records, never inferred from external probes.
     records = Path(directory)/'crowdsec-1key-own-addresses.json'
-    if records.exists():
+    if records.exists() or records.is_symlink():
         data = json.loads(records.read_text())
         if not isinstance(data, list):
             raise ValueError('own-address records must be a list')
         protected.extend(data)
     admin_records = Path(directory)/'crowdsec-1key-admin-addresses.json'
-    if admin_records.exists():
-        protected.extend(json.loads(admin_records.read_text()))
+    if admin_records.exists() or admin_records.is_symlink():
+        data = json.loads(admin_records.read_text())
+        if not isinstance(data, list):
+            raise ValueError('administrator address records must be a list')
+        protected.extend(data)
     if any(address == canonical(item) for item in protected):
         raise ValueError('不能封禁已知本机或管理员地址')
 

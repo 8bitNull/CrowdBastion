@@ -1,0 +1,1077 @@
+{
+  "generated_utc": "2026-10-19T13:18:53.996504+00:00",
+  "scope": "Authorized second VPS remediation; target, business domains, administrator addresses and credentials omitted",
+  "final_snapshot_utc": "2026-10-19T13:18:31.860367+00:00",
+  "firewall": {
+    "root_cause": "nftables backend skips every new decision whose IP is already present in any managed set, without extending the kernel timeout",
+    "source_version": "v0.0.36",
+    "same_nftables_sources_in_v0_0_38": true,
+    "binary_replaced": false,
+    "old_backend_reproduction": {
+      "passed": false,
+      "first_ban": "35s",
+      "replacement_ban": "95s",
+      "longer_decision_remaining_at_gap": {
+        "ipv4": "1m5s",
+        "ipv6": "1m5s"
+      },
+      "membership_after_old_expiry": {
+        "ipv4": false,
+        "ipv6": false
+      },
+      "phases": {
+        "before_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "during_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "after_first_expiry_with_longer_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "after_removal": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ]
+      }
+    },
+    "new_backend": "iptables/ipset; iptables uses nf_tables compatibility mode",
+    "isolated_kernel_test": {
+      "passed": true,
+      "membership_after_old_expiry": {
+        "ip": true,
+        "ip6": true
+      },
+      "cross_origin_delete_preserves_ban": true,
+      "namespace_removed": true,
+      "bouncer_stopped": true
+    },
+    "live_test": {
+      "passed": true,
+      "overlap_lifecycle_passed": true,
+      "membership_after_old_expiry": {
+        "ipv4": true,
+        "ipv6": true
+      },
+      "drop_counter_deltas": {
+        "ip": 2,
+        "ip6": 5
+      },
+      "phases": {
+        "before_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "during_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "after_first_expiry_with_longer_ban": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": false
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ],
+        "after_removal": [
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv4",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "test",
+            "protocol": "udp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "tcp",
+            "ok": true
+          },
+          {
+            "family": "ipv6",
+            "role": "control",
+            "protocol": "udp",
+            "ok": true
+          }
+        ]
+      },
+      "cleanup": {
+        "additional_removed_ids": [],
+        "remaining_owned_decisions": 0,
+        "diagnostic_rules_absent": true,
+        "namespace_delete_exit_code": 0,
+        "host_link_absent": true,
+        "namespace_absent": true
+      }
+    },
+    "final_coverage": {
+      "eligible_decisions": 17787,
+      "kernel_unique_values": 17761,
+      "missing_count": 0,
+      "minimum_remaining_seconds": 15
+    },
+    "hook_order": {
+      "iptables:INPUT": true,
+      "iptables:FORWARD": true,
+      "iptables:DOCKER-USER": true,
+      "ip6tables:INPUT": true,
+      "ip6tables:FORWARD": true,
+      "ip6tables:DOCKER-USER": true
+    },
+    "migration": {
+      "old_mode": "nftables",
+      "new_mode": "iptables",
+      "migration_snapshot_counts": {
+        "4": 17214,
+        "6": 528
+      },
+      "migration_guard_removed": true,
+      "unrelated_firewall_rules_preserved": true
+    }
+  },
+  "shop": {
+    "budget": {
+      "max_concurrent_filter_requests": 2,
+      "global_rate_per_second": 1,
+      "burst": 2,
+      "status_when_limited": 429,
+      "personalized_cache_added": false
+    },
+    "baseline": {
+      "distributed_backend_peak": 8,
+      "distributed_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "concurrency_contract_passed": false,
+      "global_rate_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "global_rate_contract_passed": false,
+      "normal_controls_passed": true,
+      "retained_controls_passed": true,
+      "production_processes_unchanged": true,
+      "temporary_prefix_removed": true
+    },
+    "encoded_bypass_before_normalization": {
+      "distributed_backend_peak": 7,
+      "distributed_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        429
+      ],
+      "concurrency_contract_passed": false,
+      "global_rate_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        429,
+        200
+      ],
+      "global_rate_contract_passed": false,
+      "normal_controls_passed": true,
+      "retained_controls_passed": true,
+      "production_processes_unchanged": true,
+      "temporary_prefix_removed": true
+    },
+    "final_runtime": {
+      "distributed_backend_peak": 2,
+      "distributed_statuses": [
+        200,
+        200,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429
+      ],
+      "concurrency_contract_passed": true,
+      "global_rate_statuses": [
+        200,
+        200,
+        200,
+        429,
+        429,
+        429,
+        429,
+        429
+      ],
+      "global_rate_contract_passed": true,
+      "normal_controls_passed": true,
+      "retained_controls_passed": true,
+      "production_processes_unchanged": true,
+      "temporary_prefix_removed": true
+    },
+    "normal_controls": [
+      {
+        "path": "/shop",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/shop?q=test",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/products/control",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/cart",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/checkout",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/my-account",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/wp-json/control",
+        "method": "GET",
+        "status": 200,
+        "body_matches": true
+      },
+      {
+        "path": "/shop?products-test=post",
+        "method": "POST",
+        "status": 200,
+        "body_matches": true
+      }
+    ],
+    "encoded_cases": [
+      "percent-encoded path",
+      "percent-encoded query key with upper/lower hex digits",
+      "repeated slashes",
+      "dot path normalization",
+      "WordPress internal redirect"
+    ],
+    "scenario_before": [
+      {
+        "case": "browser_enumeration",
+        "returncode": 0,
+        "alerts_sent": 0
+      },
+      {
+        "case": "bot_enumeration",
+        "returncode": 0,
+        "alerts_sent": 1
+      },
+      {
+        "case": "normal_browser_filtering",
+        "returncode": 0,
+        "alerts_sent": 0
+      }
+    ],
+    "scenario_after": [
+      {
+        "case": "browser_enumeration",
+        "returncode": 0,
+        "alerts_sent": 1
+      },
+      {
+        "case": "bot_enumeration",
+        "returncode": 0,
+        "alerts_sent": 1
+      },
+      {
+        "case": "normal_browser_filtering",
+        "returncode": 0,
+        "alerts_sent": 0
+      }
+    ]
+  },
+  "web": {
+    "managed_install": {
+      "passed": true,
+      "resource_count": 26,
+      "status": "installed",
+      "mode": "1panel"
+    },
+    "live_original_waf_and_bouncer_test": {
+      "passed": true,
+      "phases": {
+        "before_ban": [
+          {
+            "case": "before-test",
+            "status": 200,
+            "backend_calls": 1,
+            "body_matches": true
+          },
+          {
+            "case": "before-control",
+            "status": 200,
+            "backend_calls": 1,
+            "body_matches": true
+          }
+        ],
+        "during_ban": [
+          {
+            "case": "during-test",
+            "status": 403,
+            "backend_calls": 0,
+            "body_matches": false
+          },
+          {
+            "case": "during-control",
+            "status": 200,
+            "backend_calls": 1,
+            "body_matches": true
+          }
+        ],
+        "after_removal": [
+          {
+            "case": "after-test",
+            "status": 200,
+            "backend_calls": 1,
+            "body_matches": true
+          },
+          {
+            "case": "after-control",
+            "status": 200,
+            "backend_calls": 1,
+            "body_matches": true
+          }
+        ]
+      },
+      "master_unchanged": true,
+      "site_restored": true,
+      "test_decisions_removed": true
+    },
+    "external_cdn_identity": {
+      "status": 200,
+      "origin_trace_count": 1,
+      "visitor_matches_independently_observed_egress": true,
+      "visitor_matches_cf_header": true,
+      "peer_is_trusted_cdn": true,
+      "visitor_differs_from_peer": true,
+      "full_external_cdn_ban_cycle_performed": false,
+      "reason": "Independent HTTP egress matches an established SSH management source; it was not banned"
+    },
+    "appsec_deny_baseline": [
+      {
+        "policy": "deny",
+        "fault": "refused",
+        "status": 200,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": null,
+        "expected_status": 403,
+        "passed": false
+      },
+      {
+        "policy": "deny",
+        "fault": "timeout",
+        "status": 200,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 403,
+        "passed": false
+      },
+      {
+        "policy": "deny",
+        "fault": "http_error",
+        "status": 200,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 403,
+        "passed": false
+      },
+      {
+        "policy": "passthrough",
+        "fault": "refused",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": null,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "passthrough",
+        "fault": "timeout",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "passthrough",
+        "fault": "http_error",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "deny",
+        "fault": "healthy",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      }
+    ],
+    "appsec_deny_patched": [
+      {
+        "policy": "deny",
+        "fault": "refused",
+        "status": 403,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": null,
+        "expected_status": 403,
+        "passed": true
+      },
+      {
+        "policy": "deny",
+        "fault": "timeout",
+        "status": 403,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 403,
+        "passed": true
+      },
+      {
+        "policy": "deny",
+        "fault": "http_error",
+        "status": 403,
+        "backend_calls": 0,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 403,
+        "passed": true
+      },
+      {
+        "policy": "passthrough",
+        "fault": "refused",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": null,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "passthrough",
+        "fault": "timeout",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "passthrough",
+        "fault": "http_error",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      },
+      {
+        "policy": "deny",
+        "fault": "healthy",
+        "status": 200,
+        "backend_calls": 1,
+        "lapi_calls": 1,
+        "appsec_calls": 1,
+        "expected_status": 200,
+        "passed": true
+      }
+    ],
+    "appsec_failure_action": "passthrough",
+    "lapi_query_failure_behavior": "allow; existing live.lua unchanged"
+  },
+  "scheduler": {
+    "crond_entries_disabled": 1,
+    "root_entries_changed": 0,
+    "unrelated_content_preserved": true,
+    "timer_enabled": "enabled",
+    "timer_active": "active"
+  },
+  "acceptance": {
+    "passed": true,
+    "nginx_config_test_exit": 0,
+    "crowdsec_config_test_exit": 0,
+    "configuration_hashes": {
+      "shop_http_guard": {
+        "expected": "12cce58ec150a002bf7ce81261537f0c96d39dcc984edfffa3e50ef2d4b08fa1",
+        "actual": "12cce58ec150a002bf7ce81261537f0c96d39dcc984edfffa3e50ef2d4b08fa1",
+        "matches": true
+      },
+      "shop_vhost": {
+        "expected": "00648be530312a5b61ed31bbfa5cc976db176cd64a0b4702a7e2bb0f43f9d5df",
+        "actual": "00648be530312a5b61ed31bbfa5cc976db176cd64a0b4702a7e2bb0f43f9d5df",
+        "matches": true
+      },
+      "web_bouncer_lua": {
+        "expected": "abac44efea21ffcc1b8b041ccc702eb5ac526347df1a8ef5b2ffdca082ab972a",
+        "actual": "abac44efea21ffcc1b8b041ccc702eb5ac526347df1a8ef5b2ffdca082ab972a",
+        "matches": true
+      },
+      "managed_web_install_record": {
+        "expected": "22a5b6796b814b2d8fe675275eede7cc64278a8e72afb9f396d397d75d4711c8",
+        "actual": "22a5b6796b814b2d8fe675275eede7cc64278a8e72afb9f396d397d75d4711c8",
+        "matches": true
+      },
+      "shop_crawl_scenario": {
+        "expected": "018b37d8c2b7ec438585a4e7307926a7d95a24ca6aa198d3795a6b7fcc233063",
+        "actual": "018b37d8c2b7ec438585a4e7307926a7d95a24ca6aa198d3795a6b7fcc233063",
+        "matches": true
+      },
+      "duplicate_updater_cron": {
+        "expected": "b4afb5991874a331d38930f462be0710c495bd82fb25a312ae5fa25714e3bee3",
+        "actual": "b4afb5991874a331d38930f462be0710c495bd82fb25a312ae5fa25714e3bee3",
+        "matches": true
+      },
+      "firewall_bouncer_config": {
+        "expected": "382d60db20cf94d696e564943ce0914e63770ff10778ca67d4e7248352c79d51",
+        "actual": "382d60db20cf94d696e564943ce0914e63770ff10778ca67d4e7248352c79d51",
+        "matches": true
+      }
+    },
+    "all_configuration_hashes_match": true,
+    "pages": [
+      {
+        "page": "shop",
+        "exit_code": 0,
+        "status": 200,
+        "duration_seconds": 1.204166,
+        "html_present": true
+      },
+      {
+        "page": "checkout",
+        "exit_code": 0,
+        "status": 200,
+        "duration_seconds": 0.490407,
+        "html_present": true
+      },
+      {
+        "page": "account",
+        "exit_code": 0,
+        "status": 200,
+        "duration_seconds": 0.529956,
+        "html_present": true
+      },
+      {
+        "page": "product_detail",
+        "exit_code": 0,
+        "status": 200,
+        "duration_seconds": 1.039648,
+        "html_present": true
+      }
+    ],
+    "temporary_artifacts_clean": true,
+    "services": "MainPID=1508\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1304426\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+    "nginx_processes": {
+      "masters": [
+        1180
+      ],
+      "workers": [
+        1306837,
+        1306838,
+        1306839
+      ]
+    },
+    "load": "0.46, 0.49, 1.48",
+    "vmstat": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 0  0  31704 476508 328380 2987940    0    0    12   448 1582    4  6  1 93  0  0  0\n 1  0  31704 472808 328400 2988076    0    0     0  1084 1974 2605 11  1 87  1  0  0\n",
+    "backup_checks": [
+      {
+        "component": "shop-budget",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/shop-budget-20261019T125820Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      },
+      {
+        "component": "appsec-status",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/appsec-status-20261019T125857Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      },
+      {
+        "component": "shop-scenario",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/shop-scenario-20261019T125911Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      },
+      {
+        "component": "scheduler",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/scheduler-20261019T125940Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      },
+      {
+        "component": "shop-normalized-filter",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/shop-normalized-filter-20261019T131602Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      },
+      {
+        "component": "firewall-backend",
+        "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/firewall-backend-20261019T130934Z",
+        "root_only_directory": true,
+        "rollback_exists": true,
+        "rollback_python_syntax_valid": true
+      }
+    ]
+  },
+  "limitations": [
+    "The reproduced renewal defect establishes a real failure class; the earlier historical missing IP cannot be reconstructed event by event",
+    "Production firewall traffic tests cover INPUT on an isolated veth; FORWARD and DOCKER-USER were checked for rule order, not a complete forwarded application traffic cycle",
+    "External CDN identity is verified; ban/recovery was verified on the live vhost with a local controlled proxy and counted backend, not by banning the SSH-sharing public egress",
+    "Business acceptance reads product, shop, checkout and account pages; no orders, authenticated purchase session, payment or refund was created",
+    "High load can cause legitimate filter requests to receive 429; other expensive WordPress routes and query cost still require application-level optimization",
+    "Dynamic personalized pages were not cached; AppSec/LAPI failure-allow policies remain",
+    "Rollback scripts have backup/hash checks and syntax validation; no production rollback drill was performed"
+  ],
+  "private_artifact_sha256": {
+    "appsec_runtime-baseline-private.json": "6cad0a8bfff08588aaa857c18941df0a3f7ac36a5b61df789068c3157f8a2c93",
+    "appsec_runtime-patched-private.json": "2999dd4b341361bcf0732fe3e7bc0609898b6b25f4836496798d4746946cc47e",
+    "bootstrap-private.json": "87190a2a3a2efbc050dee4c980f65f7adfae87bd5c88c3b64e6996801694c85d",
+    "cdn_source_safety-private.json": "4949e0b3b4c35222ca462988d0f2239cf2fd0092cc357cf7e489c731067e0faf",
+    "cleanup_failed_probe-private.json": "73420a20c7d74dbd3d1a3a6e2f149db08f045bd21c7d4dddb1bc54866aaadf64",
+    "deduplicate_scheduler-private.json": "14cb72d7b2b016728a684291c84b2a23b1ab7a872b0818e6213d4bf522e1655b",
+    "deploy_appsec-private.json": "26f7aa24b18b43b521f09457e1ae4cc3602f1f656742de0c2fd50e41979daf29",
+    "deploy_encoded_guard-private.json": "760b8f5dba3bff8b02b6a2bb4081e2ceac2692aa28bbab1569bce23341c45c59",
+    "deploy_firewall-private.json": "a88b750b48a3d68426839023de02fefe99faa54b263fa55e28d8503493ad0b9d",
+    "deploy_scenario-private.json": "3443c71d496c679f12d8cc90290866e14a2eb84bf41222e7a1cf9220bfd95474",
+    "deploy_shop-private.json": "39076ddfa738fe0dd7411d60491e9e4f285579c8ddf80a36cae8b52d244aeb2d",
+    "external-edge-response-private.json": "ab9ef3a00093822f69e59c2dd0765adac3981396d2e9aa5052a5b0426f2e8016",
+    "external-probe-first-private.json": "4c704943b17d20a72bce5b91ccaac3eb8cc0935ea02b192aa73bb970afa4a214",
+    "external-probe-forged-header-403-private.json": "511bbf2c0d3df77c4bcbd860c766c0c5cd677bfadde8cce64d35efb42031fda8",
+    "external-probe-private.json": "a4f75fb76ab06e5f7672d970d5689fe4863f84926e01a6f721fd4260314293f6",
+    "final_verify-private.json": "3379790a2aa0993e20a990f144445c57fd0abc1ca0cfb378f8db0cc328d23a44",
+    "firewall_ipset_runtime-private.json": "d7c89dc8a286be942dc77ca00bae4e3fbb95ca5eebfcf17f5f984ad209416bba",
+    "firewall_options-private.json": "f05f99499a1b43a8d3b66dc4fa77b07e7ebe6ce60730842b5f7d2c6cdef00975",
+    "firewall_runtime-baseline-blocked-private.json": "a19b192ca8069dcc78e7c9070fcf13408e08da3e0994ea4a9402bb0bdf49bd8e",
+    "firewall_runtime-nft-renewal-leak-private.json": "705d29847022f5f37f9fe5e52a5ba688bec1b9c7ce4c007f8a700f7d3b2069fb",
+    "firewall_runtime-private.json": "705d29847022f5f37f9fe5e52a5ba688bec1b9c7ce4c007f8a700f7d3b2069fb",
+    "health-private.json": "d85c821c6aba84b1b68704a7d87a2fe38035b64045ea3800df8f69cd46a8a507",
+    "initial-private.json": "b2e14e73722c0bed0e090ad04a7ee9d6c441b3fea7b0bd9d0e742d2fe00e69bc",
+    "inspect_tools-private.json": "640def8df67ac54afc6755b2c1a43f67b3f53111f22122093154f58fdf2b1791",
+    "install_ipset-private.json": "b85fb41880f3b2d3db6762a759a6386b0d359f1ee3e51cfbf4792ceca33fc214",
+    "ipset_lab-private.json": "64c1ec7ddf8787260bd16970a635ed1efea6a1c3be5e15defc73d9c19c2b546a",
+    "make_shop_candidate-private.json": "ac441a340d5acce861e2b0d4d45dd89674172b74a91475aad60c9032a31f7a88",
+    "pages-after-private.json": "c1270e541cf5bef6a9afb38e1956458bbb142c26c6acd3b472dbf126e109cd4e",
+    "pages-before-private.json": "1d7228cddf1772f8590274bfdf28bda61876165f22acc571085784a3af59e59b",
+    "prepare_appsec-private.json": "163f76dd37159b1d5180b048e7eb62d0798b4ec7e349c897b680a6f5521af6a9",
+    "prepare_encoded_guard-private.json": "d830b4eacda13788e1b8d6af61e786ca440087a01b6ee7de42f28edc6761f522",
+    "prepare_firewall_backend-private.json": "3dabfc89a2a2be521ca2113bf97f71faa05ec641ee669ccc669717788279a074",
+    "prepare_ipset_lab-private.json": "963f19a1027b2c7322d754d9edb417f27c518f9ab81de259ee0741faff7e7b18",
+    "prepare_scenario-private.json": "28d2658183e63f72b0d4a1602b5439b570459a5c34ebe99b7ab38d91b9edda8a",
+    "scenario_runtime-baseline-private.json": "d8cdbd25ad260a6e297d34e0c33728f352554aaf551f9815be025813ece70e6b",
+    "scenario_runtime-candidate-private.json": "0f36c4bf2128df08ff8f657129149938301a7150761a0ecc2caab72adc7af9be",
+    "shop_runtime-baseline-private.json": "5313561065f02c6cf67116a4782af220b5dfc3502c601fa965b738f786a2f8ad",
+    "shop_runtime-candidate-initial-private.json": "6e4c482aeeb38f2ac386548d4e88ae9464b5b512fc0039212094d4c9288efbb3",
+    "shop_runtime-candidate-private.json": "6aeac50ee6ce186afea092992dacde394b5d173b8ba146a21a56062b7cc0295d",
+    "shop_runtime-encoded-before-private.json": "794c7b942efa0377570d2bcbbdb976e7382a9a9fff1f015e84faefadff1692e9",
+    "shop_runtime-private.json": "5313561065f02c6cf67116a4782af220b5dfc3502c601fa965b738f786a2f8ad",
+    "web_runtime-first-tls-error-private.json": "9cbbc2c8b0b9af3a32fc7b488689218aa78ef8ddfdc9c710b03eaef96e642ec6",
+    "web_runtime-local-waf-passed-private.json": "960cee191fb483293bdc20853805ae34728fc27c0e20f4658855de0470fdbd4e",
+    "web_runtime-private.json": "ca6abc10d679f7809ce835b3218ddc8f5787299110e21f27427ab61d3578d89b"
+  }
+}
