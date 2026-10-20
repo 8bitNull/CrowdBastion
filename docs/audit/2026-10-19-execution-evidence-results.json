@@ -1,0 +1,185 @@
+{
+  "verified_at_utc": "2026-10-19T13:40:48.027295+00:00",
+  "target": {
+    "host": "179.255.121.95",
+    "ssh_port": 53322
+  },
+  "deployment": {
+    "success": true,
+    "backup_dir": "/var/backups/crowdbastion/execution-proof-20261019T133705Z",
+    "changed_paths": [
+      "/etc/crowdsec/crowdsec-1key-web-installs.json",
+      "/home/docker/npm/data/nginx/custom/http_top.conf",
+      "/home/docker/npm/data/crowdsec-1key/target.conf",
+      "/home/docker/npm/data/crowdsec-1key/lib/crowdsec_1key/crowdsec.lua",
+      "/home/docker/npm/data/crowdsec-1key/log.lua",
+      "/home/docker/npm/data/crowdsec-1key/lib/crowdsec_1key/execution.lua",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py",
+      "/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml"
+    ],
+    "bot_processes": [
+      2051109
+    ],
+    "offline_query": {
+      "alert_available": true,
+      "button_present": true,
+      "readiness_attempts": 2,
+      "card_rendered": true
+    },
+    "policy_and_settings_unchanged": true,
+    "services_active": true,
+    "effective_hooks_verified": true,
+    "telegram_test_messages_sent": 0
+  },
+  "independent_verification": {
+    "success": true,
+    "backup_dir": "/var/backups/crowdbastion/execution-proof-20261019T133705Z",
+    "deployed_hashes_match": true,
+    "managed_resource_hashes_verified": true,
+    "effective_hooks_verified": true,
+    "nginx_syntax_valid": true,
+    "policy_and_settings_unchanged": true,
+    "policies": {
+      "APPSEC_FAILURE_ACTION": "passthrough"
+    },
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2051109",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "bot_processes": [
+      2051109
+    ],
+    "offline_query": {
+      "alert_available": true,
+      "execution_button_present": true,
+      "scope_boundary_present": true,
+      "refresh_button_present": true,
+      "evidence": {
+        "state": "empty",
+        "count": 0,
+        "causes": {},
+        "logs_read": 33,
+        "errors": 0,
+        "truncated": true
+      }
+    },
+    "remaining_runtime_prefixes": [],
+    "telegram_test_messages_sent": 0,
+    "public_or_cdn_probe_performed": false
+  },
+  "first_attempt": {
+    "success": false,
+    "backup_dir": "/var/backups/crowdbastion/execution-proof-20261019T133331Z",
+    "failed_phase": "verify",
+    "error_type": "RuntimeError",
+    "rollback_succeeded": true
+  },
+  "validation": {
+    "full_suite": {
+      "total": 877,
+      "passed": 872,
+      "optional_skipped": 5,
+      "note": "Full baseline regression; final merged files additionally covered below"
+    },
+    "final_merged_runtime_install": {
+      "passed": 31
+    },
+    "final_primary_focused": {
+      "passed": 76,
+      "skipped": 0
+    },
+    "vps_openresty_loopback": {
+      "passed": 11,
+      "production_processes_unchanged": true,
+      "temporary_prefixes_remaining": []
+    },
+    "official_notification_renderer": {
+      "passed": 11
+    },
+    "code_review": "No remaining important findings"
+  },
+  "rollback_simulation": {
+    "manifest_after_required": false,
+    "service_failure_propagated": true,
+    "silent_restore_retry_succeeded": true,
+    "unknown_concurrent_edit_refused": true,
+    "management_lock_held_during_service_checks": true
+  },
+  "readiness_simulation": {
+    "transient": {
+      "passed": true,
+      "elapsed_mock_seconds": 1.0,
+      "attempts": 2
+    },
+    "permanent": {
+      "passed": true,
+      "elapsed_mock_seconds": 40.0,
+      "attempts": 5
+    },
+    "signal": {
+      "passed": true,
+      "elapsed_mock_seconds": 0.0,
+      "attempts": 1
+    },
+    "malformed": {
+      "passed": true,
+      "elapsed_mock_seconds": 0.0,
+      "attempts": 1
+    }
+  },
+  "diagnostic_write_failure_restore_verified": true,
+  "scope": {
+    "new_web_ban_4xx_5xx_receipts": true,
+    "exact_trigger_request_or_decision_proven": false,
+    "individual_firewall_drops_verified_by_card": false,
+    "public_or_cdn_probe_performed": false,
+    "telegram_live_button_test_performed": false,
+    "telegram_test_messages_sent": 0,
+    "original_outage_policy_preserved": true,
+    "historical_requests_backfilled": false,
+    "rollback_retains_silent_bot_start": true
+  },
+  "final_service_check": {
+    "checked_at_utc": "2026-10-19T13:40:48.027295+00:00",
+    "file_hashes_still_match": true,
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2051109",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "bot_pid_stable": true,
+    "readiness_retries": [
+      {
+        "phase": "offline-query-readiness",
+        "attempt": 1,
+        "error": "命令执行失败（退出码 1）"
+      }
+    ]
+  }
+}

@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
-DEFAULTS = {'APPSEC_URL': '', 'APPSEC_DROP_UNREADABLE_BODY': 'false', 'APPSEC_FAILURE_ACTION': 'passthrough'}
+DEFAULTS = {'APPSEC_URL': '', 'APPSEC_DROP_UNREADABLE_BODY': 'false',
+            'APPSEC_FAILURE_ACTION': 'passthrough', 'LAPI_FAILURE_ACTION': 'passthrough'}
 
 def config(path):
     result = {}
@@ -17,7 +18,7 @@ def config(path):
         if not match:
             raise ValueError('无法解释 Web Bouncer 配置行，请手动核对')
         key, value = match.groups()
-        if key in result and key.startswith('APPSEC_'):
+        if key in result and (key.startswith('APPSEC_') or key == 'LAPI_FAILURE_ACTION'):
             raise ValueError('重复 Web Bouncer 配置键: '+key)
         result[key] = value.split(' #', 1)[0].strip()
     return result
@@ -38,7 +39,24 @@ def effective(path):
     local = Path(str(path)+'.local')
     if local.exists():
         values.update(config(local))
+    for key in ('APPSEC_FAILURE_ACTION', 'LAPI_FAILURE_ACTION'):
+        if values[key] not in ('deny', 'passthrough'):
+            raise ValueError(key+' 需 deny/passthrough')
     return {key: values[key] for key in DEFAULTS}
+
+def set_policy(path, body, failure, lapi=None):
+    if (body not in ('true', 'false') or failure not in ('deny', 'passthrough')
+            or lapi is not None and lapi not in ('deny', 'passthrough')):
+        raise ValueError('正文策略需 true/false，AppSec/LAPI 故障策略需 deny/passthrough')
+    guard(path)
+    text = Path(path).read_text()
+    choices = [('APPSEC_DROP_UNREADABLE_BODY', body), ('APPSEC_FAILURE_ACTION', failure)]
+    if lapi is not None:
+        choices.append(('LAPI_FAILURE_ACTION', lapi))
+    for key, value in choices:
+        text = re.sub(r'^\s*'+key+r'\s*=.*\n?', '', text, flags=re.M)
+        text = text.rstrip('\n')+'\n'+key+'='+value+'\n'
+    Path(path).write_text(text)
 
 def counters(text):
     result = {'processed': 0, 'blocked': 0, 'rules': 0}
@@ -97,15 +115,7 @@ def main():
         entry['resource_hashes']['bouncer.conf'] = resource_hashes(entry['host_assets'])['bouncer.conf']
         Path(state_path).write_text(json.dumps(state, indent=2)+'\n')
     elif action == 'policy':
-        path, body, failure = args
-        if body not in ('true', 'false') or failure not in ('deny', 'passthrough'):
-            raise ValueError('正文策略需 true/false，故障策略需 deny/passthrough')
-        guard(path)
-        text = Path(path).read_text()
-        for key, value in [('APPSEC_DROP_UNREADABLE_BODY', body), ('APPSEC_FAILURE_ACTION', failure)]:
-            text = re.sub(r'^\s*'+key+r'\s*=.*\n?', '', text, flags=re.M)
-            text = text.rstrip('\n')+'\n'+key+'='+value+'\n'
-        Path(path).write_text(text)
+        set_policy(*args)
     elif action == 'snapshot':
         print(json.dumps(counters(Path(args[0]).read_text())))
     elif action == 'verdict':

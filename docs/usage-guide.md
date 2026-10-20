@@ -30,6 +30,12 @@
 
 512 MiB 本地核心已有短时客机通过证据，256 MiB Bouncer-only 也有早期短时模拟；两者都不是长期容量保证。本轮连续 1 小时/24 小时验收、独立恢复和原生 ARM64 默认启动仍未完成，目前没有本轮新增试用放行组合。生产节点按自身业务量、内存余量、真实流量路径和最新[修复进度](audit/2026-10-12-vps-repair-progress.md)评估。
 
+### 防火墙后端与续封检查
+
+首次本地／远端 Firewall Bouncer 安装默认使用 iptables/ipset。系统的 iptables 可以使用 nf_tables 兼容层，这与 Bouncer 的 `mode: nftables` 是不同实现。已确认 0.0.36、0.0.38 的 nftables 后端存在续封缺陷：LAPI 决策仍有效时，内核封禁条目可能在原截止时间消失，见[第二台 VPS 修复实测](audit/2026-10-19-second-vps-remediation.md)。其他 nftables 版本只标为尚未验证，不推断修复状态。
+
+脚本检查基础配置和 `.local` 合并后的后端，诊断优先识别运行中 Bouncer 的二进制；修改前还检查 systemd 有效 `ExecStart` 指向的磁盘程序，避免重启后启用已知缺陷版本。任一程序命中已确认缺陷时，核心重装、Bouncer 安装／配置和连接修复会在相关修改前停止；无法确认的版本明确标为尚未验证，已有后端不会自动迁移。需要迁移的节点先备份配置、规则及有效决策，准备控制台和管理员来源保护，再安排切换和验收。
+
 ### 节点用途引导
 
 首次不带参数在终端启动时，脚本询问本机用途；菜单 `7` 可随时重新选择。输入一个或多个编号，用空格分隔：`1` 网站、`2` 本地中转、`3` 远端执行、`4` V2bX 落地。`2 4` 表示本地中转＋落地，`3 4` 表示远端执行＋落地。远端执行与网站／本地中转互斥；输入 `0` 或结束输入取消，不保存也不安装。
@@ -107,7 +113,7 @@ sudo bash crowdbastion.sh --check-logs
 
 ### 接入 AppSec 与 Web Bouncer
 
-菜单 `1 → 2` 分别提供 AppSec 配置、首次 Web Bouncer 安装、状态、主动验证、故障策略和停用。命令行步骤为：
+菜单 `1 → 2` 分别提供 AppSec 配置、首次 Web Bouncer 安装、状态、主动验证、故障策略和停用。新装本工具托管的容器 Web Bouncer 时，AppSec 和 LAPI 故障均返回 403；故障期间正常访客也可能被拒绝。旧安装重新接入会升级受管模块并保留原有策略，可用 `--appsec-policy` 分别设置两项故障策略。命令行步骤为：
 
 ```bash
 sudo bash crowdbastion.sh --install-appsec
@@ -120,6 +126,8 @@ sudo bash crowdbastion.sh --verify-appsec
 AppSec 集合、监听、Web Bouncer 接入和实际请求验证是不同步骤。按提示选择实际部署方式、容器和站点；不要只凭监听 7422 或服务 active 判断网站已有 WAF。
 
 1Panel、科技lion LDNMP、NPM 和宿主机 Nginx/OpenResty 的适配前提见 [AppSec 接入与环境适配](appsec-guide.md#web-bouncer-与环境适配)。原生容器首次安装使用实际持久化挂载；Docker bridge 需要先准备私有 LAPI/AppSec 网关，再用 `--configure-docker-endpoints` 登记，登记入口不会自动创建网络或暴露公网端口。
+
+故障策略修改和已有托管模块升级还需要[可读取的 master 重载日志](appsec-guide.md#正文与故障策略)：主配置直接设置绝对路径普通文件 `error_log ... notice;` 并提前正常加载。只有 stderr 管道、syslog 或无法确认本次重载记录时，工具返回未确认并恢复本次修改。
 
 ### 核对真实客户端 IP
 
@@ -201,6 +209,8 @@ sudo cscli decisions list
 远端 Bouncer-only 节点只检查自身 Bouncer；核心、metrics、alerts、decisions 在中心查询。日志解析计数、服务状态、决策存在和业务阻断分别核验。
 
 在自己控制的测试环境，用独立测试来源和正常来源对照：正常 TCP/UDP 可达，封禁测试来源后其新连接失败，正常来源仍可达，解封后恢复。选择目标入口，分别核查实际启用的 IPv4/IPv6、INPUT/FORWARD 路径；避免用管理员 SSH 来源、共享出口或上游中转做封禁试验。实验结束删除测试决策。实验示例中的 TEST-NET 地址不能替代真实可控客户端。
+
+另做续封对照：先设置短时封禁，在到期前延长该测试来源的封禁；越过原截止时间后，确认决策仍有效、内核条目仍存在且测试来源的新连接仍被阻止，独立正常来源始终可达。分别验证删除决策和自然到期后恢复，只清理自己创建的测试决策；按业务覆盖启用的 IPv4/IPv6 和 TCP/UDP。服务 active、集合存在或累计命中数均不能替代这组时间与流量对照。
 
 本地节点在 LAPI 上操作决策；远端节点在其中心操作。仅创建一个测试 IP 决策并查看集合，不等于已验证真实流量阻断。已有长连接和 conntrack 可能继续通行，应使用新会话测试。
 

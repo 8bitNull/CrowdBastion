@@ -1,0 +1,176 @@
+{
+  "snapshot_utc": "2026-10-19T13:23:39.757933+00:00",
+  "scope": "Authorized second VPS AppSec failure-policy correction; target, business identities, credentials and administrator sources omitted",
+  "policy_before": "passthrough",
+  "policy_after": "deny",
+  "policy_file_change": "Only APPSEC_FAILURE_ACTION line; matching managed bouncer.conf resource hash updated",
+  "runtime_scope": "actual installed Lua and unchanged configured failure policy copied into isolated OpenResty; synthetic AppSec/LAPI, dummy key, counted backend; production services unchanged",
+  "fault_injection_in_production": false,
+  "baseline_cases": [
+    {
+      "policy": "passthrough",
+      "fault": "refused",
+      "status": 200,
+      "backend_calls": 1,
+      "lapi_calls": 1,
+      "appsec_calls": null,
+      "expected_status": 200,
+      "passed": true,
+      "deny_requirement_met": false
+    },
+    {
+      "policy": "passthrough",
+      "fault": "timeout",
+      "status": 200,
+      "backend_calls": 1,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 200,
+      "passed": true,
+      "deny_requirement_met": false
+    },
+    {
+      "policy": "passthrough",
+      "fault": "http_error",
+      "status": 200,
+      "backend_calls": 1,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 200,
+      "passed": true,
+      "deny_requirement_met": false
+    },
+    {
+      "policy": "passthrough",
+      "fault": "healthy",
+      "status": 200,
+      "backend_calls": 1,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 200,
+      "passed": true,
+      "deny_requirement_met": true
+    }
+  ],
+  "current_policy_cases": [
+    {
+      "policy": "deny",
+      "fault": "refused",
+      "status": 403,
+      "backend_calls": 0,
+      "lapi_calls": 1,
+      "appsec_calls": null,
+      "expected_status": 403,
+      "passed": true,
+      "deny_requirement_met": true
+    },
+    {
+      "policy": "deny",
+      "fault": "timeout",
+      "status": 403,
+      "backend_calls": 0,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 403,
+      "passed": true,
+      "deny_requirement_met": true
+    },
+    {
+      "policy": "deny",
+      "fault": "http_error",
+      "status": 403,
+      "backend_calls": 0,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 403,
+      "passed": true,
+      "deny_requirement_met": true
+    },
+    {
+      "policy": "deny",
+      "fault": "healthy",
+      "status": 200,
+      "backend_calls": 1,
+      "lapi_calls": 1,
+      "appsec_calls": 1,
+      "expected_status": 200,
+      "passed": true,
+      "deny_requirement_met": true
+    }
+  ],
+  "source_lua_sha256": "abac44efea21ffcc1b8b041ccc702eb5ac526347df1a8ef5b2ffdca082ab972a",
+  "current_production_config_sha256": "3eb4c5343da7dd7f2cbf65cc72f6151342b586774b177f6cee11517d45c34fa3",
+  "runtime_matches_deployed_config": true,
+  "deploy_utc": "2026-10-19T13:22:55.765977+00:00",
+  "nginx_graceful_reload": true,
+  "crowdsec_firewall_services_unchanged": true,
+  "verification": {
+    "timestamp_utc": "2026-10-19T13:23:39.757933+00:00",
+    "failure_policy": "deny",
+    "managed_install_passed": true,
+    "managed_resource_count": 26,
+    "config_local_override_exists": false,
+    "changed_file_hash_checks": [
+      {
+        "file": "bouncer.conf",
+        "sha256": "3eb4c5343da7dd7f2cbf65cc72f6151342b586774b177f6cee11517d45c34fa3",
+        "matches": true
+      },
+      {
+        "file": "managed-install-state",
+        "sha256": "571cc230b1cd86356c6846b478914c1215a02072e82c0686e2dc000c9c319242",
+        "matches": true
+      }
+    ],
+    "rollback_python_syntax_valid": true,
+    "backup_directory_root_only": true,
+    "backup_files_root_only": true,
+    "backup_dir": "/var/backups/crowdbastion/second-vps-remediation-20261019/appsec-failure-policy-20261019T132255Z",
+    "nginx_config_test_passed": true,
+    "nginx_master_unchanged": true,
+    "old_nginx_workers_gone": true,
+    "active_worker_count": 3,
+    "services_unchanged": true,
+    "appsec_tcp_listener_available": true,
+    "current_config_matches_fault_test": true,
+    "current_lua_matches_fault_test": true,
+    "fault_cases_passed": true,
+    "isolation_cleanup_complete": true,
+    "isolation_preserved_production": true,
+    "production_pages_all_200": true,
+    "passed": true
+  },
+  "production_readonly_pages": [
+    {
+      "page": "shop",
+      "status": 200,
+      "elapsed_seconds": 1.245798,
+      "curl_exit_code": 0
+    },
+    {
+      "page": "checkout",
+      "status": 200,
+      "elapsed_seconds": 0.601969,
+      "curl_exit_code": 0
+    },
+    {
+      "page": "account",
+      "status": 200,
+      "elapsed_seconds": 0.509203,
+      "curl_exit_code": 0
+    },
+    {
+      "page": "product",
+      "status": 200,
+      "elapsed_seconds": 1.029825,
+      "curl_exit_code": 0
+    }
+  ],
+  "limits": [
+    "An AppSec outage now blocks otherwise legitimate requests entering the AppSec failure branch.",
+    "LAPI failure handling and unreadable-body handling were not changed.",
+    "Faults were injected in isolated actual OpenResty, preserving production AppSec.",
+    "Read-only page probes do not verify orders, payments or complete login flows.",
+    "Rollback syntax was checked; no production rollback drill was executed."
+  ]
+}

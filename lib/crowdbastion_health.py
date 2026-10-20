@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Fixed, user-facing conclusions from typed observations; no runtime probes."""
 import os
+import json
+import math
 from pathlib import Path
 import stat
 import sys
@@ -18,6 +20,7 @@ CATALOG = {
     'logs': ('日志读取与解析正常', '日志采集尚未配置', '日志已读取，但没有成功解析', '日志解析证据不足', '相关日志中的攻击可能无法被识别。', 'log_help'),
     'acquisition': ('日志采集配置检查通过', '日志采集尚未配置', '日志采集配置存在问题', '无法核查日志采集配置', '可能遗漏或重复处理日志事件。', 'log_help'),
     'rules': ('已发现来源 IP 封禁规则', '封禁规则尚未接入', '封禁规则检查未通过', '封禁规则或适用的流量路径尚未确认', '暂时无法确认业务流量会经过封禁规则。', 'path_help'),
+    'renewal': ('未命中已知的 nftables 续封缺陷', '封禁续期检查未配置', '防火墙后端存在已知续封缺陷', '防火墙后端续封修复状态尚未验证', '封禁决策仍有效时，流量可能已经恢复通行。', 'details'),
     'remote': ('远端连接配置检查通过', '远端检测中心连接尚未配置', '远端连接配置检查未通过', '无法读取远端连接配置', '当前节点可能无法接收检测中心的封禁决策。', 'details'),
     'appsec': ('网站检查配置的 AppSec 地址有监听', '网站检查引擎尚未接入', '网站检查引擎没有在配置地址监听', '网站检查引擎状态未能确认', '网站请求可能无法经过 AppSec 检查。', 'details'),
     'web': ('网站接入配置检查通过', '网站防护尚未接入', '网站接入检查未通过', '网站接入检查未完成', '暂时无法确认网站防护接入情况。', 'details'),
@@ -45,6 +48,33 @@ ACTIONS = {
     'log_help': ('查看日志解析排查方法', '核对日志格式、采集标签与解析器；详见检查详情。'),
     'path_help': ('查看封禁路径核验方法', '核对连接来源和转发路径：--relay-path。'),
 }
+
+
+def parse_acquisition_metrics(payload):
+    """Validate cscli acquisition counters without exposing source names or output."""
+    metrics = json.loads(payload)
+    if not isinstance(metrics, dict):
+        raise ValueError('invalid acquisition metrics')
+    sources = metrics.get('acquisition', {})
+    if not isinstance(sources, dict):
+        raise ValueError('invalid acquisition metrics')
+    for name, source in sources.items():
+        if not isinstance(name, str) or not isinstance(source, dict):
+            raise ValueError('invalid acquisition source')
+        for key in ('reads', 'parsed', 'unparsed'):
+            value = source.get(key, 0)
+            if type(value) not in (int, float) or (type(value) is float and not math.isfinite(value)) or value < 0:
+                raise ValueError('invalid acquisition count')
+    return sources
+
+
+def acquisition_state(sources):
+    """Classify already validated sources; a busy unparsable source wins."""
+    if any(source.get('reads', 0) and not source.get('parsed', 0) for source in sources.values()):
+        return 'fault'
+    if not sources or any(not source.get('reads', 0) for source in sources.values()):
+        return 'pending'
+    return 'ok'
 
 
 def emit(key, state):

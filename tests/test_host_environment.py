@@ -112,10 +112,29 @@ class HostEnvironment(unittest.TestCase):
         self.assertRegex(self.commands(), r'bouncers delete crowdsec-1key-firewall-')
         self.assertNotIn('restart crowdsec-firewall-bouncer', self.commands())
 
-    def test_failed_config_edit_revokes_new_bouncer_and_restores_config(self):
+    def test_invalid_backend_refused_before_creating_bouncer(self):
         path = self.bouncer('mode: invalid\napi_key: ""\n')
         original = path.read_text()
         result = self.run_shell('repair_firewall_bouncer')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(path.read_text(), original)
+        self.assertFalse(Path(str(path)+'.local').exists())
+        self.assertNotIn('bouncers add', self.commands())
+        self.assertNotIn('restart crowdsec-firewall-bouncer', self.commands())
+
+    def test_failed_config_edit_revokes_new_bouncer_and_restores_config(self):
+        path = self.bouncer('mode: iptables\napi_key: ""\n')
+        original = path.read_text()
+        stub = r'''
+yaml_tool() {
+ if [[ "$1" == bouncer ]]; then
+  printf 'partial write\n' > "${2}.local"
+  return 1
+ fi
+ python3 "${SCRIPT_DIR}/lib/crowdsec_config.py" "$@"
+}
+'''
+        result = self.run_shell('repair_firewall_bouncer', overrides=stub)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(path.read_text(), original)
         self.assertFalse(Path(str(path)+'.local').exists())
@@ -140,8 +159,8 @@ chmod() { if [[ "$1" == 600 ]]; then return 1; fi; command chmod "$@"; }
         result = self.run_shell('deploy_web_ui rotate', '3000\ny\n', stub)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(credentials.read_text(), original)
-        self.assertRegex(self.commands(), r'machines delete webui-1key-')
-        self.assertNotIn('machines delete webui-owned', self.commands())
+        self.assertRegex(self.commands(), r'machines delete -- webui-1key-')
+        self.assertNotIn('machines delete -- webui-owned', self.commands())
 
     def test_backup_restores_dangling_symlink(self):
         path = self.base/'link'

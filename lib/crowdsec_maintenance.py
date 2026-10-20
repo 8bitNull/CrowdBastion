@@ -1,7 +1,6 @@
 """Structured maintenance, health summaries and rule snapshots."""
 import hashlib
 import json
-import math
 import os
 import re
 from pathlib import Path
@@ -9,7 +8,7 @@ import shutil
 import stat
 import sys
 import yaml
-from crowdbastion_health import emit
+from crowdbastion_health import acquisition_state, emit, parse_acquisition_metrics
 
 from crowdsec_realip_diagnose import http_directives
 from crowdsec_web import mount_path
@@ -136,20 +135,7 @@ def restore(destination):
 
 
 def acquisition_metrics(acquisition):
-    metrics = json.loads(Path(acquisition).read_text())
-    if not isinstance(metrics, dict):
-        raise ValueError('invalid acquisition metrics')
-    sources = metrics.get('acquisition', {})
-    if not isinstance(sources, dict):
-        raise ValueError('invalid acquisition metrics')
-    for name, source in sources.items():
-        if not isinstance(name, str) or not isinstance(source, dict):
-            raise ValueError('invalid acquisition source')
-        for key in ('reads', 'parsed', 'unparsed'):
-            value = source.get(key, 0)
-            if type(value) not in (int, float) or (type(value) is float and not math.isfinite(value)) or value < 0:
-                raise ValueError('invalid acquisition count')
-    return sources
+    return parse_acquisition_metrics(Path(acquisition).read_text())
 
 
 def system_health_metrics(acquisition):
@@ -164,10 +150,11 @@ def system_health_metrics(acquisition):
             continue
         found = True
         reads, parsed = source.get('reads', 0), source.get('parsed', 0)
-        if not reads:
+        state = acquisition_state({name: source})
+        if state == 'pending':
             emit('logs', 'pending')
             print(f'[尚未验证] 系统/SSH 来源 {name}：reads={reads}，parsed={parsed}；可能空闲或刚重启。')
-        elif not parsed:
+        elif state == 'fault':
             emit('logs', 'fault')
             print(f'[异常] 系统/SSH 来源 {name}：reads={reads}，parsed=0；请核对格式、标签与解析器。')
             error = True
@@ -186,13 +173,13 @@ def health_metrics(acquisition, appsec):
     reads = sum(source.get('reads', 0) for source in sources.values())
     web = [source for name, source in sources.items() if 'access' in name or 'nginx' in name or '/sites/' in name]
     parsed = sum(source.get('parsed', 0) for source in web)
-    emit('logs', 'ok' if web and all(source.get('reads', 0) and source.get('parsed', 0) for source in web) else 'pending')
+    state = acquisition_state(dict(enumerate(web)))
+    emit('logs', state)
     if reads:
         print(f'[正常] 日志采集：已读 {reads} 行；HTTP 已解析 {parsed} 行。')
     else:
         print('[尚未验证] 日志采集：没有新行指标，可能空闲或刚重启。')
-    if any(source.get('reads', 0) and not source.get('parsed', 0) for source in web):
-        emit('logs', 'fault')
+    if state == 'fault':
         print('[异常] HTTP 日志有读取但无解析，请核对格式和标签。')
         return 1
     data = json.loads(Path(appsec).read_text()) if Path(appsec).is_file() else {}

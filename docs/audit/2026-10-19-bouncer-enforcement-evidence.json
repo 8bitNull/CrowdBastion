@@ -1,0 +1,1041 @@
+{
+  "schema_version": 1,
+  "scope": "Live Bouncer, real host INPUT hooks; veth clients, private echo endpoints and TCP connects to existing realm listeners. Not an external WAN/CDN test.",
+  "probe_sha256": "45e87af768a8b2ba76f33b17da2d632dd1f5d924bfe5681911be50bc68c3b566",
+  "result": {
+    "tag": "cbverify-7b39b9d63d",
+    "started_at_utc": "2026-10-19T11:12:49.232529+00:00",
+    "scope": "Live Bouncer, real host INPUT hooks; veth clients, private echo endpoints and TCP connects to existing realm listeners. Not an external WAN/CDN test.",
+    "addresses": {
+      "ipv4": {
+        "host": "198.19.252.1",
+        "test": "198.19.252.2",
+        "control": "198.19.252.3"
+      },
+      "ipv6": {
+        "host": "fd7b:cb19:252::1",
+        "test": "fd7b:cb19:252::2",
+        "control": "fd7b:cb19:252::3"
+      }
+    },
+    "decision_duration": "2m",
+    "phases": {
+      "before_ban": [
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        }
+      ],
+      "during_ban": [
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": false,
+          "error": "TimeoutError"
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        }
+      ],
+      "after_removal": [
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "udp",
+          "port": 40957,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv4",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "test",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "echo",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "udp",
+          "port": 19231,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 53551,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 56017,
+          "ok": true
+        },
+        {
+          "kind": "realm_tcp_connect",
+          "family": "ipv6",
+          "role": "control",
+          "protocol": "tcp",
+          "port": 58372,
+          "ok": true
+        }
+      ]
+    },
+    "cleanup": {
+      "additional_removed_ids": [],
+      "remaining_owned_decisions": 0,
+      "namespace_delete_exit_code": 0,
+      "host_link_absent": true,
+      "namespace_absent": true
+    },
+    "services_before": "MainPID=1186183\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1170352\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+    "echo_ports": {
+      "ipv4": 40957,
+      "ipv6": 19231
+    },
+    "created_decisions": [
+      {
+        "id": 2205482,
+        "origin": "cscli",
+        "scenario": "cbverify-7b39b9d63d",
+        "scope": "Ip",
+        "value": "198.19.252.2",
+        "type": "ban"
+      },
+      {
+        "id": 2205483,
+        "origin": "cscli",
+        "scenario": "cbverify-7b39b9d63d",
+        "scope": "Ip",
+        "value": "fd7b:cb19:252::2",
+        "type": "ban"
+      }
+    ],
+    "membership_during_ban": {
+      "ipv4": true,
+      "ipv6": true
+    },
+    "counters_before_probe": {
+      "ip": {
+        "processed": 124859375,
+        "crowdsec-blacklists-CAPI": 47952,
+        "crowdsec-blacklists-crowdsec": 21608,
+        "crowdsec-blacklists-cscli": 0
+      },
+      "ip6": {
+        "processed": 2192836,
+        "crowdsec6-blacklists-CAPI": 872,
+        "crowdsec6-blacklists-crowdsec": 490,
+        "crowdsec6-blacklists-cscli": 0
+      }
+    },
+    "counters_after_probe": {
+      "ip": {
+        "processed": 124860682,
+        "crowdsec-blacklists-CAPI": 47958,
+        "crowdsec-blacklists-crowdsec": 21608,
+        "crowdsec-blacklists-cscli": 5
+      },
+      "ip6": {
+        "processed": 2192900,
+        "crowdsec6-blacklists-CAPI": 872,
+        "crowdsec6-blacklists-crowdsec": 490,
+        "crowdsec6-blacklists-cscli": 5
+      }
+    },
+    "during_ban_matches_expected": true,
+    "drop_counter_deltas": {
+      "ip": 5,
+      "ip6": 5
+    },
+    "removed_decision_ids": [
+      "2205482",
+      "2205483"
+    ],
+    "membership_after_removal": {
+      "ipv4": false,
+      "ipv6": false
+    },
+    "passed": true,
+    "services_after": "MainPID=1186183\nNRestarts=0\nId=crowdsec.service\nActiveState=active\nSubState=running\n\nMainPID=1170352\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nSubState=running\n",
+    "services_unchanged": true,
+    "finished_at_utc": "2026-10-19T11:13:20.221899+00:00"
+  },
+  "phase_summary": {
+    "before_ban": {
+      "test": {
+        "attempted": 10,
+        "succeeded": 10,
+        "timed_out": 0
+      },
+      "control": {
+        "attempted": 10,
+        "succeeded": 10,
+        "timed_out": 0
+      }
+    },
+    "during_ban": {
+      "test": {
+        "attempted": 10,
+        "succeeded": 0,
+        "timed_out": 10
+      },
+      "control": {
+        "attempted": 10,
+        "succeeded": 10,
+        "timed_out": 0
+      }
+    },
+    "after_removal": {
+      "test": {
+        "attempted": 10,
+        "succeeded": 10,
+        "timed_out": 0
+      },
+      "control": {
+        "attempted": 10,
+        "succeeded": 10,
+        "timed_out": 0
+      }
+    }
+  },
+  "web_static_inspection": {
+    "timestamp_utc": "2026-10-19T11:13:41.651863+00:00",
+    "nginx_test_exit_code": 0,
+    "lua_hooks": [
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 2,
+        "directive": "# crowdsec-1key managed Web Bouncer"
+      },
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 3,
+        "directive": "lua_package_path \"/data/crowdsec-1key/lib/?.lua;;\";"
+      },
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 4,
+        "directive": "init_by_lua_file \"/data/crowdsec-1key/init.lua\";"
+      },
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 5,
+        "directive": "access_by_lua_file \"/data/crowdsec-1key/access.lua\";"
+      },
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 6,
+        "directive": "init_worker_by_lua_file \"/data/crowdsec-1key/worker.lua\";"
+      },
+      {
+        "file": "/data/nginx/custom/http_top.conf",
+        "line": 8,
+        "directive": "lua_shared_dict crowdsec_cache 50m;"
+      },
+      {
+        "file": "/data/nginx/custom/server_proxy.conf",
+        "line": 2,
+        "directive": "# crowdsec-1key managed trusted proxy real IP"
+      }
+    ],
+    "location_access_overrides": [],
+    "real_ip_headers": [
+      {
+        "file": "/etc/nginx/nginx.conf",
+        "directive": "real_ip_header X-Real-IP;"
+      },
+      {
+        "file": "/etc/nginx/nginx.conf",
+        "directive": "real_ip_recursive on;"
+      },
+      {
+        "file": "/data/nginx/custom/server_proxy.conf",
+        "directive": "real_ip_header CF-Connecting-IP;"
+      },
+      {
+        "file": "/data/nginx/custom/server_proxy.conf",
+        "directive": "real_ip_recursive on;"
+      }
+    ],
+    "trust_summary": {
+      "unique_cidrs": 273,
+      "trusts_every_ipv4": false,
+      "trusts_every_ipv6": false
+    },
+    "managed_paths": [
+      {
+        "key": "host_target",
+        "path": "/home/docker/npm/data/nginx/custom/http_top.conf"
+      },
+      {
+        "key": "container_target",
+        "path": "/data/nginx/custom/http_top.conf"
+      },
+      {
+        "key": "host_assets",
+        "path": "/home/docker/npm/data/crowdsec-1key"
+      },
+      {
+        "key": "container_assets",
+        "path": "/data/crowdsec-1key"
+      }
+    ],
+    "bouncer_options": [
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 1,
+        "option": "ENABLED",
+        "value": "true"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 10,
+        "option": "BOUNCING_ON_TYPE",
+        "value": "all"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 11,
+        "option": "FALLBACK_REMEDIATION",
+        "value": "ban"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 12,
+        "option": "REQUEST_TIMEOUT",
+        "value": "3000"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 13,
+        "option": "UPDATE_FREQUENCY",
+        "value": "10"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 18,
+        "option": "MODE",
+        "value": "live"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 26,
+        "option": "EXCLUDE_LOCATION",
+        "value": ""
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 42,
+        "option": "APPSEC_URL",
+        "value": "http://127.0.0.1:7422"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 43,
+        "option": "APPSEC_FAILURE_ACTION",
+        "value": "passthrough"
+      },
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+        "line": 49,
+        "option": "APPSEC_DROP_UNREADABLE_BODY",
+        "value": "false"
+      }
+    ],
+    "client_ip_code": [
+      {
+        "file": "/home/docker/npm/data/crowdsec-1key/access.lua",
+        "line": 3,
+        "code": "cs.Allow(ngx.var.remote_addr)"
+      }
+    ],
+    "whitelist_summary": [
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/whitelists.yaml",
+        "ip_count": 2,
+        "cidr_count": 3,
+        "all_ipv4": false,
+        "all_ipv6": false,
+        "expression_count": 0
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/99-admin-whitelist.yaml",
+        "ip_count": 3,
+        "cidr_count": 4,
+        "all_ipv4": false,
+        "all_ipv6": false,
+        "expression_count": 0
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/tg-whitelist.yaml",
+        "ip_count": 0,
+        "cidr_count": 7,
+        "all_ipv4": false,
+        "all_ipv6": false,
+        "expression_count": 0
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/crowdsec-1key-tg-whitelist.yaml",
+        "ip_count": 3,
+        "cidr_count": 0,
+        "all_ipv4": false,
+        "all_ipv6": false,
+        "expression_count": 0
+      }
+    ]
+  },
+  "coverage": {
+    "bouncer_filters": {
+      "mode": "nftables",
+      "update_frequency": "10s",
+      "supported_decisions_types": [
+        "ban"
+      ],
+      "disable_ipv6": false
+    },
+    "acquisition_source_types": {
+      "": 1,
+      "appsec": 1,
+      "file": 26,
+      "journalctl": 1
+    },
+    "parser_allowlists": [
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/whitelists.yaml",
+        "description": "Whitelist events from private ipv4 addresses",
+        "filter": null,
+        "expressions": [],
+        "networks": [
+          {
+            "family": 4,
+            "prefix_length": 16,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 8,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 12,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 32,
+            "globally_routable": false,
+            "more_than_one_address": false
+          },
+          {
+            "family": 6,
+            "prefix_length": 128,
+            "globally_routable": false,
+            "more_than_one_address": false
+          }
+        ]
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/99-admin-whitelist.yaml",
+        "description": "Admin and internal networks",
+        "filter": null,
+        "expressions": [],
+        "networks": [
+          {
+            "family": 4,
+            "prefix_length": 8,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 12,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 16,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 10,
+            "globally_routable": false,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 32,
+            "globally_routable": false,
+            "more_than_one_address": false
+          },
+          {
+            "family": 6,
+            "prefix_length": 128,
+            "globally_routable": false,
+            "more_than_one_address": false
+          },
+          {
+            "family": 4,
+            "prefix_length": 32,
+            "globally_routable": true,
+            "more_than_one_address": false
+          }
+        ]
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/tg-whitelist.yaml",
+        "description": "Whitelist Telegram official IP ranges",
+        "filter": null,
+        "expressions": [],
+        "networks": [
+          {
+            "family": 4,
+            "prefix_length": 20,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          },
+          {
+            "family": 4,
+            "prefix_length": 22,
+            "globally_routable": true,
+            "more_than_one_address": true
+          }
+        ]
+      },
+      {
+        "file": "/etc/crowdsec/parsers/s02-enrich/crowdsec-1key-tg-whitelist.yaml",
+        "description": "Telegram managed whitelist",
+        "filter": null,
+        "expressions": [],
+        "networks": [
+          {
+            "family": 4,
+            "prefix_length": 32,
+            "globally_routable": true,
+            "more_than_one_address": false
+          },
+          {
+            "family": 6,
+            "prefix_length": 128,
+            "globally_routable": true,
+            "more_than_one_address": false
+          },
+          {
+            "family": 4,
+            "prefix_length": 32,
+            "globally_routable": true,
+            "more_than_one_address": false
+          }
+        ]
+      }
+    ]
+  },
+  "bounded_log_correlation": {
+    "timestamp_utc": "2026-10-19T11:16:05.380640+00:00",
+    "current_unique_local_banned_ips": 10,
+    "ips_with_created_timestamp": 10,
+    "max_bytes_per_file": 65536,
+    "max_age_seconds": 3600,
+    "sync_grace_seconds": 60,
+    "files_checked": 33,
+    "counts": {
+      "tail_lines_seen": 2080,
+      "lines_from_current_local_bans": 273
+    },
+    "response_statuses_after_grace": {},
+    "candidate_not_denied_samples": [],
+    "log_format_proxy": "log_format proxy '[$time_local] $upstream_cache_status $upstream_status $status - $request_method $scheme $host \"$request_uri\" [Client $remote_addr] [Length $body_bytes_sent] [Gzip $gzip_ratio] [Sent-to $server] \"$http_user_agent\" \"$http_referer\"';",
+    "limit": "Current local CrowdSec IP bans only; bounded access-log tails; no archived files, CAPI list join or controlled CDN client."
+  },
+  "conclusion": {
+    "live_host_input_ip_ban_enforcement": "passed_for_tested_cases",
+    "external_wan_and_cdn_path": "not_tested",
+    "realm_protocol_and_udp_forwarding": "not_tested; only TCP connect to realm listeners and separate UDP echo",
+    "attack_detection_coverage": "not_established_by_manual_decision_test",
+    "appsec_failure_policy": "passthrough",
+    "drop_unreadable_body": false
+  },
+  "operation_boundary": {
+    "dedicated_nonpublic_test_addresses": true,
+    "decision_duration": "2m",
+    "decisions_added": 2,
+    "decisions_removed_by_owned_id": 2,
+    "service_restarts": false,
+    "production_configuration_edits": false,
+    "temporary_network_removed": true,
+    "test_alert_records": "Normal audit records may remain; historical alerts were not erased."
+  }
+}

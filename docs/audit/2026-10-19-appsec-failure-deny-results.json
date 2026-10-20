@@ -1,0 +1,123 @@
+{
+  "target": {
+    "host": "179.255.121.95",
+    "ssh_port": 53322
+  },
+  "user_authorized_policy": "deny",
+  "change": {
+    "success": true,
+    "backup_dir": "/var/backups/crowdbastion/appsec-deny-20261019T135302Z",
+    "changed_paths": [
+      "/home/docker/npm/data/crowdsec-1key/bouncer.conf",
+      "/etc/crowdsec/crowdsec-1key-web-installs.json"
+    ],
+    "policy_before": "passthrough",
+    "policy_after": "deny",
+    "fallback_remediation": "ban",
+    "other_config_bytes_preserved": true,
+    "managed_resource_hashes_verified": true,
+    "effective_hooks_verified": true,
+    "nginx_syntax_valid": true,
+    "nginx_before": {
+      "master": 317941,
+      "workers": [
+        2051094
+      ]
+    },
+    "nginx_after": {
+      "master": 317941,
+      "workers": [
+        2052528
+      ]
+    },
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2051109",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "service_pids_unchanged": true,
+    "telegram_test_messages_sent": 0,
+    "firewall_changes": 0
+  },
+  "independent_verification": {
+    "success": true,
+    "checked_at_utc": "2026-10-19T13:53:39.416326+00:00",
+    "appsec_failure_action": "deny",
+    "fallback_remediation": "ban",
+    "only_policy_field_and_state_fingerprint_changed": true,
+    "managed_resource_hashes_verified": true,
+    "effective_hooks_verified": true,
+    "nginx_syntax_valid": true,
+    "nginx_master_stable": true,
+    "new_worker_active": true,
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2051109",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "no_service_restarts": true,
+    "telegram_test_messages_sent": 0,
+    "public_or_cdn_probe_performed": false
+  },
+  "runtime": {
+    "validation_dir": "/var/backups/crowdbastion/appsec-deny-validation-20261019T134856Z",
+    "success": true,
+    "test_methods": 1,
+    "cases": 4,
+    "failure_modes": [
+      "connection_refused",
+      "read_timeout",
+      "http_503"
+    ],
+    "denial_status": 403,
+    "failure_upstream_requests": 0,
+    "failure_receipt_cause": "appsec_failure",
+    "healthy_status": 200,
+    "healthy_upstream_requests": 1,
+    "uses_exact_installed_lua": true,
+    "installed_vendor_sha256": "dbc55138687384045b16f6d9f9881b660e16d2e6e2bed0d7cd2ca87e52204979",
+    "production_processes_unchanged": true,
+    "temporary_prefixes_remaining": []
+  },
+  "local_checks": {
+    "only_policy_field_and_fingerprint_changed": true,
+    "rollback_retry_verified": true,
+    "unknown_edit_refused": true,
+    "reload_requires_new_worker": true,
+    "reload_with_unchanged_workers_rejected": true,
+    "rollback_retry_with_worker_confirmation_verified": true
+  },
+  "independent_review": "Passed; no remaining important findings",
+  "scope": {
+    "only_appsec_failure_policy_and_state_fingerprint_changed": true,
+    "lapi_failure_policy_changed": false,
+    "new_install_default_changed": false,
+    "production_appsec_outage_injected": false,
+    "telegram_test_messages_sent": 0,
+    "public_or_cdn_probe_performed": false
+  }
+}

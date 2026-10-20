@@ -210,6 +210,8 @@ sudo bash crowdbastion.sh --disable-v2bx-alerts
 
 接入会安装独占 parser、仅观察场景及 acquisition；在 profiles 最前增加该场景专用的空 decisions／`on_success: break` guard，再校验并重启 CrowdSec，启动 `crowdsec-v2bx-alerts.service`。**该操作会重启核心**，须选择维护窗口。原 SSH／Web 等场景仍走后续原 profiles；本工具不创建观察场景决策。存在同名资产、重复文件采集或配置漂移时拒绝自动修改。
 
+接入按 `config.yaml` 与 `config.yaml.local` 合并后的 `profiles_path` 定位规则；若存在 `profiles_path.local`，guard 写在这个优先执行的文件最前。停用恢复对应文件，保留其他 profiles；配置覆盖变化、优先 profiles 文件新增／移除或 guard 损坏会阻止继续发布。配置和 profiles 的符号链接不接受自动接管。
+
 增量发布只读已有 SQLite，每源每批最多 256 条；私有目录 `/var/lib/crowdsec-v2bx-alerts/` 保存 `events.ndjson`、发布账本与状态，helper／原 profiles 备份位于 `/usr/local/lib/crowdsec-v2bx-alerts/`。输出默认上限 128 MiB，不自动轮转。每条投影携带稳定 `observation_id`，用于本机证据核对，不是 CrowdSec 端去重保证；不要另建重叠 acquisition。
 
 首次发布先用不匹配业务 parser 的 `{}` 探针确认 acquisition 读取量增加，再排空采集积压。正常发布进程重启复用游标；完整待提交批次经内容核对、fsync 后推进游标而不重发。部分写入、输出替换／截断、源库／契约变更、容量耗尽或 CrowdSec InvocationID 改变时停止，状态为 `needs_attention`／`publication_requires_review`，保留证据。观察原始日志的 copytruncate、迟写和找回旧 inode 的限制仍然存在，不以稳定发布 ID 消除原始采集丢失／重采风险。

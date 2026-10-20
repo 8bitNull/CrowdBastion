@@ -48,7 +48,7 @@ PY
     mkdir -p "$(dirname "$REMOTE_CONFIG")" "$(dirname "$REMOTE_BINARY")" "$(dirname "$REMOTE_UNIT")" || return 1
     install -m 0755 "$unpack/crowdsec-firewall-bouncer" "$REMOTE_BINARY" || return 1
     # shellcheck disable=SC2016
-    sed 's/${BACKEND}/nftables/g; s/${API_KEY}//g' "$unpack/crowdsec-firewall-bouncer.yaml" > "$REMOTE_CONFIG" || return 1
+    sed 's/${BACKEND}/iptables/g; s/${API_KEY}//g' "$unpack/crowdsec-firewall-bouncer.yaml" > "$REMOTE_CONFIG" || return 1
     chmod 600 "$REMOTE_CONFIG" || return 1
     cat > "$REMOTE_UNIT" <<EOF
 # Managed by crowdsec-1key remote-bouncer-v1
@@ -120,6 +120,9 @@ remote_bouncer_change() (
     # Guards precede installing, stopping or backing up anything.
     if [[ "$action" == remove ]]; then remote_bouncer_tool owned || { rm -rf "$stage"; return 1; }
     else remote_bouncer_tool guard || { rm -rf "$stage"; return 1; }; fi
+    if [[ "$action" != remove && -f "$REMOTE_CONFIG" ]]; then
+        python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "$REMOTE_CONFIG" || { rm -rf "$stage"; return 1; }
+    fi
     for index in "${!paths[@]}"; do
         [[ ! -f "${paths[$index]}" ]] || cp -p -- "${paths[$index]}" "$stage/${copies[$index]}" || { rm -rf "$stage"; return 1; }
     done
@@ -152,7 +155,8 @@ remote_bouncer_change() (
         require_commands curl sha256sum install || return 1
         # Runtime packages only: never run upstream install.sh or package postinst
         # (they may register a bouncer against the existing local core).
-        install_packages nftables || return 1
+        log_info '新装远端执行节点使用 iptables/ipset，规避 nftables 续封缺陷。'
+        install_packages iptables ipset || return 1
         fresh=true
         remote_bouncer_release "$stage" || return 1
     fi

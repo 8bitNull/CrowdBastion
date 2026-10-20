@@ -14,7 +14,7 @@ BOUNCER_SHA = '2a3dceeb166b3fabb450c1c9a5ccd960d1493f5aa52677a9be2be36d6014a0bf'
 HTTP_SHA = 'f52a0538b20a2d45025f318c18a138b78f6f88f07713dd0ed502183cb3d16f17'
 WAF_PATH = '/usr/local/openresty/1pwaf/data/conf/waf.conf'
 PHASES = {'init': 'init_by_lua_file', 'access': 'access_by_lua_file',
-          'worker': 'init_worker_by_lua_file'}
+          'worker': 'init_worker_by_lua_file', 'log': 'log_by_lua_file'}
 ORIGINAL = {'init': '/usr/local/openresty/1pwaf/init.lua',
             'access': '/usr/local/openresty/1pwaf/waf.lua',
             'worker': '/usr/local/openresty/1pwaf/worker.lua',
@@ -81,7 +81,6 @@ def plan_install(effective, mounts, image, network, version, transport=None):
     is_waf = ('# configuration file '+WAF_PATH+':') in effective
     if is_waf:
         expected = [[directive, ORIGINAL[phase]] for phase, directive in PHASES.items()]
-        expected.append(['log_by_lua_file', ORIGINAL['log']])
         if sorted(hooks) != sorted(expected) or len(packages) != 1:
             raise ValueError('现有 Lua 钩子不符合已验证的 1Panel WAF 布局，未覆盖原逻辑')
         target = WAF_PATH
@@ -128,11 +127,12 @@ def plan_install(effective, mounts, image, network, version, transport=None):
     return result
 
 
-def render_hooks(plan):
+def render_hooks(plan, execution=True):
     assets = safe_path(plan['container_assets'])
     text = plan['original'] or ''
+    phases = PHASES if execution else {k: v for k, v in PHASES.items() if k != 'log'}
     if plan['mode'] == '1panel':
-        for phase, directive in PHASES.items():
+        for phase, directive in phases.items():
             text = re.sub(r'\b'+directive+r'\s+[^;]+;',
                           directive+' "'+assets+'/'+phase+'.lua";', text)
         text = re.sub(r'(lua_package_path\s+["\'])([^"\']+)(["\']\s*;)',
@@ -141,14 +141,18 @@ def render_hooks(plan):
         text += '\n# crowdsec-1key managed Web Bouncer\n'
         text += 'lua_package_path "'+assets+'/lib/?.lua;;";\n'
         text += ''.join(directive+' "'+assets+'/'+phase+'.lua";\n'
-                        for phase, directive in PHASES.items())
+                        for phase, directive in phases.items())
     text += '\nlua_shared_dict crowdsec_cache 50m;\n'
     files = {'target': text}
-    for phase in PHASES:
+    for phase in phases:
         body = '-- crowdsec-1key: original WAF runs first\n'
         if plan['mode'] == '1panel':
             # dofile is a C-call boundary and breaks yielding ngx.exit/cosocket calls.
             body += 'assert(loadfile('+json.dumps(ORIGINAL[phase])+'))()\n'
+        if phase == 'log':
+            body += 'require("crowdsec_1key.execution").emit()\n'
+            files[phase+'.lua'] = body
+            continue
         body += 'local cs = require "crowdsec_1key.crowdsec"\n'
         if phase == 'init':
             body += 'local ok, err = cs.init('+json.dumps(assets+'/bouncer.conf')+', "crowdsec-openresty-bouncer/v1.2.3")\nif ok == nil then error(err) end\n'
@@ -163,6 +167,110 @@ def render_hooks(plan):
 def verify_archive(path, expected_sha256):
     if hashlib.sha256(Path(path).read_bytes()).hexdigest() != expected_sha256:
         raise ValueError('官方资源 SHA256 校验失败，未安装')
+
+
+def instrument_execution(content):
+    """Fail closed on vendor drift; never change the remediation response."""
+    replacements = [
+        ('function csmod.AppSecCheck(ip)\n',
+         'function csmod.AppSecCheck(ip)\n  ngx.ctx.crowdsec_1key_appsec_cause = "appsec_failure"\n', 1),
+        ('    return false, runtime.conf["FALLBACK_REMEDIATION"], ngx.HTTP_FORBIDDEN, {}, nil',
+         '    ngx.ctx.crowdsec_1key_appsec_cause = "appsec_body"\n'
+         '    return false, runtime.conf["FALLBACK_REMEDIATION"], ngx.HTTP_FORBIDDEN, {}, nil', 1),
+        ('  elseif res.status == 403 then\n    ok = false',
+         '  elseif res.status == 403 then\n    ngx.ctx.crowdsec_1key_appsec_cause = "appsec_rule"\n    ok = false', 1),
+        ('        ban.apply(ret_code)',
+         '        require("crowdsec_1key.execution").mark(ip,\n'
+         '          remediationSource == flag.APPSEC_SOURCE and ngx.ctx.crowdsec_1key_appsec_cause or "lapi_ban",\n'
+         '          ret_code or ban.ret_code)\n        ban.apply(ret_code)', 2),
+    ]
+    lapi_deny = '      if runtime.conf["LAPI_FAILURE_ACTION"] == "deny" then\n'
+    if lapi_deny in content:
+        replacements.append((lapi_deny, lapi_deny+
+            '        require("crowdsec_1key.execution").mark(ip, "lapi_failure", ngx.HTTP_FORBIDDEN)\n', 1))
+    for before, after, count in replacements:
+        if content.count(before) != count:
+            raise ValueError('Bouncer 执行记录分支不匹配，未安装')
+        content = content.replace(before, after)
+    return content
+
+
+def patch_lapi_policy(content, parser=False):
+    """Add the known live-query policy without changing compatibility defaults."""
+    if 'LAPI_FAILURE_ACTION' in content:
+        if parser and 'unsupported LAPI_FAILURE_ACTION:' not in content:
+            raise ValueError('已有 LAPI 故障策略解析逻辑不匹配')
+        return content
+    if parser:
+        replacements = [
+            ("'APPSEC_FAILURE_ACTION',", "'APPSEC_FAILURE_ACTION', 'LAPI_FAILURE_ACTION',"),
+            ('    [\'APPSEC_FAILURE_ACTION\'] = "passthrough",',
+             '    [\'APPSEC_FAILURE_ACTION\'] = "passthrough",\n'
+             '    [\'LAPI_FAILURE_ACTION\'] = "passthrough",'),
+            ('            if key == "ENABLED" then\n',
+             '            if key == "LAPI_FAILURE_ACTION" then\n'
+             '                if not has_value({"deny", "passthrough"}, value) then\n'
+             '                    return nil, "unsupported LAPI_FAILURE_ACTION: " .. value\n'
+             '                end\n'
+             '            elseif key == "ENABLED" then\n'),
+        ]
+    else:
+        lookup = ('    if err ~= nil then\n'
+                  '      ngx.log(ngx.ERR, "[Crowdsec] bouncer error: " .. err)\n')
+        mark = ('        require("crowdsec_1key.execution").mark(ip, "lapi_failure", ngx.HTTP_FORBIDDEN)\n'
+                if 'crowdsec_1key_appsec_cause' in content else '')
+        replacements = [(lookup, lookup+'      if runtime.conf["LAPI_FAILURE_ACTION"] == "deny" then\n'
+                         +mark+'        return ngx.exit(ngx.HTTP_FORBIDDEN)\n      end\n')]
+    for before, after in replacements:
+        if content.count(before) != 1:
+            raise ValueError('LAPI 故障策略分支不匹配，未修改受管资源')
+        content = content.replace(before, after, 1)
+    return content
+
+
+def upgrade_execution(state_path, name, mounts):
+    """Upgrade only a verified managed installation. Caller owns backup/reload/rollback."""
+    entry = check_install(state_path, name, mounts)
+    if entry['status'] != 'installed':
+        raise ValueError('安装未完成，未升级执行记录')
+    assets = Path(entry['host_assets'])
+    files = render_hooks(entry)
+    target = Path(entry['host_target'])
+    module = assets/'lib/crowdsec_1key/crowdsec.lua'
+    parser = assets/'lib/crowdsec_1key/plugins/crowdsec/config.lua'
+    content = module.read_text()
+    recorder = Path(__file__).with_name('crowdsec_execution.lua').read_text()
+    if 'crowdsec_1key_appsec_cause' in content:
+        if (target.read_text() != files['target'] or (assets/'log.lua').read_text() != files['log.lua']
+                or (assets/'lib/crowdsec_1key/execution.lua').read_text() != recorder):
+            raise ValueError('执行记录版本或钩子不一致，请人工核对')
+    elif target.read_text() != render_hooks(entry, execution=False)['target']:
+        raise ValueError('旧钩子布局不匹配，未升级')
+    content = patch_lapi_policy(content)
+    parser_content = patch_lapi_policy(parser.read_text(), parser=True)
+    if 'crowdsec_1key_appsec_cause' not in content:
+        content = instrument_execution(content)
+    fallback = ('  if runtime.conf["APPSEC_FAILURE_ACTION"] == DENY then\n'
+                '    ok = false\n    remediation = runtime.conf["FALLBACK_REMEDIATION"]\n')
+    if content.count(fallback) != 1:
+        raise ValueError('AppSec 失败拒绝分支不匹配，未升级')
+    if fallback+'    status_code = ngx.HTTP_FORBIDDEN\n' not in content:
+        content = content.replace(fallback, fallback+'    status_code = ngx.HTTP_FORBIDDEN\n', 1)
+    changes = {module: content, parser: parser_content, assets/'log.lua': files['log.lua'],
+               assets/'lib/crowdsec_1key/execution.lua': recorder,
+               assets/'target.conf': files['target'], target: files['target']}
+    if all(path.is_file() and path.read_text() == text for path, text in changes.items()):
+        return False
+    # Validate everything before the first write; shell transaction restores partial I/O failures.
+    for path, text in changes.items():
+        path.write_text(text)
+        if path != target:
+            path.chmod(0o644)
+    state = read_state(state_path)
+    state[name]['installed_sha'] = hashlib.sha256(files['target'].encode()).hexdigest()
+    state[name]['resource_hashes'] = resource_hashes(assets)
+    save_state(state_path, state)
+    return True
 
 
 def stage_assets(plan, bouncer_archive, http_archive, stage, key, api_url):
@@ -200,6 +308,18 @@ def stage_assets(plan, bouncer_archive, http_archive, stage, key, api_url):
                 else:
                     continue
                 content = tar.extractfile(member).read().decode()
+                if rel == 'lua/lib/crowdsec.lua':
+                    # v1.2.3 carries the initial HTTP 200 into AppSec failure denial.
+                    fallback = ('  if runtime.conf["APPSEC_FAILURE_ACTION"] == DENY then\n'
+                                '    ok = false\n'
+                                '    remediation = runtime.conf["FALLBACK_REMEDIATION"]\n')
+                    if content.count(fallback) != 1:
+                        raise ValueError('AppSec 失败拒绝分支不匹配，未安装')
+                    content = content.replace(fallback, fallback + '    status_code = ngx.HTTP_FORBIDDEN\n', 1)
+                    content = patch_lapi_policy(content)
+                    content = instrument_execution(content)
+                if rel == 'lua/lib/plugins/crowdsec/config.lua':
+                    content = patch_lapi_policy(content, parser=True)
                 if dest.suffix == '.lua':
                     content = namespace(content)
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -209,7 +329,13 @@ def stage_assets(plan, bouncer_archive, http_archive, stage, key, api_url):
     content = conf.read_text().replace('${CROWDSEC_LAPI_URL}', api_url.replace('localhost', '127.0.0.1').rstrip('/')+'/').replace('${API_KEY}', key.strip())
     content = content.replace('/var/lib/crowdsec/lua/templates/', plan['container_assets']+'/templates/')
     conf.write_text(content)
+    # New managed installations choose security first. Never apply this to an
+    # existing installation: upgrades preserve its explicitly selected policy.
+    from crowdsec_appsec import set_policy
+    set_policy(conf, 'false', 'deny', 'deny')
     conf.chmod(0o600)
+    shutil.copyfile(Path(__file__).with_name('crowdsec_execution.lua'),
+                    stage/'lib/crowdsec_1key/execution.lua')
     for name, text in render_hooks(plan).items():
         if name != 'target':
             (stage/name).write_text(text)
@@ -336,6 +462,21 @@ def main(args):
     elif action == 'check':
         state, name, mounts, destination = args
         save_state(destination, check_install(state, name, json.loads(Path(mounts).read_text())))
+    elif action == 'lapi-policy-supported':
+        state, name, mounts = args
+        entry = check_install(state, name, json.loads(Path(mounts).read_text()))
+        assets = Path(entry['host_assets'])/'lib/crowdsec_1key'
+        module = (assets/'crowdsec.lua').read_text()
+        parser = (assets/'plugins/crowdsec/config.lua').read_text()
+        if (entry['status'] != 'installed' or
+                not re.search(r'if runtime\.conf\["LAPI_FAILURE_ACTION"\] == "deny" then\s+'
+                              r'(?:require\("crowdsec_1key\.execution"\)\.mark\([^\n]*\)\s+)?'
+                              r'return ngx\.exit\(ngx\.HTTP_FORBIDDEN\)', module) or
+                'unsupported LAPI_FAILURE_ACTION:' not in parser):
+            raise ValueError('当前受管模块不支持 LAPI 故障策略，请先升级并验证模块')
+    elif action == 'upgrade-execution':
+        state, name, mounts = args
+        print('updated' if upgrade_execution(state, name, json.loads(Path(mounts).read_text())) else 'current')
     elif action == 'active-hooks':
         state, name, mounts, effective = args
         entry = check_install(state, name, json.loads(Path(mounts).read_text()))
@@ -345,6 +486,13 @@ def main(args):
         access = [words for _, words, _ in directives(text) if words and words[0].startswith('access_by_lua')]
         if access != [['access_by_lua_file', entry['container_assets']+'/access.lua']]:
             raise ValueError('有效请求钩子与受管理安装不一致')
+        log_hooks = [words for _, words, _ in directives(text) if words and words[0].startswith('log_by_lua')]
+        if Path(entry['host_target']).read_text() == render_hooks(entry)['target']:
+            expected_log = [['log_by_lua_file', entry['container_assets']+'/log.lua']]
+        else:
+            expected_log = [['log_by_lua_file', ORIGINAL['log']]] if entry['mode'] == '1panel' else []
+        if log_hooks != expected_log:
+            raise ValueError('有效日志钩子被覆盖或与受管理安装不一致')
         if any(words == ['satisfy', 'any'] for _, words, _ in directives(text)):
             raise ValueError('访问控制可能绕过请求钩子')
         print('crowdsec')

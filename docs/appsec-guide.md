@@ -73,7 +73,17 @@ Docker internal bridge 没有默认网关时，容器检查结果中的 `Gateway
 
 AppSec 正文/故障策略可用 `--appsec-policy` 或菜单 `1 → 2 → 5` 检查并明确设置。支持标准宿主机 Bouncer，或输入 `docker` 选择持久化容器配置；不修改原 `APPSEC_URL`。`APPSEC_DROP_UNREADABLE_BODY=true` 会拒绝无法分析的正文，`APPSEC_FAILURE_ACTION=deny` 会按上游故障策略拒绝请求，需先评估业务。
 
-真实验证发现官方 OpenResty Bouncer 1.2.3 在连接失败时的 deny 页面可能返回 HTTP 200，需结合响应内容及后端是否收到请求确认阻断。保留默认值直到明确选择，修改前备份、校验重载，原生安装记录同步更新以保留撤销能力。
+官方 OpenResty Bouncer 1.2.3 的 AppSec 故障拒绝分支原先可能返回 HTTP 200。本项目生成的原生容器 Bouncer 已修正为 403。已有本工具托管容器可重新运行 `--install-web-bouncer`，选择原容器，升级受管 Lua、策略解析器及执行记录钩子；保留原账号、凭据和策略，更新资源摘要并校验重载，失败回滚。非托管安装需单独核对。故障测试还应检查业务后端是否收到请求。
+
+本项目新装的原生容器 Bouncer 明确设置 `APPSEC_FAILURE_ACTION=deny`、`LAPI_FAILURE_ACTION=deny`，正文不可读策略仍为 `false`。已有安装升级时保留原配置；旧配置未指定 LAPI 策略时，模块仍以 `passthrough` 保持兼容。`LAPI_FAILURE_ACTION` 只控制 `MODE=live` 下的决策查询错误；设为 `deny` 时立即返回 403，后续 AppSec 或验证码逻辑不能覆盖该拒绝。
+
+`--appsec-policy` 对已验证能力的托管容器分别提供 AppSec、LAPI 故障策略选择；LAPI 留空保留原值。策略修改和受管模块升级会核对运行中的 master 与 worker：重载后最多等待 10 秒，以连续两次采样确认新 worker 存活，并要求本次 master 重载日志中的完整 worker 启动记录与其对应，再检查托管请求钩子。仅配置测试通过、重载命令成功或 worker PID 更替仍不足以证明新策略生效：Lua 初始化失败后，master 可能使用旧配置重生崩溃的 worker。验证失败或提交前收到 INT/TERM 时恢复本次配置及安装记录，并检查恢复重载；恢复未确认时保留备份并明确提示人工核对。宿主机官方包、其他来源或尚未升级的模块不会被假定支持 LAPI 策略，工具会明确提示；应先完成受管模块升级，再选择需要的策略。
+
+该重载验证要求主配置文件直接声明普通文件类型的 `error_log /绝对路径/error.log notice;`（`info`、`debug` 级别也可），且该日志已由运行中的 master 打开并可由管理脚本读取。容器通过实际 master 的文件描述符及 PID 命名空间核对。请先按现有部署方式加载日志设置，再运行策略修改或托管模块升级；工具不会自动改动网站日志配置。仅写入 stderr 管道、syslog、隐式默认日志、相对路径、仅在 include 文件声明或无法读取日志时，自动重载验证会停止并提示人工核对；stderr 已重定向至普通文件时可验证。日志轮转、截断、覆盖或本次新增记录超过 1 MiB 导致证据不完整时，也返回未确认，不会用旧日志判定成功。
+
+容器应分别使用自己的错误日志文件。若另一个进程持有同一日志文件，且在其命名空间中显示的 PID 与目标 master 相同（例如两个容器的 master 都是 PID 1），记录归属无法区分，工具会拒绝自动验证；无法检查相关 `/proc` 元数据时同样停止。
+
+需要安全优先时，应明确选择 `APPSEC_FAILURE_ACTION=deny` 和 `LAPI_FAILURE_ACTION=deny`：相应检查失败会拒绝正常访客，直至服务恢复。有效的决策缓存仍按 `CACHE_EXPIRATION` 到期，例如配置为 1 秒时，已有允许缓存可在其剩余有效期内继续使用；这不是瞬时探测服务故障的开关。`stream` 模式的后台同步故障不受新增 LAPI 策略控制。部署前应核对 `.local` 覆盖、有效请求钩子和两端点实际密钥认证，部署后验证受保护的 HTTPS 页面；HTTP 跳转成功不足以证明请求检查正常。
 
 已有 Web Bouncer 接入、停用和状态检查会检查 `.local` 覆盖、重复 AppSec 键以及非规范 `APPSEC_URL` 赋值，遇到未明确解释的覆盖会停止；容器内无法检查的 `.local` 也不会当成不存在。请先核对配置并规范为 `APPSEC_URL=...`，不要为了通过检查直接删掉已有覆盖。
 

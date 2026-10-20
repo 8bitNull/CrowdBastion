@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "scope": "Authorized target VPS; read-only runtime acceptance and temporary staging of current diagnostic sources",
+  "started_at_utc": "2026-10-19T09:36:02Z",
+  "snapshot_at_utc": "2026-10-19T09:39:28.495192+00:00",
+  "completed_at_utc": "2026-10-19T09:41:44.092575+00:00",
+  "verdict": {
+    "read_only_runtime": "passed_within_scope",
+    "full_production_acceptance": "not_approved",
+    "blocking_finding": "Installed Telegram bot lacks current protected-address guard",
+    "unverified": [
+      "controlled external TCP/UDP blocking and recovery",
+      "site-level real IP and AppSec correlation",
+      "IPv6 local-decision membership without a current sample",
+      "current release upgrade and lifecycle",
+      "long-term stability and capacity"
+    ]
+  },
+  "source": {
+    "installed_checkout_head": "c70c1672a6ab4fc26762c9d59f3a0b363f8a93e5",
+    "workspace_head": "e960b085e2f517186b4379760644568271a6674e",
+    "diagnosed_source": "working tree contents; includes existing uncommitted changes",
+    "entrypoint_sha256": "fadde4746360114040c1a9edf2fa707f77875968e199544c415a6c5386b6358d",
+    "bot_sha256": "2b9234363d343149a3cbb00b90504d913a13c0effff3db07a5ec05e828dd1f43",
+    "safety_module_sha256": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+    "verified_source_files": 41,
+    "local_source_matches_manifest": true
+  },
+  "services": {
+    "crowdsec.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "Result": "success",
+      "NRestarts": "0",
+      "MemoryCurrent": "215293952",
+      "MemoryPeak": "451375104"
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "Result": "success",
+      "NRestarts": "0",
+      "MemoryCurrent": "22814720",
+      "MemoryPeak": "50683904"
+    },
+    "crowdsec-1key-bot.service": {
+      "ActiveState": "active",
+      "SubState": "running",
+      "Result": "success",
+      "NRestarts": "0",
+      "MemoryCurrent": "53248000",
+      "MemoryPeak": "257376256"
+    }
+  },
+  "os": "Debian GNU/Linux 13.7 amd64",
+  "versions": {
+    "crowdsec": "v1.8.1-debian-pragmatic-amd64-909b5157",
+    "firewall_bouncer": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56",
+    "web_bouncer": "v1.2.3"
+  },
+  "diagnostics": [
+    {
+      "command": "--status-details",
+      "exit_code": 2,
+      "summary": "检查结论：运行检查通过，实际拦截待验证"
+    },
+    {
+      "command": "--relay-status-details",
+      "exit_code": 2,
+      "summary": "检查结论：运行检查通过，实际拦截待验证"
+    },
+    {
+      "command": "--check-logs",
+      "exit_code": 0,
+      "summary": "[INFO] 日志路径检查完成，待调整 0 项采集。"
+    }
+  ],
+  "logging": {
+    "discovered_existing_files": 63,
+    "duplicate_existing_files": 0,
+    "pending_acquisition_additions": 0,
+    "limit": "Discovered runtime log paths only; not a guarantee for every application"
+  },
+  "firewall": {
+    "backend": "nftables",
+    "chain_summary": {
+      "ip": {
+        "exit_code": 0,
+        "chains": [
+          {
+            "family": "ip",
+            "table": "crowdsec",
+            "name": "crowdsec-chain-input",
+            "handle": 1,
+            "type": "filter",
+            "hook": "input",
+            "prio": -10,
+            "policy": "accept"
+          },
+          {
+            "family": "ip",
+            "table": "crowdsec",
+            "name": "crowdsec-chain-forward",
+            "handle": 4,
+            "type": "filter",
+            "hook": "forward",
+            "prio": -10,
+            "policy": "accept"
+          }
+        ],
+        "sets": [
+          {
+            "name": "crowdsec-blacklists-CAPI",
+            "element_count": 17127
+          },
+          {
+            "name": "crowdsec-blacklists-crowdsec",
+            "element_count": 9
+          }
+        ],
+        "drop_rule_count": 4
+      },
+      "ip6": {
+        "exit_code": 0,
+        "chains": [
+          {
+            "family": "ip6",
+            "table": "crowdsec6",
+            "name": "crowdsec6-chain-input",
+            "handle": 1,
+            "type": "filter",
+            "hook": "input",
+            "prio": -10,
+            "policy": "accept"
+          },
+          {
+            "family": "ip6",
+            "table": "crowdsec6",
+            "name": "crowdsec6-chain-forward",
+            "handle": 4,
+            "type": "filter",
+            "hook": "forward",
+            "prio": -10,
+            "policy": "accept"
+          }
+        ],
+        "sets": [
+          {
+            "name": "crowdsec6-blacklists-CAPI",
+            "element_count": 526
+          },
+          {
+            "name": "crowdsec6-blacklists-crowdsec",
+            "element_count": 0
+          }
+        ],
+        "drop_rule_count": 4
+      }
+    },
+    "existing_local_decision_check": {
+      "returned_decisions": 9,
+      "local_unique_ips": 9,
+      "results": [
+        {
+          "family": "ip",
+          "set": "crowdsec-blacklists-crowdsec",
+          "checked": 9,
+          "present": 9,
+          "unmatched_or_error": {}
+        },
+        {
+          "family": "ip6",
+          "set": "crowdsec6-blacklists-crowdsec",
+          "checked": 0,
+          "present": 0,
+          "unmatched_or_error": {}
+        }
+      ]
+    }
+  },
+  "appsec": {
+    "snapshot": {
+      "127.0.0.1:7422/": {
+        "blocked": 1237,
+        "processed": 127528
+      }
+    },
+    "later_snapshot": {
+      "127.0.0.1:7422/": {
+        "blocked": 1237,
+        "processed": 127544
+      }
+    },
+    "limit": "Natural traffic and cumulative counters; no controlled request correlation"
+  },
+  "bot_finding": {
+    "installed_script_sha256": "b9c34c212adfd1926aff99b61ed8b29c621dc57b7a1c04d90bf6ff6259b4bc22",
+    "installed_safety_module_exists": false,
+    "installed_safety_module_reference": false,
+    "offline_reproduction": {
+      "method": "Only the installed validated_ip, esc and action_ban functions were extracted using AST and executed locally; run_cmd was replaced with an in-memory recorder. No real cscli command or Telegram message was executed.",
+      "input_class": "target VPS own public IPv4",
+      "decision_add_would_be_called": true,
+      "recorded_call_count": 1,
+      "response_reports_success": true
+    },
+    "validated_ip_behavior": "ipaddress.ip_address(value.strip()) only",
+    "installed_action_ban_line": 678,
+    "current_working_tree_guard_line": 686
+  },
+  "resource_snapshot": {
+    "memory_output": "               total        used        free      shared  buff/cache   available\nMem:             956         633          71           4         393         323\nSwap:           1023         681         342\n",
+    "disk_output": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/vda1        20G  6.2G   13G  34% /\n",
+    "vmstat_output": "procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu\n 1  0 697760  73016   6448 396264    2    2    88    26  439    2  0  1 98  0  0  0\n 0  0 696900  73016   6448 396264    0    0     8     4  603  501  0  2 97  1  0  0\n 0  0 696796  73016   6448 396272    0    0     0     0  567  326  0  1 99  0  0  0\n",
+    "limit": "Brief snapshots; does not establish long-term capacity or leak freedom"
+  },
+  "journal_checks": {
+    "last_24_hours_warning_priority": {
+      "crowdsec.service": {
+        "exit_code": 0,
+        "warning_or_higher_count": 0,
+        "categories": {},
+        "first_timestamp_us": null,
+        "last_timestamp_us": null
+      },
+      "crowdsec-firewall-bouncer.service": {
+        "exit_code": 0,
+        "warning_or_higher_count": 0,
+        "categories": {},
+        "first_timestamp_us": null,
+        "last_timestamp_us": null
+      },
+      "crowdsec-1key-bot.service": {
+        "exit_code": 0,
+        "warning_or_higher_count": 0,
+        "categories": {},
+        "first_timestamp_us": null,
+        "last_timestamp_us": null
+      }
+    },
+    "kernel_oom": {
+      "query_exit_code": 0,
+      "max_entries": 3000,
+      "matching_entries": 0
+    },
+    "limit": "Bounded journald query only; not all application file logs"
+  },
+  "final_verification": {
+    "source_manifest_matches_remote": true,
+    "config_files_hash_checked_after_diagnostics": 8,
+    "config_hashes_match_snapshot": true,
+    "service_main_pids_match_snapshot": true,
+    "final_services_running": true,
+    "remote_staging_removed": true
+  },
+  "operation_boundary": {
+    "service_restarts_requested": false,
+    "production_configuration_writes_requested": false,
+    "decisions_created_or_deleted": false,
+    "firewall_mutations_requested": false,
+    "telegram_messages_sent": false,
+    "temporary_source_staging_created_and_removed": true
+  },
+  "verification_commands": [
+    "systemctl show crowdsec.service crowdsec-firewall-bouncer.service crowdsec-1key-bot.service -p Id -p ActiveState -p SubState -p Result -p NRestarts -p MainPID",
+    "cscli lapi status",
+    "cscli bouncers list -o json",
+    "cscli metrics -o json",
+    "cscli decisions list -o json",
+    "nft -j list table ip crowdsec",
+    "nft -j list table ip6 crowdsec6",
+    "nft get element ip crowdsec crowdsec-blacklists-crowdsec { <existing-decision-ip> }",
+    "bash <private-staging>/crowdbastion.sh --status-details",
+    "bash <private-staging>/crowdbastion.sh --relay-status-details",
+    "bash <private-staging>/crowdbastion.sh --check-logs"
+  ]
+}

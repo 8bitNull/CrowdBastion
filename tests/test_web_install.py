@@ -52,7 +52,9 @@ class WebInstall(unittest.TestCase):
         self.assertEqual(plan['host_target'], str(self.waf))
         files = self.web.render_hooks(plan)
         text = files['target']
-        self.assertIn('log_by_lua_file /usr/local/openresty/1pwaf/log_and_traffic.lua;', text)
+        self.assertIn('log_by_lua_file "'+plan['container_assets']+'/log.lua";', text)
+        self.assertIn('loadfile("/usr/local/openresty/1pwaf/log_and_traffic.lua")', files['log.lua'])
+        self.assertLess(files['log.lua'].index('loadfile('), files['log.lua'].index('.emit()'))
         self.assertIn('lua_shared_dict waf_sql 300m;', text)
         self.assertIn('/usr/local/openresty/1pwaf/lib/?.lua', text)
         self.assertIn('crowdsec_cache', text)
@@ -114,7 +116,7 @@ class WebInstall(unittest.TestCase):
     def test_only_owned_resource_paths_are_generated(self):
         plan = self.plan()
         assets = self.web.render_hooks(plan)
-        self.assertEqual(set(assets), {'target', 'init.lua', 'access.lua', 'worker.lua'})
+        self.assertEqual(set(assets), {'target', 'init.lua', 'access.lua', 'worker.lua', 'log.lua'})
         self.assertEqual(plan['host_assets'], str(self.root/'data/crowdsec-1key'))
 
     def test_archives_require_exact_digest(self):
@@ -142,6 +144,86 @@ class WebInstall(unittest.TestCase):
         self.assertNotIn('${API_KEY}', (stage/'bouncer.conf').read_text())
         self.assertIn('APPSEC_URL=\n', (stage/'bouncer.conf').read_text())
         self.assertFalse((stage/'lib/resty').exists())
+
+    def legacy_install(self):
+        import tarfile
+        import re
+        plan = self.plan()
+        stage = self.stage(plan)
+        state = self.root/'native.json'
+        self.web.apply_install(plan, stage, state, 'openresty', 'cs-native-test')
+        legacy = self.web.render_hooks(plan, execution=False)
+        assets = Path(plan['host_assets'])
+        self.waf.write_text(legacy['target'])
+        (assets/'target.conf').write_text(legacy['target'])
+        (assets/'log.lua').unlink()
+        (assets/'lib/crowdsec_1key/execution.lua').unlink()
+        with tarfile.open('/tmp/crowdsec-official-openresty.tgz') as archive:
+            name = next(n for n in archive.getnames() if n.endswith('/lua/lib/crowdsec.lua'))
+            lua = archive.extractfile(name).read().decode()
+            parser_name = next(n for n in archive.getnames() if n.endswith('/lua/lib/plugins/crowdsec/config.lua'))
+            parser = archive.extractfile(parser_name).read().decode()
+        lua = re.sub(r'(["\'])(plugins\.crowdsec(?:\.[a-zA-Z_]+)*|resty\.http(?:_[a-zA-Z_]+)?)(["\'])',
+                     lambda m: m[1]+'crowdsec_1key.'+m[2]+m[3], lua)
+        (assets/'lib/crowdsec_1key/crowdsec.lua').write_text(lua)
+        (assets/'lib/crowdsec_1key/plugins/crowdsec/config.lua').write_text(parser)
+        config = assets/'bouncer.conf'
+        lines = [line for line in config.read_text().splitlines()
+                 if line.split('=', 1)[0] not in ('APPSEC_FAILURE_ACTION', 'LAPI_FAILURE_ACTION')]
+        config.write_text('\n'.join(lines)+'\nAPPSEC_FAILURE_ACTION=passthrough\n')
+        saved = self.web.read_state(state)
+        saved['openresty'].update(installed_sha=hashlib.sha256(self.waf.read_bytes()).hexdigest(),
+                                 resource_hashes=self.web.resource_hashes(assets))
+        self.web.save_state(state, saved)
+        return plan, state
+
+    def test_execution_upgrade_preserves_policy_and_validates_owned_hashes(self):
+        plan, state = self.legacy_install()
+        config = Path(plan['host_assets'])/'bouncer.conf'
+        before = config.read_bytes()
+        self.assertTrue(self.web.upgrade_execution(state, 'openresty', self.mounts))
+        self.assertEqual(config.read_bytes(), before)
+        self.web.check_install(state, 'openresty', self.mounts)
+        self.assertFalse(self.web.upgrade_execution(state, 'openresty', self.mounts))
+        entry = self.web.read_state(state)['openresty']
+        self.web.restore_install(entry)
+        self.assertEqual(self.waf.read_text(), WAF)
+
+    def test_legacy_upgrade_adds_lapi_policy_support_without_changing_choices(self):
+        plan, state = self.legacy_install()
+        config = Path(plan['host_assets'])/'bouncer.conf'
+        before = config.read_bytes()
+        self.web.upgrade_execution(state, 'openresty', self.mounts)
+        mounts = self.root/'mounts.json'
+        mounts.write_text(json.dumps(self.mounts))
+        try:
+            self.web.main(['lapi-policy-supported', str(state), 'openresty', str(mounts)])
+        except ValueError as exc:
+            self.fail('Legacy runtime upgrade did not install LAPI denial support: '+str(exc))
+        self.assertEqual(config.read_bytes(), before)
+
+    def test_active_hooks_refuse_child_log_override_before_and_after_upgrade(self):
+        plan, state = self.legacy_install()
+        mounts = self.root/'mounts.json'; mounts.write_text(json.dumps(self.mounts))
+        effective = self.root/'effective.txt'
+        for upgrade in [False, True]:
+            if upgrade:
+                self.web.upgrade_execution(state, 'openresty', self.mounts)
+            text = '# configuration file '+REMOTE_WAF+':\n'+self.waf.read_text()
+            effective.write_text(text+'\nserver { location / { log_by_lua_block { ngx.log(ngx.INFO, "other") } } }\n')
+            with self.assertRaisesRegex(ValueError, '日志钩子'):
+                self.web.main(['active-hooks', str(state), 'openresty', str(mounts), str(effective)])
+            effective.write_text(text)
+            self.web.main(['active-hooks', str(state), 'openresty', str(mounts), str(effective)])
+
+    def test_execution_upgrade_refuses_modified_module_without_writing(self):
+        plan, state = self.legacy_install()
+        module = Path(plan['host_assets'])/'lib/crowdsec_1key/crowdsec.lua'
+        module.write_text(module.read_text()+'-- manual change\n')
+        before = self.waf.read_bytes()
+        with self.assertRaisesRegex(ValueError, '资源'):
+            self.web.upgrade_execution(state, 'openresty', self.mounts)
+        self.assertEqual(self.waf.read_bytes(), before)
 
     def test_install_owns_only_new_resources_and_prevents_reinstall(self):
         plan = self.plan()

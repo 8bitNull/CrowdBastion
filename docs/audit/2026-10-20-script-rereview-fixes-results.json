@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "recorded_at": "2026-10-19T23:22:26.763514+00:00",
+  "scope": "Approved script review fixes; local fixture and real Nginx/Lua checks only; no VPS deployment, live systemd or real Docker daemon.",
+  "baseline_snapshot": "179e53a19b6a72550d9941ad19f00ced6d1ffb72",
+  "isolated_unittest": {
+    "total": 927,
+    "passed": 906,
+    "skipped": 21,
+    "failed": 0,
+    "seconds": 350.941,
+    "real_nginx_lua_passed": 16,
+    "skip_reasons": {
+      "optional official gost binary": 1,
+      "set CROWDSEC_TEST_RELEASE for official receipt checks": 5,
+      "set CROWDSEC_TEST_RELEASE for official plugin checks": 11,
+      "pycdlib required for media validation": 4
+    },
+    "log": "/tmp/crowdbastion-review-fixes-full-unittest.log",
+    "log_sha256": "5e5fff5b4f8ed6f489f8b68e60f27397bd62587353b50a2d60ad31b72e1c481e"
+  },
+  "source_unittest": {
+    "total": 1014,
+    "passed": 993,
+    "skipped": 21,
+    "failed": 0,
+    "seconds": 361.987,
+    "real_nginx_lua_passed": 16,
+    "skip_reasons": {
+      "optional official gost binary": 1,
+      "set CROWDSEC_TEST_RELEASE for official receipt checks": 5,
+      "set CROWDSEC_TEST_RELEASE for official plugin checks": 11,
+      "pycdlib required for media validation": 4
+    },
+    "log": "/tmp/crowdbastion-review-fixes-source-unittest.log",
+    "log_sha256": "2310f02a998e7b9e9f0b19145055aa2f48b00fa546eca0f72fdfe3a86a24134e"
+  },
+  "fixture_matrix": {
+    "total": 109,
+    "passed": 109,
+    "failed": 0
+  },
+  "static": {
+    "isolated": {
+      "bash_syntax_files": 26,
+      "python_ast_files": 183,
+      "scope": "project files, excluding .venv/.git/.superpowers"
+    },
+    "source": {
+      "bash_syntax_files": 26,
+      "python_ast_files": 191,
+      "scope": "project files, excluding .venv/.git/.superpowers"
+    },
+    "diff_check": "pass",
+    "shellcheck": {
+      "version": "0.11.0",
+      "files": [
+        "lib/nginx_reload.sh",
+        "lib/appsec_audit.sh"
+      ],
+      "status": "pass",
+      "broader_scope": "Existing informational native/main diagnostics remain outside this change."
+    }
+  },
+  "review": {
+    "production": "Independent whole-change review found no remaining production blockers; original stale reload-failure injection corrected.",
+    "fixture_fix": "Separate final scoped review approved explicit failure parameter and both consumers."
+  },
+  "code_and_test_sha256": {
+    "crowdbastion.sh": "45a0522a3124a1e875f5dcc55cd753fe5eb804d06b4eb702780fc2ab2889d0af",
+    "lib/nginx_reload.sh": "9579d84afb6410e45e55cf420a4fd2b1436ac9c5404bd8606f8ac41269c06db1",
+    "lib/appsec_audit.sh": "fafcd3e65fa950b9fe1ba341d9afccece10db0a8b549877297eb8309a686a171",
+    "lib/native_web_bouncer.sh": "17d0cf1d39088d8aad2a30a4f0c01639a331ed01c57222da7ccdb384c3f37460",
+    "lib/crowdsec_firewall.py": "91dceb03c9d911a063026315319c7444e611d73b7b52d8178e8c45918339b106",
+    "tests/test_nginx_reload.py": "9909678099afb63a46afa8a21091725d0c390b83e3023a1a499fd8000dbaf59f",
+    "tests/test_firewall_startup.py": "919762342bd91ba57ebf61eee42590e6becb9aa881b858670c5e8c6c729cad95",
+    "tests/test_native_workflows.py": "1644c4e30480222f6fd7140d48e6238f8ce0dc54af881a7f6acd891bd596aa1f",
+    "tests/test_audit_appsec.py": "170c4eff845be74801fece7bf5ce88f90cda4b2156a15f7aa35bd4e0bce3fb01",
+    "tests/test_workflows.py": "eb38777cefa3c3f3c0cfedc00bf37481363096a4a6ea6d38d38e7693cbfccec4"
+  },
+  "limits": [
+    "Docker command and systemd metadata boundaries use fixtures.",
+    "Nginx generation proof covers two live samples, not permanent process health.",
+    "Killing a Docker client does not guarantee cancellation of a daemon-submitted command.",
+    "No real kernel enforcement, renewal, external traffic or VPS acceptance run."
+  ]
+}

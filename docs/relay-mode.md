@@ -127,7 +127,7 @@ URL 和密钥交互输入，密钥隐藏，不支持密钥命令行参数。URL 
 
 已有官方基础 YAML 保留；本工具仅写入 root-only `crowdsec-firewall-bouncer.yaml.local` 与无密钥 SHA256 托管标记。已有非托管 `.local`，或托管文件被外部修改，均拒绝接管/移除。覆盖配置指定 INPUT/FORWARD 和 nftables input/forward hooks，明确启用 TLS 校验和 API-key 认证；不会自动停止、卸载或配置已安装的 CrowdSec 核心，不注册中心账号、不修改其他 Bouncer。
 
-全新 amd64/arm64 节点安装固定官方 Firewall Bouncer v0.0.36 release：通过官方 GitHub HTTPS release 元数据中的 asset SHA256 digest 验证归档；无 digest 或校验失败时拒绝安装。直接部署官方二进制、完整配置与独立 systemd unit；只复用系统包管理安装 nftables、curl/CA/PyYAML 等运行依赖，避免 upstream install.sh/软件包 postinst 自动访问本地 cscli。已有 Bouncer 基础配置时使用原安装与防火墙后端；检测到残留 binary/unit 但缺少基础配置时拒绝覆盖，需人工核对。
+全新 amd64/arm64 节点安装固定官方 Firewall Bouncer v0.0.36 release：通过官方 GitHub HTTPS release 元数据中的 asset SHA256 digest 验证归档；无 digest 或校验失败时拒绝安装。直接部署官方二进制、完整配置与独立 systemd unit，默认使用 iptables/ipset 后端；只复用系统包管理安装 iptables、ipset、curl/CA/PyYAML 等运行依赖，避免 upstream install.sh/软件包 postinst 自动访问本地 cscli。已有 Bouncer 基础配置时使用原安装与防火墙后端；命中已确认的 0.0.36／0.0.38 nftables 续封缺陷时先拒绝安装／配置，按[后端与续封检查](usage-guide.md#防火墙后端与续封检查)规划迁移。检测到残留 binary/unit 但缺少基础配置时拒绝覆盖，需人工核对。
 
 配置或启动失败恢复原 `.local`、托管标记以及原服务启用/运行状态；首次安装失败移除新 binary/unit/base 配置，已安装的通用依赖保留。移除入口先验证托管标记与内容，再停用 Firewall Bouncer 并移除本工具远端覆盖；原基础配置、包和二进制保留，不自动重新启动原本地配置。遇非托管或修改过的覆盖先拒绝，不改变服务。状态命令不做认证请求、服务重启或防火墙写入，也不显示密钥；服务运行不等于真实业务阻断通过。
 

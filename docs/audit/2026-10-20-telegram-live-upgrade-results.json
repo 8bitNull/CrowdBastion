@@ -1,0 +1,211 @@
+{
+  "target": {
+    "ip": "179.255.121.95",
+    "ssh_port": 53322
+  },
+  "updated_at_utc": "2026-10-20T01:03:33.731466+00:00",
+  "deployment": {
+    "success": true,
+    "backup_dir": "/var/backups/crowdbastion/telegram-update-20261020T005820Z",
+    "installed_files": {
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": "5457afb7575af6de9494ab61b29ec8bde4f7cc2fb77750d526fd15522b0eb48c",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": "2c50f6e03295f0dbe7af5c4cce09ca7001c97ab27bc3015219e3a6e7bc07f18a",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+      "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+      "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052"
+    },
+    "configuration_and_web_policy_unchanged": true,
+    "appsec_failure_action": "deny",
+    "telegram_get_me_valid": true,
+    "telegram_webhook_empty": true,
+    "telegram_polling_status": "healthy",
+    "bot_processes": [
+      2057719
+    ],
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2057719",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "automatic_notifications_unchanged": true
+  },
+  "validation": {
+    "bot_unit_tests": {
+      "passed": 139,
+      "skipped": 0
+    },
+    "live_telegram": {
+      "success": true,
+      "completed_at_utc": "2026-10-20T01:01:31.648856+00:00",
+      "api_hostname": "api.telegram.org",
+      "chat_verified": true,
+      "live_calls": [
+        {
+          "method": "getChat",
+          "success": true
+        },
+        {
+          "method": "sendMessage",
+          "success": true
+        },
+        {
+          "method": "editMessageText",
+          "success": true
+        },
+        {
+          "method": "editMessageText",
+          "success": true
+        },
+        {
+          "method": "editMessageText",
+          "success": true
+        },
+        {
+          "method": "editMessageText",
+          "success": true
+        }
+      ],
+      "test_messages_sent": 1,
+      "successful_card_edits": [
+        "site_health",
+        "decision_list",
+        "forensics",
+        "execution_evidence"
+      ],
+      "test_message_id": 1029,
+      "alert_id": 1968,
+      "poll_status": "healthy",
+      "poll_instance_pid": 2057719,
+      "last_poll_at": 1792458087.0059848,
+      "last_poll_attempt_at": 1792458087.0059848,
+      "mutations_executed": 0,
+      "test_probe_uses_separate_diagnostics": true,
+      "live_user_callback_observed": false
+    },
+    "production": {
+      "success": true,
+      "verified_at_utc": "2026-10-20T01:03:01.128906+00:00",
+      "installed_files": {
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": {
+          "sha256": "5457afb7575af6de9494ab61b29ec8bde4f7cc2fb77750d526fd15522b0eb48c",
+          "mode": "0o755",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": {
+          "sha256": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": {
+          "sha256": "2c50f6e03295f0dbe7af5c4cce09ca7001c97ab27bc3015219e3a6e7bc07f18a",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": {
+          "sha256": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": {
+          "sha256": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": {
+          "sha256": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": {
+          "sha256": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+          "mode": "0o600",
+          "owner": "root:root"
+        },
+        "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": {
+          "sha256": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052",
+          "mode": "0o600",
+          "owner": "root:root"
+        }
+      },
+      "configuration_and_web_policy_unchanged": true,
+      "appsec_failure_action": "deny",
+      "services": {
+        "crowdsec": {
+          "MainPID": "1186183",
+          "NRestarts": "0",
+          "ActiveState": "active"
+        },
+        "crowdsec-firewall-bouncer": {
+          "MainPID": "1170352",
+          "NRestarts": "0",
+          "ActiveState": "active"
+        },
+        "crowdsec-1key-bot.service": {
+          "MainPID": "2057719",
+          "NRestarts": "0",
+          "ActiveState": "active"
+        }
+      },
+      "bot_processes": [
+        2057719
+      ],
+      "helper_imports_passed": 7,
+      "fresh_successful_poll": true,
+      "runtime": {
+        "status": "healthy",
+        "last_poll_at": 1792458176.8194432,
+        "last_poll_attempt_at": 1792458176.8194432,
+        "last_send_at": 1792458156.3483922,
+        "last_api_at": null,
+        "poll_error": null,
+        "send_error": null,
+        "api_error": null,
+        "poll_failures": 0
+      },
+      "process_started_at": 1792457902.06,
+      "processing_error_count": 0,
+      "recovery_artifact_signal_protected": true,
+      "rollback_executed": false
+    },
+    "rollback_mock_checks": {
+      "restores_prior_files": true,
+      "removes_new_helpers": true,
+      "retry_after_service_start_failure": true,
+      "rejects_concurrent_edit": true,
+      "survives_sigterm_during_stop": true
+    },
+    "independent_review": {
+      "candidate_and_helpers": "passed",
+      "deployment_and_recovery_tooling": "passed",
+      "reviewer_connected_to_production": false
+    }
+  },
+  "limitations": [
+    "Telegram accepted the actual message and four card edits. No second getUpdates consumer or synthetic incoming update was used.",
+    "The administrator was asked to click refresh and send /status. Individual callback/command completion has not been confirmed by the administrator; runtime diagnostics do not identify the incoming command.",
+    "Execution cards report evidence available for the alert. Sending/rendering a card does not establish that its original request was blocked."
+  ],
+  "mutation_scope": {
+    "real_bans_unbans_whitelists_reloads_or_cache_actions": 0,
+    "crowdsec_restarted": false,
+    "firewall_bouncer_restarted": false,
+    "bot_restarted_for_update": true,
+    "rollback_executed": false
+  },
+  "workspace_product_sources_modified_for_deployment": false
+}

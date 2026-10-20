@@ -18,6 +18,7 @@ import yaml
 from crowdsec_v2bx_service import (HELPERS, Manager, private_directory, read_json,
                                    safe_regular, systemctl, write_status)
 from crowdsec_v2bx_stream import Publisher
+from crowdsec_config import merged_config
 
 UNIT = 'crowdsec-v2bx-alerts.service'
 GUARD = b'''name: crowdsec_1key_v2bx_observation_guard
@@ -76,7 +77,9 @@ class AlertManager:
 
     def layout(self):
         self.guard_paths(self.config)
-        cfg = yaml.safe_load(bytes_of(self.config))
+        bytes_of(self.config)
+        self.local_config_digest()
+        cfg = merged_config(self.config)
         core = cfg['crowdsec_service']
         # Initial rollout only supports the standard local layout; no guessing alternate roots.
         if cfg['config_paths']['config_dir'].rstrip('/') != str(self.cs) or core['acquisition_dir'].rstrip('/') != str(self.cs/'acquis.d'):
@@ -84,7 +87,16 @@ class AlertManager:
         profile = Path(cfg['api']['server']['profiles_path'])
         if not profile.is_absolute():raise ValueError('relative_profiles_path')
         self.guard_paths(profile)
+        # CrowdSec evaluates profiles_path.local before profiles_path.
+        local_profile = Path(str(profile)+'.local')
+        self.guard_paths(local_profile)
+        if local_profile.exists():profile = local_profile
         return cfg, profile
+
+    def local_config_digest(self):
+        path = Path(str(self.config)+'.local')
+        self.guard_paths(path)
+        return digest(bytes_of(path)) if path.exists() else None
 
     def assert_unique_acquisition(self, cfg):
         import fnmatch
@@ -115,6 +127,7 @@ class AlertManager:
         manifest = self.manifest()
         if manifest.get('phase') != 'enabled':raise ValueError('installation_not_enabled')
         if manifest['core_config'] != digest(bytes_of(self.config)):raise ValueError('core_config_changed')
+        if manifest.get('core_config_local') != self.local_config_digest():raise ValueError('core_config_changed')
         _, profile = self.layout()
         if str(profile) != manifest['profile'] or not bytes_of(profile).startswith(GUARD):
             raise ValueError('observation_guard_changed')
@@ -173,6 +186,7 @@ WantedBy=multi-user.target
             for path in (self.code, self.state):path.mkdir(parents=True, mode=0o700);created.append(path)
             (self.code/'profiles.before').write_bytes(original);(self.code/'profiles.before').chmod(0o600)
             manifest = dict(phase='prepared', profile=str(profile), core_config=digest(bytes_of(self.config)),
+                            core_config_local=self.local_config_digest(),
                             assets={str(p): digest(data) for p, data in assets.items()})
             self.save_manifest(manifest)
             for path, data in assets.items():

@@ -1,0 +1,119 @@
+{
+  "target": "179.255.121.95:53322",
+  "preflight": {
+    "checked_at_utc": "2026-10-20T01:55:20.746987+00:00",
+    "all_installed_files_match_candidate": true,
+    "installed_hashes": {
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": "5457afb7575af6de9494ab61b29ec8bde4f7cc2fb77750d526fd15522b0eb48c",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": "2c50f6e03295f0dbe7af5c4cce09ca7001c97ab27bc3015219e3a6e7bc07f18a",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588",
+      "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+      "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+      "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052"
+    },
+    "menu": {
+      "keyboard": [
+        [
+          {
+            "text": "📊 系统大屏"
+          },
+          {
+            "text": "🛡️ 攻击态势"
+          },
+          {
+            "text": "🚨 最新告警"
+          }
+        ],
+        [
+          {
+            "text": "💀 黑客榜单"
+          },
+          {
+            "text": "🎯 漏洞靶心"
+          },
+          {
+            "text": "🔍 取证穿透"
+          }
+        ],
+        [
+          {
+            "text": "🚫 封禁名单"
+          },
+          {
+            "text": "🌐 站点体检"
+          },
+          {
+            "text": "⚡ 应急管家"
+          }
+        ]
+      ],
+      "resize_keyboard": true,
+      "is_persistent": true
+    },
+    "services": {
+      "crowdsec": {
+        "MainPID": "1186183",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-firewall-bouncer": {
+        "MainPID": "1170352",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      },
+      "crowdsec-1key-bot.service": {
+        "MainPID": "2057719",
+        "NRestarts": "0",
+        "ActiveState": "active"
+      }
+    },
+    "runtime": {
+      "status": "healthy",
+      "last_poll_at": 1792461308.8115976,
+      "poll_error": null,
+      "send_error": null,
+      "api_error": null
+    },
+    "single_bot_process": true,
+    "poll_pid_matches": true,
+    "fresh_successful_poll": true,
+    "appsec_failure_deny": true,
+    "preserved_configuration_hashes": {
+      "/etc/crowdsec/crowdsec-1key-bot.json": "7b0e446968847b212ce9c256eed2ade8295e0721e9c9e0abd87ef6ee5392ef0e",
+      "/etc/systemd/system/crowdsec-1key-bot.service": "76eadd050af5c47f024b2ff800302fbf029af767e743b5a85dbdab37911d4a89",
+      "/etc/crowdsec/crowdsec-1key-web-installs.json": "2758127a93a54f769803d3816a6bdb7ae7151fd27004084f2f998c4e311adb92",
+      "/home/docker/npm/data/crowdsec-1key/bouncer.conf": "00fc0b53c8c66da7b1099031442ffa67e0e1872c93c14a1beed372599efbe468",
+      "/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml": "ff82b2ba339c6a278484d4c24b817f1f9fc2afb55efaf64a9cbda7f10d48f18f"
+    }
+  },
+  "real_telegram_menu_refresh": {
+    "success": true,
+    "completed_at_utc": "2026-10-20T01:55:45.868310+00:00",
+    "telegram_get_me_verified": true,
+    "send_message_accepted": true,
+    "message_id": 1035,
+    "reply_keyboard_rows": 3,
+    "reply_keyboard_columns": 3,
+    "unique_buttons": 9,
+    "configuration_unchanged": true,
+    "poll_status": "healthy",
+    "used_separate_diagnostics": true,
+    "get_updates_called_by_probe": false,
+    "files_replaced": 0,
+    "service_restarted": false,
+    "actual_client_render_and_button_response_verified": false
+  },
+  "deployment_decision": "No replacement: all 8 installed Python files equal current workspace and previous deployed candidate. Requested newer refactor source location from user.",
+  "code_or_configuration_changed": false,
+  "previous_bot_tests": {
+    "passed": 139,
+    "source": "2026-10-20-telegram-live-upgrade-results.json",
+    "rerun_this_task": false
+  },
+  "limitations": [
+    "No newer source version was found in this workspace.",
+    "Telegram accepted the 3x3 ReplyKeyboardMarkup; actual client rendering/button responses require user interaction."
+  ]
+}

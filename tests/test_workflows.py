@@ -30,7 +30,7 @@ class Workflows(unittest.TestCase):
         self.source.write_text(source)
         (self.base / "lib").mkdir()
         for helper in (ROOT/'lib').glob('*'):
-            if helper.is_file() and helper.suffix in ('.py', '.sh'):
+            if helper.is_file() and helper.suffix in ('.py', '.sh', '.lua'):
                 (self.base/'lib'/helper.name).write_text(helper.read_text())
         self.trace = self.base / "trace"
         self.trace.touch()
@@ -47,6 +47,29 @@ class Workflows(unittest.TestCase):
 
     def run_shell(self, action, user_input='', overrides='', timeout=5):
         stub = r'''
+nginx_test_reload() {
+ local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
+ echo "$((generation+1))" > "$TRACE.workers"
+ printf '2026/10/20 00:00:00 [notice] 42#42: reconfiguring\n2026/10/20 00:00:00 [notice] 42#42: start worker processes\n2026/10/20 00:00:00 [notice] 42#42: start worker process %s\n' "$((generation+1))" >> "$TRACE.nginx-error"
+}
+nginx_test_processes() {
+ local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
+ mkdir -p "$TRACE.proc/42" "$TRACE.proc/$generation"
+ printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
+ printf 'NSpid:\t%s\n' "$generation" > "$TRACE.proc/$generation/status"
+ printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n%s 42 S nginx: worker process\n' "$generation"
+}
+# Fake process metadata and the discovered log file; production cursor parsing,
+# inode checks, fresh master/cohort evidence and PID correlation still run.
+nginx_reload_tool() { timeout --signal=KILL "$1" python3 "$SCRIPT_DIR/lib/crowdsec_nginx_reload.py" --proc-root "$TRACE.proc" "${@:2}"; }
+nginx_reload_log_source() {
+ mkdir -p "$TRACE.proc/42"
+ printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
+ touch "$TRACE.nginx-error"
+ printf '%s\n' "$TRACE.nginx-error"
+}
+timeout() { [[ "$1" != --signal=KILL ]] || shift; shift; "$@"; }
+ps() { if [[ "$*" == '-eo pid,ppid,stat,args' ]]; then nginx_test_processes; else command ps "$@"; fi; }
 record() { printf '%s\n' "$*" >> "$TRACE"; }
 cscli() {
  record cscli "$@"
@@ -63,6 +86,8 @@ cscli() {
 crowdsec() { record crowdsec "$@"; return 0; }
 systemctl() {
  record systemctl "$@"
+ if [[ "$1" == show && "$*" == *MainPID* ]]; then echo 42; return 0; fi
+ if [[ "$1" == reload && ( "$2" == nginx || "$2" == openresty ) ]]; then nginx_test_reload; fi
  if [[ "$1" == show && "$*" == *crowdsec-1key-bot.service* ]]; then
   if [[ -f "$CUSTOM_BOT_UNIT" ]]; then printf 'LoadState=loaded\nFragmentPath=%s\n' "$CUSTOM_BOT_UNIT"; else echo 'LoadState=not-found'; fi
  fi
@@ -352,7 +377,7 @@ finally:
         self.assertFalse((d/'crowdsec-1key-appsec.yaml').exists())
         self.assertNotIn('collections install', self.commands())
 
-    def appsec_docker_stub(self, mounted=False, network='host', hook=True, waf=True):
+    def appsec_docker_stub(self, mounted=False, network='host', hook=True, waf=True, reload_succeeds=True):
         config = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
         if mounted:
             config.parent.mkdir(exist_ok=True)
@@ -361,9 +386,11 @@ finally:
         effective = ('init_by_lua_block { require "crowdsec" }\naccess_by_lua_block { cs.Allow(ngx.var.remote_addr) }\n' if hook else '')
         if waf:
             effective += 'access_by_lua_file /usr/local/openresty/1pwaf/waf.lua;\n'
+        reload_command = 'nginx_test_reload; return 0' if reload_succeeds else 'return 1'
         return '''docker() {
  record docker "$@"
  case "$1" in
+ top) nginx_test_processes;;
  ps) echo 'web123 1panel/openresty:test openresty';;
  inspect) case "$3" in
  *NetworkMode*) echo '''+shlex.quote(network)+''';;
@@ -372,7 +399,7 @@ finally:
  exec) case "$4" in
  -T) printf '%s\\n' '''+shlex.quote(effective)+''';;
  -t) return 0;;
- -s) return 0;; esac;;
+ -s) '''+reload_command+''';; esac;;
  esac
 }'''
 
@@ -425,7 +452,7 @@ finally:
         self.assertIn('缺少 CrowdSec Web Bouncer 请求处理调用', p.stdout+p.stderr)
 
     def test_appsec_container_reload_failure_restores_config(self):
-        stub = self.appsec_docker_stub(mounted=True).replace('-s) return 0', '-s) return 1')
+        stub = self.appsec_docker_stub(mounted=True, reload_succeeds=False)
         p = self.run_shell('setup_appsec', '3\nweb123\ny\n', stub)
         self.assertNotEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('APPSEC_URL=http://old.example:7422', (self.config/'bouncers/crowdsec-openresty-bouncer.conf').read_text())
@@ -1175,8 +1202,8 @@ finally:
         self.make_webui()
         p = self.run_shell('uninstall_web_ui', 'y\n')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
-        self.assertIn('machines delete webui-owned', self.commands())
-        self.assertNotIn('machines delete webui-other-owner', self.commands())
+        self.assertIn('machines delete -- webui-owned', self.commands())
+        self.assertNotIn('machines delete -- webui-other-owner', self.commands())
 
     def test_webui_rollback_pins_previous_image(self):
         self.make_webui()
@@ -1251,8 +1278,8 @@ cscli() {
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         trace = self.commands()
         self.assertIn('machines add', trace)
-        self.assertIn('machines delete webui-owned', trace)
-        self.assertLess(trace.index('State.Running'), trace.index('machines delete webui-owned'))
+        self.assertIn('machines delete -- webui-owned', trace)
+        self.assertLess(trace.index('State.Running'), trace.index('machines delete -- webui-owned'))
 
     def test_bouncer_invalid_api_key_does_not_claim_repaired(self):
         file = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
