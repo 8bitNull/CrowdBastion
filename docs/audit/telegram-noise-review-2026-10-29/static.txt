@@ -1,0 +1,4 @@
+PASS: Bash syntax
+PASS: ShellCheck
+PASS: Python compilation
+PASS: git diff --check

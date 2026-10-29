@@ -118,7 +118,7 @@ def verify(release, telegram_delivery='immediate'):
         helper.main(['profiles', str(cfg/'profiles.yaml'), 'enable'])
         try:
             cli('notifications', 'test', 'crowdsec_1key_telegram')
-            assert received and received[-1]['chat_id'] == '-123' and 'CrowdSec' in received[-1]['text']
+            assert received and received[-1]['chat_id'] == '-123' and '新告警' in received[-1]['text']
             hostile = 'test "quoted"\n<script>&\\escape'
             cli('notifications', 'test', 'crowdsec_1key_telegram', '--alert', json.dumps({'scenario': hostile, 'decisions': [], 'source': None}))
             assert hostile in received[-1]['text'], received[-1]
@@ -178,9 +178,9 @@ def verify(release, telegram_delivery='immediate'):
                         raise AssertionError('Live AppSec notification missing request path / UA: '+str(received)+'\nAlerts: '+cli('alerts', 'list', '-o', 'json')+'\nEngine: '+log.read_text()[-6000:])
                     print('Live AppSec notification: request path and UA delivered by official HTTP plugin.', flush=True)
                     if telegram_delivery == 'batch':
-                        actual = next(item['text'] for item in received if '/.env' in item.get('text', '') and '本批告警: 10 条' in item.get('text', ''))
-                        assert 'crowdsecurity/vpatch-env-access: 10 条' in actual, actual
-                        assert actual.count('【实时告警】') == 3, actual
+                        actual = next(item['text'] for item in received if '/.env' in item.get('text', '') and '新告警 · 10 条' in item.get('text', ''))
+                        assert 'crowdsecurity/vpatch-env-access：10 条' in actual, actual
+                        assert actual.count('\n\n告警') == 3, actual
                         assert len(actual) <= 4096, actual
                         # Feed a multi-rule batch through the real LAPI and
                         # plugin scheduler, not a duplicated template renderer.
@@ -206,17 +206,17 @@ def verify(release, telegram_delivery='immediate'):
                         with urllib.request.urlopen(posting, timeout=10) as response:
                             assert response.status == 201
                         for _ in range(150):
-                            matches = [item['text'] for item in received if 'qa/second: 5 条' in item.get('text', '')]
+                            matches = [item['text'] for item in received if 'qa/second：5 条' in item.get('text', '')]
                             if matches:
                                 break
                             time.sleep(.2)
                         else:
                             raise AssertionError('Missing mixed-rule batch: '+str(received))
                         mixed = matches[-1]
-                        assert '本批告警: 10 条（模拟: 2 条）' in mixed, mixed
-                        assert 'qa/first: 5 条' in mixed and 'qa/second: 5 条' in mixed, mixed
-                        assert mixed.count('刺探目标:') == 3 and 'Batch-UA-' in mixed, mixed
-                        assert '前 3 条告警' in mixed and len(mixed) <= 4096, mixed
+                        assert '新告警 · 10 条\n模拟：2 条' in mixed, mixed
+                        assert 'qa/first：5 条' in mixed and 'qa/second：5 条' in mixed, mixed
+                        assert mixed.count('请求样本 1：') == 3 and 'Batch-UA-' in mixed, mixed
+                        assert '以下展开 3 条' in mixed and len(mixed) <= 4096, mixed
                         print('Live batch notifications: 10 alerts, all rule counts, simulation count and 3 bounded evidence samples: PASS.', flush=True)
                     headers['X-Crowdsec-Appsec-Uri'] = '/'
                     with urllib.request.urlopen(urllib.request.Request(f'http://127.0.0.1:{appsec_port}/', headers=headers), timeout=10) as response:

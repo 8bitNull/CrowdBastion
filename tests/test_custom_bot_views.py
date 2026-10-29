@@ -37,12 +37,13 @@ class QueryCards(unittest.TestCase):
         duplicate['decisions'][0].update(id=99, duration='2h')
         text, kb = self.decisions(alerts+[duplicate])
         self.assertIn('1 个目标', text)
-        self.assertIn('2 条决策', text)
+        self.assertIn('2 条处置要求', text)
+        self.assertIn('其中一条：', text)
         target = kb['inline_keyboard'][0][0]['callback_data'].split(':')[1]
-        detail, _ = self.decisions(alerts+[duplicate], target=target)
+        detail, _ = self.decisions(alerts+[duplicate], target=target, details=True)
         for expected in ('59m12s', '2h', 'qa/second', 'qa/&lt;scan&gt;', '#9'):
             self.assertIn(expected, detail)
-        self.assertIn('不证明 Bouncer', text)
+        self.assertIn('实际执行情况请查看拦截记录', detail)
 
     def test_pagination_has_five_cards_and_last_page_clamps(self):
         text, kb = self.decisions(self.alerts())
@@ -68,11 +69,12 @@ class QueryCards(unittest.TestCase):
         self.assertIn('未找到', self.decisions([])[0])
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('secret')):
             text, _ = self.bot.module_decisions()
-        self.assertIn('查询失败', text)
+        self.assertIn('暂时无法查询处置要求', text)
+        self.assertNotIn('未找到有效处置要求', text)
         self.assertNotIn('secret', text)
         with patch.object(self.bot, 'run_cmd', return_value='{"unexpected": []}'):
             text, _ = self.bot.module_decisions()
-        self.assertIn('查询失败', text)
+        self.assertIn('暂时无法查询处置要求', text)
 
     def test_long_fields_fit_telegram_html_budget(self):
         alerts = self.alerts(5)
@@ -94,28 +96,29 @@ class QueryCards(unittest.TestCase):
     def test_site_card_distinguishes_container_health_and_http(self):
         with patch.object(self.bot, 'run_cmd', side_effect=self.docker(health='unhealthy')):
             text, _ = self.bot.module_sites()
-        for expected in ('web&lt;&amp;&gt;', 'running', 'unhealthy', '尚未验证', '无本工具安装记录'):
+        for expected in ('web&lt;&amp;&gt;', '运行：运行中', '健康检查：异常', '未检查网站访问和实际拦截', '无本工具安装记录'):
             self.assertIn(expected, text)
         self.assertNotIn('已拦截', text)
 
     def test_stopped_no_health_and_state_query_failure(self):
         with patch.object(self.bot, 'run_cmd', side_effect=self.docker(state='exited')):
             text, _ = self.bot.module_sites()
-        self.assertIn('exited', text)
-        self.assertIn('未配置 HEALTHCHECK', text)
+        self.assertIn('运行：已停止', text)
+        self.assertIn('健康检查：未设置', text)
         with patch.object(self.bot, 'run_cmd', side_effect=[self.docker()[0], RuntimeError('no inspect')]):
             text, _ = self.bot.module_sites()
-        self.assertIn('状态查询失败', text)
+        self.assertIn('健康检查：暂时无法查询', text)
+        self.assertNotIn('no inspect', text)
 
     def test_no_docker_empty_and_invalid_output(self):
         for output in ('', 'not json'):
             with patch.object(self.bot, 'run_cmd', return_value=output):
                 text, _ = self.bot.module_sites()
-            self.assertIn('未找到容器' if not output else '查询失败', text)
+            self.assertIn('未找到 Docker 容器' if not output else '暂时无法查询容器', text)
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('missing')):
             text, _ = self.bot.module_sites()
         self.assertIn('Docker', text)
-        self.assertIn('查询失败', text)
+        self.assertIn('暂时无法查询容器', text)
 
     def test_install_record_hash_is_not_execution_proof(self):
         import hashlib
@@ -126,16 +129,17 @@ class QueryCards(unittest.TestCase):
         (self.base/'crowdsec-1key-web-installs.json').write_text(json.dumps(records))
         with patch.object(self.bot, 'run_cmd', side_effect=self.docker()):
             text, _ = self.bot.module_sites()
-        self.assertIn('配置指纹一致', text)
-        self.assertIn('尚未验证', text)
+        self.assertIn('主配置：与安装记录一致', text)
+        self.assertIn('未检查网站访问和实际拦截', text)
         target.write_text('changed')
         with patch.object(self.bot, 'run_cmd', side_effect=self.docker()):
             text, _ = self.bot.module_sites()
-        self.assertIn('配置已变化', text)
+        self.assertIn('与安装记录不同', text)
 
     def test_invalid_view_callbacks_do_not_execute_commands(self):
         with patch.object(self.bot, 'run_cmd') as run:
-            for data in ('dec:-1', 'site:;reboot', 'dd:bad:0', 'dec:9999999'):
+            for data in ('dec:-1', 'site:;reboot', 'dd:bad:0', 'dec:9999999',
+                         'more:site:;reboot', 'more:dd:bad:0', 'more:more:dec:0'):
                 self.assertFalse(self.bot.handle_view_callback({
                     'data': data, 'from': {'id': self.bot.ADMIN_USER_ID},
                     'message': {'message_id': 90, 'chat': {'id': self.bot.ADMIN_CHAT_ID}}}))
@@ -151,7 +155,7 @@ class QueryCards(unittest.TestCase):
         last, _ = self.decisions(alerts, target=key, page=1)
         self.assertIn('1/2', first)
         self.assertIn('2/2', last)
-        self.assertIn('7 条决策', first)
+        self.assertIn('7 条要求', first)
         self.assertNotIn('告警 #6 ', first)
         self.assertIn('告警 #6 ', last)
         self.assertTrue(any(b['callback_data'] == 'dd:'+key+':1' for row in kb['inline_keyboard'] for b in row))
@@ -174,6 +178,81 @@ class QueryCards(unittest.TestCase):
         self.assertIn('2/2', last)
         self.assertNotIn('<b>web6</b>', first)
         self.assertIn('<b>web6</b>', last)
+
+    def callback_card(self, data):
+        cq = {'id': 'q', 'data': data, 'from': {'id': self.bot.ADMIN_USER_ID},
+              'message': {'message_id': 90, 'chat': {'id': self.bot.ADMIN_CHAT_ID}}}
+        with patch.object(self.bot, 'tg_request', return_value={'ok': True}) as tg:
+            self.assertTrue(self.bot.handle_view_callback(cq))
+        self.assertEqual(tg.call_args_list[0].args[0], 'answerCallbackQuery')
+        payload = next(c.args[1] for c in tg.call_args_list if c.args[0] == 'editMessageText')
+        self.assertEqual(payload['message_id'], 90)
+        buttons = [b['callback_data'] for row in payload['reply_markup']['inline_keyboard'] for b in row]
+        return payload['text'], buttons
+
+    def test_more_decision_list_keeps_selected_page_and_returns_to_same_page(self):
+        with patch.object(self.bot, 'run_cmd', return_value=json.dumps(self.alerts())) as run:
+            plain, plain_buttons = self.callback_card('dec:1')
+            detail, detail_buttons = self.callback_card('more:dec:1')
+            returned, _ = self.callback_card('dec:1')
+        self.assertTrue(all(c.args[0][:3] == ['cscli', 'decisions', 'list'] for c in run.call_args_list))
+        self.assertIn('more:dec:1', plain_buttons)
+        self.assertIn('2/2', detail)
+        self.assertIn('203.0.113.6', detail)
+        self.assertNotIn('203.0.113.1</code>', detail)
+        self.assertIn('来源：cscli', detail)
+        self.assertIn('more:dec:0', detail_buttons)
+        self.assertIn('more:dec:1', detail_buttons)
+        self.assertIn('dec:1', detail_buttons)
+        self.assertEqual(plain, returned)
+
+    def test_more_decision_requirements_keep_target_and_requirement_page(self):
+        alerts = self.alerts()
+        for alert in alerts:
+            alert['decisions'][0]['value'] = '203.0.113.1'
+        _, kb = self.decisions(alerts)
+        target = kb['inline_keyboard'][0][0]['callback_data'].split(':')[1]
+        base = 'dd:'+target+':1'
+        with patch.object(self.bot, 'run_cmd', return_value=json.dumps(alerts)) as run:
+            plain, plain_buttons = self.callback_card(base)
+            detail, detail_buttons = self.callback_card('more:'+base)
+        self.assertTrue(all(c.args[0][:3] == ['cscli', 'decisions', 'list'] for c in run.call_args_list))
+        self.assertIn('more:'+base, plain_buttons)
+        self.assertNotIn('原始时长', plain)
+        self.assertIn('原始时长：59m12s', detail)
+        self.assertIn('2/2', detail)
+        self.assertIn('告警 #6 ', detail)
+        self.assertNotIn('告警 #1 ', detail)
+        self.assertIn('more:dd:'+target+':0', detail_buttons)
+        self.assertIn('more:'+base, detail_buttons)
+        self.assertIn(base, detail_buttons)
+
+    def test_more_container_card_keeps_page_and_selected_container_inspections(self):
+        containers = [{'ID': str(n), 'Names': f'web{n}', 'State': 'running', 'Status': 'Up 2 hours'}
+                      for n in range(1, 8)]
+        inspected = []
+        def command(args):
+            if args[1] == 'ps':
+                return '\n'.join(json.dumps(c) for c in containers)
+            self.assertEqual(args[:2], ['docker', 'inspect'])
+            inspected.append(args[-1])
+            return json.dumps({'StartedAt': '2026-10-13T00:00:00Z'})
+        with patch.object(self.bot, 'run_cmd', side_effect=command):
+            detail, buttons = self.callback_card('more:site:1')
+            self.assertEqual(inspected, ['6', '7'])
+            inspected.clear()
+            plain, plain_buttons = self.callback_card('site:1')
+        self.assertEqual(inspected, ['6', '7'])
+        self.assertIn('2/2', detail)
+        self.assertIn('Docker 摘要：Up 2 hours', detail)
+        self.assertIn('原始状态：running', detail)
+        self.assertIn('UTC', detail)
+        self.assertNotIn('<b>web1</b>', detail)
+        self.assertNotIn('Docker 摘要', plain)
+        self.assertIn('more:site:0', buttons)
+        self.assertIn('more:site:1', buttons)
+        self.assertIn('site:1', buttons)
+        self.assertIn('more:site:1', plain_buttons)
 
     def test_callback_acknowledged_before_slow_docker_query(self):
         cq = {'id': 'q', 'data': 'site:0', 'from': {'id': self.bot.ADMIN_USER_ID},

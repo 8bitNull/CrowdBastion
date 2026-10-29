@@ -13,6 +13,7 @@
 | [日志与真实 IP 排查](detection-guide.md) | 来源信任、采集与解析、AllowList、防火墙核查 |
 | [管理与维护](management-guide.md) | WebUI、Telegram、Hub 更新和恢复 |
 | [自定义 Telegram 机器人](2026-10-13-custom-telegram-bot.md) | 可选交互查询与迁移回滚 |
+| [Telegram 分级降噪](telegram-noise-control.md) | 普通汇总、紧急提醒、确认与恢复、持久化队列 |
 | [维护边界](optimization-boundary.md) | 配置所有权、支持前提与验收要求 |
 
 ## 中转与 V2bX 落地

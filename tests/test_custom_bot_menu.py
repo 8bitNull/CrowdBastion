@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 MENU_ROWS = [
-    ['📊 防护总览', '🚨 最近告警', '🚫 封禁决策'],
-    ['🔍 告警取证', '📈 攻击分析', '📦 容器状态'],
-    ['🤖 机器人状态', '🛠 运维工具', '❓ 使用帮助'],
+    ['📊 防护概况', '🚨 最近告警', '🚫 封禁列表'],
+    ['🔍 告警详情', '📈 访问分析', '📦 容器状态'],
+    ['🤖 机器人状态', '🛠 管理工具', '❓ 使用帮助'],
 ]
 
 
@@ -36,8 +36,8 @@ class MenuNavigation(unittest.TestCase):
             '"GET /.env HTTP/1.1" 403 0 "-" "-" [Client 203.0.113.8]\n')
         with sqlite3.connect(self.bot.DB_PATH) as conn:
             conn.execute('CREATE TABLE alerts (id INTEGER, source_ip TEXT, source_country TEXT, '
-                         'scenario TEXT, created_at TEXT)')
-            conn.execute("INSERT INTO alerts VALUES (42, '203.0.113.8', 'CN', 'qa/env', datetime('now'))")
+                         'scenario TEXT, created_at TEXT, simulated BOOLEAN DEFAULT 0)')
+            conn.execute("INSERT INTO alerts(id, source_ip, source_country, scenario, created_at) VALUES (42, '203.0.113.8', 'CN', 'qa/env', datetime('now'))")
             conn.execute('CREATE TABLE decisions (until TEXT)')
         self.alert = {'id': 42, 'scenario': 'qa/env', 'source': {'value': '203.0.113.8'},
                       'start_at': '2026-10-20T00:00:00Z', 'events': [], 'decisions': [
@@ -46,7 +46,7 @@ class MenuNavigation(unittest.TestCase):
         self.current_decisions = [self.alert]
         self.sent, self.commands, self.mutations = [], [], []
         for name, replacement in [('tg_request', self.telegram), ('run_cmd', self.command),
-                                  ('module_health_status', lambda: '防护健康摘要: 测试采样')]:
+                                  ('module_health_status', lambda details=False: '防护概况: 测试采样')]:
             mock = patch.object(self.bot, name, side_effect=replacement)
             mock.start()
             self.addCleanup(mock.stop)
@@ -105,10 +105,10 @@ class MenuNavigation(unittest.TestCase):
         self.assertTrue(payload['reply_markup']['is_persistent'])
 
     def test_all_nine_entries_route_to_read_only_cards(self):
-        cases = [('📊 防护总览', '防护健康摘要'), ('🚨 最近告警', '#42'),
-                 ('🚫 封禁决策', '203.0.113.8'), ('🔍 告警取证', 'Alert #42'),
-                 ('📈 攻击分析', '攻击分析'), ('📦 容器状态', 'web'),
-                 ('🤖 机器人状态', '轮询'), ('🛠 运维工具', '文件缓存'),
+        cases = [('📊 防护概况', '防护概况'), ('🚨 最近告警', '#42'),
+                 ('🚫 封禁列表', '203.0.113.8'), ('🔍 告警详情', '告警详情 · #42'),
+                 ('📈 访问分析', '访问分析'), ('📦 容器状态', 'web'),
+                 ('🤖 机器人状态', '接收消息'), ('🛠 管理工具', '管理工具'),
                  ('❓ 使用帮助', '/inspect')]
         for label, expected in cases:
             with self.subTest(label=label):
@@ -123,20 +123,22 @@ class MenuNavigation(unittest.TestCase):
         self.assertIn('exp:42', self.buttons(card))
         self.callback('exp:42')
         card = self.edited_card()
-        self.assertIn('Alert #42', card['text'])
+        self.assertIn('拦截记录 · #42', card['text'])
         self.assertIn('exp:42', self.buttons(card))
         self.assertIn('ins:42', self.buttons(card))
         self.assertIn('nav:home', self.buttons(card))
         self.callback('ins:42')
-        self.assertIn('Alert #42', self.edited_card()['text'])
+        self.assertIn('告警详情 · #42', self.edited_card()['text'])
         self.assertEqual(self.mutations, [])
 
     def test_old_labels_still_open_the_corresponding_cards(self):
-        cases = [('📊 系统大屏', '防护健康摘要'), ('🛡️ 攻击态势', '24'),
+        cases = [('📊 系统大屏', '防护概况'), ('🛡️ 攻击态势', '24'),
                  ('🚨 最新告警', '#42'), ('💀 黑客榜单', '可疑来源'),
-                 ('🎯 漏洞靶心', '请求路径'), ('🔍 取证穿透', 'Alert #42'),
+                 ('🎯 漏洞靶心', '访问路径'), ('🔍 取证穿透', '告警详情 · #42'),
                  ('🚫 封禁名单', '203.0.113.8'), ('🌐 站点体检', 'web'),
-                 ('⚡ 应急管家', '文件缓存')]
+                 ('⚡ 应急管家', '管理工具'), ('📊 防护总览', '防护概况'),
+                 ('🚫 封禁决策', '203.0.113.8'), ('🔍 告警取证', '告警详情 · #42'),
+                 ('📈 攻击分析', '访问分析'), ('🛠 运维工具', '管理工具')]
         for label, expected in cases:
             with self.subTest(label=label):
                 self.assertIn(expected, self.message(label)['text'])
@@ -149,9 +151,9 @@ class MenuNavigation(unittest.TestCase):
                     'overview', 'alerts', 'decisions', 'analysis', 'containers', 'bot', 'tools'}
         self.assertTrue(expected.issubset(names))
         self.assertEqual(len(names), len(set(names)))
-        self.assertIn('轮询', self.message('/bot@example_bot')['text'])
-        self.assertIn('防护健康摘要', self.message('/status')['text'])
-        self.assertIn('请求路径', self.message('/top')['text'])
+        self.assertIn('接收消息', self.message('/bot@example_bot')['text'])
+        self.assertIn('防护概况', self.message('/status')['text'])
+        self.assertIn('访问路径', self.message('/top')['text'])
 
     def test_analysis_subcards_refresh_and_return_without_new_messages(self):
         self.callback('nav:analysis')
@@ -195,7 +197,7 @@ class MenuNavigation(unittest.TestCase):
         self.assertFalse(any(b.startswith(('unban:', 'white:')) for b in self.buttons(card)))
         self.callback('dip:203.0.113.8')
         card = self.edited_card()
-        self.assertIn('决策详情', card['text'])
+        self.assertIn('处置要求', card['text'])
         self.assertIn('unban:203.0.113.8', self.buttons(card))
         self.assertIn('white:203.0.113.8', self.buttons(card))
         self.callback('unban:203.0.113.8')
@@ -211,7 +213,7 @@ class MenuNavigation(unittest.TestCase):
         self.current_decisions = []
         self.callback('dip:203.0.113.8')
         card = self.edited_card()
-        self.assertIn('本次查询', card['text'])
+        self.assertIn('本次未查到', card['text'])
         self.assertIn('203.0.113.8', card['text'])
         self.assertFalse(any(b.startswith(('unban:', 'white:')) for b in self.buttons(card)))
         self.assertIn('dip:203.0.113.8', self.buttons(card))
@@ -223,8 +225,8 @@ class MenuNavigation(unittest.TestCase):
         self.current_decisions.append(duplicate)
         self.callback('dip:203.0.113.8')
         card = self.edited_card()
-        self.assertIn('1h', card['text'])
-        self.assertIn('2h', card['text'])
+        self.assertIn('剩余：1 小时', card['text'])
+        self.assertIn('剩余：2 小时', card['text'])
         self.assertEqual(self.buttons(card).count('unban:203.0.113.8'), 1)
         self.assertEqual(self.buttons(card).count('white:203.0.113.8'), 1)
 
@@ -232,7 +234,7 @@ class MenuNavigation(unittest.TestCase):
         self.alert['decisions'][0]['value'] = '2001:0db8:0:0:0:0:0:8'
         self.callback('dip:2001:db8::8')
         card = self.edited_card()
-        self.assertIn('决策详情', card['text'])
+        self.assertIn('处置要求', card['text'])
         self.assertIn('unban:2001:db8::8', self.buttons(card))
         for row in card['reply_markup']['inline_keyboard']:
             for button in row:
@@ -251,7 +253,7 @@ class MenuNavigation(unittest.TestCase):
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('PRIVATE')):
             self.callback('site:0')
         card = self.edited_card()
-        self.assertIn('查询失败', card['text'])
+        self.assertIn('暂时无法查询容器', card['text'])
         self.assertNotIn('PRIVATE', card['text'])
         self.assertIn('site:0', self.buttons(card))
         self.assertIn('nav:home', self.buttons(card))

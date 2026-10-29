@@ -20,6 +20,8 @@ from urllib.parse import urlsplit
 
 import yaml
 from crowdsec_config import merged_config, notification_locations, read, read_mapping, telegram_routes, write
+from crowdsec_notify import CONFIG_NAME, WEBHOOK_FORMAT, load_config
+from crowdsec_notify_client import request as notify_request, worker_state
 
 CHANNEL = 'crowdsec_1key_telegram'
 EVIDENCE = 'crowdsec-1key-telegram-test.json'
@@ -30,11 +32,25 @@ def fingerprint(root):
     profiles, notification = notification_locations(root)
     digest = hashlib.sha256()
     for path in (Path(root)/'config.yaml', Path(root)/'config.yaml.local',
-                 notification, profiles, Path(str(profiles)+'.local')):
+                 notification, profiles, Path(str(profiles)+'.local'), Path(root)/CONFIG_NAME):
         digest.update(str(path).encode()+b'\0')
         digest.update(path.read_bytes() if path.exists() else b'<absent>')
         digest.update(b'\0')
     return digest.hexdigest()
+
+
+def smart_config(root, notification):
+    path = Path(root)/CONFIG_NAME
+    if not path.exists():
+        return None
+    config = load_config(path)
+    if not config['enabled']:
+        return None
+    if (notification.get('url') != f'http://127.0.0.1:{config["port"]}/alerts'
+            or (notification.get('headers') or {}).get('Authorization') != 'Bearer '+config['secret']
+            or notification.get('format') != WEBHOOK_FORMAT):
+        raise ValueError('分级通知配置与插件路由不一致')
+    return config
 
 
 def save_result(root, accepted, now=None, signature=None):
@@ -104,6 +120,7 @@ def inspect_settings(root, units='', cron_dir='/etc/cron.d', crontab='', now=Non
     if not notification.exists():
         return report
     config = read_mapping(notification)
+    smart = smart_config(root, config)
     if config.get('type') != 'http' or config.get('name') != CHANNEL or not isinstance(config.get('format'), str):
         report['configuration']['state'] = 'abnormal'
         report['exit_code'] = 1
@@ -117,6 +134,22 @@ def inspect_settings(root, units='', cron_dir='/etc/cron.d', crontab='', now=Non
     token = re.search(r'/bot(\d+:[A-Za-z0-9_-]+)/sendMessage/?$', url.path)
     ids = re.findall(r'"chat_id"\s+"(-?\d+)"', config['format'])
     same = telegram_routes(root, token.group(1), ids[0]) if token and len(set(ids)) == 1 else []
+    if smart:
+        report['configuration']['mode'] = 'smart'
+        same = telegram_routes(root, smart['bot_token'], str(smart['chat_id']))
+        try:
+            report['worker'] = notify_request(smart, 'status')
+            state = worker_state(report['worker'], smart['policy']['health_interval_seconds'])
+            report['worker']['state'] = state
+            if state in ('sender_stale', 'health_stale', 'delivery_failed'):
+                report['configuration']['state'] = 'abnormal'
+                report['exit_code'] = 1
+            elif state == 'health_pending':
+                report['configuration']['state'] = 'unknown'
+        except (OSError, ValueError, KeyError, TypeError):
+            report['worker'] = {'state': 'unavailable'}
+            report['configuration']['state'] = 'abnormal'
+            report['exit_code'] = 1
     documents = []
     for path in (Path(str(profiles_path)+'.local'), profiles_path):
         if path.exists():
@@ -167,8 +200,15 @@ def print_report(report):
     config = report['configuration']
     print(f"[{labels[config['state']]}] 通知配置: {config['path']}")
     if config.get('mode'):
-        mode = '批量' if config['mode'] == 'batch' else '即时'
+        mode = {'batch': '批量', 'smart': '分级降噪', 'immediate': '即时'}[config['mode']]
         print(f"通知模式: {mode}；group_wait={config['group_wait']}，group_threshold={config['group_threshold']}")
+    if 'worker' in report:
+        worker = report['worker']
+        print(f'分级通知服务：待发 {worker.get("pending", "未知")} 条；未恢复紧急事件 {worker.get("open_critical", "未知")} 个')
+        if worker.get('state') in ('health_stale', 'health_pending'):
+            print('健康检查心跳已过期。' if worker['state'] == 'health_stale' else '健康检查尚未完成。')
+        elif worker.get('state') == 'delivery_failed':
+            print('仍有通知发送失败，队列将继续重试。')
     print(f"[{labels[report['routing']['state']]}] 通知路由（local 优先，仅匹配 profile 的告警会发送）")
     for profile in report['routing']['profiles']:
         print(f"  {profile['name']} / {profile['path']} / on_success={profile['on_success']}")
@@ -204,6 +244,7 @@ def test_notification(root, cscli='cscli'):
         print('请先配置 Telegram。', file=sys.stderr)
         return 1
     config = read_mapping(notification)
+    smart = smart_config(root, config)
     url = urlsplit(str(config.get('url', '')))
     # Production endpoints use HTTPS; loopback HTTP is for isolated receivers.
     local_http = False
@@ -230,25 +271,24 @@ def test_notification(root, cscli='cscli'):
                     raise ValueError('通知消息大小无效')
                 body = self.rfile.read(length)
                 payload = json.loads(body)
-                if not isinstance(payload, dict) or not payload.get('chat_id') or not payload.get('text'):
+                if smart:
+                    queued = notify_request(smart, 'test', payload)
+                    deadline = time.monotonic()+20
+                    accepted = False
+                    while time.monotonic() < deadline:
+                        accepted = notify_request(smart, 'receipt', {'id': queued['test_id']}).get('accepted') is True
+                        if accepted:
+                            break
+                        time.sleep(0.5)
+                    receipt['accepted'] = accepted
+                    receipt['reason'] = '官方插件、持久化队列和 Telegram API 回执检查通过' if accepted else '测试已入队，尚未取得 API 成功回执'
+                elif not isinstance(payload, dict) or not payload.get('chat_id') or not payload.get('text'):
                     raise ValueError('通知消息格式无效')
-                request = urllib.request.Request(config['url'], data=body,
-                           headers=config.get('headers') or {'Content-Type': 'application/json'}, method='POST')
-                try:
-                    with opener.open(request, timeout=10) as response:
-                        code = response.status
-                        reply = json.loads(response.read(65536))
-                    receipt['accepted'] = 200 <= code < 300 and isinstance(reply, dict) and reply.get('ok') is True
-                    receipt['reason'] = 'API 已接受测试消息' if receipt['accepted'] else 'API 拒绝测试消息'
-                except urllib.error.HTTPError as error:
-                    receipt['accepted'] = False
-                    receipt['reason'] = f'API 拒绝测试消息（HTTP {error.code}）'
-                except (OSError, ValueError, urllib.error.URLError):
-                    receipt['accepted'] = False
-                    receipt['reason'] = 'API 回执读取失败（连接、超时或响应格式错误）'
-            except (ValueError, TypeError, KeyError):
+                else:
+                    self.forward_direct(body, opener)
+            except (ValueError, TypeError, KeyError, OSError, urllib.error.URLError):
                 receipt['accepted'] = False
-                receipt['reason'] = '官方插件生成的通知格式无效'
+                receipt['reason'] = '官方插件通知或分级服务回执无效'
             receipt_event.set()
             self.send_response(200)
             self.end_headers()
@@ -256,6 +296,22 @@ def test_notification(root, cscli='cscli'):
                 self.wfile.write(b'{"ok":true}')
             except OSError:
                 pass
+
+        def forward_direct(self, body, opener):
+            request = urllib.request.Request(config['url'], data=body,
+                       headers=config.get('headers') or {'Content-Type': 'application/json'}, method='POST')
+            try:
+                with opener.open(request, timeout=10) as response:
+                    code = response.status
+                    reply = json.loads(response.read(65536))
+                receipt['accepted'] = 200 <= code < 300 and isinstance(reply, dict) and reply.get('ok') is True
+                receipt['reason'] = 'API 已接受测试消息' if receipt['accepted'] else 'API 拒绝测试消息'
+            except urllib.error.HTTPError as error:
+                receipt['accepted'] = False
+                receipt['reason'] = f'API 拒绝测试消息（HTTP {error.code}）'
+            except (OSError, ValueError, urllib.error.URLError):
+                receipt['accepted'] = False
+                receipt['reason'] = 'API 回执读取失败（连接、超时或响应格式错误）'
 
         def log_message(self, *args):
             pass
@@ -268,7 +324,7 @@ def test_notification(root, cscli='cscli'):
             stage = Path(temporary)
             staged = dict(config)
             staged.update(url=f'http://127.0.0.1:{server.server_port}{nonce}', log_level='info',
-                          group_wait='1s', group_threshold=1, timeout='15s', max_retry=0)
+                          group_wait='1s', group_threshold=1, timeout='30s' if smart else '15s', max_retry=0)
             write(stage/'notifications/telegram.yaml', staged, private=True)
             effective = merged_config(str(Path(root)/'config.yaml'))
             effective.setdefault('config_paths', {})['notification_dir'] = str(stage/'notifications')

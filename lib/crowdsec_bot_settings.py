@@ -41,6 +41,7 @@ def configure(target, root, state_dir, legacy):
                   npm_log_dir=npm or config.get('npm_log_dir', prior.get('NPM_LOG_DIR', '/home/docker/npm/data/logs')),
                   api_endpoint=endpoint or config.get('api_endpoint', 'https://api.telegram.org'),
                   crowdsec_config=str(Path(root)/'config.yaml'), state_dir=state_dir,
+                  notification_callbacks=1,
                   whitelist_file=str(Path(root)/'parsers/s02-enrich/crowdsec-1key-tg-whitelist.yaml'))
     effective = merged_config(str(Path(root)/'config.yaml'))
     config['db_path'] = effective.get('db_config', {}).get('db_path') or prior.get('DB_PATH', '/var/lib/crowdsec/data/crowdsec.db')

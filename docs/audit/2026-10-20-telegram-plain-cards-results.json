@@ -1,0 +1,307 @@
+{
+  "verified_at": "2026-10-20T08:01:21.372926+00:00",
+  "success": true,
+  "test_count": 238,
+  "test_suites": [
+    {
+      "pattern": "test_execution_evidence.py",
+      "exit_code": 0,
+      "count": 21,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_custom_bot*.py",
+      "exit_code": 0,
+      "count": 179,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_telegram.py",
+      "exit_code": 0,
+      "count": 25,
+      "summary": "OK"
+    },
+    {
+      "pattern": "test_web_bouncer_runtime.py",
+      "exit_code": 0,
+      "count": 13,
+      "summary": "OK"
+    }
+  ],
+  "temporary_engine_integrations": [
+    {
+      "name": "verify_custom_bot.py",
+      "exit_code": 0
+    },
+    {
+      "name": "verify_telegram_batch.py",
+      "exit_code": 0
+    }
+  ],
+  "staged_view_count": 25,
+  "installed_python_sha256": {
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": "d19154a86d55e07555003f5ff5767a629e17f8495e203a5bd563b1498fa1fd04",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f",
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": "f54fbfb3ce6a38d42f28e3386c6c46a58ae482772231db385d893b94bf489ea4",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": "811807fd3e3fa0a196d98344fae66cb8cd4abfc268296ec2ab2b9c55238fb588"
+  },
+  "notification_sha256": "87d371c7f005db70b573110d1566b78a2f8b429087a79de8383add5a03348172",
+  "only_notification_format_changed": true,
+  "bot_backup_dir": "/var/backups/crowdbastion/telegram-update-20261020T075849Z",
+  "notification_backup_dir": "/var/backups/crowdbastion/telegram-plain-notification-20261020T075941Z",
+  "services": {
+    "crowdsec": {
+      "MainPID": "1186183",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2063399",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  },
+  "telegram_live": {
+    "success": true,
+    "at": "2026-10-20T08:00:26.211416+00:00",
+    "cards": [
+      {
+        "view": "home",
+        "message_id": 1099
+      },
+      {
+        "alert_id": 1982,
+        "message_id": 1100,
+        "state": "observed"
+      },
+      {
+        "alert_id": 1983,
+        "message_id": 1101,
+        "state": "empty"
+      }
+    ],
+    "calls": [
+      {
+        "method": "getMe",
+        "ok": true
+      },
+      {
+        "method": "sendMessage",
+        "ok": true
+      },
+      {
+        "method": "sendMessage",
+        "ok": true
+      },
+      {
+        "method": "sendMessage",
+        "ok": true
+      },
+      {
+        "method": "editMessageText",
+        "ok": true
+      },
+      {
+        "method": "editMessageText",
+        "ok": true
+      }
+    ],
+    "official_notification": {
+      "accepted": true,
+      "message_id": 1102,
+      "actual_installed_template": true
+    },
+    "messages_sent": 4,
+    "message_edits": 2,
+    "poll_status": "healthy",
+    "second_get_updates_consumer": false,
+    "ban_or_firewall_mutations": 0,
+    "user_callback_confirmed": false
+  },
+  "final_views": [
+    {
+      "view": "overview",
+      "details": false,
+      "characters": 142
+    },
+    {
+      "view": "overview",
+      "details": true,
+      "characters": 324
+    },
+    {
+      "view": "alerts",
+      "details": false,
+      "characters": 476
+    },
+    {
+      "view": "decisions",
+      "details": false,
+      "characters": 367
+    },
+    {
+      "view": "decisions",
+      "details": true,
+      "characters": 683
+    },
+    {
+      "view": "forensics",
+      "details": false,
+      "characters": 150
+    },
+    {
+      "view": "forensics",
+      "details": true,
+      "characters": 260
+    },
+    {
+      "view": "analysis",
+      "details": false,
+      "characters": 23
+    },
+    {
+      "view": "sites",
+      "details": false,
+      "characters": 91
+    },
+    {
+      "view": "sites",
+      "details": true,
+      "characters": 186
+    },
+    {
+      "view": "runtime",
+      "details": false,
+      "characters": 94
+    },
+    {
+      "view": "runtime",
+      "details": true,
+      "characters": 140
+    },
+    {
+      "view": "tools",
+      "details": false,
+      "characters": 28
+    },
+    {
+      "view": "help",
+      "details": false,
+      "characters": 710
+    },
+    {
+      "view": "posture",
+      "details": false,
+      "characters": 141
+    },
+    {
+      "view": "posture",
+      "details": true,
+      "characters": 159
+    },
+    {
+      "view": "sources",
+      "details": false,
+      "characters": 425
+    },
+    {
+      "view": "sources",
+      "details": true,
+      "characters": 455
+    },
+    {
+      "view": "paths",
+      "details": false,
+      "characters": 408
+    },
+    {
+      "view": "paths",
+      "details": true,
+      "characters": 452
+    },
+    {
+      "view": "whitelist",
+      "details": false,
+      "characters": 290
+    },
+    {
+      "view": "status",
+      "details": false,
+      "characters": 160
+    },
+    {
+      "view": "status",
+      "details": true,
+      "characters": 352
+    },
+    {
+      "view": "top",
+      "details": false,
+      "characters": 835
+    },
+    {
+      "view": "top",
+      "details": true,
+      "characters": 909
+    }
+  ],
+  "menu": [
+    [
+      "📊 防护概况",
+      "🚨 最近告警",
+      "🚫 封禁列表"
+    ],
+    [
+      "🔍 告警详情",
+      "📈 访问分析",
+      "📦 容器状态"
+    ],
+    [
+      "🤖 机器人状态",
+      "🛠 管理工具",
+      "❓ 使用帮助"
+    ]
+  ],
+  "evidence_snapshot": [
+    {
+      "alert_id": 1982,
+      "web_state": "observed",
+      "web_receipts": 17,
+      "logs_read": 33,
+      "truncated_files": 5,
+      "read_errors": 0,
+      "scan_limited": false,
+      "firewall_membership": "present"
+    },
+    {
+      "alert_id": 1983,
+      "web_state": "empty",
+      "web_receipts": 0,
+      "logs_read": 33,
+      "truncated_files": 5,
+      "read_errors": 0,
+      "scan_limited": false,
+      "firewall_membership": "present"
+    }
+  ],
+  "poll_status": "healthy",
+  "appsec_failure_action": "deny",
+  "credentials_settings_web_and_firewall_preserved": true,
+  "production_decision_or_firewall_mutations": 0,
+  "actual_firewall_packet_drops_verified": false,
+  "user_callback_confirmed": false,
+  "source_candidate_deployed_hashes_match": true,
+  "source_sha256": {
+    "lib/crowdsec_bot.py": "d19154a86d55e07555003f5ff5767a629e17f8495e203a5bd563b1498fa1fd04",
+    "lib/crowdsec_config.py": "825719596c1b2602071fa66a7329bf43900d5fb95f80836c43da6bfd05dba12f"
+  }
+}

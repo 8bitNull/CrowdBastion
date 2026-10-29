@@ -1,0 +1,6 @@
+test_restart_respects_real_https_429_then_ack_and_recovery_work (test_notify_runtime.NotificationRuntime.test_restart_respects_real_https_429_then_ack_and_recovery_work) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 12.147s
+
+OK

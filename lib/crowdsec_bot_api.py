@@ -339,6 +339,12 @@ class TelegramClient:
             retry = self._state['next_retry_at']
             return max(0, retry - time.time()) if retry is not None else 0
 
+    def last_send_error(self):
+        """Return the latest safe send result even if diagnostic persistence failed."""
+        with self._lock:
+            error = self._state['send_error']
+            return dict(error) if error is not None else None
+
     def request(self, endpoint: str, data: Optional[dict] = None) -> Optional[dict]:
         """Make exactly one HTTP attempt; callers decide when to poll again."""
         method = endpoint.split('?', 1)[0] if isinstance(endpoint, str) else ''

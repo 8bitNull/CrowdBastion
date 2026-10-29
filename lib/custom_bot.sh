@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Optional interactive bot; official HTTP notifications retain their own lifecycle.
 CUSTOM_BOT_HELPERS=(crowdsec_safety.py crowdsec_execution.py crowdsec_bot_actions.py
-    crowdsec_bot_api.py crowdsec_bot_health.py crowdbastion_health.py crowdbastion_node.py)
+    crowdsec_bot_api.py crowdsec_bot_health.py crowdbastion_health.py crowdbastion_node.py crowdsec_notify_client.py)
 
 custom_bot_owned() {
     [[ -f "$CUSTOM_BOT_UNIT" && ! -L "$CUSTOM_BOT_UNIT" ]] &&
