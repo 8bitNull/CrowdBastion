@@ -26,6 +26,12 @@ CUSTOM_BOT_LEGACY="/usr/local/bin/crowdsec_bot.py"
 CUSTOM_BOT_CRON_DIR="/etc/cron.d"
 # shellcheck source=lib/custom_bot.sh
 source "${SCRIPT_DIR}/lib/custom_bot.sh"
+NOTIFY_CODE="/usr/local/lib/crowdbastion-notify"
+NOTIFY_CONFIG="${CS_DIR}/crowdbastion-notify.json"
+NOTIFY_UNIT="/etc/systemd/system/crowdbastion-notify.service"
+NOTIFY_STATE="/var/lib/crowdbastion-notify"
+# shellcheck source=lib/notify.sh
+source "${SCRIPT_DIR}/lib/notify.sh"
 PROFILES_FILE="${CS_DIR}/profiles.yaml"
 APPSEC_FILE="${CS_DIR}/acquis.d/crowdsec-1key-appsec.yaml"
 APPSEC_LINKS="${CS_DIR}/crowdsec-1key-appsec-links.yaml"
@@ -1533,6 +1539,11 @@ update_telegram_profiles() {
 setup_telegram_notification() {
     require_core && require_yaml || return 1
     resolve_telegram_paths || return 1
+    local smart_status=0
+    notify_tool enabled "$CS_DIR" || smart_status=$?
+    if [[ "$smart_status" == 0 ]]; then
+        log_err '当前启用了分级通知；请先在 TG 菜单第 6 项恢复原通知模式，再修改通知目标。'; return 1
+    elif [[ "$smart_status" != 2 ]]; then return 1; fi
     local token chat endpoint routes
     local delivery="${1:-preserve}" choice
     local -a replaced_routes=()
@@ -1593,6 +1604,10 @@ disable_telegram_notification() {
     require_core && require_yaml || return 1
     resolve_telegram_paths || return 1
     confirm '停用本工具 Telegram 通知？其他通知通道保留。' || return 0
+    local smart_status=0
+    notify_tool enabled "$CS_DIR" || smart_status=$?
+    if [[ "$smart_status" == 0 ]]; then disable_smart_notifications off; return $?;
+    elif [[ "$smart_status" != 2 ]]; then return 1; fi
     begin_config_change "$TG_NOTIF_FILE" "${TG_PROFILE_PATHS[@]}" || return 1
     update_telegram_profiles disable || { restore_config_change; return 1; }
     rm -f "$TG_NOTIF_FILE" || { restore_config_change; return 1; }
@@ -1604,14 +1619,15 @@ manage_telegram() {
     require_core || return 1
     local choice
     while true; do
-        printf '\nTelegram 告警\n1. 设置通知\n2. 发送测试消息并检查是否送达\n3. 查看通知状态，检查重复通知\n4. 停用本工具的通知\n5. 管理交互机器人（查询和按钮操作）\n0. 返回\n'
-        prompt choice '请选择 [0-5]: ' || return 0
+        printf '\nTelegram 告警\n1. 设置通知\n2. 发送测试消息并检查是否送达\n3. 查看通知状态，检查重复通知\n4. 停用本工具的通知\n5. 管理交互机器人（查询和按钮操作）\n6. 分级降噪通知\n0. 返回\n'
+        prompt choice '请选择 [0-6]: ' || return 0
         case "$choice" in
             1) setup_telegram_notification interactive ;;
             2) test_telegram_notification ;;
             3) check_telegram_settings ;;
             4) disable_telegram_notification ;;
             5) manage_custom_bot; continue ;;
+            6) manage_smart_notifications; continue ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -1863,6 +1879,7 @@ deep_purge_residuals() {
             return 1
         fi
     done
+    purge_smart_notifications || return 1
     purge_custom_bot || return 1
     local service
     for service in crowdsec-firewall-bouncer crowdsec; do
@@ -2214,6 +2231,9 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --clean-redundant    查看节点，选择不再使用的节点并注销（不自动批量删除）
   --telegram           Telegram 管理菜单
   --telegram-test      发送官方插件测试消息并核对 Telegram API 回执
+  --telegram-smart     启用/更新分级降噪通知（需先配置 TG）
+  --telegram-smart-status  查看分级通知队列与健康检查状态
+  --telegram-smart-disable 恢复启用分级前的通知模式
   --custom-bot         可选交互机器人管理（官方通知保持独立）
 
 卸载、清理和帮助：
@@ -2284,6 +2304,9 @@ main_operation() {
         --check-logs) check_log_inventory ;;
         --telegram) manage_telegram ;;
         --telegram-test) test_telegram_notification ;;
+        --telegram-smart) enable_smart_notifications ;;
+        --telegram-smart-status) notify_tool status "$CS_DIR" ;;
+        --telegram-smart-disable) disable_smart_notifications ;;
         --custom-bot) manage_custom_bot ;;
         --optimize) smart_audit_and_optimize ;;
         --enable-wal) enable_sqlite_wal ;;
@@ -2296,7 +2319,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub) main_operation "$@" ;;
+        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

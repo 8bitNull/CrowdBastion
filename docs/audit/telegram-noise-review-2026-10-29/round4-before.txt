@@ -1,0 +1,29 @@
+test_resumed_monitoring_cancels_an_unsent_scope_removal_message (test_notify_review.PolicyReview.test_resumed_monitoring_cancels_an_unsent_scope_removal_message) ... FAIL
+test_failed_pending_delivery_is_reported_until_that_queue_item_succeeds (test_notify_review.PolicyReview.test_failed_pending_delivery_is_reported_until_that_queue_item_succeeds) ... FAIL
+
+======================================================================
+FAIL: test_resumed_monitoring_cancels_an_unsent_scope_removal_message (test_notify_review.PolicyReview.test_resumed_monitoring_cancels_an_unsent_scope_removal_message)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 69, in test_resumed_monitoring_cancels_an_unsent_scope_removal_message
+    self.assertFalse(self.tick(1120))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_failed_pending_delivery_is_reported_until_that_queue_item_succeeds (test_notify_review.PolicyReview.test_failed_pending_delivery_is_reported_until_that_queue_item_succeeds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 80, in test_failed_pending_delivery_is_reported_until_that_queue_item_succeeds
+    self.assertEqual(setup.main(), 1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.068s
+
+FAILED (failures=2)
+待发通知：1 条；未恢复紧急事件：1 个
+发送检查：1 秒前
+组件健康检查：1 秒前
+最近 API 成功：暂无记录
+最近发送失败：1970-01-01 00:17:40 UTC
+通知服务与健康检查心跳正常。

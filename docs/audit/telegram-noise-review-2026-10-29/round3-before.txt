@@ -1,0 +1,14 @@
+test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress (test_notify_review.ReceiverReview.test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress) ... FAIL
+
+======================================================================
+FAIL: test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress (test_notify_review.ReceiverReview.test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 234, in test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress
+    with self.assertRaises(urllib.error.HTTPError) as failure:
+AssertionError: HTTPError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 5.728s
+
+FAILED (failures=1)

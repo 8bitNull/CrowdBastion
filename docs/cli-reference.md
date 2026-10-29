@@ -74,6 +74,9 @@ bash crowdbastion.sh --help
 | `--deep-clean`、`--purge`、`--uninstall` | 确认后卸载和删除数据 |
 | `--telegram` | Telegram 管理菜单 |
 | `--telegram-test` | 官方插件测试并核对 Telegram API 回执 |
+| `--telegram-smart` | 启用/更新分级降噪通知，需已有 TG 目标；[策略与范围](telegram-noise-control.md) |
+| `--telegram-smart-status` | 只读查看待发队列、紧急事件与检查心跳 |
+| `--telegram-smart-disable` | 停用分级服务并恢复原即时/批量模式，保留队列 |
 | `--custom-bot` | 可选交互机器人配置/更新、只读检查及独立停用 |
 | `--optimize` | 诊断后逐项选择基础规则、日志采集和指标，汇总确认后统一加载 |
 | `--enable-wal` | 确认本地 SQLite 后启用官方 WAL 配置 |

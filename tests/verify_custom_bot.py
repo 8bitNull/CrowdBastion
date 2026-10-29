@@ -50,7 +50,7 @@ def verify(release):
                 assert response.status == 201
             alerts = json.loads(engine['cli']('alerts', 'list', '-o', 'json'))
             aid = next(a['id'] for a in alerts if a['scenario'] == alert['scenario'])
-            text, keyboard = bot.module_forensics(aid)
+            text, keyboard = bot.module_forensics(aid, details=True)
             assert '/.env?qa=custom-bot' in text and 'Custom-Bot-Real-JSON &lt;probe&gt;' in text, text
             assert '203.0.113.20' in text and keyboard, (text, keyboard)
             assert 'DROP' not in text and '模拟告警' not in text, text
@@ -64,13 +64,13 @@ def verify(release):
             print('Official SQLite schema -> retained recent-alerts/posture menus: PASS.', flush=True)
             engine['cli']('decisions', 'add', '--ip', '203.0.113.29', '--duration', '1h', '--reason', 'qa/bot-card')
             engine['cli']('decisions', 'add', '--range', '198.51.100.0/24', '--duration', '2h', '--reason', 'qa/bot-range')
-            card, buttons = bot.module_decisions()
+            card, buttons = bot.module_decisions(details=True)
             assert '203.0.113.29' in card and '198.51.100.0/24' in card, card
             assert 'qa/bot-card' in card and '查询失败' not in card, card
             groups = bot.decision_groups()
             group = next(g for g in groups if g['value'] == '203.0.113.29')
             detail, _ = bot.module_decisions(target=group['key'])
-            assert 'qa/bot-card' in detail and '剩余:' in detail and '告警 #' in detail, detail
+            assert 'qa/bot-card' in detail and '剩余：' in detail and '告警 #' in detail, detail
             range_group = next(g for g in groups if g['value'] == '198.51.100.0/24')
             assert all(not b['callback_data'].startswith('unban:') for b in bot.decision_buttons(range_group, range_group['decisions']))
             print('Official decision-list alert array -> IP/Range cards and decision details: PASS.', flush=True)
@@ -85,7 +85,7 @@ def verify(release):
             bot.run_cmd = only_reload_stub
             try:
                 result = bot.action_whitelist('203.0.113.21')
-                assert '已加入' in result, result
+                assert '已更新日志白名单' in result, result
                 assert calls == [['systemctl', 'reload', 'crowdsec']], calls
                 print('Generated whitelist accepted by official crowdsec -t; reload simulated, decision delete real: PASS.', flush=True)
             finally:

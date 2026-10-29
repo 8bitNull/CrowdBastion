@@ -170,23 +170,60 @@ class TelegramRendering(unittest.TestCase):
 
     def test_zero_id_is_not_presented_as_persistent_alert_id(self):
         text = self.render({'id': 0, 'scenario': 'http-test'})
-        self.assertNotIn('Alert #0', text)
-        self.assertIn('实时告警', text)
+        self.assertNotIn('#0', text)
+        self.assertIn('查看详情：/inspect\n', text)
+        self.assertNotIn('/inspect 0', text)
 
     def test_decision_is_not_reported_as_verified_bouncer_enforcement(self):
         text = self.render({'scenario': 'http-test', 'decisions': [{'type': 'ban', 'duration': '4h'}]})
-        self.assertIn('ban / 4h', text)
-        self.assertIn('本条通知未查询执行回执', text)
-        self.assertNotIn('DROP', text)
+        self.assertIn('告警处置：封禁 · 4h', text)
+        self.assertIn('拦截记录需在详情中查询。', text)
+        for unsupported_claim in ['剩余', '已拦截', '已封禁', '实际丢包', 'DROP']:
+            self.assertNotIn(unsupported_claim, text)
 
     def test_missing_decision_and_simulation_are_explicit(self):
         text = self.render({'scenario': 'http-test', 'decisions': [], 'simulated': True})
-        self.assertIn('未附带处置决策', text)
+        self.assertIn('告警处置：未附带处置要求', text)
         self.assertIn('模拟告警', text)
 
     def test_false_simulation_flag_is_not_treated_as_a_truthy_pointer(self):
         text = self.render({'scenario': 'http-test', 'simulated': False})
-        self.assertNotIn('模式: 模拟告警', text)
+        self.assertNotIn('模拟告警', text)
+
+    def test_notification_keeps_queryable_id_and_original_decision_types(self):
+        text = self.render({'id': 156, 'scenario': 'http-test', 'simulated': True,
+                            'decisions': [{'type': 'captcha', 'duration': '5m'},
+                                          {'type': 'custom-type', 'duration': '2h'}]})
+        self.assertTrue(text.startswith('🚨 新告警 · #156\nℹ️ 模拟告警\n'), text)
+        self.assertIn('查看详情：/inspect 156', text)
+        self.assertIn('告警处置：captcha · 5m', text)
+        self.assertIn('告警处置：custom-type · 2h', text)
+        self.assertNotIn('封禁', text)
+
+    def test_missing_source_and_decision_fields_are_not_guessed(self):
+        text = self.render({'id': 156, 'scenario': 'http-test',
+                            'source': {'value': None},
+                            'decisions': [{'type': None, 'duration': None}]})
+        self.assertIn('来源：未记录', text)
+        self.assertIn('告警处置：未记录 · 时长未记录', text)
+        self.assertIn('查看详情：/inspect 156', text)
+
+    def test_batched_notification_counts_alerts_and_limits_details(self):
+        notification = self.config/'notifications/crowdsec-1key-telegram.yaml'
+        data = yaml.safe_load(notification.read_text())
+        # The official CLI supplies one real Alert. Repeat that object to
+        # exercise the plugin's batch template with the same model type.
+        data['format'] = '{{- with list (index . 0) (index . 0) (index . 0) (index . 0) -}}'+data['format']+'{{- end -}}'
+        notification.write_text(yaml.safe_dump(data))
+        text = self.render({'id': 156, 'scenario': 'http-test', 'simulated': True,
+                            'events': [self.event(http_path='/batch', http_user_agent='Batch-UA')]})
+        self.assertTrue(text.startswith('🚨 新告警 · 4 条\n模拟：4 条\n'), text)
+        self.assertIn('http-test：4 条', text)
+        self.assertIn('以下展开 3 条，更多记录使用 /inspect 查询。', text)
+        self.assertEqual(text.count('查看详情：/inspect 156'), 3)
+        self.assertEqual(text.count('请求样本 '), 3)
+        self.assertEqual(text.count('拦截记录需在详情中查询。'), 1)
+        self.assertLessEqual(len(text), 4096)
 
     def test_real_event_meta_paths_and_ua_are_rendered_and_json_escaped(self):
         path = '/probe?q="quoted"&x=<script>\\test'
@@ -206,8 +243,8 @@ class TelegramRendering(unittest.TestCase):
                             'events': [self.event(uri='/.env')],
                             'meta': self.event(target_uri=json.dumps(['/.env']),
                                                user_agent=json.dumps([ua]), method=json.dumps(['GET']))['meta']})
-        self.assertIn('刺探目标: GET /.env', text)
-        self.assertIn('客户端指纹: '+ua, text)
+        self.assertIn('请求样本 1：GET /.env', text)
+        self.assertIn('客户端：'+ua, text)
         self.assertNotIn('未记录 UA', text)
 
     def test_context_from_different_path_is_not_paired_with_event(self):
@@ -225,7 +262,7 @@ class TelegramRendering(unittest.TestCase):
         text = self.render({'scenario': 'http-test', 'events': [self.event(http_path='/no-ua', http_user_agent='-')]})
         self.assertIn('未提供 UA', text)
         text = self.render({'scenario': 'ssh-test', 'source': None})
-        self.assertIn('未携带 HTTP 请求元数据', text)
+        self.assertIn('未记录网站请求详情', text)
 
     def test_request_samples_keep_path_ua_pairs_and_bound_message_size(self):
         events = [self.event(http_path='/first', http_user_agent='UA-first'), self.event(http_path='/second', http_user_agent='UA-second')]
@@ -237,7 +274,9 @@ class TelegramRendering(unittest.TestCase):
         self.assertLess(text.index('/second'), text.index('UA-second'))
         text = self.render({'scenario': 'http-test', 'events': [self.event(http_path='中'*2000+str(i), http_user_agent='测'*2000+str(i)) for i in range(4)]})
         self.assertLessEqual(len(text), 4096)
-        self.assertEqual(text.count('请求样本'), 3)
+        self.assertEqual(text.count('请求样本 '), 3)
+        self.assertIn('更多请求样本已省略', text)
+        self.assertIn('过长内容已省略', text)
 
 
 @unittest.skipUnless(os.environ.get('CROWDSEC_TEST_RELEASE'), 'set CROWDSEC_TEST_RELEASE for official receipt checks')

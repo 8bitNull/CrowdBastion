@@ -104,26 +104,42 @@ def telegram_template(chat):
     # Alert/Event Meta is []*MetaItems0 (Key/Value), not a map. Read the
     # actual contributing events, preserving request/UA pairs and limiting
     # samples so an attacker cannot exceed Telegram's message size limit.
-    return r'''{{- $text := "CrowdSec 告警" -}}
+    return r'''{{- $text := "" -}}{{- $shortened := false -}}
 {{- $batch := gt (len .) 1 -}}{{- $detailLimit := 1 -}}{{- $sampleLimit := 3 -}}{{- $pathLimit := 350 -}}{{- $uaLimit := 180 -}}
 {{- if $batch -}}
 {{- $detailLimit = 3 -}}{{- $sampleLimit = 1 -}}{{- $pathLimit = 200 -}}{{- $uaLimit = 120 -}}
 {{- $counts := dict -}}{{- $simulated := 0 -}}
 {{- range . -}}{{- $rule := .Scenario | toJson | fromJson -}}{{- $_ := set $counts $rule (add (get $counts $rule | default 0) 1) -}}{{- if (.Simulated | toJson | fromJson) -}}{{- $simulated = add $simulated 1 -}}{{- end -}}{{- end -}}
-{{- $text = printf "CrowdSec 批量告警\n本批告警: %d 条（模拟: %d 条）\n规则汇总:" (len .) $simulated -}}
-{{- range $i, $rule := keys $counts | sortAlpha -}}{{- if lt $i 10 -}}{{- $text = printf "%s\n%s: %d 条" $text ($rule | trunc 80) (get $counts $rule) -}}{{- end -}}{{- end -}}
+{{- $text = printf "🚨 新告警 · %d 条\n模拟：%d 条\n规则汇总：" (len .) $simulated -}}
+{{- range $i, $rule := keys $counts | sortAlpha -}}{{- if lt $i 10 -}}{{- if gt (len $rule) 80 -}}{{- $shortened = true -}}{{- end -}}{{- $text = printf "%s\n%s：%d 条" $text ($rule | trunc 80) (get $counts $rule) -}}{{- end -}}{{- end -}}
 {{- if gt (len $counts) 10 -}}{{- $text = printf "%s\n另有 %d 种规则未展开" $text (sub (len $counts) 10) -}}{{- end -}}
-{{- $text = printf "%s\n取证仅展示前 %d 条告警；完整记录请用 cscli alerts list / inspect 查询。" $text (min $detailLimit (len .)) -}}
+{{- $text = printf "%s\n以下展开 %d 条，更多记录使用 /inspect 查询。" $text (min $detailLimit (len .)) -}}
 {{- end -}}
-{{- $text = printf "%s\n执行核验: 本条通知未查询执行回执；使用 /inspect 调阅告警后点击“执行核验”查看 Web 拒绝记录与防火墙集合同步状态。集合成员状态不代表已验证实际丢包。" $text -}}
 {{- range $index, $alert := . -}}{{- if lt $index $detailLimit -}}
-{{- if gt .ID 0 -}}{{- $text = printf "%s\n\n【Alert #%d】" $text .ID -}}{{- else -}}{{- $text = printf "%s\n\n【实时告警】" $text -}}{{- end -}}
-{{- $text = printf "%s\n场景: %s" $text (.Scenario | toJson | fromJson | trunc 100) -}}
-{{- if (.Simulated | toJson | fromJson) -}}{{- $text = printf "%s\n模式: 模拟告警（不代表实际封禁）" $text -}}{{- end -}}
-{{- if not .Decisions -}}{{- $text = printf "%s\n决策: 本告警未附带处置决策" $text -}}{{- end -}}
-{{- if .Source -}}{{- $text = printf "%s\n来源: %s\n归属地: %s | %s" $text (.Source.Value | trunc 60) (.Source.Cn | trunc 30) (.Source.AsName | trunc 50) -}}{{- end -}}
-{{- if .StartAt -}}{{- $text = printf "%s\n告警时间: %s" $text (.StartAt | toJson | fromJson | trunc 60) -}}{{- end -}}
-{{- range $i, $d := .Decisions -}}{{- if lt $i 3 -}}{{- $text = printf "%s\n决策: %s / %s" $text ($d.Type | trunc 40) ($d.Duration | trunc 40) -}}{{- end -}}{{- end -}}
+{{- $title := "🚨 新告警" -}}{{- if $batch -}}{{- $title = "告警" -}}{{- end -}}
+{{- if gt .ID 0 -}}{{- $title = printf "%s · #%d" $title .ID -}}{{- end -}}
+{{- if $batch -}}{{- $text = printf "%s\n\n%s" $text $title -}}{{- else -}}{{- $text = $title -}}{{- end -}}
+{{- if (.Simulated | toJson | fromJson) -}}{{- $text = printf "%s\nℹ️ 模拟告警" $text -}}{{- end -}}
+{{- if .Source -}}
+{{- $source := .Source.Value | toJson | fromJson | default "未记录" -}}
+{{- if or (gt (len $source) 60) (gt (len .Source.Cn) 30) -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n来源：%s" $text ($source | trunc 60) -}}
+{{- if .Source.Cn -}}{{- $text = printf "%s · %s" $text (.Source.Cn | trunc 30) -}}{{- end -}}
+{{- else -}}{{- $text = printf "%s\n来源：未记录" $text -}}{{- end -}}
+{{- $scenario := .Scenario | toJson | fromJson | default "未记录" -}}{{- if gt (len $scenario) 100 -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n类型：%s" $text ($scenario | trunc 100) -}}
+{{- if not .Decisions -}}{{- $text = printf "%s\n告警处置：未附带处置要求" $text -}}{{- end -}}
+{{- range $i, $d := .Decisions -}}{{- if lt $i 3 -}}
+{{- $type := $d.Type | toJson | fromJson | default "未记录" -}}{{- if eq $type "ban" -}}{{- $type = "封禁" -}}{{- end -}}
+{{- $duration := $d.Duration | toJson | fromJson | default "时长未记录" -}}
+{{- if or (gt (len $type) 40) (gt (len $duration) 40) -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n告警处置：%s · %s" $text ($type | trunc 40) ($duration | trunc 40) -}}
+{{- end -}}{{- end -}}
+{{- if gt (len .Decisions) 3 -}}{{- $text = printf "%s\n另有 %d 条告警处置未展开" $text (sub (len .Decisions) 3) -}}{{- end -}}
+{{- $time := .StartAt | toJson | fromJson | default "未记录" -}}
+{{- if hasSuffix "Z" $time -}}{{- $time = printf "%s UTC" (trimSuffix "Z" $time) -}}{{- end -}}
+{{- if gt (len $time) 60 -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n时间：%s" $text ($time | trunc 60) -}}
 {{- $kind := .Kind -}}
 {{- $contextPath := "" -}}{{- $contextUA := "" -}}{{- $contextHasUA := false -}}{{- $contextVerb := "" -}}{{- $contextSingle := true -}}
 {{- range .Meta -}}
@@ -139,7 +155,7 @@ def telegram_template(chat):
 {{- if and (eq .Key "user_agent") (not $contextHasUA) -}}{{- $contextUA = $value -}}{{- $contextHasUA = true -}}{{- end -}}
 {{- if or (eq .Key "method") (eq .Key "http_verb") -}}{{- $contextVerb = $value -}}{{- end -}}
 {{- end -}}{{- end -}}
-{{- $samples := 0 -}}{{- $seen := dict -}}
+{{- $samples := 0 -}}{{- $seen := dict -}}{{- $moreSamples := false -}}
 {{- range .Events -}}
 {{- $path := "" -}}{{- $ua := "" -}}{{- $verb := "" -}}{{- $hasUA := false -}}
 {{- range .Meta -}}
@@ -155,11 +171,13 @@ def telegram_template(chat):
 {{- end -}}
 {{- if or $path $hasUA -}}
 {{- $signature := list $path $ua $verb | toJson -}}
-{{- if and (lt $samples $sampleLimit) (not (hasKey $seen $signature)) -}}
-{{- $_ := set $seen $signature true -}}{{- $samples = add $samples 1 -}}
+{{- if not (hasKey $seen $signature) -}}
+{{- if lt $samples $sampleLimit -}}{{- $_ := set $seen $signature true -}}{{- $samples = add $samples 1 -}}
 {{- if not $path -}}{{- $path = "事件未记录请求路径" -}}{{- end -}}
 {{- if not $hasUA -}}{{- $ua = "事件未记录 UA" -}}{{- else if or (eq $ua "") (eq $ua "-") -}}{{- $ua = "请求未提供 UA" -}}{{- end -}}
-{{- $text = printf "%s\n请求样本 %d\n刺探目标: %s %s\n客户端指纹: %s" $text $samples ($verb | trunc 20) ($path | trunc $pathLimit) ($ua | trunc $uaLimit) -}}
+{{- if or (gt (len $path) $pathLimit) (gt (len $ua) $uaLimit) (gt (len $verb) 20) -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n请求样本 %d：%s\n客户端：%s" $text $samples (printf "%s %s" ($verb | trunc 20) ($path | trunc $pathLimit) | trim) ($ua | trunc $uaLimit) -}}
+{{- else -}}{{- $moreSamples = true -}}{{- end -}}
 {{- end -}}{{- end -}}
 {{- end -}}
 {{- if eq $samples 0 -}}
@@ -167,10 +185,16 @@ def telegram_template(chat):
 {{- if or $path $hasUA -}}
 {{- if not $path -}}{{- $path = "告警上下文未记录请求路径" -}}{{- end -}}
 {{- if not $hasUA -}}{{- $ua = "告警上下文未记录 UA" -}}{{- else if or (eq $ua "") (eq $ua "-") -}}{{- $ua = "请求未提供 UA" -}}{{- end -}}
-{{- $text = printf "%s\n刺探目标: %s\n客户端指纹: %s" $text ($path | trunc $pathLimit) ($ua | trunc $uaLimit) -}}
-{{- else -}}{{- $text = printf "%s\n取证: 告警未携带 HTTP 请求元数据（非 HTTP 告警或源数据未记录）" $text -}}{{- end -}}
+{{- if or (gt (len $path) $pathLimit) (gt (len $ua) $uaLimit) (gt (len $contextVerb) 20) -}}{{- $shortened = true -}}{{- end -}}
+{{- $text = printf "%s\n请求样本 1：%s\n客户端：%s" $text (printf "%s %s" ($contextVerb | trunc 20) ($path | trunc $pathLimit) | trim) ($ua | trunc $uaLimit) -}}
+{{- else -}}{{- $text = printf "%s\n未记录网站请求详情" $text -}}{{- end -}}
 {{- end -}}
+{{- if $moreSamples -}}{{- $text = printf "%s\n更多请求样本已省略" $text -}}{{- end -}}
+{{- if gt .ID 0 -}}{{- $text = printf "%s\n\n查看详情：/inspect %d" $text .ID -}}{{- else -}}{{- $text = printf "%s\n\n查看详情：/inspect" $text -}}{{- end -}}
 {{- end -}}{{- end -}}
+{{- if gt (len $text) 3700 -}}{{- $text = $text | trunc 3700 -}}{{- $shortened = true -}}{{- end -}}
+{{- if $shortened -}}{{- $text = printf "%s\n过长内容已省略" $text -}}{{- end -}}
+{{- $text = printf "%s\n拦截记录需在详情中查询。" $text -}}
 {{- dict "chat_id" CHAT_ID "text" ($text | trunc 3900) | toJson -}}
 '''.replace('CHAT_ID', json.dumps(chat))
 

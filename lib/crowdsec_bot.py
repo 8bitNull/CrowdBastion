@@ -146,28 +146,28 @@ def offset_path():
 MenuView = namedtuple('MenuView', 'label renderer command description aliases parent refresh usage',
                       defaults=(None, '', (), 'home', True, ''))
 VIEWS = {
-    'overview': MenuView('📊 防护总览', 'module_system_status', 'overview', '防护健康与系统资源', ('📊 系统大屏',)),
+    'overview': MenuView('📊 防护概况', 'module_system_status', 'overview', '服务状态与系统资源', ('📊 系统大屏', '📊 防护总览')),
     'alerts': MenuView('🚨 最近告警', 'module_recent_alerts', 'alerts', '查看最近告警', ('🚨 最新告警',)),
-    'decisions': MenuView('🚫 封禁决策', 'module_decisions', 'decisions', '查看当前封禁决策', ('🚫 封禁名单',), refresh=False),
-    'forensics': MenuView('🔍 告警取证', 'module_forensics', 'inspect', '调阅指定或最新告警', ('🔍 取证穿透',),
+    'decisions': MenuView('🚫 封禁列表', 'module_decisions', 'decisions', '查看当前处置要求', ('🚫 封禁名单', '🚫 封禁决策'), refresh=False),
+    'forensics': MenuView('🔍 告警详情', 'module_forensics', 'inspect', '查看指定或最新告警', ('🔍 取证穿透', '🔍 告警取证'),
                           parent='alerts', usage=' [ID]'),
-    'analysis': MenuView('📈 攻击分析', 'module_analysis', 'analysis', '告警统计与日志抽样分析', refresh=False),
+    'analysis': MenuView('📈 访问分析', 'module_analysis', 'analysis', '告警与访问日志统计', ('📈 攻击分析',), refresh=False),
     'sites': MenuView('📦 容器状态', 'module_sites', 'containers', '容器健康与接入配置', ('🌐 站点体检',), refresh=False),
     'runtime': MenuView('🤖 机器人状态', 'module_bot_status', 'bot', '轮询、投递与待核对操作'),
-    'tools': MenuView('🛠 运维工具', 'module_emergency_manager', 'tools', '查看白名单与运维操作', ('⚡ 应急管家',), refresh=False),
+    'tools': MenuView('🛠 管理工具', 'module_emergency_manager', 'tools', '白名单、重载与缓存', ('⚡ 应急管家', '🛠 运维工具'), refresh=False),
     'help': MenuView('❓ 使用帮助', 'module_help', 'help', '查看命令与操作说明', ('帮助',), refresh=False),
-    'posture': MenuView('🛡️ 告警统计', 'module_attack_posture', aliases=('🛡️ 攻击态势',), parent='analysis'),
+    'posture': MenuView('📈 24 小时告警', 'module_attack_posture', aliases=('🛡️ 攻击态势', '🛡️ 告警统计'), parent='analysis'),
     'sources': MenuView('🔎 可疑来源', 'module_top_hackers', aliases=('💀 黑客榜单',), parent='analysis'),
-    'paths': MenuView('🎯 请求路径', 'module_top_targets', aliases=('🎯 漏洞靶心',), parent='analysis'),
-    'whitelist': MenuView('📋 日志解析白名单', 'module_whitelist', parent='tools'),
+    'paths': MenuView('🎯 访问路径', 'module_top_targets', aliases=('🎯 漏洞靶心', '🎯 请求路径'), parent='analysis'),
+    'whitelist': MenuView('📋 日志白名单', 'module_whitelist', aliases=('📋 日志解析白名单',), parent='tools'),
     'status': MenuView('🩺 综合状态', 'module_status', 'status', '防护健康与机器人运行状态'),
     'top': MenuView('📈 日志抽样排行', 'module_top', 'top', '可疑来源与请求路径排行', parent='analysis'),
 }
 MAIN_MENU = (('overview', 'alerts', 'decisions'), ('forensics', 'analysis', 'sites'),
              ('runtime', 'tools', 'help'))
 ACTION_COMMANDS = (('ban', ' IP [时长]', '手动封禁 IP（需确认）'),
-                   ('unban', ' IP', '删除此 IP 全部决策（需确认）'),
-                   ('white', ' IP', '永久加入日志解析白名单（需确认）'))
+                   ('unban', ' IP', '提交 IP 解封（需确认）'),
+                   ('white', ' IP', '加入日志白名单（需确认）'))
 MAIN_KEYBOARD = {
     "keyboard": [[{"text": VIEWS[key].label} for key in row] for row in MAIN_MENU],
     "resize_keyboard": True,
@@ -275,192 +275,228 @@ def read_log_tail_chunks():
     return "\n".join(chunks)
 
 # ==================== 业务模块实现 ====================
-def module_system_status():
-    """📊 系统大屏"""
-    load = os.getloadavg()
-    with open('/proc/meminfo', 'r') as f:
-        m = {line.split(':')[0].strip(): int(line.split(':')[1].split()[0]) for line in f if ':' in line}
-    mem_total = m.get('MemTotal', 1) / 1024
-    mem_used = mem_total - (m.get('MemAvailable', 1) / 1024)
-    mem_pct = (mem_used / mem_total) * 100
-    st = os.statvfs('/')
-    d_total = (st.f_blocks * st.f_frsize) / (1024**3)
-    d_used = d_total - ((st.f_bavail * st.f_frsize) / (1024**3))
-    uptime_h = int(float(Path('/proc/uptime').read_text().split()[0]) // 3600)
-    ban_cnt = None
+def display_duration(value):
+    raw = str(value or '')
+    if len(raw) > 48:
+        return esc(raw, 40)
+    parts = re.findall(r'(\d+(?:\.\d+)?)([hms])', raw)
+    if not parts or ''.join(n+u for n, u in parts) != raw:
+        return esc(raw or '未记录', 40)
+    seconds = sum(float(n)*{'h': 3600, 'm': 60, 's': 1}[u] for n, u in parts)
+    if seconds >= 3600:
+        return f'{int(seconds//3600)} 小时'+(f' {int(seconds%3600//60)} 分' if seconds%3600 >= 60 else '')
+    return f'{int(seconds//60)} 分 {int(seconds%60)} 秒' if seconds >= 60 else f'{int(seconds)} 秒'
+
+
+def display_time(value):
+    try:
+        date = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+        return date.replace(tzinfo=date.tzinfo or timezone.utc).astimezone(timezone.utc).strftime('%m-%d %H:%M:%S UTC')
+    except (ValueError, TypeError, OverflowError):
+        return '未记录'
+
+
+def disposition(value):
+    return {'ban': '封禁', 'captcha': '验证码'}.get(str(value), esc(value or '未记录', 20))
+
+
+def detail_button(data, details):
+    return {'text': '⬅️ 返回简洁版' if details else '📄 查看详情',
+            'callback_data': data if details else 'more:'+data}
+
+
+def module_system_status(details=False):
+    with open('/proc/meminfo', 'r') as stream:
+        memory = {line.split(':')[0]: int(line.split(':')[1].split()[0]) for line in stream if ':' in line}
+    total = memory.get('MemTotal', 1)/1024
+    used = total-memory.get('MemAvailable', 1)/1024
+    disk = os.statvfs('/')
+    disk_total = disk.f_blocks*disk.f_frsize/(1024**3)
+    disk_used = disk_total-disk.f_bavail*disk.f_frsize/(1024**3)
+    count = None
     conn = get_db_conn()
     if conn:
         try:
-            ban_cnt = conn.execute("SELECT count(*) FROM decisions WHERE until > datetime('now')").fetchone()[0]
-        except Exception:
+            count = conn.execute("SELECT count(*) FROM decisions WHERE until > datetime('now')").fetchone()[0]
+        except sqlite3.Error:
             pass
-        conn.close()
-    count_text = '未知（数据库不可读或查询失败）' if ban_cnt is None else str(ban_cnt)+' 条'
-    return f"""📊 <b>【{esc(os.uname().nodename, 80)} 防护总览】</b>
-━━━━━━━━━━━━━━━━━━
-⏱️ <b>持续运行</b>: <code>{uptime_h} 小时</code>
-⚙️ <b>系统负载</b>: <code>{load[0]:.2f}, {load[1]:.2f}, {load[2]:.2f}</code>
-🧠 <b>内存状态</b>: <code>{mem_used:.0f}M / {mem_total:.0f}M ({mem_pct:.1f}%)</code>
-💾 <b>系统磁盘</b>: <code>{d_used:.1f}G / {d_total:.1f}G</code>
-🛡️ <b>有效决策总数</b>: <code>{count_text}</code>
-━━━━━━━━━━━━━━━━━━
-<i>资源为当前采样，不代表内存容量验收。</i>
-
-{module_health_status()}"""
+        finally:
+            conn.close()
+    count_text = str(count)+' 条' if count is not None else '暂时无法查询（未知）'
+    text = f'📊 <b>防护概况 · {esc(os.uname().nodename, 60)}</b>\n'
+    text += module_health_status(details=details)+'\n'
+    text += f'当前处置要求：{count_text}\n内存：{used:.0f}/{total:.0f} MB · 磁盘：{disk_used:.1f}/{disk_total:.1f} GB'
+    if details:
+        load = os.getloadavg()
+        hours = int(float(Path('/proc/uptime').read_text().split()[0])//3600)
+        text += f'\n系统负载：{load[0]:.2f} / {load[1]:.2f} / {load[2]:.2f}\n持续运行：{hours} 小时'
+    return text
 
 
-def module_health_status():
+def module_health_status(details=False):
     global _HEALTH_COLLECTOR
     try:
-        # The collector imports only these installed, shared standard-library helpers.
         sibling('crowdbastion_health')
         sibling('crowdbastion_node')
         if _HEALTH_COLLECTOR is None or _HEALTH_COLLECTOR[0] != CSCLI_CONFIG:
             _HEALTH_COLLECTOR = (CSCLI_CONFIG, sibling('crowdsec_bot_health').HealthCollector(CSCLI_CONFIG))
         report = _HEALTH_COLLECTOR[1].collect()
-        labels = {'ok': '正常', 'fault': '异常', 'missing': '未配置', 'unknown': '未知',
-                  'pending': '待确认', 'optional': '未配置（可选）', 'verified': '已验证'}
-        names = {'core': 'CrowdSec', 'api': 'LAPI', 'bouncer': 'Firewall Bouncer',
-                 'registry': 'Bouncer 登记', 'metrics': '指标读取', 'logs': '日志解析', 'remote': '远端连接'}
-        lines = ['🩺 <b>防护健康摘要</b>', '范围: '+esc(report['scope'], 100)]
-        for key, name in names.items():
-            if key in report['checks']:
-                lines.append(name+': '+labels.get(report['checks'][key], '未知'))
-        summary = report['summary']
-        lines.append('结论: '+esc(summary['verdict'], 100))
-        if summary.get('attention'):
-            lines.append('需要关注: '+esc(summary['attention'], 160))
-        if summary.get('impact'):
-            lines.append('影响: '+esc(summary['impact'], 160))
-        lines.append('下一步: '+esc(summary['next'], 220))
-        lines.append('实际拦截: 待独立核验；组件状态不证明具体请求已被拦截。')
-        lines.append('采样: '+datetime.fromtimestamp(report['checked_at'], timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC'))
+        labels = {'ok': '正常', 'fault': '异常', 'missing': '尚未配置', 'unknown': '暂时无法确认',
+                  'pending': '样本不足', 'optional': '未启用（可选）', 'verified': '已验证'}
+        names = {'core': '检测服务', 'api': '检测接口', 'bouncer': '防火墙服务',
+                 'registry': '组件登记', 'metrics': '运行指标', 'logs': '日志解析', 'remote': '远端连接'}
+        checks, summary = report['checks'], report['summary']
+        lines = ['🩺 <b>服务检查</b>']
+        if any(state in ('fault', 'missing', 'unknown') for state in checks.values()):
+            lines.append('⚠️ '+esc(summary.get('attention') or summary['verdict'], 140))
+            if summary.get('next'):
+                lines.append('建议：'+esc(summary['next'], 180))
+        selected = names if details else ('core', 'bouncer', 'logs', 'remote')
+        for key in selected:
+            state = checks.get(key)
+            if state is None or (not details and state == 'optional'):
+                continue
+            label = '运行中' if state == 'ok' and key in ('core', 'bouncer') else labels.get(state, '暂时无法确认')
+            lines.append(names[key]+'：'+label)
+        if details:
+            lines.extend(['范围：'+esc(report['scope'], 120), '检查结论：'+esc(summary['verdict'], 120)])
+            if summary.get('impact'):
+                lines.append('影响：'+esc(summary['impact'], 160))
+            lines.append('本页检查服务与配置；实际拦截请查看具体来源的拦截记录。')
+        lines.append('更新：'+datetime.fromtimestamp(report['checked_at'], timezone.utc).strftime('%m-%d %H:%M:%S UTC'))
         return '\n'.join(lines)
     except (OSError, ValueError, RuntimeError, ImportError, KeyError, TypeError):
-        return '🩺 防护健康摘要: 未知，检查未完成；请核对诊断依赖与运行权限。'
+        return '🩺 服务检查：暂时无法查询，请检查依赖或权限。'
 
 
-def runtime_status_text():
+def runtime_status_text(details=True):
     api = sibling('crowdsec_bot_api')
-    text = api.describe_runtime(api.read_runtime(STATE_DIR, BOT_TOKEN))
+    report = api.read_runtime(STATE_DIR, BOT_TOKEN)
+    if details:
+        text = api.describe_runtime(report)
+    else:
+        labels = {'healthy': '正常', 'error': '异常', 'stale': '状态记录已过期', 'unknown': '暂时无法确认'}
+        poll_status = report.get('status')
+        if poll_status in ('healthy', 'error'):
+            poll_status = 'error' if report.get('poll_error') is not None else ('healthy' if report.get('last_poll_at') is not None else 'unknown')
+        text = '接收消息：'+labels.get(poll_status, '暂时无法确认')
+        text += '\n最近成功收取：'+api._format_time(report.get('last_poll_at'))
+        text += '\n最近发送成功：'+api._format_time(report.get('last_send_at'))
+        # The API renderer uses only fixed, trusted error categories.
+        diagnostic = api.describe_runtime(report)
+        error_line = next((line for line in diagnostic.splitlines() if line.startswith('当前错误：')), '')
+        if error_line and error_line != '当前错误：无已记录错误':
+            text += '\n⚠️ '+error_line
+        if report.get('next_retry_at') is not None:
+            text += '\n下次重试：'+api._format_time(report['next_retry_at'])
     try:
         pending = get_action_store().unfinished()
+        text += f'\n待核对操作：最近 {len(pending)} 项（最多显示 5 项）' if pending else '\n待核对操作：0 项'
         if pending:
-            text += '\n操作结果待核对（不会自动重放）:'
-            for item in pending:
-                text += '\n'+item['action']+' '+ ' '.join(item['params'])+' / '+item['id']
+            text += '\n请先核对操作结果，再决定是否重试。'
+            if details:
+                for item in pending:
+                    text += '\n'+item['action']+' '+' '.join(item['params'])+' / '+item['id']
     except (OSError, ValueError):
-        text += '\n操作记录不可读，请在本机核对。'
+        text += '\n⚠️ 操作记录暂时无法读取，请在服务器核对。'
     return text
 
 
-def module_status():
-    return module_health_status()+'\n\n<b>Telegram 与操作状态</b>\n<pre>'+esc(runtime_status_text(), 2000)+'</pre>'
+def module_status(details=False):
+    return module_health_status(details=details)+'\n\n'+module_bot_status(details=details)
 
 
-def module_bot_status():
-    return '🤖 <b>机器人状态</b>\n<pre>'+esc(runtime_status_text(), 2000)+'</pre>'
+def module_bot_status(details=False):
+    return '🤖 <b>机器人状态</b>\n'+esc(runtime_status_text(details=details), 2500)
 
 
 def module_analysis():
-    return ('📈 <b>攻击分析</b>\n告警统计读取近 24 小时 CrowdSec 告警；'
-            '可疑来源和请求路径来自 NPM 日志有限抽样。\n请选择要查看的分析。',
+    return ('📈 <b>访问分析</b>\n选择要查看的统计。',
             {'inline_keyboard': [[{'text': VIEWS[key].label, 'callback_data': 'nav:'+key}]
                                  for key in ('posture', 'sources', 'paths')]})
 
 
-def module_top():
-    return module_top_hackers()+'\n\n'+module_top_targets()
+def module_top(details=False):
+    return module_top_hackers(details=details)+'\n\n'+module_top_targets(details=details)
 
 
-def module_attack_posture():
-    """🛡️ 攻击态势（24小时战报，严密排除云端同步更新）"""
+def module_attack_posture(details=False):
     conn = get_db_conn()
     if not conn:
-        return "❌ 无法读取数据库"
-    day_ago = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
-    sc_cnt, ip_cnt = Counter(), Counter()
+        return '暂时无法查询告警统计，请稍后刷新。'
+    day_ago = (datetime.now(timezone.utc)-timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
     try:
-        cur = conn.cursor()
-        rows = cur.execute("""
-            SELECT scenario, source_ip
-            FROM alerts
-            WHERE created_at >= ?
-              AND scenario NOT LIKE '%update%'
-              AND source_ip IS NOT NULL
-              AND source_ip != ''
-        """, (day_ago,)).fetchall()
-        for r in rows:
-            sc_cnt[r[0]] += 1
-            ip_cnt[r[1]] += 1
-    except Exception as e:
+        rows = conn.execute("""SELECT scenario, source_ip FROM alerts
+            WHERE created_at >= ? AND scenario NOT LIKE '%update%'
+            AND source_ip IS NOT NULL AND source_ip != ''""", (day_ago,)).fetchall()
+    except sqlite3.Error:
+        return '暂时无法查询告警统计，请稍后刷新。'
+    finally:
         conn.close()
-        return f"❌ 查询异常: {html.escape(str(e))}"
-    conn.close()
-    rules_txt = "".join([f"• <code>{html.escape(k.split('/')[-1])}</code>: {v} 次\n" for k, v in sc_cnt.most_common(3)]) or "• <i>近24小时内未产生新增威胁</i>\n"
-    return f"""🛡️ <b>【24小时全网防御态势战报】</b>
-━━━━━━━━━━━━━━━━━━
-📈 <b>24H 告警</b>: <b>{len(rows)}</b> 次
-👾 <b>告警来源 IP</b>: <b>{len(ip_cnt)}</b> 个
-🔥 <b>主流攻击类型</b>:
-{rules_txt}━━━━━━━━━━━━━━━━━━
-💡 <i>提示：告警统计不证明 Bouncer 已实际拦截。</i>"""
+    rules = Counter(row[0] for row in rows)
+    sources = {row[1] for row in rows}
+    text = f'📈 <b>24 小时告警</b>\n告警：{len(rows)} 条\n来源 IP：{len(sources)} 个\n'
+    if rows:
+        text += '常见类型：\n'+'\n'.join(f'{i}. {esc(rule.split("/")[-1], 60)} · {count} 条'
+                                         for i, (rule, count) in enumerate(rules.most_common(3), 1))
+    else:
+        text += '近 24 小时未查到告警。'
+    text += '\n范围：本机告警记录。'
+    if details:
+        text += '\n统计告警数量，不代表实际拦截次数。'
+    return text
+
 
 def module_recent_alerts():
-    """🚨 最新告警（只呈现真实外部黑客）"""
     conn = get_db_conn()
     if not conn:
-        return "❌ 数据库离线", None
+        return '暂时无法查询告警，请稍后刷新。', None
     try:
-        alerts = conn.execute("""
-            SELECT id, source_ip, source_country, scenario, created_at
-            FROM alerts
-            WHERE scenario NOT LIKE '%update%'
-              AND source_ip IS NOT NULL
-              AND source_ip != ''
-            ORDER BY id DESC LIMIT 5
-        """).fetchall()
-    except Exception as e:
+        alerts = conn.execute("""SELECT id, source_ip, source_country, scenario, created_at, simulated
+            FROM alerts WHERE scenario NOT LIKE '%update%' AND source_ip IS NOT NULL
+            AND source_ip != '' ORDER BY id DESC LIMIT 5""").fetchall()
+    except sqlite3.Error:
+        return '暂时无法查询告警，请稍后刷新。', None
+    finally:
         conn.close()
-        return f"❌ 查询失败: {e}", None
-    conn.close()
     if not alerts:
-        return "✅ 当前查询未找到告警；不代表防护已验证。", None
-    txt = "🚨 <b>【最近告警 (Top 5)】</b>\n━━━━━━━━━━━━━━━━━━\n"
-    kb = []
-    for a in alerts:
-        aid, ip, country, sc, created = a
-        txt += f"<b>#{aid}</b> | <code>{html.escape(ip)}</code> ({html.escape(country or '未知')})\n   └ 规则: <code>{html.escape(sc.split('/')[-1])}</code>\n   └ 时间: <code>{created}</code>\n\n"
-        kb.append([{"text": f"🔍 取证 #{aid}", "callback_data": f"ins:{aid}"}])
-    return txt.strip(), {"inline_keyboard": kb}
+        return '🚨 最近告警\n本次查询未找到告警。', None
+    text, keyboard = '🚨 <b>最近告警 · 最近 5 条</b>\n', []
+    for aid, ip, country, rule, created, simulated in alerts:
+        text += f'\n<b>#{esc(aid)}</b> · <code>{esc(ip, 60)}</code> · {esc(country or "未记录", 20)}'+(' · 模拟' if simulated else '')+'\n'
+        text += '类型：'+esc(str(rule).split('/')[-1], 65)+'\n时间：'+display_time(created)+'\n'
+        keyboard.append([{'text': f'🔍 查看 #{aid}', 'callback_data': f'ins:{aid}'}])
+    return text.strip(), {'inline_keyboard': keyboard}
 
-def module_top_hackers():
-    """💀 黑客榜单（Top 10 恶意扫描 IP 排行）"""
+
+def module_top_hackers(details=False):
     raw = read_log_tail_chunks()
     if not raw:
-        return "⚠️ 可疑来源: 暂无可读取的 NPM 日志抽样。"
-    m = re.findall(r'(?:GET|POST|HEAD) [^\"]*(?:\.env|\.\./|phpmyadmin|actuator|pearcmd|\.git|wp-login|\.bak)[^\"]* [^\[]*\[Client ([a-fA-F0-9:.]+)\]', raw, re.I) or re.findall(r' (?:404|403) [^\[]*\[Client ([a-fA-F0-9:.]+)\]', raw)
-    counts = Counter(m).most_common(10)
-    if not counts:
-        return "可疑来源: 本次日志抽样未匹配到可疑请求；不代表没有攻击。"
-    txt = "🔎 <b>【可疑来源 IP (Top 10)】</b>\n━━━━━━━━━━━━━━━━━━\n"
-    for idx, (ip, cnt) in enumerate(counts, 1):
-        txt += f"<b>{idx}.</b> <code>{html.escape(ip)}</code> ➔ <b>{cnt}</b> 次探测\n"
-    return txt + "━━━━━━━━━━━━━━━━━━\n<i>NPM 日志有限抽样，按路径/状态码启发式统计，不作为恶意身份或实际拦截的证明。</i>"
+        return '🔎 可疑来源\n暂时没有可读取的网站日志。'
+    matches = re.findall(r'(?:GET|POST|HEAD) [^\"]*(?:\.env|\.\./|phpmyadmin|actuator|pearcmd|\.git|wp-login|\.bak)[^\"]* [^\[]*\[Client ([a-fA-F0-9:.]+)\]', raw, re.I) or re.findall(r' (?:404|403) [^\[]*\[Client ([a-fA-F0-9:.]+)\]', raw)
+    counts = Counter(matches).most_common(10)
+    text = '🔎 <b>可疑来源 · 前 10 名</b>\n'
+    text += '\n'.join(f'{i}. <code>{esc(ip)}</code> · {count} 次匹配' for i, (ip, count) in enumerate(counts, 1)) if counts else '本次抽样未匹配到可疑请求。'
+    text += '\n范围：最近可读取的网站日志抽样。'
+    if details:
+        text += '\n按请求路径或响应状态匹配，不能据此确定恶意身份或实际拦截。'
+    return text
 
-def module_top_targets():
-    """🎯 漏洞靶心（Top 10 被嗅探敏感路径）"""
+
+def module_top_targets(details=False):
     raw = read_log_tail_chunks()
     if not raw:
-        return "⚠️ 请求路径: 暂无可读取的 NPM 日志抽样。"
+        return '🎯 访问路径\n暂时没有可读取的网站日志。'
     paths = re.findall(r'(?:GET|POST|HEAD) (/[^ \"?]+)', raw, re.I)
     sensitive = [p for p in paths if any(k in p.lower() for k in ['.env', '..', 'phpmyadmin', 'actuator', 'pearcmd', '.git', 'wp-', '.bak', 'api/', 'login'])]
     counts = Counter(sensitive).most_common(10) or Counter(paths).most_common(10)
-    txt = "🎯 <b>【请求路径抽样 (Top 10)】</b>\n━━━━━━━━━━━━━━━━━━\n"
-    for idx, (p, cnt) in enumerate(counts, 1):
-        disp = p if len(p) <= 32 else p[:29] + "..."
-        txt += f"<b>{idx}.</b> <code>{html.escape(disp)}</code> ➔ <b>{cnt}</b> 次\n"
-    return txt + "━━━━━━━━━━━━━━━━━━\n<i>NPM 日志有限抽样；请求频率不能单独证明攻击或已拦截。</i>"
+    text = '🎯 <b>访问路径 · 前 10 名</b>\n'
+    text += '\n'.join(f'{i}. <code>{esc(path, 100 if details else 32)}</code> · {count} 次' for i, (path, count) in enumerate(counts, 1)) if counts else '本次抽样未找到请求路径。'
+    text += '\n范围：最近可读取的网站日志抽样。'
+    if details:
+        text += '\n优先统计敏感路径；请求频率不能单独证明攻击或已拦截。'
+    return text
+
 
 def meta_values(meta):
     if isinstance(meta, dict):
@@ -534,39 +570,49 @@ def esc(value, limit=160):
     return html.escape(str(value or '')[:limit])
 
 
-def module_forensics(alert_id=None):
+def module_forensics(alert_id=None, details=False):
     try:
         alert = read_alert(alert_id)
         if alert is None:
-            return '⚠️ 未找到对应的告警。', None
+            return '未找到这条告警，请返回列表刷新。', None
         source = alert.get('source') or {}
         aid, ip = alert.get('id'), source.get('value', source.get('ip', ''))
-        txt = f"🔍 <b>【Alert #{esc(aid)} 告警取证】</b>\n来源: <code>{esc(ip)}</code>\n归属地: {esc(source.get('cn'))} | {esc(source.get('as_name'))}\n规则: <code>{esc(alert.get('scenario'), 100)}</code>\n告警时间: {esc(alert.get('start_at'), 50)}\n"
+        text = f'🔍 <b>告警详情 · #{card_esc(aid)}</b>\n'
         if alert.get('simulated') is True:
-            txt += '模式: 模拟告警（不代表实际封禁）\n'
+            text += 'ℹ️ 模拟告警\n'
+        text += f'来源：<code>{card_esc(ip, 60)}</code> · {card_esc(source.get("cn") or "地区未记录", 30)}\n'
+        text += '类型：'+card_esc(alert.get('scenario'), 100)+'\n时间：'+display_time(alert.get('start_at'))+'\n'
         decisions = alert.get('decisions') or []
-        if decisions:
-            txt += '决策: '+', '.join(esc(d.get('type'), 20)+' / '+esc(d.get('duration'), 20) for d in decisions[:3])+'\n'
-        else:
-            txt += '决策: 本告警未附带处置决策\n'
-        txt += '执行回执: 本页未查询；点击下方“执行核验”查看 Web 拒绝记录和防火墙集合同步状态。\n'
+        text += '告警处置：'+('、'.join(disposition(d.get('type'))+' '+display_duration(d.get('duration'))+('（模拟）' if d.get('simulated') is True else '')
+                                          for d in decisions[:3]) if decisions else '未附带处置要求')+'\n'
+        if len(decisions) > 3:
+            text += f'另有 {len(decisions)-3} 条未展开。\n'
         samples = request_samples(alert)
-        for index, (path, ua, method) in enumerate(samples, 1):
-            description = '未记录 UA' if ua is None else ('请求未提供 UA' if not ua else ua)
-            txt += f"\n请求样本 {index}\n🎯 刺探目标: <code>{esc(method, 12)} {esc(path, 180)}</code>\n🤖 客户端指纹: <code>{esc(description, 100)}</code>\n"
-        if not samples:
-            txt += '取证: 未记录 HTTP 元数据；非 HTTP 告警不适用路径/UA。\n'
-        kb = None
+        if details:
+            text += '网络归属：'+card_esc(source.get('as_name') or '未记录', 100)+'\n'
+            text += '告警附带的处置是历史记录；当前状态请查看“当前封禁要求”。\n'
+            for index, (path, ua, method) in enumerate(samples, 1):
+                description = '未记录 UA' if ua is None else ('请求未提供 UA' if not ua else ua)
+                text += f'\n请求样本 {index}：<code>{card_esc(method, 12)} {card_esc(path, 180)}</code>\n客户端：<code>{card_esc(description, 100)}</code>\n'
+            text += '\n拦截记录按来源查询，不等同于原告警请求已被拦截。'
+        elif samples:
+            path, _, method = samples[0]
+            text += f'请求样本：<code>{card_esc(method, 12)} {card_esc(path, 180)}</code>\n'
+        else:
+            text += '未记录网站请求详情。\n'
+        rows = []
         try:
             parsed_ip = str(ipaddress.ip_address(ip))
-            kb = {'inline_keyboard': [[{'text': '📋 查看此 IP 当前决策', 'callback_data': 'dip:'+parsed_ip}]]}
             if type(aid) is int and aid > 0:
-                kb['inline_keyboard'].insert(0, [{'text': '🔎 执行核验', 'callback_data': f'exp:{aid}'}])
+                rows.append([{'text': '🔎 拦截记录', 'callback_data': f'exp:{aid}'}])
+            rows.append([{'text': '📋 当前封禁要求', 'callback_data': 'dip:'+parsed_ip}])
         except ValueError:
             pass
-        return txt, kb
+        if type(aid) is int and aid > 0:
+            rows.append([detail_button(f'ins:{aid}', details)])
+        return text.strip(), {'inline_keyboard': rows}
     except (RuntimeError, ValueError, TypeError, KeyError):
-        return '❌ 告警查询失败，请检查 cscli 权限、配置和 JSON 输出。', None
+        return '暂时无法查询告警，请稍后刷新。', None
 
 
 # Read-only mobile views. Limits are alert/container samples, not global totals.
@@ -585,20 +631,24 @@ def card_esc(value, limit=60):
     return result
 
 
-def module_execution(alert_id):
-    keyboard = {'inline_keyboard': [[{'text': '🔄 刷新执行核验', 'callback_data': f'exp:{alert_id}'}],
-        [{'text': '⬅️ 返回告警取证', 'callback_data': f'ins:{alert_id}'}],
+def module_execution(alert_id, details=False, decision_page=0):
+    base = f'exp:{alert_id}'
+    keyboard = {'inline_keyboard': [[{'text': '🔄 刷新', 'callback_data': ('more:' if details else '')+base},
+                                    detail_button(base, details)],
+        [{'text': '⬅️ 返回告警', 'callback_data': f'ins:{alert_id}'}],
         [{'text': '🏠 主菜单', 'callback_data': 'nav:home'}]]}
     try:
         alert = read_alert(alert_id)
         if alert is None:
-            return '⚠️ 未找到对应的告警。', keyboard
+            return '未找到这条告警，请返回列表刷新。', keyboard
         ip = str(ipaddress.ip_address((alert.get('source') or {}).get('value', '')))
     except (RuntimeError, ValueError, TypeError):
-        return '⚠️ 执行核验无法读取告警或来源不是单个 IP。', keyboard
-    text = f'🔎 <b>【Alert #{card_esc(alert_id)} 执行核验 · Web】</b>\n来源: <code>{card_esc(ip)}</code>\n'
+        return '暂时无法查询拦截记录，请核对告警及来源 IP。', keyboard
+    lines = [f'🔎 <b>{"拦截详情" if details else "拦截记录"} · #{card_esc(alert_id)}</b>']
     if alert.get('simulated') is True:
-        text += '模式: 模拟告警；以下为该来源的独立观测，不代表模拟告警产生了封禁。\n'
+        lines.append('ℹ️ 模拟告警；以下记录按来源单独查询。')
+    lines.append(f'来源：<code>{card_esc(ip)}</code>')
+    decisions = []
     try:
         data = json.loads(run_cmd(['cscli', 'decisions', 'list', '--ip', ip, '-l', '20', '-o', 'json']))
         if data is None:
@@ -606,59 +656,81 @@ def module_execution(alert_id):
         if not isinstance(data, list) or any(not isinstance(a, dict) or
                 not isinstance(a.get('decisions', []), list) for a in data):
             raise ValueError('Invalid decisions')
-        decisions = [d for a in data for d in (a.get('decisions') or []) if isinstance(d, dict)]
-        text += '当前决策（按 IP 查询，最多20条告警）: '
-        text += ('、'.join(card_esc(d.get('type'), 20)+' / '+card_esc(d.get('duration'), 20)
-                          for d in decisions[:3]) if decisions else '未查到')+'\n'
+        decisions = [dict(d, simulated=d.get('simulated') is True or a.get('simulated') is True)
+                     for a in data for d in (a.get('decisions') or []) if isinstance(d, dict)]
+        if not decisions:
+            lines.append('当前处置：本次未查到')
+        elif len(decisions) == 1 and decisions[0]['simulated']:
+            lines.append('模拟处置：'+disposition(decisions[0].get('type'))+' · '+display_duration(decisions[0].get('duration')))
+        elif len(decisions) == 1 and decisions[0].get('type') == 'ban':
+            lines.append('封禁要求：剩余 '+display_duration(decisions[0].get('duration')))
+        elif len(decisions) == 1:
+            lines.append('当前处置：'+disposition(decisions[0].get('type'))+' · 剩余 '+display_duration(decisions[0].get('duration')))
+        else:
+            lines.append(f'当前处置：{len(decisions)} 条要求'+('（含模拟）' if any(d['simulated'] for d in decisions) else '')+'，详见详情')
     except (RuntimeError, ValueError, TypeError):
-        text += '当前决策: 查询不可用\n'
-    text += '决策存在只表示处置要求。\n'
+        lines.append('当前处置：暂时无法查询')
     now = time.time()
     since = now-86400
+    fallback_time = False
     try:
         date = datetime.fromisoformat(str(alert.get('start_at', '')).replace('Z', '+00:00'))
         since = date.replace(tzinfo=date.tzinfo or timezone.utc).timestamp()
     except (ValueError, TypeError, OverflowError):
-        text += '告警时间不可用，按最近24小时查询。\n'
+        fallback_time = True
+    evidence = None
     try:
-        # Load the installed sibling even when this bot is imported by an audit tool.
-        import importlib.util
-        spec = importlib.util.spec_from_file_location('crowdbastion_execution', Path(__file__).with_name('crowdsec_execution.py'))
-        reader = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(reader)
+        reader = sibling('crowdsec_execution')
         evidence = reader.query(EXECUTION_LOG_DIRS or [NPM_LOG_DIR], ip, since, now=now)
         if evidence['state'] == 'observed':
-            text += f"✅ 已记录同源 Web 拒绝: {evidence['count']} 条（日志抽样）\n"
-            text += '原因: '+'、'.join(reader.CAUSES[k]+f' {v} 条' for k,v in evidence['causes'].items())+'\n'
-            last = evidence['records'][0]
-            date = datetime.fromtimestamp(last['time'], timezone.utc).strftime('%m-%d %H:%M:%S UTC')
-            text += f"最后记录: {date} / HTTP {last['status']} / 未访问业务上游\n请求 ID: <code>{last['request_id']}</code>\n"
+            lines.append(f"网站拒绝：已记录 {evidence['count']} 次（抽样）")
         elif evidence['state'] == 'empty':
-            text += '⏳ Web 回执: 本次未找到该来源的拒绝记录，不能据此判断拦截成功或漏防。\n'
+            lines.append('网站拒绝：本次未查到记录')
         else:
-            text += '⚠️ Web 回执查询不可用，本次结果未知。\n'
-        start = datetime.fromtimestamp(evidence['since'], timezone.utc).strftime('%m-%d %H:%M UTC')
-        text += f"查询窗口: {start} 至今（最多24小时）；读取 {evidence['logs_read']} 个日志尾部。\n"
-        text += f"读取情况: 截尾 {evidence['truncated_files']} 个文件；读取错误 {evidence['errors']}。\n"
-        if evidence['scan_limited']:
-            text += '扫描达到文件或目录条目上限。\n'
-        if evidence['truncated'] or evidence['errors']:
-            text += '覆盖有限: 以上条数仅为本次抽样，不代表全量；扫描范围不是拦截次数。\n'
+            lines.append('网站拒绝：暂时无法查询')
     except (OSError, ValueError, TypeError, ImportError, KeyError, OverflowError):
-        text += '⚠️ Web 回执查询不可用（日志或核验模块异常），本次结果未知。\n'
+        lines.append('网站拒绝：暂时无法查询')
+        evidence = None
     try:
         config_path = Path(CSCLI_CONFIG).parent/'bouncers/crowdsec-firewall-bouncer.yaml'
         firewall = sibling('crowdsec_execution').firewall_membership(sibling('crowdsec_safety').load(config_path), ip)
-        labels = {'present': '已进入配置的封禁集合', 'absent': '本次未在配置的封禁集合中查到',
-                  'unavailable': '查询不可用，本次结果未知', 'unsupported': '未核验（当前后端或地址族不支持）'}
-        text += '防火墙集合同步: '+labels[firewall['state']]+'。\n'
+        labels = {'present': '已加入', 'absent': '本次未查到',
+                  'unavailable': '暂时无法查询', 'unsupported': '当前方式暂不支持查询'}
+        lines.append('防火墙名单：'+labels[firewall['state']])
     except Exception:
-        # Optional evidence must not hide the independent Web receipt result.
-        text += '防火墙集合同步: 查询不可用，本次结果未知。\n'
-    text += '防火墙实际丢包: 本卡未核验；集合成员状态不能证明实际丢包。\n'
-    text += '关联范围: 来源 IP 与时间窗；不能证明原触发请求或本告警某条决策已执行。'
-    return text, keyboard
-
+        lines.append('防火墙名单：暂时无法查询')
+    lines.append('防火墙实际拦截：尚未验证')
+    start = max(since, now-86400) if evidence is None else evidence['since']
+    lines.append('范围：该来源，自 '+datetime.fromtimestamp(start, timezone.utc).strftime('%m-%d %H:%M UTC')+' 起')
+    if evidence and (evidence['truncated'] or evidence['errors']):
+        lines.append('ℹ️ 记录不完整，详见详情。')
+    if details:
+        if fallback_time:
+            lines.append('告警时间未记录，按最近 24 小时查询。')
+        lines.append('查询结束：'+datetime.fromtimestamp(now, timezone.utc).strftime('%m-%d %H:%M:%S UTC'))
+        lines.append('当前处置按 IP 查询，最多 20 条告警；处置要求不等于已执行。')
+        entries, decision_page, decision_pages = page_slice(decisions, decision_page)
+        lines.append(f'处置要求：{decision_page+1}/{decision_pages} 页')
+        for decision in entries:
+            lines.append('• '+disposition(decision.get('type'))+' / '+card_esc(decision.get('duration'), 30)+(' · 模拟' if decision['simulated'] else ''))
+        keyboard['inline_keyboard'][0][0]['callback_data'] = f'exd:{alert_id}:{decision_page}'
+        if decision_pages > 1:
+            keyboard['inline_keyboard'].insert(1, page_controls(f'exd:{alert_id}', decision_page, decision_pages))
+        if evidence:
+            lines.append(f"读取日志：{evidence['logs_read']} 个\n日志截尾：{evidence['truncated_files']} 个 · 读取失败：{evidence['errors']}")
+            lines.append('扫描上限：'+('已达到' if evidence['scan_limited'] else '未达到'))
+            causes = {'lapi_ban': '命中封禁要求', 'lapi_failure': '封禁查询故障，按策略拒绝',
+                      'appsec_rule': '命中网站安全规则', 'appsec_failure': '网站检查故障，按策略拒绝',
+                      'appsec_body': '请求体检查未完成，按策略拒绝'}
+            if evidence['state'] == 'observed':
+                lines.append('拒绝原因：'+'；'.join(causes[k]+f' {v} 次' for k, v in evidence['causes'].items()))
+                last = evidence['records'][0]
+                lines.append('最近拒绝：'+datetime.fromtimestamp(last['time'], timezone.utc).strftime('%m-%d %H:%M:%S UTC'))
+                lines.append(f"HTTP {last['status']} · 未访问业务上游\n请求 ID：<code>{last['request_id']}</code>")
+        lines.extend(['网站记录按来源 IP 和时间查询，不能证明原触发请求或某条告警决策已执行。',
+                      '未查到网站记录时，可能没有新访问、请求先被防火墙拦住，或日志记录不完整。',
+                      '加入防火墙名单仅表示配置集合中存在该 IP，集合成员状态不能证明实际丢包。'])
+    return '\n'.join(lines), keyboard
 
 
 def page_controls(prefix, page, pages):
@@ -702,82 +774,86 @@ def decision_groups():
 
 
 def decision_buttons(group, decisions, detail=False):
-    row = []
     if not detail:
-        row.append({'text': '📋 决策详情', 'callback_data': 'dd:'+group['key']+':0'})
-    else:
-        aids = list(dict.fromkeys(str(d['alert_id']) for d in decisions if re.fullmatch(r'[1-9][0-9]{0,17}', str(d['alert_id']))))
-        row.extend({'text': '🔍 取证 #'+aid, 'callback_data': 'ins:'+aid} for aid in aids[:2])
-    return row
+        return [{'text': '📋 查看要求', 'callback_data': 'dd:'+group['key']+':0'}]
+    aids = list(dict.fromkeys(str(d['alert_id']) for d in decisions if re.fullmatch(r'[1-9][0-9]{0,17}', str(d['alert_id']))))
+    return [{'text': '🔍 查看告警 #'+aid, 'callback_data': 'ins:'+aid} for aid in aids[:2]]
 
 
 def decision_actions(group):
     if group['scope'].lower() == 'ip':
         try:
             value = str(ipaddress.ip_address(group['value']))
-            return [{'text': '🔓 解封此 IP 全部决策', 'callback_data': 'unban:'+value},
-                    {'text': '🛡️ 加入日志解析白名单', 'callback_data': 'white:'+value}]
+            return [{'text': '🔓 解封此 IP', 'callback_data': 'unban:'+value},
+                    {'text': '🛡️ 加入日志白名单', 'callback_data': 'white:'+value}]
         except ValueError:
             pass
     return []
 
 
-def module_decisions(page=0, target=None, ip=None):
+def module_decisions(page=0, target=None, ip=None, details=False):
     refresh = {'inline_keyboard': [page_controls('dec', 0, 1)]}
     try:
         groups = decision_groups()
-        intro = '范围: 本地/手动等默认来源，不含 CAPI；最多查询 50 条告警所附决策。\n'
+        intro = '范围：本地及手动来源，最多 50 条告警；不含云端情报。'
         if ip is not None:
             ip = validated_ip(ip)
             refresh = {'inline_keyboard': [[{'text': '🔄 刷新', 'callback_data': 'dip:'+ip}],
-                                           [{'text': '⬅️ 返回决策列表', 'callback_data': 'dec:0'}]]}
+                                           [{'text': '⬅️ 返回列表', 'callback_data': 'dec:0'}]]}
             group = next((g for g in groups if g['scope'].lower() == 'ip'
                           and str(ipaddress.ip_address(g['value'])) == ip), None)
             if group is None:
-                return ('⚠️ 本次查询未找到 IP <code>'+esc(ip)+'</code> 的当前决策。\n'+intro+
-                        '可能已过期或超出查询范围，请先核对实际状态。', refresh)
+                return ('本次未查到 IP <code>'+esc(ip)+'</code> 的处置要求。\n可能已到期或不在查询范围内。\n'+intro, refresh)
             target = group['key']
+        keyboard = []
         if target is not None:
             group = next((g for g in groups if g['key'] == target), None)
             if group is None:
-                return '⚠️ 此目标已不在本次查询结果中，可能已过期或超出查询范围。', refresh
+                return '此目标已不在本次查询结果中，可能已到期或超出范围。', refresh
             entries, page, pages = page_slice(group['decisions'], page)
-            text = f"📋 <b>决策详情 {page+1}/{pages}</b>\n目标: <code>{card_esc(group['value'], 64)}</code> ({card_esc(group['scope'], 12)})\n共 {len(group['decisions'])} 条决策\n"+intro
-            keyboard = []
+            base = 'dd:'+target+':'+str(page)
+            text = f'📋 <b>处置要求 · {page+1}/{pages}</b>\n目标：<code>{card_esc(group["value"], 64)}</code>\n共 {len(group["decisions"])} 条要求\n'
             for d in entries:
-                text += (f"\n告警 #{card_esc(d['alert_id'], 12)} · 决策 #{card_esc(d.get('id'), 12)}\n"
-                         f"规则: <code>{card_esc(d.get('scenario'), 55)}</code>\n"
-                         f"来源: {card_esc(d.get('origin'), 16)} · {card_esc(d.get('type'), 12)}\n"
-                         f"剩余: {card_esc(d.get('duration'), 24)} · {'模拟' if d['simulated'] else '非模拟'}\n")
+                text += f'\n告警 #{card_esc(d["alert_id"], 12)} · '+disposition(d.get('type'))+'\n'
+                text += '剩余：'+display_duration(d.get('duration'))+(' · 模拟' if d['simulated'] else '')+'\n'
+                text += '规则：<code>'+card_esc(d.get('scenario'), 55)+'</code>\n'
+                if details:
+                    text += '来源：'+card_esc(d.get('origin'), 16)+' · 决策 #'+card_esc(d.get('id'), 12)+'\n'
+                    text += '原始时长：'+card_esc(d.get('duration'), 24)+'\n'
                 row = decision_buttons(group, [d], detail=True)
                 if row:
                     keyboard.append(row)
             actions = decision_actions(group)
             if actions:
                 keyboard.append(actions)
-            keyboard.append(page_controls('dd:'+target, page, pages))
-            keyboard.append([{'text': '⬅️ 返回决策列表', 'callback_data': 'dec:0'}])
+            prefix = ('more:' if details else '')+'dd:'+target
         else:
             entries, page, pages = page_slice(groups, page)
+            base = 'dec:'+str(page)
             total = sum(len(g['decisions']) for g in groups)
-            text = f'🚫 <b>封禁决策 {page+1}/{pages}</b>\n本次结果: {len(groups)} 个目标 · {total} 条决策\n'+intro
-            keyboard = []
+            text = f'🚫 <b>封禁列表 · {page+1}/{pages}</b>\n本次查到：{len(groups)} 个目标 · {total} 条处置要求\n'
             if not entries:
-                text += '\n未找到有效决策。\n'
-            for g in entries:
-                decisions = g['decisions']
-                d = decisions[0]
-                text += (f"\n<code>{card_esc(g['value'], 64)}</code> ({card_esc(g['scope'], 12)})\n"
-                         f"{len(decisions)} 条决策 · {'含模拟决策' if any(x['simulated'] for x in decisions) else '非模拟'}\n"
-                         f"规则: <code>{card_esc(d.get('scenario'), 55)}</code>\n"
-                         f"来源: {card_esc(d.get('origin'), 16)} · {card_esc(d.get('type'), 12)} · 剩余: {card_esc(d.get('duration'), 24)}\n"
-                         f"告警 #{card_esc(d['alert_id'], 12)}"+(' · 更多规则/时长见详情' if len(decisions)>1 else '')+'\n')
-                keyboard.append(decision_buttons(g, decisions))
-            keyboard.append(page_controls('dec', page, pages))
-        text += '\n决策存在不证明 Bouncer 已实际拦截。刷新会重新查询，排序及页数可能变化。'
+                text += '\n本次查询未找到有效处置要求。\n'
+            for group in entries:
+                ds, d = group['decisions'], group['decisions'][0]
+                simulation = ' · 模拟' if all(x['simulated'] for x in ds) else (' · 含模拟' if any(x['simulated'] for x in ds) else '')
+                text += f'\n<code>{card_esc(group["value"], 64)}</code>'+simulation+'\n'
+                text += ('其中一条：' if len(ds)>1 else '')+disposition(d.get('type'))+' · 剩余 '+display_duration(d.get('duration'))+'\n'
+                text += f'{len(ds)} 条要求 · 查看要求\n'
+                if details:
+                    text += '规则：'+card_esc(d.get('scenario'), 55)+' · 来源：'+card_esc(d.get('origin'), 16)+'\n'
+                keyboard.append(decision_buttons(group, ds))
+            prefix = ('more:' if details else '')+'dec'
+        text += '\n'+intro
+        if details:
+            text += '\n这里显示处置要求；实际执行情况请查看拦截记录。刷新后列表可能变化。'
+        keyboard.append(page_controls(prefix, page, pages))
+        keyboard.append([detail_button(base, details)])
+        if target is not None:
+            keyboard.append([{'text': '⬅️ 返回列表', 'callback_data': 'dec:0'}])
         return text, {'inline_keyboard': keyboard}
     except (RuntimeError, ValueError, TypeError, KeyError):
-        return '❌ 决策查询失败，请检查 cscli 权限、配置和 JSON 输出。', refresh
+        return '暂时无法查询处置要求，请稍后刷新。', refresh
 
 
 def web_install_records():
@@ -796,9 +872,9 @@ def web_install_records():
 
 def web_config_status(name, records, error):
     if error:
-        return error
+        return '暂时无法核对'
     if name not in records:
-        return '无本工具安装记录（不排除外部安装）'
+        return '无本工具安装记录'
     entry = records[name]
     if not isinstance(entry, dict):
         return '安装记录格式无效'
@@ -806,12 +882,12 @@ def web_config_status(name, records, error):
         return '安装记录状态: '+card_esc(entry.get('status', '未知'), 24)
     try:
         actual = hashlib.sha256(Path(entry['host_target']).read_bytes()).hexdigest()
-        return '配置指纹一致（仅主配置文件）' if actual == entry['installed_sha'] else '配置已变化，请核对'
+        return '与安装记录一致' if actual == entry['installed_sha'] else '⚠️ 与安装记录不同'
     except (OSError, ValueError, TypeError, KeyError):
-        return '配置不可读或记录不完整'
+        return '暂时无法核对'
 
 
-def module_sites(page=0):
+def module_sites(page=0, details=False):
     refresh = {'inline_keyboard': [page_controls('site', 0, 1)]}
     try:
         raw = run_cmd(['docker', 'ps', '-a', '--format', '{{json .}}'])
@@ -821,46 +897,67 @@ def module_sites(page=0):
         containers.sort(key=lambda c: c['Names'])
         entries, page, pages = page_slice(containers, page)
         records, error = web_install_records()
-        text = f'📦 <b>容器状态 {page+1}/{pages}</b>\nDocker 容器: {len(containers)} 个（包括停止的容器）\n'
+        text = f'📦 <b>容器状态 · {page+1}/{pages}</b>\n共 {len(containers)} 个，包含已停止的容器\n'
         if not entries:
-            text += '\n未找到容器。\n'
+            text += '\n未找到 Docker 容器。\n'
+        status_names = {'running': '运行中', 'exited': '已停止', 'restarting': '重启中',
+                        'paused': '已暂停', 'created': '已创建', 'dead': '异常'}
+        health_names = {'healthy': '正常', 'unhealthy': '异常', 'starting': '检查中'}
         for container in entries:
-            text += f"\n<b>{card_esc(container['Names'], 48)}</b>\n容器: {card_esc(container.get('State', '未知'), 16)} · {card_esc(container.get('Status'), 45)}\n"
+            state_value = container.get('State', '未记录')
+            text += f'\n<b>{card_esc(container["Names"], 48)}</b>\n运行：'+card_esc(status_names.get(state_value, state_value), 24)+'\n'
             try:
-                # State only: full inspect can expose passwords/environment variables.
                 state = json.loads(run_cmd(['docker', 'inspect', '--format', '{{json .State}}', container['ID']]))
                 if not isinstance(state, dict):
                     raise ValueError('Invalid state')
-                health = (state.get('Health') or {}).get('Status', '未配置 HEALTHCHECK')
-                text += f"健康: {card_esc(health, 28)}\n启动时间: {card_esc(state.get('StartedAt', '未知'), 35)}\n"
+                health = (state.get('Health') or {}).get('Status', '未设置')
+                text += '健康检查：'+card_esc(health_names.get(health, health), 28)+'\n'
+                if details:
+                    text += '启动时间：'+display_time(state.get('StartedAt'))+'\n'
             except (RuntimeError, ValueError, TypeError, AttributeError):
-                text += '健康/启动时间: 状态查询失败\n'
-            text += 'Bouncer: '+web_config_status(container['Names'], records, error)+'\n'
+                text += '健康检查：暂时无法查询\n'
+            status = web_config_status(container['Names'], records, error)
+            text += '主配置：'+status+'\n'
+            if details:
+                text += 'Docker 摘要：'+card_esc(container.get('Status'), 60)+'\n'
+                text += '原始状态：'+card_esc(state_value, 20)+'\n'
         if error and not entries:
-            text += error+'\n'
-        text += '\nHTTP 可用性: 尚未验证（本页不主动探测）。\n配置指纹不证明挂载、资源文件、运行时加载或实际拦截；其他接入方式尚未核验。'
-        return text, {'inline_keyboard': [page_controls('site', page, pages)]}
+            text += '主配置：暂时无法核对\n'
+        text += '\n本页未检查网站访问和实际拦截。'
+        if details:
+            text += '\n仅核对主配置文件；未检查挂载、资源文件或运行时加载。其他接入方式未检查。'
+        prefix = ('more:' if details else '')+'site'
+        return text, {'inline_keyboard': [page_controls(prefix, page, pages), [detail_button('site:'+str(page), details)]]}
     except (RuntimeError, ValueError, TypeError, KeyError):
-        return '❌ Docker 容器查询失败，请检查 Docker 是否安装、守护进程、权限和 JSON 输出。', refresh
+        return '暂时无法查询容器，请检查 Docker 服务或权限。', refresh
 
 
 def home_card():
-    return ('📱 <b>主菜单</b>\n请选择要查看的状态或告警；修改操作会先展示影响并请求确认。',
+    return ('📱 <b>主菜单</b>\n选择下方功能。\n封禁、解封等操作会先请你确认。',
             {'inline_keyboard': [[{'text': VIEWS[key].label, 'callback_data': 'nav:'+key}
                                   for key in row] for row in MAIN_MENU]})
 
 
-def render_view(view_id, *args, refresh_data=None, **kwargs):
+DETAIL_VIEWS = {'overview', 'forensics', 'runtime', 'posture', 'sources', 'paths',
+                'status', 'top', 'decisions', 'sites'}
+
+
+def render_view(view_id, *args, refresh_data=None, details=False, **kwargs):
     """Normalize existing renderers into cards with the same navigation rules."""
     if view_id == 'home':
         return home_card()
     view = VIEWS[view_id]
+    if view_id in DETAIL_VIEWS:
+        kwargs['details'] = details
     result = globals()[view.renderer](*args, **kwargs)
     text, markup = result if isinstance(result, tuple) else (result, None)
     rows = [[dict(button) for button in row] for row in (markup or {}).get('inline_keyboard', [])]
     navigation = []
+    base = refresh_data or 'nav:'+view_id
     if view.refresh:
-        navigation.append({'text': '🔄 刷新', 'callback_data': refresh_data or 'nav:'+view_id})
+        navigation.append({'text': '🔄 刷新', 'callback_data': ('more:' if details else '')+base})
+    if view_id in DETAIL_VIEWS-{'forensics', 'decisions', 'sites'}:
+        rows.append([detail_button(base, details)])
     if view.parent != 'home':
         navigation.append({'text': '⬅️ 返回'+VIEWS[view.parent].label, 'callback_data': 'nav:'+view.parent})
     if navigation:
@@ -881,11 +978,15 @@ def handle_view_callback(callback):
     message_id = callback.get('message', {}).get('message_id')
     if not isinstance(data, str) or not message_id:
         return False
+    details = data.startswith('more:')
+    if details:
+        data = data[5:]
     view_id, kwargs = None, {}
     match = re.fullmatch(r'(dec|site):(\d{1,6})', data)
     detail = re.fullmatch(r'dd:([a-f0-9]{16}):(\d{1,6})', data)
     inspect = re.fullmatch(r'ins:([1-9]\d{0,17})', data)
     execution = re.fullmatch(r'exp:([1-9]\d{0,11})', data)
+    execution_detail = re.fullmatch(r'exd:([1-9]\d{0,11}):(\d{1,6})', data)
     if data.startswith('nav:') and data[4:] in (*VIEWS, 'home'):
         view_id = data[4:]
     elif match:
@@ -904,52 +1005,51 @@ def handle_view_callback(callback):
     elif execution:
         view_id = 'execution'
         kwargs = {'alert_id': int(execution[1])}
+    elif execution_detail:
+        view_id, details = 'execution', True
+        kwargs = {'alert_id': int(execution_detail[1]), 'decision_page': int(execution_detail[2])}
     elif data == 'em:view_white':
         view_id = 'whitelist'
     if view_id is None:
         return False
+    if details and view_id not in DETAIL_VIEWS | {'execution'}:
+        return False
     answer_callback(callback['id'], '正在查询…')
     if view_id == 'execution':
-        text, keyboard = module_execution(**kwargs)
+        text, keyboard = module_execution(details=details, **kwargs)
     else:
-        text, keyboard = render_view(view_id, **kwargs)
+        text, keyboard = render_view(view_id, details=details, **kwargs)
     tg_request('editMessageText', {'chat_id': ADMIN_CHAT_ID, 'message_id': message_id,
         'text': text, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': keyboard})
     return True
 
 
 def module_emergency_manager():
-    """运维工具：查询直接响应，修改经既有确认与审计流程执行。"""
-    txt = """🛠 <b>运维工具</b>
-━━━━━━━━━━━━━━━━━━
-• <b>查看日志解析白名单</b>：只读展示本工具白名单文件
-• <b>重载 CrowdSec</b>：校验配置后重载
-• <b>释放文件缓存</b>：不保证降低应用内存
-修改操作会展示具体影响，确认后才执行。"""
-    kb = {"inline_keyboard": [
-        [{"text": VIEWS['whitelist'].label, "callback_data": "nav:whitelist"}],
-        [{"text": "🔄 重载 CrowdSec", "callback_data": "em:reload_cs"}],
-        [{"text": "🧹 释放文件缓存", "callback_data": "em:drop_caches"}]
-    ]}
-    return txt, kb
+    return ('🛠 <b>管理工具</b>\n选择操作，执行前会再次确认。', {'inline_keyboard': [
+        [{'text': '📋 查看日志白名单', 'callback_data': 'nav:whitelist'}],
+        [{'text': '🔄 重载检测服务', 'callback_data': 'em:reload_cs'}],
+        [{'text': '🧹 释放文件缓存', 'callback_data': 'em:drop_caches'}]]})
 
 
 def module_whitelist():
     if not os.path.exists(WHITELIST_FILE):
-        return '📋 日志解析白名单\n无本工具白名单文件。'
-    return module_command(['cat', WHITELIST_FILE], '日志解析白名单')
+        return '📋 日志白名单\n未找到本工具管理的日志白名单。'
+    return module_command(['cat', WHITELIST_FILE], '日志白名单')+'\n作用：在日志检测流程中加白。网站检查和云端封禁可能仍然生效。'
 
 
 def module_help():
-    lines = ['❓ <b>使用帮助</b>', '• <code>/start</code> - 唤出 3×3 九宫格主键盘']
-    lines.extend('• <code>/'+view.command+esc(view.usage)+'</code> - '+view.description
+    lines = ['❓ <b>使用帮助</b>', '查告警：最近告警 → 告警详情', '查拦截：告警详情 → 拦截记录',
+             '查封禁：封禁列表', '做操作：管理工具，或使用下方命令', '', '<code>/start</code> — 打开主菜单']
+    lines.extend('<code>/'+view.command+esc(view.usage)+'</code> — '+view.description
                  for view in VIEWS.values() if view.command)
-    lines.extend('• <code>/'+command+esc(usage)+'</code> - '+description
+    lines.extend('<code>/'+command+esc(usage)+'</code> — '+description
                  for command, usage, description in ACTION_COMMANDS)
-    lines.append('流程：最近告警 → 告警取证 → 当前决策 → 操作确认。')
-    lines.append('<i>修改操作需在 60 秒内点击确认；查询直接响应。'
-                 '操作结果待核对时请先查询实际状态。</i>')
+    lines.extend(['', '网站拒绝记录：查询该来源的网站请求拒绝记录。',
+                  '防火墙名单：查询该 IP 是否进入封禁集合，实际丢包尚未验证。',
+                  '未查到网站记录可能是没有新访问、先被防火墙拦住，或记录不完整。',
+                  '操作需在 60 秒内确认；结果待核对时，请先查询实际状态。'])
     return '\n'.join(lines)
+
 
 def validated_ip(value):
     return str(ipaddress.ip_address(value.strip()))
@@ -968,21 +1068,21 @@ def action_ban(ip, dur='4h'):
         guard(ip, Path(CSCLI_CONFIG).parent, '', interfaces)
     except Exception:
         # Invalid YAML and command errors may contain private configuration.
-        return '❌ 封禁安全检查失败，请核对本机和管理员地址及检查依赖；未添加封禁。'
+        return '❌ 封禁安全检查未通过，未添加封禁。请核对本机与管理员地址保护。'
     try:
         run_cmd(['cscli', 'decisions', 'add', '--ip', ip, '--duration', dur, '--reason', 'manual_tg'])
-        return f'✅ 封禁决策已添加: <code>{esc(ip)}</code> / {esc(dur)}；实际拦截需核验 Bouncer。'
+        return f'✅ 已添加封禁要求\nIP：<code>{esc(ip)}</code> · 时长：{display_duration(dur)}\n实际执行情况请查看拦截记录。'
     except CommandUncertain:
         raise
     except RuntimeError:
-        return '❌ 添加封禁决策失败。'
+        return '❌ 添加封禁要求失败。'
 
 
 def action_unban(ip):
     try:
         ip = validated_ip(ip)
         run_cmd(['cscli', 'decisions', 'delete', '--ip', ip])
-        return f'✅ 已提交解封: <code>{esc(ip)}</code>；Bouncer 同步后生效。'
+        return f'✅ 已提交解封\nIP：<code>{esc(ip)}</code>\n防护组件同步后生效。'
     except CommandUncertain:
         raise
     except ValueError:
@@ -1035,7 +1135,7 @@ def action_whitelist(ip):
         loaded = True
         changed = False
         run_cmd(['cscli', 'decisions', 'delete', '--ip', ip])
-        return f'✅ 已加入日志解析白名单并提交解封: <code>{esc(ip)}</code>。不保证 AppSec/CAPI 或其他防护组件放行。'
+        return f'✅ 已更新日志白名单并提交解封\nIP：<code>{esc(ip)}</code>\n网站检查和云端封禁仍可能阻止访问。'
     except ValueError:
         return '❌ IP 或白名单文件格式无效。'
     except (RuntimeError, OSError) as error:
@@ -1061,7 +1161,7 @@ def module_command(args, label):
         output = run_cmd(args)
         return '<b>'+esc(label)+'</b>\n<pre>'+esc(output, 2500)+'</pre>'
     except RuntimeError:
-        return '❌ '+esc(label)+'查询失败，请检查命令和权限。'
+        return '暂时无法查询'+esc(label)+'，请检查服务或权限。'
 
 
 def reload_engine():
@@ -1071,7 +1171,7 @@ def reload_engine():
         return '❌ 配置校验失败或超时，未提交重载。'
     try:
         run_cmd(['systemctl', 'reload', 'crowdsec'])
-        return '✅ 引擎重载完成。'
+        return '✅ CrowdSec 已重载。'
     except CommandUncertain:
         raise
     except RuntimeError:
@@ -1083,7 +1183,7 @@ def drop_caches():
         os.sync()
         with open('/proc/sys/vm/drop_caches', 'w') as stream:
             stream.write('3\n')
-        return '✅ 已请求释放文件缓存；不保证降低应用内存。'
+        return '✅ 已请求释放文件缓存。\n应用占用的内存不一定减少。'
     except OSError:
         return '❌ 缓存释放失败或权限不足。'
 
@@ -1122,7 +1222,7 @@ def background_alert_watcher():
 
                 # 只有真正外部黑客来犯才报警！
                 txt, kb = module_forensics(aid)
-                send_message(f"🚨 <b>【CrowdSec 突发威胁阻断】</b>\n\n{txt}", reply_markup=kb)
+                send_message(f"🚨 <b>新告警</b>\n\n{txt}", reply_markup=kb)
         except Exception:
             pass
         finally:
@@ -1130,8 +1230,8 @@ def background_alert_watcher():
 
 def request_action(action, params):
     """Both commands and legacy buttons enter this preview, never execute directly."""
-    labels = {'ban': '封禁', 'unban': '解封', 'white': '永久加入日志解析白名单',
-              'reload': '重载 CrowdSec', 'drop_caches': '释放系统文件缓存'}
+    labels = {'ban': '封禁', 'unban': '解封', 'white': '加入日志白名单',
+              'reload': '重载 CrowdSec', 'drop_caches': '释放文件缓存'}
     try:
         if action not in labels:
             raise ValueError('unknown action')
@@ -1141,22 +1241,22 @@ def request_action(action, params):
             raise ValueError('invalid duration')
         nonce = get_action_store().offer(action, params, ADMIN_USER_ID, ADMIN_CHAT_ID)
     except (ValueError, IndexError, TypeError):
-        send_message('❌ 操作参数无效，未执行。')
+        send_message('❌ 参数格式不正确，本次未执行。')
         return
-    text = '⚠️ <b>确认操作：'+labels[action]+'</b>\n'
+    text = '⚠️ <b>确认'+labels[action]+'？</b>\n'
     if params:
-        text += '目标: <code>'+esc(params[0])+'</code>\n'
+        text += 'IP：<code>'+esc(params[0])+'</code>\n'
     if action == 'ban':
-        text += '时长: '+esc(params[1])+'；提交决策前仍会核对本机与管理员地址。\n'
+        text += '时长：'+display_duration(params[1])+'\n将添加封禁要求，执行前会检查管理地址保护。\n'
     elif action == 'unban':
-        text += '影响: 删除此 IP 的全部决策，Bouncer 同步后生效。\n'
+        text += '将删除该 IP 的全部处置要求。防护组件同步后生效。\n'
     elif action == 'white':
-        text += '影响: 修改日志解析白名单、重载 CrowdSec，并删除此 IP 的全部决策以提交解封。此白名单不保证 AppSec/CAPI 放行。\n'
+        text += '将更新白名单、重载检测服务，并删除该 IP 的全部处置要求。\n网站检查和云端封禁仍可能阻止访问。\n'
     elif action == 'reload':
-        text += '影响: 校验配置后重载 CrowdSec。\n'
+        text += '先检查配置，再重载检测服务。\n'
     else:
-        text += '影响: 同步写入并释放文件缓存，不保证降低应用内存。\n'
-    text += '60 秒内确认有效；取消或服务重启后需重新发起。'
+        text += '将先写回数据，再释放系统文件缓存。应用占用的内存不一定减少。\n'
+    text += '请在 60 秒内确认。'
     send_message(text, {'inline_keyboard': [[
         {'text': '确认执行', 'callback_data': 'yes:'+nonce},
         {'text': '取消', 'callback_data': 'no:'+nonce}]]})
@@ -1175,26 +1275,40 @@ def execute_confirmed(ticket):
         outcome = 'success' if result.startswith('✅') else 'failed'
     except Exception:
         # A command may have completed before its caller failed. Never replay it.
-        outcome, result = 'unknown', '⚠️ 操作结果待核对，请先查询实际状态后再决定是否重新发起。'
+        outcome, result = 'unknown', '⚠️ 操作结果待核对\n请先查询实际状态，再决定是否重试。'
     try:
         store.finish(ticket, outcome, result)
     except (OSError, ValueError):
-        result += '\n⚠️ 操作记录写入未完成，结果待核对；不会自动重放。'
+        result += '\n⚠️ 操作记录未保存完整，请先核对实际结果。'
     return result+'\n操作 ID: <code>'+esc(ticket['id'])+'</code>'
 
 
 def handle_action_callback(callback):
     data = callback.get('data', '')
+    notice = re.fullmatch(r'(na|nd):([a-f0-9]{24})', data)
+    if notice:
+        try:
+            result = sibling('crowdsec_notify_client').bot_request(
+                Path(CSCLI_CONFIG).parent/'crowdbastion-notify.json', BOT_TOKEN, ADMIN_CHAT_ID,
+                'ack' if notice[1] == 'na' else 'detail', notice[2])
+            if notice[1] == 'na':
+                answer_callback(callback['id'], '已知晓；恢复和升级仍会通知' if result.get('acknowledged') else '事件已结束或不存在')
+            else:
+                answer_callback(callback['id'])
+                send_message(esc(result['text']))
+        except (OSError, ValueError, TypeError, KeyError):
+            answer_callback(callback['id'], '通知服务暂不可用，请检查服务状态', alert=True)
+        return True
     match = re.fullmatch(r'(yes|no):([A-Za-z0-9_-]{16,64})', data)
     if match:
         store = get_action_store()
         if match[1] == 'no':
             cancelled = store.cancel(match[2], ADMIN_USER_ID, ADMIN_CHAT_ID)
-            answer_callback(callback['id'], '已取消' if cancelled else '确认已过期或已处理')
+            answer_callback(callback['id'], '已取消，本次未执行' if cancelled else '此确认已失效或已处理，请先核对结果')
             return True
         ticket = store.take(match[2], ADMIN_USER_ID, ADMIN_CHAT_ID)
         if ticket is None:
-            answer_callback(callback['id'], '确认已过期或已处理，请重新发起', alert=True)
+            answer_callback(callback['id'], '确认已失效或已处理，请先核对结果', alert=True)
             return True
         answer_callback(callback['id'], '正在执行，请稍候…')
         result = execute_confirmed(ticket)

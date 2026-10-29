@@ -1,0 +1,45 @@
+test_existing_worker_update_without_notification_route_does_not_claim_success (test_notify_review.InstallationReview.test_existing_worker_update_without_notification_route_does_not_claim_success) ... ok
+test_first_install_rollback_disables_before_removing_unit_file (test_notify_review.InstallationReview.test_first_install_rollback_disables_before_removing_unit_file) ... ok
+test_unreadable_previous_service_state_stops_update_before_mutation (test_notify_review.InstallationReview.test_unreadable_previous_service_state_stops_update_before_mutation) ... FAIL
+test_api_backoff_survives_failure_to_write_optional_transport_diagnostics (test_notify_review.PolicyReview.test_api_backoff_survives_failure_to_write_optional_transport_diagnostics) ... Telegram 运行状态记录失败，请检查状态目录。
+Telegram API：请求过于频繁（429）。
+FAIL
+test_broken_optional_bot_configuration_cannot_block_critical_delivery (test_notify_review.PolicyReview.test_broken_optional_bot_configuration_cannot_block_critical_delivery) ... ok
+test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery (test_notify_review.PolicyReview.test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery) ... ok
+test_new_confirmed_failure_retracts_queued_recovery_of_same_component (test_notify_review.PolicyReview.test_new_confirmed_failure_retracts_queued_recovery_of_same_component) ... ok
+test_non_object_service_configuration_has_a_controlled_validation_error (test_notify_review.PolicyReview.test_non_object_service_configuration_has_a_controlled_validation_error) ... ok
+test_status_fails_if_health_collection_stalls_while_sender_is_alive (test_notify_review.PolicyReview.test_status_fails_if_health_collection_stalls_while_sender_is_alive) ... FAIL
+
+======================================================================
+FAIL: test_unreadable_previous_service_state_stops_update_before_mutation (test_notify_review.InstallationReview.test_unreadable_previous_service_state_stops_update_before_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 145, in test_unreadable_previous_service_state_stops_update_before_mutation
+    self.assertNotIn('restart crowdbastion-notify', self.commands())
+AssertionError: 'restart crowdbastion-notify' unexpectedly found in 'systemctl show --property=LoadState --property=FragmentPath crowdbastion-notify.service\nsystemctl is-active --quiet crowdbastion-notify.service\nsystemctl is-enabled --quiet crowdbastion-notify.service\nsystemctl daemon-reload\nsystemctl enable crowdbastion-notify.service\nsystemctl restart crowdbastion-notify.service\ncrowdsec -t\nsystemctl is-active --quiet crowdsec\nsystemctl restart crowdsec\nsystemctl is-active --quiet crowdsec\ncrowdsec -t\nsystemctl restart crowdsec\nsystemctl is-active --quiet crowdsec\nsystemctl stop crowdbastion-notify.service\nsystemctl daemon-reload\nsystemctl enable crowdbastion-notify.service\n'
+
+======================================================================
+FAIL: test_api_backoff_survives_failure_to_write_optional_transport_diagnostics (test_notify_review.PolicyReview.test_api_backoff_survives_failure_to_write_optional_transport_diagnostics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 72, in test_api_backoff_survives_failure_to_write_optional_transport_diagnostics
+    self.assertGreaterEqual(self.store._get('api_retry'), 1400)
+AssertionError: 0 not greater than or equal to 1400
+
+======================================================================
+FAIL: test_status_fails_if_health_collection_stalls_while_sender_is_alive (test_notify_review.PolicyReview.test_status_fails_if_health_collection_stalls_while_sender_is_alive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 81, in test_status_fails_if_health_collection_stalls_while_sender_is_alive
+    self.assertEqual(setup.main(), 1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 9 tests in 4.917s
+
+FAILED (failures=3)
+待发通知：0 条；未恢复紧急事件：0 个
+发送检查：1 秒前
+组件健康检查：3600 秒前
+最近 API 成功：暂无记录
+最近发送失败：暂无记录

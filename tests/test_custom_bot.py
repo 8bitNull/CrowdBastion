@@ -28,8 +28,8 @@ class CustomBot(unittest.TestCase):
         self.bot.CSCLI_CONFIG = str(self.base/'config.yaml')
         self.bot.DB_PATH = str(self.base/'db.sqlite')
         conn = sqlite3.connect(self.bot.DB_PATH)
-        conn.execute('CREATE TABLE alerts (id INTEGER, source_ip TEXT, source_country TEXT, source_as_name TEXT, scenario TEXT, created_at TEXT)')
-        conn.execute("INSERT INTO alerts VALUES (42, '203.0.113.20', '', '', 'crowdsecurity/vpatch-env-access', '2026-10-13')")
+        conn.execute('CREATE TABLE alerts (id INTEGER, source_ip TEXT, source_country TEXT, source_as_name TEXT, scenario TEXT, created_at TEXT, simulated BOOLEAN DEFAULT 0)')
+        conn.execute("INSERT INTO alerts(id, source_ip, source_country, source_as_name, scenario, created_at) VALUES (42, '203.0.113.20', '', '', 'crowdsecurity/vpatch-env-access', '2026-10-13')")
         conn.commit()
         conn.close()
         self.alert = {'id': 42, 'scenario': 'crowdsecurity/vpatch-env-access', 'source': {'value': '203.0.113.20'},
@@ -37,9 +37,9 @@ class CustomBot(unittest.TestCase):
                           {'meta': [{'key': 'uri', 'value': '/.env'}, {'key': 'user_agent', 'value': 'Real-UA <test>'},
                                     {'key': 'method', 'value': 'GET'}]}]}
 
-    def forensic(self, alert=None):
+    def forensic(self, alert=None, details=True):
         with patch.object(self.bot, 'run_cmd', return_value=json.dumps([alert or self.alert])) as run:
-            text, keyboard = self.bot.module_forensics(42)
+            text, keyboard = self.bot.module_forensics(42, details=details)
         return text, keyboard, run
 
     def test_json_inspect_event_meta_shows_matching_path_and_ua(self):
@@ -51,6 +51,14 @@ class CustomBot(unittest.TestCase):
         self.assertIn('--details', args)
         self.assertIn('json', args)
         self.assertNotIn('--no-metrics', args)
+
+    def test_plain_forensics_keeps_request_sample_and_moves_ua_to_details(self):
+        text, keyboard, _ = self.forensic(details=False)
+        self.assertIn('/.env', text)
+        self.assertNotIn('Real-UA', text)
+        self.assertIn('more:ins:42', [b['callback_data'] for row in keyboard['inline_keyboard'] for b in row])
+        detail, _, _ = self.forensic(details=True)
+        self.assertIn('Real-UA &lt;test&gt;', detail)
 
     def test_appsec_context_arrays_are_parsed_without_claiming_drop(self):
         self.alert['events'] = []
@@ -67,6 +75,7 @@ class CustomBot(unittest.TestCase):
         self.alert['meta'] = [{'key': 'target_uri', 'value': '["/.env", "/other"]'},
                               {'key': 'user_agent', 'value': '["One-UA", "Other-UA"]'}]
         text, _, _ = self.forensic()
+        self.assertNotIn('One-UA', text)
         self.assertNotIn('Other-UA', text)
         self.assertIn('未记录', text)
 
@@ -81,7 +90,8 @@ class CustomBot(unittest.TestCase):
     def test_query_failure_is_reported_instead_of_unknown_fields(self):
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('inspect failed')):
             text, keyboard = self.bot.module_forensics(42)
-        self.assertIn('查询失败', text)
+        self.assertIn('暂时无法查询告警', text)
+        self.assertNotIn('inspect failed', text)
         self.assertIsNone(keyboard)
 
     def test_ban_rejects_shell_input_without_executing(self):
@@ -94,12 +104,15 @@ class CustomBot(unittest.TestCase):
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('command failed')):
             text = self.bot.action_unban('203.0.113.20')
         self.assertIn('失败', text)
+        self.assertNotIn('command failed', text)
         self.assertNotIn('已解封', text)
+        self.assertNotIn('已提交解封', text)
 
     def test_read_only_command_failure_returns_visible_response(self):
         with patch.object(self.bot, 'run_cmd', side_effect=RuntimeError('missing docker')):
             text = self.bot.module_command(['docker', 'ps'], '容器状态')
-        self.assertIn('失败', text)
+        self.assertIn('暂时无法查询', text)
+        self.assertNotIn('missing docker', text)
 
     def test_invalid_duration_is_rejected(self):
         with patch.object(self.bot, 'run_cmd', return_value='') as run:
@@ -192,7 +205,7 @@ class CustomBot(unittest.TestCase):
         import yaml
         data = yaml.safe_load(Path(self.bot.WHITELIST_FILE).read_text())
         self.assertEqual(data['whitelist']['ip'], ['203.0.113.20'])
-        self.assertIn('已加入', text)
+        self.assertIn('已更新日志白名单并提交解封', text)
         self.assertEqual(run.call_args_list[0].args[0][0], 'crowdsec')
         self.assertEqual(run.call_args_list[1].args[0], ['systemctl', 'reload', 'crowdsec'])
 

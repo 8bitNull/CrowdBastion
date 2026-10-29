@@ -1,0 +1,167 @@
+{
+  "target": {
+    "host": "179.255.121.95",
+    "port": 53322
+  },
+  "verified_at": 1793280872.4523876,
+  "release": "/opt/crowdbastion/releases/telegram-noise-20261029",
+  "backup": "/var/backups/crowdbastion/telegram-noise-update-20261029T133222Z",
+  "services_before": {
+    "crowdsec.service": {
+      "MainPID": "1186183",
+      "NRestarts": "0",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2069519",
+      "NRestarts": "0",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdbastion-notify.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "UnitFileState": ""
+    }
+  },
+  "services_after": {
+    "crowdsec.service": {
+      "MainPID": "2172093",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "MainPID": "1170352",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "2171787",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdbastion-notify.service": {
+      "MainPID": "2171912",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    }
+  },
+  "worker": {
+    "pending": 0,
+    "retrying": 0,
+    "open_critical": 0,
+    "heartbeat_age": 0.37500929832458496,
+    "last_delivery": 0,
+    "last_failure": 0,
+    "health_age": 4.430782318115234,
+    "state": "ready"
+  },
+  "bot_runtime": {
+    "status": "healthy",
+    "instance": {
+      "pid": 2171787,
+      "session": "6789fdf14456400899672c59e49fcec0"
+    },
+    "last_poll_at": 1793280867.4510336,
+    "poll_error": null,
+    "send_error": null,
+    "api_error": null
+  },
+  "unique_processes": {
+    "crowdsec_bot.py": [
+      2171787
+    ],
+    "crowdsec_notify.py": [
+      2171912
+    ]
+  },
+  "observations": [
+    {
+      "component": "api",
+      "state": "ok",
+      "checked": 1793280867.9351182
+    },
+    {
+      "component": "bouncer",
+      "state": "ok",
+      "checked": 1793280867.9351182
+    },
+    {
+      "component": "core",
+      "state": "ok",
+      "checked": 1793280867.9351182
+    }
+  ],
+  "natural_ingress": {
+    "unique_alerts": 1,
+    "last_ingress": 1793280795.146896
+  },
+  "notification_mode": "smart",
+  "notification_duplicates": {
+    "same_destination": [],
+    "repeated_profiles": [],
+    "continuing_profiles": [],
+    "co_routed_profiles": []
+  },
+  "bot_config_changed_keys": [
+    "notification_callbacks"
+  ],
+  "protected_configuration_unchanged": true,
+  "deployed_file_hashes": {
+    "/etc/crowdsec/crowdbastion-notify.json": "ba773344011aa8a3289cd61faf47a6d345ebda0f250c908f70784f23b6522dc9",
+    "/etc/crowdsec/crowdsec-1key-bot.json": "2d49f270765b783995ba8fa3f4a035536483f50e9af636c9f056766ab8dae13b",
+    "/etc/crowdsec/notifications/crowdsec-1key-telegram.yaml": "1bf2eba4a937d81158f63a77371b1be6593082a1bd817649f46080fabc3ef1b6",
+    "/etc/crowdsec/profiles.yaml": "c8ea868f75406d314b984f009050b1984f1f92209e5f85ea27f1e950bff01444",
+    "/etc/crowdsec/profiles.yaml.local": null,
+    "/etc/systemd/system/crowdbastion-notify.service": "448bb8bf9979ffbbc8ec36d9ce9b4e964b2535119966e0deba55f27047f453d9",
+    "/etc/systemd/system/crowdsec-1key-bot.service": "23e7c40713f1f544b0428531841bf0e15b58581dd0aedc0b37e669270d1bdd39",
+    "/usr/local/lib/crowdbastion-notify/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+    "/usr/local/lib/crowdbastion-notify/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052",
+    "/usr/local/lib/crowdbastion-notify/crowdsec_bot_api.py": "44e956569bba505c815878e3c04aa3862779b062a24db9b6c06366a7a92b6e20",
+    "/usr/local/lib/crowdbastion-notify/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+    "/usr/local/lib/crowdbastion-notify/crowdsec_notify.py": "2f40e4ece66d41045408ed9d5348d6ddec97fa0da6e113914c1e98eaf6f45940",
+    "/usr/local/lib/crowdbastion-notify/crowdsec_notify_client.py": "611314c1f13b920fd90c41100405fd4679145bd2ea9367b55d09693d88f4aa8c",
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_health.py": "b5d73dc24ba718060484cfb38ba3c635e7468b75d139439ca85ef15e0afe1619",
+    "/usr/local/lib/crowdsec-1key-bot/crowdbastion_node.py": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot.py": "99f3fedfc98ad01a47ba6e9d6037d253c7419cba2fc696a9b842ccd2ac1eeb42",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_actions.py": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_api.py": "44e956569bba505c815878e3c04aa3862779b062a24db9b6c06366a7a92b6e20",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_bot_health.py": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_execution.py": "f54fbfb3ce6a38d42f28e3386c6c46a58ae482772231db385d893b94bf489ea4",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_notify_client.py": "611314c1f13b920fd90c41100405fd4679145bd2ea9367b55d09693d88f4aa8c",
+    "/usr/local/lib/crowdsec-1key-bot/crowdsec_safety.py": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f"
+  },
+  "telegram_getMe": true,
+  "telegram_webhook_empty": true,
+  "unauthenticated_status_http": 403,
+  "manual_telegram_test_sent": false,
+  "startup_error_markers": {},
+  "observed_incident_levels": [
+    {
+      "level": 0,
+      "incidents": 1,
+      "received": 1,
+      "reported": 0
+    }
+  ],
+  "crowdsec_version": "v1.8.1-debian-pragmatic-amd64-909b5157",
+  "listener": "127.0.0.1:7423",
+  "systemd_unit_verify": true,
+  "core_journal_error_lines": 0
+}

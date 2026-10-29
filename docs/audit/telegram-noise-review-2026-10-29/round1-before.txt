@@ -1,0 +1,78 @@
+test_existing_worker_update_without_notification_route_does_not_claim_success (test_notify_review.InstallationReview.test_existing_worker_update_without_notification_route_does_not_claim_success) ... FAIL
+test_first_install_rollback_disables_before_removing_unit_file (test_notify_review.InstallationReview.test_first_install_rollback_disables_before_removing_unit_file) ... FAIL
+test_broken_optional_bot_configuration_cannot_block_critical_delivery (test_notify_review.PolicyReview.test_broken_optional_bot_configuration_cannot_block_critical_delivery) ... ERROR
+test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery (test_notify_review.PolicyReview.test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery) ... FAIL
+test_new_confirmed_failure_retracts_queued_recovery_of_same_component (test_notify_review.PolicyReview.test_new_confirmed_failure_retracts_queued_recovery_of_same_component) ... FAIL
+test_non_object_service_configuration_has_a_controlled_validation_error (test_notify_review.PolicyReview.test_non_object_service_configuration_has_a_controlled_validation_error) ... ERROR
+
+======================================================================
+ERROR: test_broken_optional_bot_configuration_cannot_block_critical_delivery (test_notify_review.PolicyReview.test_broken_optional_bot_configuration_cannot_block_critical_delivery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 22, in test_broken_optional_bot_configuration_cannot_block_critical_delivery
+    self.assertTrue(self.tick(1060))
+                    ^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/tests/test_notify.py", line 49, in tick
+    self.store.schedule(now)
+  File "/projects/script/CrowdBastion/lib/crowdsec_notify.py", line 303, in schedule
+    self._enqueue('incident:'+row['id'], 2, self._payload(text, identifier=row['id']),
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/lib/crowdsec_notify.py", line 272, in _payload
+    buttons = self._buttons(identifier) if identifier else None
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/lib/crowdsec_notify.py", line 260, in _buttons
+    if (bot.get('notification_callbacks') == 1 and bot.get('bot_token') == self.config['bot_token']
+        ^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+ERROR: test_non_object_service_configuration_has_a_controlled_validation_error (test_notify_review.PolicyReview.test_non_object_service_configuration_has_a_controlled_validation_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 30, in test_non_object_service_configuration_has_a_controlled_validation_error
+    notify.load_config(path)
+  File "/projects/script/CrowdBastion/lib/crowdsec_notify.py", line 53, in load_config
+    if type(config.get('version')) is not int or config['version'] != 1 or type(config.get('enabled')) is not bool:
+            ^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+FAIL: test_existing_worker_update_without_notification_route_does_not_claim_success (test_notify_review.InstallationReview.test_existing_worker_update_without_notification_route_does_not_claim_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 72, in test_existing_worker_update_without_notification_route_does_not_claim_success
+    self.assertNotEqual(result.returncode, 0)
+AssertionError: 0 == 0
+
+======================================================================
+FAIL: test_first_install_rollback_disables_before_removing_unit_file (test_notify_review.InstallationReview.test_first_install_rollback_disables_before_removing_unit_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 96, in test_first_install_rollback_disables_before_removing_unit_file
+    self.assertFalse(enabled.is_symlink(), result.stdout+result.stderr)
+AssertionError: True is not false : [INFO] 修改前备份: /tmp/codeg-acp/8-b5da0f9d/crowdsec-workflows-7hr5_kit/var/backups/crowdsec-1key/change.MNfQcrwJ
+分级通知配置有效。
+[WARN] 已恢复本次修改前的配置。
+[ERROR] 通知服务回滚不完整，请检查原服务和路由。
+
+
+======================================================================
+FAIL: test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery (test_notify_review.PolicyReview.test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 49, in test_component_removed_from_monitoring_does_not_keep_reminding_or_claim_recovery
+    self.assertEqual(self.store.status(1400)['open_critical'], 0)
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_new_confirmed_failure_retracts_queued_recovery_of_same_component (test_notify_review.PolicyReview.test_new_confirmed_failure_retracts_queued_recovery_of_same_component)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 41, in test_new_confirmed_failure_retracts_queued_recovery_of_same_component
+    self.assertIn('紧急告警', self.sent[-1]['text'])
+AssertionError: '紧急告警' not found in '✅ 故障恢复 · test-node\nCrowdSec 服务\n连续检查已恢复正常。'
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.894s
+
+FAILED (failures=4, errors=2)
