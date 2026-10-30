@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-30",
+  "baseline_commit": "d31e3a2d96c8fcbe20dedad5f98f79d1ebb92417",
+  "scope": "Local source review and isolated tests; production code unchanged",
+  "findings": {
+    "total": 7,
+    "P1": 1,
+    "P2": 6,
+    "isolated_reproductions": 6,
+    "upstream_source_confirmed": 1
+  },
+  "final_full_regression": {
+    "command": "PYTHONPATH=\"$PWD/lib:$PWD/.venv/lib/python3.11/site-packages\" .venv/bin/python -m unittest discover -s tests -v",
+    "total": 1135,
+    "passed": 1091,
+    "skipped": 44,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 433.979,
+    "skip_reasons": {
+      "Lua-enabled Nginx required": 18,
+      "set CROWDSEC_TEST_RELEASE for official plugin checks": 16,
+      "optional official gost binary": 1,
+      "set CROWDSEC_TEST_RELEASE for official receipt checks": 5,
+      "pycdlib required for media validation": 4
+    },
+    "full_log_local_path": "/tmp/crowdbastion-review-final-tests.txt",
+    "full_log_sha256": "a05a5c2da9a6164e596ef2d90bfc6a4442af37ac15478a1bf7903c1b20c8c7c8"
+  },
+  "earlier_configured_full_regression": {
+    "total": 1135,
+    "passed": 1062,
+    "skipped": 72,
+    "errors": 1,
+    "failures": 0,
+    "seconds": 296.176,
+    "error_test": "test_notify_review.ReceiverReview.test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress",
+    "error": "Expected HTTPError(503), observed URLError(BrokenPipeError); reproduced by standalone rerun; final full run passed without production or test edits",
+    "evidence": "2026-10-30-script-review/receiver-regression.txt"
+  },
+  "environment_notes": [
+    "Initial run lacked PyYAML in system-Python subprocesses; corrected PYTHONPATH before interpreting results.",
+    "Isolated Web suites also need lib on PYTHONPATH; rerun with the documented path.",
+    "Official OpenResty Bouncer 1.2.3 and lua-resty-http 0.17.1 archives downloaded to /tmp and SHA256 checked against crowdsec_web.py."
+  ],
+  "focused_tests": [
+    {
+      "suite": "test_native_workflows.py",
+      "passed": 14,
+      "seconds": 42.993
+    },
+    {
+      "suite": "test_web_install.py",
+      "passed": 21,
+      "seconds": 0.236
+    },
+    {
+      "suite": "test_notify_runtime.py",
+      "passed": 1,
+      "seconds": 9.811,
+      "boundary": "Actual worker process and loopback TLS mock Telegram; no public Telegram calls"
+    }
+  ],
+  "static_checks": {
+    "bash_n": {
+      "files": 17,
+      "passed": true
+    },
+    "python_ast": {
+      "production_files": 36,
+      "passed": true
+    },
+    "shellcheck": {
+      "version": "0.11.0",
+      "command": "shellcheck -x -e SC2317,SC2329,SC2120,SC2119 crowdbastion.sh lib/*.sh tools/*.sh",
+      "exit_code": 1,
+      "error_or_warning_diagnostics": 0,
+      "info_diagnostics": {
+        "SC2030": 1,
+        "SC2031": 2
+      },
+      "evidence": "2026-10-30-script-review/shellcheck.txt"
+    },
+    "git_diff_check": "passed"
+  },
+  "upstream_source": {
+    "url": "https://github.com/crowdsecurity/crowdsec/blob/v1.8.1/pkg/apiserver/controllers/v1/decisions.go#L277",
+    "git_blob": "3c7396d5b793fd18f2cb17ee9758dfdc92abb6bc",
+    "sha256": "ba6ae0d3363084acb10fe06a3ef78bd18d89a735a7c72f01495fae716bb8359d",
+    "evidence": "GET StreamDecision calls UpdateBouncerStreamPull after successful streaming; HEAD returns before updating pull state.",
+    "real_center_tested": false
+  },
+  "reproductions": "2026-10-30-script-review/reproductions.jsonl",
+  "limitations": [
+    "No real systemd or kernel firewall mutation",
+    "No live Nginx/Lua runtime acceptance",
+    "No real remote-center requests",
+    "No public Telegram delivery",
+    "Optional skipped tests are not passing evidence"
+  ]
+}

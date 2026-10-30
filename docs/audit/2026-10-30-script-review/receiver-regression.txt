@@ -1,0 +1,48 @@
+test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress (test_notify_review.ReceiverReview.test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress) ... ERROR
+
+======================================================================
+ERROR: test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress (test_notify_review.ReceiverReview.test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/urllib/request.py", line 1361, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.11/http/client.py", line 1311, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1357, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1306, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.11/http/client.py", line 1105, in _send_output
+    self.send(chunk)
+  File "/usr/lib/python3.11/http/client.py", line 1027, in send
+    self.sock.sendall(data)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_review.py", line 260, in test_incomplete_requests_are_bounded_and_do_not_prevent_later_ingress
+    request(self.config, 'status')
+  File "/projects/script/CrowdBastion/lib/crowdsec_notify_client.py", line 63, in request
+    with urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect()).open(message, timeout=5) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/urllib/request.py", line 519, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/urllib/request.py", line 536, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.11/urllib/request.py", line 1390, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/urllib/request.py", line 1364, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 32] Broken pipe>
+
+----------------------------------------------------------------------
+Ran 1 test in 2.592s
+
+FAILED (errors=1)

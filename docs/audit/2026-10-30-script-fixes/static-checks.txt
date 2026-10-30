@@ -1,0 +1,4 @@
+Bash syntax: PASS (17 files)
+Python AST: PASS (131 files)
+ShellCheck 0.11.0: exit 0
+Exclusions: SC2317,SC2329,SC2120,SC2119 (existing callback conventions)

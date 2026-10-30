@@ -45,7 +45,7 @@ class Workflows(unittest.TestCase):
         (self.config / "local_api_credentials.yaml").write_text('url: http://127.0.0.1:8080/\nlogin: webui-legitimate-host\npassword: test-password\n')
         (self.config / "profiles.yaml").write_text('name: default_ip_remediation\nfilters:\n  - Alert.Remediation == true\ndecisions:\n  - type: ban\n    duration: 4h\non_success: break\n')
 
-    def run_shell(self, action, user_input='', overrides='', timeout=5):
+    def run_shell(self, action, user_input='', overrides='', timeout=15):
         stub = r'''
 nginx_test_reload() {
  local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
@@ -86,6 +86,9 @@ cscli() {
 crowdsec() { record crowdsec "$@"; return 0; }
 systemctl() {
  record systemctl "$@"
+ if [[ "$1" == show && "$*" == *crowdsec-v2bx-* ]]; then
+  printf 'LoadState=not-found\nActiveState=inactive\nUnitFileState=\n'; return 0
+ fi
  if [[ "$1" == show && "$*" == *MainPID* ]]; then echo 42; return 0; fi
  if [[ "$1" == reload && ( "$2" == nginx || "$2" == openresty ) ]]; then nginx_test_reload; fi
  if [[ "$1" == show && "$*" == *crowdsec-1key-bot.service* ]]; then

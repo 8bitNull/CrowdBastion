@@ -50,6 +50,43 @@ class AlertManagement(unittest.TestCase):
         self.assertFalse(self.manager.acquisition.exists())
         self.assertFalse(self.manager.parser.exists());self.assertFalse(self.manager.scenario.exists())
 
+    def test_telegram_profile_rewrites_preserve_guard_and_allow_disable(self):
+        import crowdsec_config
+        import yaml
+        self.manager.enable()
+        for operation in ('enable', 'disable', 'enable'):
+            crowdsec_config.main(['profiles', str(self.profiles), operation])
+            self.manager.check_managed()
+            docs = list(yaml.safe_load_all(self.profiles.read_bytes()))
+            self.assertEqual(docs[0]['decisions'], [])
+        expected = docs[1:]
+        with self.profiles.open('ab') as stream:stream.write('\n# 后续修改保留\n'.encode())
+        self.manager.disable()
+        self.assertEqual(list(yaml.safe_load_all(self.profiles.read_bytes())), expected)
+        self.assertTrue(self.profiles.read_text().endswith('# 后续修改保留\n'))
+
+    def test_guard_semantics_and_duplicate_fields_cannot_be_weakened(self):
+        import yaml
+        self.manager.enable()
+        original = self.profiles.read_bytes()
+        for field, value in [('decisions', [{'type':'ban'}]), ('filters', ['true']), ('on_success', 'continue'), ('extra', True)]:
+            with self.subTest(field=field):
+                docs = list(yaml.safe_load_all(original))
+                docs[0][field] = value
+                self.profiles.write_text(yaml.safe_dump_all(docs))
+                with self.assertRaises(ValueError):self.manager.check_managed()
+        self.profiles.write_bytes(b'decisions: [{type: ban}]\n'+original)
+        with self.assertRaises(ValueError):self.manager.check_managed()
+
+    def test_malformed_or_merged_guard_fails_closed_with_controlled_error(self):
+        self.manager.enable()
+        original = self.profiles.read_bytes()
+        for data in (b'<<: {decisions: [{type: ban}]}\n'+original,
+                     b'notifications: [\n'+original, b'\xff'+original):
+            with self.subTest(data=data[:25]):
+                self.profiles.write_bytes(data)
+                with self.assertRaises(ValueError):self.manager.check_managed()
+
     def test_failed_validation_restores_profile_and_created_assets(self):
         def fail(*args):raise RuntimeError('validation failed')
         self.manager.command = fail

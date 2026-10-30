@@ -30,6 +30,48 @@ on_success: break
 '''
 
 
+def without_guard(data):
+    """Validate the first profile semantically and preserve the remaining bytes.
+
+    Telegram rewrites YAML and may attach notification routes to the guard.
+    No other field or duplicate key may weaken the observation-only boundary.
+    """
+    try:
+        return split_guard(data)
+    except (yaml.YAMLError, UnicodeError) as error:
+        raise ValueError('observation_guard_changed') from error
+
+
+def split_guard(data):
+    text = data.decode('utf-8')
+    starts = 0
+    boundary = len(text)
+    for event in yaml.parse(text, Loader=yaml.SafeLoader):
+        if isinstance(event, yaml.events.DocumentStartEvent):
+            starts += 1
+            if starts == 2:
+                boundary = event.start_mark.index
+                break
+    first = text[:boundary]
+    node = yaml.compose(first, Loader=yaml.SafeLoader)
+    if not isinstance(node, yaml.MappingNode) or node.tag != 'tag:yaml.org,2002:map':
+        raise ValueError('observation_guard_changed')
+    keys = [key.value for key, _ in node.value
+            if isinstance(key, yaml.ScalarNode) and key.tag == 'tag:yaml.org,2002:str']
+    if len(keys) != len(node.value) or len(set(keys)) != len(keys):
+        raise ValueError('observation_guard_changed')
+    if set(keys) - {'name', 'filters', 'decisions', 'on_success', 'notifications'}:
+        raise ValueError('observation_guard_changed')
+    guard = yaml.safe_load(first)
+    routes = guard.pop('notifications', [])
+    expected = next(yaml.safe_load_all(GUARD))
+    if guard != expected or not isinstance(routes, list) or any(not isinstance(route, str) for route in routes):
+        raise ValueError('observation_guard_changed')
+    # Preserve the original installation's exact tail, including its comments.
+    if data.startswith(GUARD):return data[len(GUARD):]
+    return text[boundary:].encode('utf-8')
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -129,8 +171,9 @@ class AlertManager:
         if manifest['core_config'] != digest(bytes_of(self.config)):raise ValueError('core_config_changed')
         if manifest.get('core_config_local') != self.local_config_digest():raise ValueError('core_config_changed')
         _, profile = self.layout()
-        if str(profile) != manifest['profile'] or not bytes_of(profile).startswith(GUARD):
+        if str(profile) != manifest['profile']:
             raise ValueError('observation_guard_changed')
+        without_guard(bytes_of(profile))
         expected_paths = {str(p) for p in (self.acquisition, self.parser, self.scenario, self.unit)}
         expected_paths.update(str(self.code/name) for name in (*HELPERS, 'crowdsec_v2bx_stream.py', 'crowdsec_v2bx_alerts.py'))
         if set(manifest['assets']) != expected_paths:raise ValueError('invalid_installation_manifest')
@@ -207,8 +250,7 @@ WantedBy=multi-user.target
             if attempted:self.control('disable', '--now', UNIT)
             if changed:
                 current = bytes_of(profile)
-                if not current.startswith(GUARD):raise RuntimeError('guard_restore_requires_review')
-                replace(profile, current[len(GUARD):])
+                replace(profile, without_guard(current))
             # Restore core assets first; retain backups/ledger until rollback restart succeeds.
             for path in reversed(created):
                 if path not in (self.code, self.state) and not path.is_relative_to(self.code) and path.exists():
@@ -243,7 +285,7 @@ WantedBy=multi-user.target
         profile_data = bytes_of(profile)
         try:
             for path in originals:path.unlink()
-            replace(profile, profile_data[len(GUARD):])
+            replace(profile, without_guard(profile_data))
             self.command('crowdsec', '-c', str(self.config), '-t')
             self.control('restart', 'crowdsec')
         except Exception:

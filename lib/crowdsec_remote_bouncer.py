@@ -44,18 +44,17 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise RemoteError('预检拒绝重定向。')
 
 def preflight(url,key):
-    request=urllib.request.Request(url+'v1/decisions/stream?startup=true',headers={'X-Api-Key':key})
+    # HEAD authenticates without consuming the running bouncer's stream cursor.
+    request=urllib.request.Request(url+'v1/decisions/stream',headers={'X-Api-Key':key},method='HEAD')
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),NoRedirect())
     try:
         with opener.open(request,timeout=5) as response:
             if response.status!=200:
                 raise RemoteError('远端认证预检失败。')
-            payload=response.read(1024*1024+1)
-            if len(payload)>1024*1024:
-                raise RemoteError('预检响应过大。')
-            content=json.loads(payload)
-            if not isinstance(content,dict) or not all(k in content and (content[k] is None or isinstance(content[k],list)) for k in ('new','deleted')):
-                raise RemoteError('预检响应不是决策流。')
+            # Official HEAD returns an empty text/plain response. Reject common
+            # reverse-proxy login pages; never fall back to a stateful GET.
+            if not response.headers.get('Content-Type') or response.headers.get_content_type() not in ('text/plain','application/json'):
+                raise RemoteError('预检响应不是 LAPI。')
     except Exception:
         raise RemoteError('远端认证预检失败（认证、TLS 或连接错误），原配置未改变。') from None
 

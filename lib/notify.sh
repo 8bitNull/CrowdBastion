@@ -63,14 +63,23 @@ notify_snapshot() {
 
 notify_rollback() {
     local failed=false
-    if notify_owned || [[ "$NOTIFY_WAS_PRESENT" == true ]]; then
-        systemctl stop crowdbastion-notify.service || failed=true
+    if [[ "$NOTIFY_SERVICE_TOUCHED" == true || "$NOTIFY_WAS_PRESENT" == true ]]; then
+        if ! systemctl stop crowdbastion-notify.service; then
+            log_err '通知服务无法停止，保留当前程序和配置及修改前备份，请人工恢复。'
+            return 1
+        fi
         if [[ "$NOTIFY_WAS_ENABLED" != true || "$NOTIFY_WAS_RUNTIME" == true ]]; then
             # Disable while the unit still exists, before rollback removes a new unit.
-            systemctl disable crowdbastion-notify.service || failed=true
+            if ! systemctl disable crowdbastion-notify.service; then
+                log_err '通知服务无法取消启用，保留当前程序和配置及修改前备份，请人工恢复。'
+                return 1
+            fi
         fi
     fi
-    restore_config_change || failed=true
+    if ! restore_config_change; then
+        log_err '通知文件恢复失败，未重新加载服务；请用修改前备份人工恢复。'
+        return 1
+    fi
     systemctl daemon-reload || failed=true
     if [[ "$NOTIFY_WAS_ENABLED" == true ]]; then
         local flags=()
@@ -80,6 +89,9 @@ notify_rollback() {
     if [[ "$NOTIFY_WAS_ACTIVE" == true ]]; then
         systemctl restart crowdbastion-notify.service || failed=true
         systemctl is-active --quiet crowdbastion-notify.service || failed=true
+    fi
+    if [[ "$NOTIFY_CORE_TOUCHED" == true ]]; then
+        crowdsec -t && systemctl restart crowdsec && systemctl is-active --quiet crowdsec || failed=true
     fi
     if [[ "$failed" == true ]]; then log_err '通知服务回滚不完整，请检查原服务和路由。'; return 1; fi
 }
@@ -94,23 +106,50 @@ notify_ready() {
     return 1
 }
 
-enable_smart_notifications() {
+# Keep rollback in one owner: apply_core_config restores files too early for
+# systemd disable/stop, and cannot restore the worker before reloading core.
+notify_apply_core() {
+    crowdsec -t || return 1
+    if ! config_change_needed && systemctl is-active --quiet crowdsec; then return 0; fi
+    NOTIFY_CORE_TOUCHED=true
+    systemctl restart crowdsec && systemctl is-active --quiet crowdsec
+}
+
+notify_transaction_exit() {
+    local status=$?
+    trap - EXIT INT TERM
+    if [[ "$committed" != true ]]; then
+        notify_rollback || log_err '通知事务恢复不完整，修改前备份已保留。'
+        [[ "$status" != 0 ]] || status=1
+    fi
+    exit "$status"
+}
+
+enable_smart_notifications() (
     require_core && require_yaml && resolve_telegram_paths && notify_preflight || return 1
     [[ -f "$TG_NOTIF_FILE" ]] || { log_err '请先通过 Telegram 菜单第 1 项设置通知目标。'; return 1; }
     notify_tool plan "$CS_DIR" --state-dir "$NOTIFY_STATE" --bot-config "$CUSTOM_BOT_CONFIG" || return 1
+    local NOTIFY_SERVICE_TOUCHED=false NOTIFY_CORE_TOUCHED=false committed=false
+    # This transaction owns both files and runtime rollback, including signals.
+    # shellcheck disable=SC2034 # dynamically scoped manager transaction callbacks
+    local CORE_CONFIG_TRACKING=false CORE_CONFIG_PENDING=false
     notify_snapshot || return 1
+    trap notify_transaction_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     local helper python_bin
     python_bin=$(command -v python3) || return 1
     if ! notify_tool prepare "$CS_DIR" --state-dir "$NOTIFY_STATE" --bot-config "$CUSTOM_BOT_CONFIG" ||
         ! mkdir -p "$NOTIFY_CODE" "$NOTIFY_STATE" "$(dirname "$NOTIFY_UNIT")" ||
         ! chmod 700 "$NOTIFY_CODE" "$NOTIFY_STATE"; then
-        notify_rollback; return 1
+        return 1
     fi
     for helper in "${NOTIFY_HELPERS[@]}"; do
         if ! cp -- "$SCRIPT_DIR/lib/$helper" "$NOTIFY_CODE/$helper" || ! chmod 600 "$NOTIFY_CODE/$helper"; then
-            notify_rollback; return 1
+            return 1
         fi
     done
+    NOTIFY_SERVICE_TOUCHED=true
     if ! cat > "$NOTIFY_UNIT" <<EOF
 # crowdbastion-managed-notify
 [Unit]
@@ -132,35 +171,45 @@ ReadWritePaths="$NOTIFY_STATE"
 [Install]
 WantedBy=multi-user.target
 EOF
-    then notify_rollback; return 1; fi
+    then return 1; fi
     if ! python3 "$NOTIFY_CODE/crowdsec_notify.py" check "$NOTIFY_CONFIG" ||
         ! systemctl daemon-reload || ! systemctl enable crowdbastion-notify.service ||
         ! systemctl restart crowdbastion-notify.service || ! notify_ready; then
-        notify_rollback; return 1
+        return 1
     fi
-    if ! apply_core_config; then notify_rollback; return 1; fi
+    notify_apply_core || return 1
+    committed=true
     log_succ '已启用分级通知：普通告警每小时汇总，未知规则首次提醒，持续组件故障紧急通知。'
     log_info '原通知模式已保存；交互机器人更新后支持“已知晓”和“查看详情”。'
     log_info '本次未发送测试消息；可用 TG 菜单第 2 项验证官方插件、队列和 API 回执。'
-}
+)
 
-disable_smart_notifications() {
+disable_smart_notifications() (
     local mode="${1:-restore}"
     require_core && require_yaml && resolve_telegram_paths && notify_preflight || return 1
     notify_tool enabled "$CS_DIR" || return 1
+    local NOTIFY_SERVICE_TOUCHED=false NOTIFY_CORE_TOUCHED=false committed=false
+    # This transaction owns both files and runtime rollback, including signals.
+    # shellcheck disable=SC2034 # dynamically scoped manager transaction callbacks
+    local CORE_CONFIG_TRACKING=false CORE_CONFIG_PENDING=false
     notify_snapshot || return 1
+    trap notify_transaction_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    NOTIFY_SERVICE_TOUCHED=true
     if ! systemctl disable --now crowdbastion-notify.service || ! notify_tool restore "$CS_DIR"; then
-        notify_rollback; return 1
+        return 1
     fi
     if [[ "$mode" == off ]]; then
         if ! update_telegram_profiles disable || ! rm -f -- "$TG_NOTIF_FILE"; then
-            notify_rollback; return 1
+            return 1
         fi
     fi
-    if ! apply_core_config; then notify_rollback; return 1; fi
+    notify_apply_core || return 1
+    committed=true
     log_succ '分级通知已停用，待发队列保留。'
     if [[ "$mode" == restore ]]; then log_info '已恢复启用分级前的官方通知模式。'; fi
-}
+)
 
 purge_smart_notifications() {
     [[ -e "$NOTIFY_UNIT" || -L "$NOTIFY_UNIT" ]] || return 0

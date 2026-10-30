@@ -1,0 +1,23 @@
+{
+  "base_commit": "d31e3a2d96c8fcbe20dedad5f98f79d1ebb92417",
+  "tests": 1156,
+  "passed": 1112,
+  "skipped": 44,
+  "failures": 0,
+  "errors": 0,
+  "duration_seconds": 542.877,
+  "exit_code": 0,
+  "skip_reasons": {
+    "Lua-enabled Nginx required": 18,
+    "set CROWDSEC_TEST_RELEASE for official plugin checks": 16,
+    "optional official gost binary": 1,
+    "set CROWDSEC_TEST_RELEASE for official receipt checks": 5,
+    "pycdlib required for media validation": 4
+  },
+  "new_regressions": 21,
+  "bash_syntax_files": 17,
+  "python_ast_files": 131,
+  "shellcheck_exit_code": 0,
+  "command": "PYTHONPATH=\"$PWD/lib:$PWD/.venv/lib/python3.11/site-packages\" .venv/bin/python -m unittest discover -s tests -v",
+  "deployment_performed": false
+}

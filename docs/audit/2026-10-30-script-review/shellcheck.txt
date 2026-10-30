@@ -1,0 +1,18 @@
+
+In lib/native_web_bouncer.sh line 24:
+    assets=$(web_tool get "$entry" host_assets) || return 1
+    ^----^ SC2030 (info): Modification of assets is local (to subshell caused by (..) group).
+
+
+In lib/native_web_bouncer.sh line 79:
+                        web_tool recovery "$work/plan" "$WEB_INSTALLS" "$NATIVE_NAME" "$account" || log_err "恢复记录失败，需人工保留并核对资源 ${assets}、账号 ${account}。"
+                                                                                                                               ^-------^ SC2031 (info): assets was modified in a subshell. That change might be lost.
+
+
+In lib/native_web_bouncer.sh line 82:
+                        rm -rf -- "$assets"
+                                   ^-----^ SC2031 (info): assets was modified in a subshell. That change might be lost.
+
+For more information:
+  https://www.shellcheck.net/wiki/SC2030 -- Modification of assets is local (...
+  https://www.shellcheck.net/wiki/SC2031 -- assets was modified in a subshell...

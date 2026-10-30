@@ -24,11 +24,23 @@ class RemoteConfig(unittest.TestCase):
         return subprocess.run([sys.executable,str(HELPER),action,str(self.base)], input=json.dumps(data or {}), capture_output=True,text=True)
     def server(self, status=200, payload=b'{"new":[],"deleted":[]}'):
         owner=self
+        self.stream_pulls=0
         class Handler(BaseHTTPRequestHandler):
+            def do_HEAD(self):
+                owner.request_method='HEAD'
+                self.respond(False)
             def do_GET(self):
+                owner.request_method='GET'
+                owner.stream_pulls+=1
+                self.respond(True)
+            def respond(self, body):
                 owner.request_path=self.path
                 owner.request_key=self.headers.get('X-Api-Key')
-                self.send_response(status); self.end_headers(); self.wfile.write(payload)
+                self.send_response(status)
+                self.send_header('Content-Type', 'text/html' if payload.startswith(b'<html>') else 'text/plain; charset=utf-8')
+                self.send_header('Content-Length', str(len(payload)) if body else '0')
+                self.end_headers()
+                if body:self.wfile.write(payload)
             def log_message(self,*args): pass
         server=HTTPServer(('127.0.0.1',0),Handler)
         threading.Thread(target=server.serve_forever,daemon=True).start()
@@ -48,7 +60,9 @@ class RemoteConfig(unittest.TestCase):
         r=self.run_tool('apply',{'url':url,'key':'do-not-print'})
         self.assertEqual(r.returncode,0,r.stderr)
         self.assertEqual(self.request_key,'do-not-print')
-        self.assertEqual(self.request_path,'/v1/decisions/stream?startup=true')
+        self.assertEqual(self.request_path,'/v1/decisions/stream')
+        self.assertEqual(self.request_method,'HEAD')
+        self.assertEqual(self.stream_pulls,0)
         self.assertEqual(self.base.read_bytes(),before)
         self.assertEqual(self.local.stat().st_mode & 0o777,0o600)
         self.assertNotIn('do-not-print',r.stdout+r.stderr+self.state.read_text())
@@ -88,6 +102,30 @@ class RemoteConfig(unittest.TestCase):
         r=self.run_tool('apply',{'url':self.server(payload=b'<html>login</html>'),'key':'secret'})
         self.assertNotEqual(r.returncode,0)
         self.assertFalse(self.local.exists())
+    def test_large_decision_feed_does_not_limit_or_consume_preflight(self):
+        url=self.server(payload=json.dumps({'new':[{'id':i,'value':'198.51.100.1','scenario':'x'*100} for i in range(10000)],'deleted':[]}).encode())
+        result=self.run_tool('apply',{'url':url,'key':'secret'})
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(self.stream_pulls,0)
+        self.assertEqual(self.request_method,'HEAD')
+
+    def test_failed_local_commit_never_advances_remote_cursor(self):
+        import crowdsec_remote_bouncer as remote
+        from unittest.mock import patch
+        url=self.server()
+        with patch.object(remote, 'atomic', side_effect=OSError('disk full')):
+            with self.assertRaises(OSError):remote.apply(self.base, {'url':url,'key':'secret'})
+        self.assertEqual(self.request_method,'HEAD')
+        self.assertEqual(self.stream_pulls,0)
+        self.assertFalse(self.local.exists())
+        self.assertFalse(self.state.exists())
+
+    def test_unsupported_head_never_falls_back_to_get(self):
+        result=self.run_tool('apply',{'url':self.server(405),'key':'secret'})
+        self.assertNotEqual(result.returncode,0)
+        self.assertEqual(self.stream_pulls,0)
+        self.assertFalse(self.local.exists())
+
     def test_unmanaged_local_override_refused_even_with_good_credentials(self):
         self.local.write_text('mode: nftables\napi_key: other\n')
         r=self.run_tool('apply',{'url':self.server(),'key':'secret'})

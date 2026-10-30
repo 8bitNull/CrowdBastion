@@ -1,0 +1,7 @@
+4c11f82f33328b8b12aaaca8def92c7514b7867be0bcf3b1019229d8645140e1  2026-10-30-script-review.md
+c232753aa17405e913fec3ad081680387b25dc6632ec760f67e3a1a6e4b1ddba  2026-10-30-script-review-results.json
+b2c89e18da22d035b4db1ba7484c451f7cbb727ba9b04ed149d1962c5480aee1  2026-10-30-script-review/full-regression-summary.txt
+ef621253329610c14f3762870e61362684c2245dc44cf17f118e1ca34ff39192  2026-10-30-script-review/receiver-regression.txt
+b3acb34013c37f3905056367ce451ae34b7617e3ccb7c535124e60c5e9971bf3  2026-10-30-script-review/reproduce.py
+21cae54756dc0e31a7bbcd021d0183be7b0e6b7dd32eec9881e8570220964cb1  2026-10-30-script-review/reproductions.jsonl
+1d2e34e5a9e2f4d8fccc77c8bf165fce8b42f39f26f97668133c444dbf3836ce  2026-10-30-script-review/shellcheck.txt

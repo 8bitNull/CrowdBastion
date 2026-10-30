@@ -256,9 +256,19 @@ class ReceiverReview(unittest.TestCase):
                 for _ in range(16):
                     clients.append(socket.create_connection(self.server.server_address, timeout=2))
                 self.assertTrue(ready.wait(3))
-                with self.assertRaises(urllib.error.HTTPError) as failure:
+                # An early overload response can race urllib's request-body
+                # write, yielding EPIPE/reset instead of a parsed HTTP error.
+                with self.assertRaises((urllib.error.URLError, ConnectionError)) as failure:
                     request(self.config, 'status')
-                self.assertEqual(failure.exception.code, 503)
+                if isinstance(failure.exception, urllib.error.HTTPError):
+                    self.assertEqual(failure.exception.code, 503)
+                elif isinstance(failure.exception, urllib.error.URLError):
+                    self.assertIsInstance(failure.exception.reason, ConnectionError)
+                # Reading before sending eliminates that client-write race and
+                # verifies the actual overload response without a 17th handler.
+                with socket.create_connection(self.server.server_address, timeout=2) as rejected:
+                    self.assertTrue(rejected.recv(4096).startswith(b'HTTP/1.0 503 '))
+                self.assertEqual(len(entered), 16)
             finally:
                 for client in clients:
                     client.close()
@@ -267,7 +277,7 @@ class ReceiverReview(unittest.TestCase):
             try:
                 self.assertEqual(request(self.config, 'status')['pending'], 0)
                 break
-            except urllib.error.HTTPError:
+            except (urllib.error.URLError, ConnectionError):
                 if notify.time.monotonic() >= deadline:
                     raise
                 notify.time.sleep(0.01)

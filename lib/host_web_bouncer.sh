@@ -74,7 +74,7 @@ PY
 
 host_web_rollback_package() {
     local service="$1" snapshot="$2" package="$3" after name result=0
-    if ! restore_config_change || ! "$service" -t || ! systemctl reload "$service"; then
+    if ! restore_config_change || ! nginx_reload_verified "$service"; then
         log_err '无法确认旧 Web 配置已恢复并重新加载；保留本次新增 Bouncer 账号和软件包资源，避免仍在运行的新配置失去凭据。'
         log_warn "请检查修改前备份及仅 root 可读的安装日志，手动修复配置，再执行 ${service} -t 和 systemctl reload ${service}；确认旧配置已运行后再清理本次新增账号。"
         return 1
@@ -123,7 +123,7 @@ install_host_web_bouncer() (
         if [[ "$changed" == true && "$result" != 0 ]]; then
             if [[ "$package_started" == true ]]; then
                 host_web_rollback_package "$service" "$snapshot" "$package" || log_err '宿主机安装中断后的恢复未完成，请检查安装日志和修改前备份。'
-            elif ! restore_config_change || ! "$service" -t || ! systemctl reload "$service"; then
+            elif ! restore_config_change || ! nginx_reload_verified "$service"; then
                 log_err '宿主机接入中断后的恢复/重载未完成，请检查修改前备份。'
             fi
         fi
@@ -161,7 +161,7 @@ install_host_web_bouncer() (
         changed=true
         if ! yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" || ! "$service" -t; then
             restore_config_change || return 1
-            if "$service" -t; then systemctl reload "$service" || true; fi
+            nginx_reload_verified "$service" || log_warn '恢复后宿主机重载未被证实。'
             changed=false
             log_err 'Web Bouncer 接入失败，已恢复修改前配置。'
             return 1
@@ -170,9 +170,9 @@ install_host_web_bouncer() (
             log_info '已有宿主机接入未变化，跳过 Web 服务重载。'
             return 0
         fi
-        if ! systemctl reload "$service"; then
+        if ! nginx_reload_verified "$service"; then
             restore_config_change || return 1
-            if "$service" -t; then systemctl reload "$service" || true; fi
+            nginx_reload_verified "$service" || log_warn '恢复后宿主机重载未被证实。'
             changed=false
             return 1
         fi
@@ -264,7 +264,7 @@ PY
        ! yaml_tool link-web-bouncer "$file" "$APPSEC_LINKS" ||
        ! "$service" -T > "$effective" 2>/dev/null ||
        ! host_web_config loaded "$effective" "$main" "$snippet" ||
-       ! "$service" -t || ! systemctl reload "$service"; then
+       ! nginx_reload_verified "$service"; then
         host_web_rollback_package "$service" "$snapshot" "$package" || log_err '部分回滚操作失败，请立即检查 Web 服务与安装日志。'
         changed=false
         rm -f -- "$effective" "$snapshot"

@@ -40,6 +40,9 @@ class HostWeb(unittest.TestCase):
         copied.write_text(content)
         prelude = r'''
 set -o pipefail
+# Package transaction fixtures stub reload acceptance. Real master/worker
+# acceptance and silent failure are exercised by test_script_review_fixes.
+nginx_reload_verified() { "$1" -t && systemctl reload "$1"; }
 record() { printf '%s\n' "$*" >> "$TRACE"; }
 log_info() { echo "[INFO] $*"; }
 log_warn() { echo "[WARN] $*" >&2; }
