@@ -1,0 +1,1 @@
+{"path": "/etc/sysctl.d/99-network-optimize.conf", "old_configured_value": 6000, "preserved_effective_value": 8000, "service_restart_exit": 0, "initial_check_option_order_mistake_reapplied_existing_config": true}

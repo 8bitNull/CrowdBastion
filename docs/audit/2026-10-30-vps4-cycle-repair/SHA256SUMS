@@ -1,0 +1,16 @@
+80675a72c344a41bbcd761a1d606f1b4ce3f3150e1b9846a925f25874a50a929  docs/audit/2026-10-30-vps4-cycle-repair.md
+464a99ed50f3f4f09a5e6c86137f4aedd47f841259b02ae2f3520cfee3190a24  docs/audit/2026-10-30-vps4-cycle-repair/aux-fixes.json
+470ff12582991585f1385865e69db8140b008637de7bee1d530e4fd783197eed  docs/audit/2026-10-30-vps4-cycle-repair/aux_fixes.py
+af4c4d414414b75518d280712a243f5fdd4a890aa93b2fcd672f56b131cc55df  docs/audit/2026-10-30-vps4-cycle-repair/final_verify.py
+4820b688620d20383fa4b72eb18044648936d01e982b583e2c069695cc1a55ed  docs/audit/2026-10-30-vps4-cycle-repair/flow-after.json
+d6835eb65b0e5b15b96d00e44a9e00ca96eaf9469c1b51ae0a19921457b0c856  docs/audit/2026-10-30-vps4-cycle-repair/flow-before.json
+179bd55f566133acdf65bece4dc38137ca23dca28aca301afcab116518249d0e  docs/audit/2026-10-30-vps4-cycle-repair/health-final.txt
+8493efa956861b161a3e4b1d3cfd7c9e9711acdbb7c0aa51ad591045268d6885  docs/audit/2026-10-30-vps4-cycle-repair/local-focused-tests.txt
+377c81885645f3e556e629af342900dd48ca5af81f24647ad2670998a5cd81d2  docs/audit/2026-10-30-vps4-cycle-repair/migrate.py
+97b57eeea686ce421c38f7ae2942c3dbfeef36c810b62ba14d66697058479bc1  docs/audit/2026-10-30-vps4-cycle-repair/migration.json
+4904c49a487405e6e658ea81fd966f74ecd494b7a6488303769305d2e1f8e3a3  docs/audit/2026-10-30-vps4-cycle-repair/node-final.txt
+18723310094682ad95ca92e126711fd4338ccd17a2bea14097c4f93dca355ff9  docs/audit/2026-10-30-vps4-cycle-repair/restore-reproduction.json
+5d1af07f5176878305f4edf5b9ec03b11da5b54dd309cb430ee2bad8a01062c7  docs/audit/2026-10-30-vps4-cycle-repair/sysctl-fix.json
+0833f8db6ddeaafc8c76c34c56e45bc2a458b2b514842d44c21f403b0faf4051  docs/audit/2026-10-30-vps4-cycle-repair/verification-final.json
+eb90fa45fc2259d44d1e6f5c6b2f734f761994df7c77636d7d9d3462744b5aad  docs/audit/2026-10-30-vps4-cycle-repair/vps4-flow-test.py
+3cf9fc9249c49c1b6696842d1d84b8deff906be509000c8111cb42eb983c6bbd  docs/audit/2026-10-30-vps4-cycle-repair/vps4-source-manifest.json

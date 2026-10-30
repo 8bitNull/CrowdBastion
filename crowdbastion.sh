@@ -66,6 +66,10 @@ source "${SCRIPT_DIR}/lib/remote_bouncer.sh"
 source "${SCRIPT_DIR}/lib/health_summary.sh"
 # shellcheck source=lib/node_guidance.sh
 source "${SCRIPT_DIR}/lib/node_guidance.sh"
+FIREWALL_MIGRATION_STATE='/var/lib/crowdbastion/firewall-migration'
+FIREWALL_DROPIN='/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf'
+# shellcheck source=lib/firewall.sh
+source "${SCRIPT_DIR}/lib/firewall.sh"
 REMOTE_BINARY="/usr/local/bin/crowdsec-firewall-bouncer"
 REMOTE_UNIT="/etc/systemd/system/crowdsec-firewall-bouncer.service"
 LOG_REPAIR_FILE="${CS_DIR}/acquis.d/crowdsec-1key-log-repair.yaml"
@@ -360,6 +364,9 @@ install_crowdsec_core() (
     fi
     cleanup_log_repair
     systemctl enable --now crowdsec-firewall-bouncer || return 1
+    if [[ "$(yaml_tool bouncer-mode "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml")" == iptables ]]; then
+        repair_firewall_startup || return 1
+    fi
     if ! systemctl is-active --quiet crowdsec-firewall-bouncer; then
         log_err 'Firewall Bouncer 未运行，请查看 journalctl -u crowdsec-firewall-bouncer。'
         return 1
@@ -1453,7 +1460,7 @@ repair_firewall_bouncer() (
         trap - EXIT INT TERM
         if [[ "$committed" != true ]]; then
             if [[ "$changed" == true ]]; then
-                if ! restore_config_change || ! systemctl restart crowdsec-firewall-bouncer || ! systemctl is-active --quiet crowdsec-firewall-bouncer; then
+                if ! restore_config_change || ! systemctl daemon-reload || ! systemctl restart crowdsec-firewall-bouncer || ! systemctl is-active --quiet crowdsec-firewall-bouncer; then
                     cleanup_account=false
                     log_err 'Bouncer 回滚未完成，保留新增账号；请根据修改前备份恢复服务后核验。'
                 fi
@@ -1480,13 +1487,18 @@ repair_firewall_bouncer() (
         return 1
     fi
     if command -v iptables >/dev/null 2>&1 && iptables -S DOCKER-USER >/dev/null 2>&1; then docker_chain=true; fi
-    begin_config_change "$cfg" "${cfg}.local" || return 1
+    begin_config_change "$cfg" "${cfg}.local" "$FIREWALL_DROPIN" || return 1
     changed=true
     yaml_tool bouncer "$cfg" "$url" "$key" "$docker_chain" || return 1
+    if [[ "$(yaml_tool bouncer-mode "$cfg")" == iptables ]]; then
+        firewall_write_startup "$cfg" || return 1
+        systemctl daemon-reload || return 1
+    fi
     if ! systemctl restart crowdsec-firewall-bouncer || ! systemctl is-active --quiet crowdsec-firewall-bouncer; then
         journalctl -u crowdsec-firewall-bouncer -n 30 --no-pager
         return 1
     fi
+    if [[ "$(yaml_tool bouncer-mode "$cfg")" == iptables ]]; then check_firewall_runtime || return 1; fi
     committed=true
     log_succ 'Bouncer 服务已运行；现有其他 Bouncer 凭据保留。'
     cscli bouncers list || return 1
@@ -1706,6 +1718,10 @@ check_web_health_status() {
         check_firewall_backend || backend_status=$?
         if [[ "$backend_status" == 1 ]]; then result=1
         elif [[ "$backend_status" == 2 && "$result" == 0 ]]; then result=2; fi
+        local runtime_status=0
+        check_firewall_runtime || runtime_status=$?
+        if [[ "$runtime_status" == 1 ]]; then result=1
+        elif [[ "$runtime_status" == 2 && "$result" == 0 ]]; then result=2; fi
         firewall_status || result=1
     fi
     if [[ "${1:-web}" == web ]]; then
@@ -2277,6 +2293,8 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --status-details     显示整体检查结论与完整技术详情
   --check-logs         只读检查新增日志、漏采和重复采集
   --repair-logs        按实际网站配置补齐漏采的访问日志
+  --firewall-check     只读检查开机规则覆盖、Docker 顺序和双栈链
+  --firewall-maintenance 防火墙启动修复与分阶段迁移（带自动回退）
   --repair-bouncer     修复防火墙与检测服务的连接地址
   --optimize           检查基础配置，选择需要修复的项目并确认后应用
   --enable-wal         改善数据库写入（需确认数据库使用本地磁盘）
@@ -2339,6 +2357,8 @@ main_operation() {
         --appsec-policy) configure_appsec_policy ;;
         --disable-appsec) disable_appsec ;;
         --clean-redundant) check_and_clean_redundant_instances ;;
+        --firewall-check) check_firewall_runtime ;;
+        --firewall-maintenance) manage_firewall_maintenance ;;
         --repair-bouncer) repair_firewall_bouncer ;;
         --admin-allowlist) manage_admin_allowlist ;;
         --self-report-status) diagnose_self_report ;;
@@ -2375,7 +2395,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
+        ''|--help|-h|--firewall-check|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

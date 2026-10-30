@@ -1,0 +1,81 @@
+{
+  "migration_committed": true,
+  "membership": {
+    "active_decisions": 16180,
+    "expected_networks_over_15s": 16179,
+    "kernel_networks": 16179,
+    "missing": []
+  },
+  "rules": {
+    "iptables": "all original rules unchanged; all three entry points protected first",
+    "ip6tables": "all original rules unchanged; all three entry points protected first"
+  },
+  "core_config": {
+    "exit": 0,
+    "output": ""
+  },
+  "nginx_config": {
+    "exit": 0,
+    "output": "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful\n"
+  },
+  "service_active": {
+    "exit": 0,
+    "output": "active\nactive\nactive\nactive\nactive\n"
+  },
+  "failed_units": "",
+  "core_docker_v2bx_not_restarted": true,
+  "service_runtime": "MainPID=1042488\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-13 08:51:21 PDT\nId=crowdsec.service\n\nMainPID=2855494\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-10-29 21:32:02 PDT\nId=crowdsec-firewall-bouncer.service\n\nMainPID=690\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-10-04 03:40:07 PDT\nId=docker.service\n\nMainPID=654\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-10-04 03:40:06 PDT\nId=V2bX.service\n",
+  "containers": {
+    "/nginx": {
+      "state": "running",
+      "restart_count": 0
+    },
+    "/gost": {
+      "state": "running",
+      "restart_count": 0
+    },
+    "/openlist": {
+      "state": "running",
+      "restart_count": 0
+    },
+    "/gost-http-proxy": {
+      "state": "exited",
+      "restart_count": 40904
+    }
+  },
+  "existing_healthy_containers_not_restarted": true,
+  "source_files": 56,
+  "source_hashes_verified": true,
+  "protected_changed_paths": [
+    "/etc/sysctl.d/99-network-optimize.conf"
+  ],
+  "core_and_existing_bouncer_config_bytes_preserved": true,
+  "obsolete_restore_disabled_and_other_jobs_preserved": true,
+  "saved_rules_unchanged": true,
+  "sysctl_value": "8000",
+  "conflicting_proxy_persistently_disabled": true,
+  "startup_after_docker": true,
+  "flow_before_reproduced": true,
+  "flow_after_passed": true,
+  "cleanup": {
+    "namespaces": true,
+    "interfaces": true,
+    "rules": true,
+    "snapshot_table": true,
+    "listeners": true,
+    "timers": true,
+    "decisions": true
+  },
+  "health_exit": 2,
+  "node_exit": 2,
+  "website": {
+    "origin": {
+      "exit": 0,
+      "status": "200"
+    },
+    "public": {
+      "exit": 0,
+      "status": "200"
+    }
+  }
+}

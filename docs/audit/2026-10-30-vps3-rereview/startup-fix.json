@@ -1,0 +1,11 @@
+{
+  "reproduced_ipv4_ipv6": true,
+  "obsolete_restore_jobs_disabled": 2,
+  "all_other_cron_lines_preserved": true,
+  "live_rules_unchanged": true,
+  "services_not_restarted": true,
+  "namespace_cleaned": true,
+  "snapshots_preserved": true,
+  "cold_boot_tested": false,
+  "backup": "/var/backups/crowdbastion/vps3-rereview-20261030"
+}

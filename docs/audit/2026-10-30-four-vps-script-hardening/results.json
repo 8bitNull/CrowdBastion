@@ -1,0 +1,28 @@
+{
+  "full_regression": {
+    "discovered": 1202,
+    "passed": 1113,
+    "skipped": 89,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 421.176,
+    "scope": "started before final boundary refinements; followed by final focused suite"
+  },
+  "final_focused": {
+    "discovered": 96,
+    "passed": 91,
+    "skipped": 5,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 15.042,
+    "new_tests_passed": 43
+  },
+  "static": {
+    "python_ast_files": 136,
+    "bash_syntax_files": 17,
+    "shellcheck": "passed",
+    "diff_check": "passed"
+  },
+  "production_deployed": false,
+  "real_host_migration_tested": false
+}

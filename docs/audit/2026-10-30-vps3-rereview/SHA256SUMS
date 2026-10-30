@@ -1,0 +1,16 @@
+2bde1e63b6df623e31213eae50f27053248b5d06f4a122ae7438136ccfb2a5aa  docs/audit/2026-10-30-vps3-rereview.md
+3cf9fc9249c49c1b6696842d1d84b8deff906be509000c8111cb42eb983c6bbd  docs/audit/2026-10-30-vps3-rereview/deployed-source-manifest.json
+ac2adb54eb11edeb95a2c3fb229c9e5064908643e357160491cf4ce91953c4e3  docs/audit/2026-10-30-vps3-rereview/environment-rerun.txt
+8d27063bd57e47e9803ea533c0025a80a4b3139eb5465f1d9cdac82de202d318  docs/audit/2026-10-30-vps3-rereview/full-regression-initial.txt
+871b5faad5dd41e4caa23cfabba5a1d89b1a316e9e7387bf9fdaccb96f71ac21  docs/audit/2026-10-30-vps3-rereview/health-final.txt
+ffdec84cde4d5632cd8e5ad6aeeb07ebd51ea39a83d6cdfc201fe9902d770ed9  docs/audit/2026-10-30-vps3-rereview/isolated-normal.txt
+7649b838395a2c2e8d196d61d3bc829d812ce91bdae4873e10f24f827219509e  docs/audit/2026-10-30-vps3-rereview/isolated-rejected.txt
+5359857c936ed151b530b3ab59ee33b001cc2cd60f55c13e334877d1199b7e25  docs/audit/2026-10-30-vps3-rereview/isolated-restored.txt
+dce6b5f83c570af24edf96422eb911acee3898bdb85bc6384f4ea2fede32b28b  docs/audit/2026-10-30-vps3-rereview/regression-summary.json
+fa143f9378238c3ae4d63c83eaede812ef98c8e7b12eeab8dc9e235398d11209  docs/audit/2026-10-30-vps3-rereview/reproduction.json
+e35b67176ac91847681a5087c56ed369a2dd05ab2019f9b4073a43199ce11d81  docs/audit/2026-10-30-vps3-rereview/second-review.json
+45036c4486e71654dea719f063519ecc50abbc08cd878a29a3bbb5721ea08107  docs/audit/2026-10-30-vps3-rereview/startup-fix-output.txt
+ad5ebda6a9bfc0cc8d18ba585967d062e48639a4b39c5a80ff0c93eb85bb1b91  docs/audit/2026-10-30-vps3-rereview/startup-fix.json
+232d159c2464c28050c29f12a897632639d1eef129c18684c4bd4d94a6d90e33  docs/audit/2026-10-30-vps3-rereview/static-checks.txt
+5149c8869d6124c95e738817a66951f1616f247751d043ecd376aa69e41e46e3  docs/audit/2026-10-30-vps3-rereview/verification-final.json
+d457dde13905ad576364d8106ca25b3cf21638028d26d7fa529a3511b6d558ef  docs/usage-guide.md

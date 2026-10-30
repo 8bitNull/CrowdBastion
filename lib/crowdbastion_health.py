@@ -20,6 +20,8 @@ CATALOG = {
     'logs': ('日志读取与解析正常', '日志采集尚未配置', '日志已读取，但没有成功解析', '日志解析证据不足', '相关日志中的攻击可能无法被识别。', 'log_help'),
     'acquisition': ('日志采集配置检查通过', '日志采集尚未配置', '日志采集配置存在问题', '无法核查日志采集配置', '可能遗漏或重复处理日志事件。', 'log_help'),
     'rules': ('已发现来源 IP 封禁规则', '封禁规则尚未接入', '封禁规则检查未通过', '封禁规则或适用的流量路径尚未确认', '暂时无法确认业务流量会经过封禁规则。', 'path_help'),
+    'firewall_startup': ('开机任务和防火墙启动顺序检查通过', '防火墙启动检查未配置', '开机规则覆盖或防火墙启动顺序存在风险', '无法完整核查防火墙启动条件', '重启后可能丢失封禁或 Docker 转发规则。', 'details'),
+    'firewall_paths': ('双栈防火墙链入口检查通过', '防火墙链尚未接入', '双栈防火墙链入口不完整', '无法确认双栈防火墙链覆盖', '部分输入或转发流量可能绕过 IP 封禁。', 'path_help'),
     'renewal': ('未命中已知的 nftables 续封缺陷', '封禁续期检查未配置', '防火墙后端存在已知续封缺陷', '防火墙后端续封修复状态尚未验证', '封禁决策仍有效时，流量可能已经恢复通行。', 'details'),
     'remote': ('远端连接配置检查通过', '远端检测中心连接尚未配置', '远端连接配置检查未通过', '无法读取远端连接配置', '当前节点可能无法接收检测中心的封禁决策。', 'details'),
     'appsec': ('网站检查配置的 AppSec 地址有监听', '网站检查引擎尚未接入', '网站检查引擎没有在配置地址监听', '网站检查引擎状态未能确认', '网站请求可能无法经过 AppSec 检查。', 'details'),
@@ -151,7 +153,10 @@ def main(args):
     records = [line.split('\t') for line in Path(path).read_text().splitlines()]
     report = summarize(records, int(status), scope, roles)
     print('检查结论：'+report['verdict'])
-    label = '、'.join(LABELS[r] for r in roles.split() if r in LABELS)
+    checked_roles = set(roles.split())
+    if scope == 'overall' and any(key == 'web' and state == 'required' for key, state in records):
+        checked_roles.add('web')
+    label = '、'.join(label for role, label in LABELS.items() if role in checked_roles)
     print('检查范围：'+({'relay': '中转防火墙', 'node': 'V2bX 落地'}.get(scope, label or '网站（尚未选择用途）')))
     if report['confirmed']:
         print('已确认：'+report['confirmed']+'。')

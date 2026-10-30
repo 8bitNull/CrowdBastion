@@ -83,8 +83,8 @@ remote_bouncer_change() (
     REMOTE_CONFIG="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml"
     stage=$(mktemp -d) || return 1
     chmod 700 "$stage" || return 1
-    paths=("${REMOTE_CONFIG}.local" "${REMOTE_CONFIG}.remote.json")
-    copies=(local state)
+    paths=("${REMOTE_CONFIG}.local" "${REMOTE_CONFIG}.remote.json" "$FIREWALL_DROPIN")
+    copies=(local state dropin)
     # Called by EXIT trap.
     # shellcheck disable=SC2329
     remote_bouncer_rollback() {
@@ -103,6 +103,7 @@ remote_bouncer_change() (
                 rm -f -- "$REMOTE_CONFIG"
                 systemctl daemon-reload >/dev/null 2>&1 || true
             elif [[ "$service_touched" == true ]]; then
+                systemctl daemon-reload >/dev/null 2>&1 || log_err '恢复启动依赖失败。'
                 if [[ "$active" == true ]]; then systemctl restart crowdsec-firewall-bouncer >/dev/null 2>&1 || log_err '原 Bouncer 服务状态未恢复，请手动检查。'
                 else systemctl stop crowdsec-firewall-bouncer >/dev/null 2>&1 || true; fi
                 if [[ "$enable_touched" == true ]]; then
@@ -161,9 +162,15 @@ remote_bouncer_change() (
         remote_bouncer_release "$stage" || return 1
     fi
     remote_bouncer_tool apply < "$stage/input.json" || return 1
+    if [[ "$(yaml_tool bouncer-mode "$REMOTE_CONFIG")" == iptables ]]; then
+        service_touched=true
+        firewall_write_startup "$REMOTE_CONFIG" || return 1
+        systemctl daemon-reload || return 1
+    fi
     # Unit ExecStartPre performs official -t validation; no credential args.
     service_touched=true
     systemctl restart crowdsec-firewall-bouncer && systemctl is-active --quiet crowdsec-firewall-bouncer || return 1
+    if [[ "$(yaml_tool bouncer-mode "$REMOTE_CONFIG")" == iptables ]]; then check_firewall_runtime || return 1; fi
     if [[ "$action" == install && "$fresh" == true ]]; then
         # A nonexistent old unit reports not-found; enable the new managed unit.
         enable_touched=true

@@ -1,0 +1,8 @@
+{
+  "python_modules_compiled": 36,
+  "existing_rules_absent_from_hub_index": [
+    "crowdsecurity/vpatch-CVE-2026-96652",
+    "crowdsecurity/vpatch-CVE-2026-96655",
+    "crowdsecurity/vpatch-CVE-2026-96656"
+  ]
+}

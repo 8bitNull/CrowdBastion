@@ -31,6 +31,8 @@ server { include /data/nginx/custom/server_proxy[.]conf; }
         return '''docker() {
 record docker "$@"
 case "$*" in
+ 'top '*) nginx_test_processes;;
+ 'exec '*' nginx -s reload') nginx_test_reload;;
  'ps --format '*) echo 'cid 1panel/openresty:1 openresty';;
  'inspect --format {{json .Mounts}} '*) cat '''+shlex.quote(str(mounts))+''';;
  'exec '*' nginx -T') cat '''+shlex.quote(str(effective))+'''

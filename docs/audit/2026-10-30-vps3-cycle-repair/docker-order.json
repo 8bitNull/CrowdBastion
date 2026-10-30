@@ -1,0 +1,6 @@
+{
+  "dropin": "/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf",
+  "previously_absent": true,
+  "after_docker": true,
+  "bouncer_pid_unchanged": true
+}

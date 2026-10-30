@@ -1,0 +1,4 @@
+Python AST: 136 passed
+Bash syntax: 17 passed
+ShellCheck warning/error: passed (SC2317,SC2329,SC2120,SC2119 excluded)
+git diff --check: passed

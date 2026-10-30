@@ -10,6 +10,7 @@
 | [更名与升级](project-rename.md) | 仓库地址、主入口及旧版运行标识兼容性 |
 | [命令行参考](cli-reference.md) | 参数、菜单、互斥与退出码 |
 | [AppSec 指南](appsec-guide.md) | Web Bouncer、网站和 Docker 接入条件 |
+| [防火墙启动与迁移](firewall-maintenance.md) | 开机规则覆盖、双栈链、受保护迁移与本机流量验收 |
 | [日志与真实 IP 排查](detection-guide.md) | 来源信任、采集与解析、AllowList、防火墙核查 |
 | [管理与维护](management-guide.md) | WebUI、Telegram、Hub 更新和恢复 |
 | [自定义 Telegram 机器人](2026-10-13-custom-telegram-bot.md) | 可选交互查询与迁移回滚 |
@@ -34,6 +35,8 @@
 [验证记录](verification.md)保存各轮检查方法和结果；[验收索引](audit/README.md)指向报告及证据。系统试用放行以 [VPS 修复进度](audit/2026-10-12-vps-repair-progress.md)和 [兼容性矩阵](audit/2026-10-12-vps-compatibility.md)为准，不能用源码测试数量替代目标系统验收。
 
 2026-10-20 [仓库整合验收](audit/2026-10-20-repository-consolidation.md)记录脚本修复、Web 执行证据及 Telegram 九宫格的统一回归、本地归档和仓库同步；本轮未部署 VPS。
+
+2026-10-30 [四台 VPS 修复与复审](audit/README.md#2026-10-30-vps-修复与复审)汇总部署、续封流量实测、Nginx 重载与真实 IP 核验，以及旧开机防火墙任务修复。各节点的公网实际拦截仍待验证，历史报告与后续修复按节点串联阅读。
 
 最近的 V2bX [混合入口实验](audit/2026-10-13-v2bx-mixed-ingress.md)已取得基础组合的双账号、IPv4/IPv6 和 TCP/UDP 应用载荷证据；生产观察仍未部署。历史报告记录当时的版本、配置与检测缺口，后续变化以对应新报告为准。
 

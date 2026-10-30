@@ -1,0 +1,16 @@
+{
+  "ipv4_ipv6_rules_still_unchanged": true,
+  "obsolete_jobs_still_inactive": true,
+  "production_service_identity_preserved": true,
+  "failed_units": "",
+  "containers": "crowdsec-web-ui Up 5 hours (healthy)\nzhishangsheng-heartbeat Up 33 hours\ndujiao-next Up 42 hours (healthy)\nphp8512 Up 7 days\nredis Up 7 days\nzhishangsheng-app Up 8 days (healthy)\nmysql Up 10 days\nwatchtower Up 10 days (healthy)\nopenresty Up 10 days\n",
+  "temporary_resources_removed": true,
+  "membership": {
+    "active_decisions": 16491,
+    "expected_networks_over_15s": 16467,
+    "kernel_networks": 16467,
+    "missing": []
+  },
+  "saved_snapshots_unchanged": true,
+  "cold_boot_tested": false
+}

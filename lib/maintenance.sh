@@ -9,6 +9,12 @@ locked_operation() (
         exec 9> "$MAINTENANCE_LOCK" || return 1
         if ! flock -n 9; then log_warn '另一个 CrowdSec 管理操作正在执行，请稍后重试。'; return 75; fi
     fi
+    if declare -F firewall_migration_pending >/dev/null && firewall_migration_pending; then
+        case "$*" in
+            'main_operation --firewall-maintenance'|manage_firewall_maintenance) ;;
+            *) log_err '防火墙迁移尚未结束，其他修改暂停；请使用 --firewall-maintenance 完成或回退。'; return 75 ;;
+        esac
+    fi
     trap hub_workflow_exit EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM

@@ -1,0 +1,17 @@
+test_bound_log_read_and_missing_namespace_metadata_fail_closed (test_nginx_reload_log.ReloadLog.test_bound_log_read_and_missing_namespace_metadata_fail_closed) ... ok
+test_distinct_logged_master_pid_does_not_make_log_ambiguous (test_nginx_reload_log.ReloadLog.test_distinct_logged_master_pid_does_not_make_log_ambiguous) ... ok
+test_fresh_complete_master_cohort_matches_namespaced_workers (test_nginx_reload_log.ReloadLog.test_fresh_complete_master_cohort_matches_namespaced_workers) ... ok
+test_later_rejection_and_conflicting_lifecycle_invalidate_previous_cohort (test_nginx_reload_log.ReloadLog.test_later_rejection_and_conflicting_lifecycle_invalidate_previous_cohort) ... ok
+test_locate_only_main_notice_error_log_matching_open_inode (test_nginx_reload_log.ReloadLog.test_locate_only_main_notice_error_log_matching_open_inode) ... ok
+test_main_glob_does_not_match_hidden_http_include (test_nginx_reload_log.ReloadLog.test_main_glob_does_not_match_hidden_http_include) ... ok
+test_main_include_cycles_and_duplicate_dump_sections_fail_closed (test_nginx_reload_log.ReloadLog.test_main_include_cycles_and_duplicate_dump_sections_fail_closed) ... ok
+test_npm_main_include_log_is_found_but_http_and_unreferenced_logs_are_not (test_nginx_reload_log.ReloadLog.test_npm_main_include_log_is_found_but_http_and_unreferenced_logs_are_not) ... ok
+test_old_or_respawn_records_do_not_prove_acceptance (test_nginx_reload_log.ReloadLog.test_old_or_respawn_records_do_not_prove_acceptance) ... ok
+test_replaced_truncated_or_overwritten_log_is_rejected (test_nginx_reload_log.ReloadLog.test_replaced_truncated_or_overwritten_log_is_rejected) ... ok
+test_shared_log_with_colliding_container_master_pid_is_rejected (test_nginx_reload_log.ReloadLog.test_shared_log_with_colliding_container_master_pid_is_rejected) ... ok
+test_wrong_master_partial_line_and_missing_worker_are_not_accepted (test_nginx_reload_log.ReloadLog.test_wrong_master_partial_line_and_missing_worker_are_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.022s
+
+OK

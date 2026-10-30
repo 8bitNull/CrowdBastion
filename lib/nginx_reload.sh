@@ -36,23 +36,33 @@ nginx_process_snapshot() {
     printf '%s\n' "$table" | awk -v wanted="$master" '
         $1 ~ /^[0-9]+$/ && $3 !~ /[ZX]/ {
             if ($4 == "nginx:" && $5 == "master" && $6 == "process" && (wanted == "" || $1 == wanted)) {
-                master=$1; masters++
+                candidates[$1]=$2
             }
             if ($4 == "nginx:" && $5 == "worker" && $6 == "process" && $7 != "is") parent[$1]=$2
         }
         END {
+            # A just-forked child briefly inherits the master process title.
+            # Wait for its worker title instead of mistaking it for a second
+            # independent master or accepting an incomplete process cohort.
+            inherited=0
+            for (pid in candidates) {
+                if (candidates[pid] in candidates) { inherited=1; continue }
+                master=pid; masters++
+            }
             if (masters != 1) exit 1
             print "master", master
             count=0
             for (pid in parent) if (parent[pid] == master) { print "worker", pid; count++ }
-            if (!count) exit 1
+            # A known master can briefly have no observable serving workers
+            # while the process titles/cohort change during reload.
+            if (!count || inherited) exit 2
         }' | sort -k1,1 -k2,2n
     return "${PIPESTATUS[1]}"
 }
 
 nginx_reload_verified() (
     local service=$1 container=${2:-} before after master old_workers workers previous='' deadline now remaining
-    local work source log_fd log_ref witness_status limit worker_pids=()
+    local work source log_fd log_ref witness_status snapshot_status limit worker_pids=()
     work=$(mktemp -d) || return 1
     chmod 700 "$work" || { rm -rf -- "$work"; return 1; }
     trap 'rm -rf -- "$work"' EXIT
@@ -82,14 +92,23 @@ nginx_reload_verified() (
     while :; do
         now=$(nginx_monotonic_us) || return 1; remaining=$((deadline - now))
         (( remaining > 0 )) || break
-        after=$(nginx_process_snapshot "$service" "$container" "$deadline") || {
-            log_err '重载后无法确认 Nginx master/worker 进程。'; return 1;
-        }
+        after=$(nginx_process_snapshot "$service" "$container" "$deadline")
+        snapshot_status=$?
+        if [[ "$snapshot_status" != 0 && "$snapshot_status" != 2 ]]; then
+            log_err '重载后无法确认 Nginx master/worker 进程。'; return 1
+        fi
         now=$(nginx_monotonic_us) || return 1
         (( now < deadline )) || break
         [[ "${after%%$'\n'*}" == "$master" ]] || {
             log_err '重载期间 Nginx master 已变化，未确认本次配置。'; return 1;
         }
+        if [[ "$snapshot_status" == 2 ]]; then
+            previous=''
+            now=$(nginx_monotonic_us) || return 1
+            (( deadline - now >= 200000 )) || break
+            sleep 0.2
+            continue
+        fi
         workers=${after#*$'\n'}
         local worker fresh=true
         while IFS= read -r worker; do

@@ -1,0 +1,8 @@
+{
+  "old_release": "/usr/local/lib/crowdsec-1key/release-review-20261030-ab0af70",
+  "new_release": "/usr/local/lib/crowdsec-1key/release-review-20261030-cycle2-4734bff2",
+  "changed_file": "lib/real_ip.sh",
+  "sha256": "4734bff20a52be82858f30843550c90c31c4b65f597fd73b6e326344dc2a3c69",
+  "focused_tests": 48,
+  "focused_failures": 0
+}

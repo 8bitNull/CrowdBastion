@@ -17,8 +17,14 @@ real_ip_select_runtime() {
 }
 
 real_ip_web_command() {
-    if [[ -n "${REALIP_HOST_SERVICE:-}" ]]; then
-        if [[ "$1 $2" == '-s reload' ]]; then systemctl reload "$REALIP_HOST_SERVICE"; else "$REALIP_HOST_SERVICE" "$@"; fi
+    if [[ "$1 ${2:-}" == '-s reload' ]]; then
+        if [[ -n "${REALIP_HOST_SERVICE:-}" ]]; then
+            nginx_reload_verified "$REALIP_HOST_SERVICE"
+        else
+            nginx_reload_verified docker "$NATIVE_ID"
+        fi
+    elif [[ -n "${REALIP_HOST_SERVICE:-}" ]]; then
+        "$REALIP_HOST_SERVICE" "$@"
     else
         docker exec "$NATIVE_ID" nginx "$@"
     fi

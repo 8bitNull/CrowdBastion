@@ -152,6 +152,9 @@ hub_maintenance() (
         exec 9> "$MAINTENANCE_LOCK" || return 1
         flock -n 9 || { log_warn '已有管理操作，跳过本次 Hub 维护。'; return 75; }
     fi
+    if declare -F firewall_migration_pending >/dev/null && firewall_migration_pending; then
+        log_warn '防火墙迁移尚未结束，跳过 Hub 维护。'; return 75
+    fi
     trap 'hub_abort || true' EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM

@@ -1,0 +1,11 @@
+3cf9fc9249c49c1b6696842d1d84b8deff906be509000c8111cb42eb983c6bbd  docs/audit/2026-10-30-vps3-cycle-repair/SOURCE-MANIFEST.json
+46ca82547b11ba51ac03c63256fdf7793c7314642394c8f68b8a00d3eefc3fc0  docs/audit/2026-10-30-vps3-cycle-repair/additional-checks.json
+37f43eb864a57025288da23121736504e8fe58ebc532def0732fcf99a7c291a1  docs/audit/2026-10-30-vps3-cycle-repair/docker-order.json
+355a1ecb9c1101a35f5e271e5c2aeedd6cf3dd1a8eef35b060b56f12b87f9ca3  docs/audit/2026-10-30-vps3-cycle-repair/flow-after.json
+871b5faad5dd41e4caa23cfabba5a1d89b1a316e9e7387bf9fdaccb96f71ac21  docs/audit/2026-10-30-vps3-cycle-repair/health-final.txt
+f715a66c35805c0e0133e5d3fb4f6adc708cdaa509fdea1a6462238002ae132a  docs/audit/2026-10-30-vps3-cycle-repair/membership-before.json
+52a06cb717adf9a7bc8f340d364f9aaab24674de09eb2de6cfcb17b946bd60c7  docs/audit/2026-10-30-vps3-cycle-repair/real-ip-verification.txt
+69922ea6f736bf632b63c30c80ca48d14e52aa617114658b2acba74272073b46  docs/audit/2026-10-30-vps3-cycle-repair/verification-final.json
+78e86d42cf1a033276aca26074c3ecc9dbade8c893d57155ffa2f8d195a5fe6e  docs/audit/2026-10-30-vps3-cycle-repair/web-repeat.txt
+ed730cb5aebb11891b05d7fc1876dbab567223ebbbd5396053d03bfcb1553a82  docs/audit/2026-10-30-vps3-cycle-repair/web-upgrade.txt
+ce68b57d760fbed666072534c2942092d164573fb05493f3f587d27a76438147  docs/audit/2026-10-30-vps3-cycle-repair.md

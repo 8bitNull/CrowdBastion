@@ -1,0 +1,27 @@
+{
+  "discovered": 1169,
+  "initial_passed": 1077,
+  "initial_failures": 3,
+  "initial_errors": 0,
+  "skipped": 89,
+  "skipped_reasons": {
+    "official pinned archives are required for archive integration": 14,
+    "pinned official archives required": 31,
+    "Lua-enabled Nginx required": 18,
+    "set CROWDSEC_TEST_RELEASE for official plugin checks": 16,
+    "optional official gost binary": 1,
+    "set CROWDSEC_TEST_RELEASE for official receipt checks": 5,
+    "pycdlib required for media validation": 4
+  },
+  "initial_seconds": 357.065,
+  "initial_failure_cause": "Local environment lacked journalctl executable; project virtualenv PyYAML was used.",
+  "after_dependency_install_failed_cases_rerun": {
+    "passed": 3,
+    "failed": 0,
+    "seconds": 3.582
+  },
+  "effective_passed_after_targeted_rerun": 1080,
+  "unresolved_test_failures": 0,
+  "full_suite_repeated_after_dependency_install": false,
+  "production_source_changes": 0
+}

@@ -73,6 +73,33 @@ class SummaryWorkflow(unittest.TestCase):
     roles = test_node_guidance.Guidance.roles
     run_terminal = test_node_guidance.Guidance.run_terminal
 
+    def test_detected_web_is_in_overall_scope_without_changing_selected_roles(self):
+        self.roles('relay')
+        overrides = '''
+check_health_status_raw() {
+ load_node_roles
+ health_expect core; health_event core ok
+ health_expect web; health_event web ok
+ return 2
+}
+'''
+        p = self.run_shell('main --status; result=$?; printf "ROLES="; load_node_roles; printf "%s\\n" "$NODE_ROLES"; exit "$result"', overrides=overrides)
+        self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
+        self.assertIn('检查范围：网站、本地中转', p.stdout)
+        self.assertIn('ROLES=relay', p.stdout)
+        self.assertIn('实际拦截待验证', p.stdout)
+
+    def test_verification_help_covers_detected_web_without_sending_requests(self):
+        self.roles('relay')
+        for detected in ('true', 'false'):
+            with self.subTest(detected=detected):
+                p = self.run_shell('load_node_roles; health_verification_help',
+                                   overrides=f'node_web_deployed() {{ {detected}; }}')
+                self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+                self.assertEqual('--verify-appsec' in p.stdout, detected == 'true')
+                self.assertIn('--verify-relay', p.stdout)
+                self.assertNotRegex(self.commands(), r'restart|reload|decisions add|curl')
+
     def test_missing_core_is_concise_and_advises_correct_installation(self):
         self.roles('relay')
         (self.config/'config.yaml').unlink()

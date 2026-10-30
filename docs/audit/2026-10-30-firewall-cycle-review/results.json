@@ -1,0 +1,40 @@
+{
+  "full_regression": {
+    "discovered": 1236,
+    "passed": 1147,
+    "skipped": 89,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 401.947,
+    "exit_code": 0,
+    "final_code": true
+  },
+  "focused_regression": {
+    "discovered": 67,
+    "passed": 67,
+    "skipped": 0,
+    "seconds": 2.04,
+    "new_review_tests": 24
+  },
+  "earlier_integration": {
+    "discovered": 102,
+    "passed": 102,
+    "skipped": 0,
+    "seconds": 22.136
+  },
+  "initial_full_run": {
+    "exit_code": 130,
+    "reason": "interrupted to restart from final code; not counted as a complete regression"
+  },
+  "static": {
+    "python_ast": 137,
+    "bash": 17,
+    "shellcheck": "passed",
+    "diff_check": "passed"
+  },
+  "additional_rule_order_model": "passed, real setup function with all system commands mocked",
+  "production_deployed": false,
+  "real_host_migration_tested": false,
+  "full_command": "PYTHONPATH=\"$PWD/lib:$PWD/.venv/lib/python3.11/site-packages\" .venv/bin/python -m unittest discover -s tests -v",
+  "focused_command": "PYTHONPATH=\"$PWD/lib:$PWD/tests:$PWD/.venv/lib/python3.11/site-packages\" .venv/bin/python -m unittest test_firewall_runtime test_firewall_review -v"
+}

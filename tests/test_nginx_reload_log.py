@@ -90,6 +90,43 @@ class ReloadLog(unittest.TestCase):
         with self.assertRaises((OSError, ValueError)):
             self.tool.capture('missing', self.log, self.proc)
 
+    def test_npm_main_include_log_is_found_but_http_and_unreferenced_logs_are_not(self):
+        master = self.proc/'42'; (master/'fd').mkdir()
+        (master/'root').symlink_to('/')
+        (master/'fd/5').symlink_to(self.log)
+        dump = ('# configuration file /etc/nginx/nginx.conf:\n'
+                'error_log /unreadable warn; include /data/custom/root_top[.]conf;\n'
+                'http { include /data/custom/http.conf; }\n'
+                '# configuration file /data/custom/root_top.conf:\n'
+                'include /data/custom/nested/*.conf;\n'
+                '# configuration file /data/custom/nested/log.conf:\n'
+                f'error_log "{self.log}" notice;\n'
+                '# configuration file /data/custom/http.conf:\n'
+                'error_log /unreadable notice;\n')
+        self.assertEqual(self.tool.locate('42', dump, self.proc), master/'fd/5')
+        for changed in [dump.replace('include /data/custom/root_top[.]conf;', ''),
+                        dump.replace('include /data/custom/root_top[.]conf;', 'http { include /data/custom/root_top[.]conf; }'),
+                        dump.replace('include /data/custom/nested/*.conf;', 'include /data/*.conf;'),
+                        dump.replace('include /data/custom/nested/*.conf;', 'include nested/*.conf;')]:
+            with self.subTest(dump=changed), self.assertRaises(ValueError):
+                self.tool.locate('42', changed, self.proc)
+
+    def test_main_include_cycles_and_duplicate_dump_sections_fail_closed(self):
+        for dump in ['# configuration file /nginx.conf:\ninclude /child.conf;\n'
+                     '# configuration file /child.conf:\ninclude /nginx.conf;\n',
+                     '# configuration file /nginx.conf:\nerror_log /x notice;\n'
+                     '# configuration file /nginx.conf:\nerror_log /y notice;\n']:
+            with self.subTest(dump=dump), self.assertRaises(ValueError):
+                self.tool.main_error_logs(dump)
+
+    def test_main_glob_does_not_match_hidden_http_include(self):
+        dump = ('# configuration file /nginx.conf:\ninclude /conf/*.conf;\n'
+                'http { include /conf/.http.conf; }\n'
+                '# configuration file /conf/.http.conf:\nerror_log /http.log notice;\n')
+        self.assertEqual(self.tool.main_error_logs(dump), [])
+        explicit = dump.replace('include /conf/*.conf;', 'include /conf/.http.conf;')
+        self.assertEqual(self.tool.main_error_logs(explicit), [['error_log', '/http.log', 'notice']])
+
     def test_shared_log_with_colliding_container_master_pid_is_rejected(self):
         other = self.proc/'43'; (other/'fd').mkdir(parents=True)
         (other/'status').write_text('NSpid:\t43\t1\n')

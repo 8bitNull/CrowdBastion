@@ -196,6 +196,19 @@ class ReloadProcessEvidence(unittest.TestCase):
     setUp = test_workflows.Workflows.setUp
     run_shell = test_workflows.Workflows.run_shell
 
+    def test_forked_child_inheriting_master_title_is_transient(self):
+        result = self.run_shell('nginx_process_snapshot docker web', overrides=r'''
+docker() { printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n100 42 S nginx: worker process\n101 42 R nginx: master process nginx\n'; }
+''')
+        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+        self.assertEqual(result.stdout.strip(), 'master 42\nworker 100')
+
+    def test_independent_masters_remain_rejected(self):
+        result = self.run_shell('nginx_process_snapshot docker web', overrides=r'''
+docker() { printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n100 42 S nginx: worker process\n101 1 S nginx: master process nginx\n'; }
+''')
+        self.assertEqual(result.returncode, 1, result.stdout+result.stderr)
+
     def test_log_namespace_query_is_bounded_when_metadata_read_hangs(self):
         proc = Path(str(self.trace)+'.proc/42'); proc.mkdir(parents=True)
         os.mkfifo(proc/'status')
@@ -221,6 +234,54 @@ docker() {
 '''
         result = self.run_shell('nginx_reload_verified docker web', overrides=overrides)
         self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+
+    def test_reload_waits_for_transient_worker_cohort_gap(self):
+        overrides = r'''
+docker() {
+ case "$*" in
+  'top '*)
+   if [[ -f "$TRACE.reloaded" && ! -f "$TRACE.gap" ]]; then
+    touch "$TRACE.gap"
+    printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n'
+   else nginx_test_processes; fi;;
+  'exec '*' nginx -s reload') nginx_test_reload; touch "$TRACE.reloaded";;
+ esac
+ return 0
+}
+'''
+        result = self.run_shell('nginx_reload_verified docker web', overrides=overrides)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertTrue(Path(str(self.trace)+'.gap').exists())
+
+    def test_no_workers_before_reload_never_sends_signal(self):
+        overrides = r'''
+docker() {
+ case "$1" in
+  top) printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n';;
+  exec) touch "$TRACE.unexpected-signal";;
+ esac
+}
+'''
+        result = self.run_shell('nginx_reload_verified docker web', overrides=overrides)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(Path(str(self.trace)+'.unexpected-signal').exists())
+
+    def test_master_change_during_worker_gap_is_rejected(self):
+        overrides = r'''
+docker() {
+ case "$*" in
+  'top '*)
+   if [[ -f "$TRACE.reloaded" ]]; then
+    printf 'PID PPID STAT COMMAND\n43 1 Ss nginx: master process nginx\n'
+   else nginx_test_processes; fi;;
+  'exec '*' nginx -s reload') nginx_test_reload; touch "$TRACE.reloaded";;
+ esac
+ return 0
+}
+'''
+        result = self.run_shell('nginx_reload_verified docker web', overrides=overrides)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('master 已变化', result.stderr)
 
     def test_master_replacement_is_not_accepted_as_reload(self):
         overrides = r'''
