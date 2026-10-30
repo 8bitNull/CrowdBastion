@@ -1,0 +1,59 @@
+{
+  "server": "45.82.122.6",
+  "source_commit": "ab0af70",
+  "release": "/usr/local/lib/crowdsec-1key/release-review-20261030-ab0af70",
+  "backup": "/var/backups/crowdsec-1key/remediation-20261030-ab0af70",
+  "source_hashes_verified": true,
+  "account_preserved": true,
+  "bouncer_config_preserved": true,
+  "checks": {
+    "core_config": {
+      "exit": 0,
+      "output": ""
+    },
+    "nginx_config": {
+      "exit": 0,
+      "output": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful"
+    },
+    "core_active": {
+      "exit": 0,
+      "output": "active"
+    },
+    "firewall_active": {
+      "exit": 0,
+      "output": "active"
+    },
+    "core_runtime": {
+      "exit": 0,
+      "output": "ExecMainStartTimestamp=Thu 2026-10-29 05:12:08 CST"
+    },
+    "container_health": {
+      "exit": 0,
+      "output": "rc-container-vps20261028-frontend-1\tUp 2 hours (healthy)\ncrowdsec-web-ui\tUp 3 hours (healthy)\nrc-container-vps20261028-backend-1\tUp 3 hours (healthy)\ncodeg-server\tUp 22 hours (healthy)\nopenvscode-gateway\tUp 26 hours (healthy)\nrc-container-vps20261028-mysql-1\tUp 36 hours (healthy)\nHermes-Agent\tUp 5 days\ncloudflared\tUp 5 days\nopenvscode-server\tUp 5 days (healthy)\nwatchtower\tUp 5 days (healthy)\nopenresty\tUp 5 days"
+    }
+  },
+  "repeat_install_without_reload": true,
+  "http_origin_checks": {
+    "codeg-x.688600.xyz": {
+      "exit": 0,
+      "status": "200"
+    },
+    "test.688600.xyz": {
+      "exit": 0,
+      "status": "200"
+    },
+    "waf.860525.xyz": {
+      "exit": 0,
+      "status": "200"
+    }
+  },
+  "http_scope": "Local origin smoke checks only; -k permits existing origin certificates, no TLS settings changed.",
+  "health_exit": 1,
+  "remaining_known_issue": "Firewall Bouncer 0.0.36 nftables renewal defect; backend migration not performed.",
+  "not_installed": [
+    "smart_notifications",
+    "v2bx_observer",
+    "v2bx_alerts",
+    "remote_bouncer_overlay"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "core_config": {
+    "exit": 0,
+    "output": ""
+  },
+  "nginx_config": {
+    "exit": 0,
+    "output": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful"
+  },
+  "services": {
+    "exit": 0,
+    "output": "active\nactive\nactive"
+  },
+  "service_runtime": {
+    "exit": 0,
+    "output": "MainPID=2978854\nNRestarts=2\nExecMainStartTimestamp=Sun 2026-10-25 10:21:14 CST\nId=crowdsec.service\n\nMainPID=709\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-20 00:09:34 CST\nId=docker.service\n\nMainPID=1946\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-20 00:09:43 CST\nId=crowdsec-firewall-bouncer.service"
+  },
+  "containers": {
+    "exit": 0,
+    "output": "crowdsec-web-ui\tUp 4 hours (healthy)\nzhishangsheng-heartbeat\tUp 32 hours\ndujiao-next\tUp 41 hours (healthy)\nphp8512\tUp 7 days\nredis\tUp 7 days\nzhishangsheng-app\tUp 8 days (healthy)\nmysql\tUp 10 days\nwatchtower\tUp 10 days (healthy)\nopenresty\tUp 10 days"
+  },
+  "membership": {
+    "active_decisions": 16493,
+    "expected_networks_over_15s": 16477,
+    "kernel_networks": 16477,
+    "missing": []
+  },
+  "rules": {
+    "iptables-save": {
+      "original_rules_unchanged": true,
+      "bouncer_managed_empty_cscli_set": "crowdsec-blacklists-2"
+    },
+    "ip6tables-save": {
+      "original_rules_unchanged": true,
+      "bouncer_managed_empty_cscli_set": "crowdsec6-blacklists-2"
+    }
+  },
+  "managed_resources_restored": true,
+  "account_preserved": true,
+  "protected_changed_paths": [
+    "/etc/crowdsec/crowdsec-1key-web-installs.json"
+  ],
+  "bouncer_credentials_and_policy_preserved": true,
+  "firewall_config_preserved": true,
+  "temporary_decisions_absent": true,
+  "cleanup": {
+    "namespaces": true,
+    "interfaces": true,
+    "rules": true,
+    "timers": true,
+    "listeners": true
+  },
+  "http_origin": {
+    "aomway.com": {
+      "exit": 0,
+      "status": "200"
+    },
+    "shop.node2api.com": {
+      "exit": 0,
+      "status": "200"
+    },
+    "www.zhishangsheng.com": {
+      "exit": 0,
+      "status": "200"
+    }
+  },
+  "repeat_install_without_reload": true,
+  "health_exit": 2,
+  "release": "/opt/crowdbastion/releases/review-20261030",
+  "source_files": 56,
+  "source_hashes_verified": true,
+  "services_not_restarted": true,
+  "flow_test": true,
+  "docker_order": {
+    "dropin": "/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf",
+    "previously_absent": true,
+    "after_docker": true,
+    "bouncer_pid_unchanged": true
+  }
+}

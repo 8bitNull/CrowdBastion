@@ -1,0 +1,21 @@
+b870124199a6 1panel/openresty:1.31.1.1-2-4-noble openresty
+1. 从当前主机发送一次正常页面请求
+2. 从外部设备访问生成的标记 URL，随后按回车核验
+[INFO] 修改前备份: /var/backups/crowdsec-1key/change.wTnNXc7w
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+2026/10/30 10:10:20 [notice] 221#221: signal process started
+[INFO] 正常请求核验 URL：https://www.zhishangsheng.com/?crowdsec_ip_check=2115b81fb26a0608af2bea91
+连接对端：172.69.64.143
+CF-Connecting-IP：167.17.74.78
+X-Forwarded-For：167.17.74.78
+访问日志 IP：167.17.74.78；Bouncer IP：167.17.74.78；预期 IP：167.17.74.78
+[SUCCESS] 同一正常请求的访问日志和 Bouncer IP 与预期来源一致，临时诊断代码即将恢复。
+[WARN] 已恢复本次修改前的配置。
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+2026/10/30 10:10:23 [notice] 248#248: signal process started

@@ -1,0 +1,10 @@
+{
+  "active_decisions": 17400,
+  "expected_networks_over_15s": 17400,
+  "kernel_networks": 17400,
+  "missing": [],
+  "rules": {
+    "iptables": "all original rules unchanged; all three entry points protected first",
+    "ip6tables": "all original rules unchanged; all three entry points protected first"
+  }
+}

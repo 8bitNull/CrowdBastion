@@ -1,0 +1,17 @@
+42dcfc49b3c186e92137de9a770a6e8aa57be92aec73c0902140a082415ad297  docs/audit/2026-10-30-vps1-cycle-repair/final-membership.json
+541720c6502c3d98235b698aba60a1de56396f7dba3a62ba19d69604fe899ff1  docs/audit/2026-10-30-vps1-cycle-repair/flow-after.json
+0e35f1a8e67b48518b158ac4c481c57e5eff2a033a3bb7a360260c3c5945ae98  docs/audit/2026-10-30-vps1-cycle-repair/flow-before.json
+1630078c9954e446c1576449519d9b6456cb7beccbdbe2c73dcc28cd29d55f37  docs/audit/2026-10-30-vps1-cycle-repair/isolated-reload.json
+d6c0c15d8849121abb589b3ca81763d75792784d5d48d58f56c21116b8150a6b  docs/audit/2026-10-30-vps1-cycle-repair/migration.json
+30d78815afe3816dbb5f4220bacad63c60ca30c31b2cabaa60cb5df7c9e55c58  docs/audit/2026-10-30-vps1-cycle-repair/real-ip-live-verification-final.txt
+1d23500c36c507b1a914c25b8a2fbdba7fb4d7adeed34960664f1e730abadb10  docs/audit/2026-10-30-vps1-cycle-repair/reload-regressions-final.txt
+2c571d0ecf77d4c40f97df5405a486d986b7df8a2cf3b3e3b6feeb98f6b2b646  docs/audit/2026-10-30-vps1-cycle-repair/reload-script-patch-final.json
+1f00489424e85a1693ccfca6e0eddb9a745180c6dc641fa13a331596cf685af6  docs/audit/2026-10-30-vps1-cycle-repair/script-patch.json
+0f9cb602732bdeeaf8dc712cff4c63a222c5f6c7579fb6e55ff6e34225ab7ab5  docs/audit/2026-10-30-vps1-cycle-repair/verification-final.json
+94e8f8462b1b0628e61c1a1e04db3f45ab9bd6ad2af0d8640dc29cb5687687ba  docs/audit/2026-10-30-vps1-cycle-repair.md
+7017a299853296a0aef49f288a6508da6a330f4d2b5adae3f03f5414bf67aa96  docs/detection-guide.md
+4734bff20a52be82858f30843550c90c31c4b65f597fd73b6e326344dc2a3c69  lib/real_ip.sh
+d75639c08c5f311e5419cbc02c09b99c26e9743522ccb8221b8567559df910b9  lib/nginx_reload.sh
+572b5b71ef8a73134cff49ad828cffa3a96029177f2ec122337e23a6234cf1b2  tests/test_nginx_reload.py
+4521f497800e25599aa80ffca87414a5a51932b7a0ded584f20761efdae7641f  tests/test_real_ip_workflows.py
+4007d39a961de3317e2cb8a22e755874e62bfa93418230253ba92ae1cf583afd  tests/test_real_ip_reload_review.py

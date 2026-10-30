@@ -47,6 +47,10 @@ class Workflows(unittest.TestCase):
 
     def run_shell(self, action, user_input='', overrides='', timeout=15):
         stub = r'''
+# Host firewall effects are mocked, like the package and systemd commands below.
+repair_firewall_startup() { record repair_firewall_startup; return 0; }
+firewall_write_startup() { record firewall_write_startup; return 0; }
+check_firewall_runtime() { record check_firewall_runtime; return 0; }
 nginx_test_reload() {
  local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
  echo "$((generation+1))" > "$TRACE.workers"

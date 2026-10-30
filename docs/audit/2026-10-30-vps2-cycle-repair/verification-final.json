@@ -1,0 +1,97 @@
+{
+  "core_config": {
+    "exit": 0,
+    "output": "time=\"2026-10-29T18:50:21-07:00\" level=info msg=\"Loading yaml file: '/etc/crowdsec/config.yaml' with additional values from '/etc/crowdsec/config.yaml.local'\""
+  },
+  "nginx_config": {
+    "exit": 0,
+    "output": "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful"
+  },
+  "services": {
+    "exit": 0,
+    "output": "active\nactive\nactive\nactive\nactive"
+  },
+  "service_runtime": {
+    "exit": 0,
+    "output": "MainPID=2172093\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-10-29 06:32:31 PDT\nId=crowdsec.service\n\nMainPID=621\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-06 04:21:28 PDT\nId=docker.service\n\nMainPID=2242344\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-10-29 18:44:31 PDT\nId=crowdsec-firewall-bouncer.service\n\nMainPID=2171787\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-10-29 06:32:23 PDT\nId=crowdsec-1key-bot.service\n\nMainPID=2171912\nNRestarts=0\nExecMainStartTimestamp=Thu 2026-10-29 06:32:25 PDT\nId=crowdbastion-notify.service"
+  },
+  "containers": {
+    "exit": 0,
+    "output": "npm\tUp 2 weeks"
+  },
+  "membership": {
+    "active_decisions": 16482,
+    "expected_networks_over_15s": 16465,
+    "kernel_networks": 16465,
+    "missing": []
+  },
+  "rules": {
+    "iptables": "all original rules unchanged; all three entry points protected first",
+    "ip6tables": "all original rules unchanged; all three entry points protected first"
+  },
+  "managed_resources_restored": true,
+  "account_preserved": true,
+  "protected_changed_paths": [
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local"
+  ],
+  "bouncer_credentials_and_policy_preserved": true,
+  "firewall_base_unchanged": true,
+  "firewall_overlay_credentials_preserved": true,
+  "temporary_decisions_absent": true,
+  "cleanup": {
+    "namespaces": true,
+    "interfaces": true,
+    "container": true,
+    "hold_table": true,
+    "rules": true,
+    "timers": true,
+    "listeners": true
+  },
+  "http_origin": {
+    "shop.688600.xyz": {
+      "exit": 0,
+      "status": "301"
+    },
+    "32byte.cn": {
+      "exit": 0,
+      "status": "200"
+    },
+    "waf.688600.xyz": {
+      "exit": 0,
+      "status": "200"
+    }
+  },
+  "notification": {
+    "state": "ready",
+    "heartbeat_age": 0.59645676612854,
+    "health_age": 10.12825894355774,
+    "pending": 0,
+    "retrying": 0,
+    "unresolved": null
+  },
+  "bot": {
+    "status": "healthy",
+    "instance": {
+      "pid": 2171787
+    },
+    "last_poll_at": 1793325010.4113615,
+    "poll_error": null,
+    "send_error": null,
+    "api_error": null
+  },
+  "health_exit": 2,
+  "release": "/opt/crowdbastion/releases/review-20261030-cycle-npm-final",
+  "source_files": 56,
+  "source_hashes_verified": true,
+  "unchanged_runtime": {
+    "crowdsec.service": true,
+    "docker.service": true,
+    "crowdsec-1key-bot.service": true,
+    "crowdbastion-notify.service": true
+  },
+  "repeat_install": {
+    "exit": 0,
+    "processes_unchanged": true
+  },
+  "final_helper_reload_verified": true
+}

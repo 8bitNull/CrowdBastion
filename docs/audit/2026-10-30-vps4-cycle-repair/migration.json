@@ -1,0 +1,13 @@
+{
+  "membership": {
+    "active_decisions": 16180,
+    "expected_networks_over_15s": 16179,
+    "kernel_networks": 16179,
+    "missing": []
+  },
+  "rules": {
+    "iptables": "all original rules unchanged; all three entry points protected first",
+    "ip6tables": "all original rules unchanged; all three entry points protected first"
+  },
+  "awaiting_flow_and_fresh_ssh": true
+}

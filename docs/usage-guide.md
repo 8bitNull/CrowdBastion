@@ -32,6 +32,8 @@
 
 ### 防火墙后端与续封检查
 
+使用 `--firewall-check` 只读检查开机恢复任务、Docker 启动顺序和双栈链；`--firewall-maintenance` 提供启动修复与分阶段迁移。适用条件、回退及验收步骤见[防火墙维护](firewall-maintenance.md)。
+
 首次本地／远端 Firewall Bouncer 安装默认使用 iptables/ipset。系统的 iptables 可以使用 nf_tables 兼容层，这与 Bouncer 的 `mode: nftables` 是不同实现。已确认 0.0.36、0.0.38 的 nftables 后端存在续封缺陷：LAPI 决策仍有效时，内核封禁条目可能在原截止时间消失，见[第二台 VPS 修复实测](audit/2026-10-19-second-vps-remediation.md)。其他 nftables 版本只标为尚未验证，不推断修复状态。
 
 脚本检查基础配置和 `.local` 合并后的后端，诊断优先识别运行中 Bouncer 的二进制；修改前还检查 systemd 有效 `ExecStart` 指向的磁盘程序，避免重启后启用已知缺陷版本。任一程序命中已确认缺陷时，核心重装、Bouncer 安装／配置和连接修复会在相关修改前停止；无法确认的版本明确标为尚未验证，已有后端不会自动迁移。需要迁移的节点先备份配置、规则及有效决策，准备控制台和管理员来源保护，再安排切换和验收。
@@ -153,6 +155,8 @@ sudo cscli metrics
 此入口保留已有 Web/AppSec 组件，重复安装不会自动把完整版“瘦身”。纯中转缺少系统采集时重新执行 `--install-relay`；`--reset-baseline` 是网站基础集合入口，不适合作为中转精简重置。
 
 在 `--relay-path` 中声明节点角色、用户态/NAT/bridge 路径和 TCP/UDP 入口端口。宿主机 gost/realm 通常检查 INPUT，内核 DNAT/路由转发检查 FORWARD，Docker bridge 需核对实际钩子和跳转顺序。多跳入口看到的来源可能只有上游节点；封禁该来源会影响其所有用户。详见 [中转模式](relay-mode.md)。
+
+检查开机防火墙恢复任务是否与 Docker、Firewall Bouncer 冲突：`iptables-restore` / `ip6tables-restore` 默认会清空所恢复表中的现有规则。旧快照若由无启动顺序约束的 `@reboot` 任务加载，可能删除刚建立的 CrowdSec 和 Docker 跳转。应备份并核对快照与任务归属，再停用过期任务，或将必要的基础规则恢复安排在动态防火墙服务之前；不要保存动态封禁集的引用后直接在开机时恢复。修复示例与隔离复现见 [VPS 追加复审](audit/2026-10-30-vps3-rereview.md)。
 
 ## 远端 Bouncer-only 节点
 

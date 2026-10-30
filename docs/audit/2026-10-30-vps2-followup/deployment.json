@@ -1,0 +1,13 @@
+{
+  "release": "/opt/crowdbastion/releases/review-20261030-followup",
+  "previous_release": "/opt/crowdbastion/releases/review-20261030-cycle-npm-final",
+  "source_hashes": {
+    "crowdbastion_health.py": "54eb53a6861be0bafc10939195c22afd2f0097a3ce2b395ea5bb5520862140dd",
+    "health_summary.sh": "64f8f493740f2e35925827ec91996dfc8fa308f244d0c1aea7a515075866913b"
+  },
+  "health_exit": 2,
+  "role_preferences_unchanged": true,
+  "website_and_relay_scope_confirmed": true,
+  "both_verification_guides_present": true,
+  "source_hashes_verified": true
+}

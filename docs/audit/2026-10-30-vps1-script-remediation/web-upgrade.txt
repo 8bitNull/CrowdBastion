@@ -1,0 +1,13 @@
+1. 为 Docker 网站安装拦截组件（1Panel/NPM/Lua Nginx）
+2. 为宿主机 Nginx 安装拦截组件
+3. 为宿主机 OpenResty 安装拦截组件
+0. 返回
+de798120ff54 nginx:alpine openvscode-gateway
+a29a098ef950 1panel/openresty:1.31.1.1-2-4-noble openresty
+crowdsec
+[INFO] 修改前备份: /var/backups/crowdsec-1key/change.Z2cVktbj
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+2026/10/30 08:50:33 [notice] 386#386: signal process started
+[SUCCESS] 已更新受管理 Web Bouncer：真实拒绝记录、AppSec 403 与 LAPI 故障策略支持；已有策略与账号保留。
+[INFO] 已有本工具 Web Bouncer，复用原账号；可用接入已有 Docker Web Bouncer 恢复 AppSec 地址。

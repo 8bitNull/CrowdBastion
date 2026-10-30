@@ -1,0 +1,8 @@
+{
+  "persistent_include": "/home/docker/npm/data/nginx/custom/root_top.conf",
+  "log": "/home/docker/npm/data/logs/crowdbastion_reload_error.log",
+  "sha256": "207d375f7456eabc1f2312be2b4625bfe1b04b808494b48458eaa648065c34f2",
+  "bootstrap_stable_workers": true,
+  "subsequent_reload_verified": true,
+  "existing_logrotate_matches": true
+}

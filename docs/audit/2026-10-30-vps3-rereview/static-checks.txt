@@ -1,0 +1,8 @@
+Python AST: 132 files passed
+Bash syntax: 17 scripts passed
+ShellCheck warning/error: passed
+ShellCheck - shell script analysis tool
+version: 0.9.0
+license: GNU General Public License, version 3
+website: https://www.shellcheck.net
+Exclusions: SC1091,SC2034,SC2317,SC2329,SC2120,SC2119 (source/dynamic variables and established callback conventions)

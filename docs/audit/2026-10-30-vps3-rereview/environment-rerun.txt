@@ -1,0 +1,8 @@
+test_relay_unrelated_journal_source_does_not_hide_missing_ssh (test_relay_mode.RelayMode.test_relay_unrelated_journal_source_does_not_hide_missing_ssh) ... ok
+test_relay_uses_journald_when_auth_files_absent (test_relay_mode.RelayMode.test_relay_uses_journald_when_auth_files_absent) ... ok
+test_ordinary_distro_unit_does_not_block_normal_local_relay_install (test_remote_bouncer.RemoteWorkflow.test_ordinary_distro_unit_does_not_block_normal_local_relay_install) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 3.582s
+
+OK

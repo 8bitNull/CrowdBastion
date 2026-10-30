@@ -55,6 +55,8 @@ bash crowdbastion.sh --help
 | `--update-hub` | 带锁、快照、校验及失败回滚的 Hub 更新 |
 | `--check-logs` | 只读检查新增/漏采日志和重复采集 |
 | `--clean-redundant` | 查看节点并选择注销，保留受保护账号 |
+| `--firewall-check` | 只读检查开机规则覆盖、Docker 顺序和双栈链 |
+| `--firewall-maintenance` | 启动修复、带回退定时器的后端迁移与本机流量验收；见[防火墙维护](firewall-maintenance.md) |
 | `--repair-bouncer` | 修复 Firewall Bouncer 连接配置 |
 | `--self-report-status` | 只读核对已知自身地址的告警和决策 |
 | `--admin-allowlist` | 明确管理中央管理员 AllowList（旁路 AppSec） |

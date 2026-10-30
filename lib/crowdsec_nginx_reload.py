@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read bounded, fresh master error-log evidence of a completed HUP cycle."""
 import argparse
+import fnmatch
 import hashlib
 import json
 import os
@@ -50,18 +51,45 @@ def unambiguous_master(master, metadata, proc):
     return logged_pid
 
 
-def locate(master, effective, proc=Path('/proc')):
-    # -T concatenates files without preserving include scope. Only direct
-    # main-file directives are unambiguous here; included error_log directives
-    # must never be confused with the master's error_log.
-    sections = re.split(r'(?m)^# configuration file [^\n]+:\n', effective)
-    if len(sections) < 2:
+def main_error_logs(effective):
+    # Follow only absolute includes reached at main scope. The -T dump is a
+    # list of files, not an expanded configuration: an HTTP/server log must
+    # never be mistaken for the master's log.
+    sections = re.split(r'(?m)^# configuration file ([^\n]+):\n', effective)
+    if len(sections) < 3:
         raise ValueError('Main configuration unavailable')
+    files = dict(zip(sections[1::2], sections[2::2]))
+    if len(files) != len(sections[1::2]):
+        raise ValueError('Ambiguous configuration dump')
+    visited = set()
+
+    def walk(name, parents):
+        if name in parents or len(parents) >= 16 or len(visited) >= 256:
+            raise ValueError('Configuration include traversal limit')
+        if name in visited:
+            return
+        visited.add(name)
+        for context, words, block in directives(files[name]):
+            if context or block or not words:
+                continue
+            if words[0] == 'error_log':
+                yield words
+            elif len(words) == 2 and words[0] == 'include' and words[1].startswith('/'):
+                pattern = words[1].split('/')
+                for child in files:
+                    parts = child.split('/')
+                    if len(parts) == len(pattern) and all(
+                            (not a.startswith('.') or b.startswith('.')) and fnmatch.fnmatchcase(a, b)
+                            for a, b in zip(parts, pattern)):
+                        yield from walk(child, parents | {name})
+
+    return list(walk(sections[1], set()))
+
+
+def locate(master, effective, proc=Path('/proc')):
     root = proc/str(master)
     candidates = []
-    for context, words, block in directives(sections[1]):
-        if context or block or not words or words[0] != 'error_log':
-            continue
+    for words in main_error_logs(effective):
         if len(words) != 3 or words[2] not in ('notice', 'info', 'debug'):
             continue
         if words[1] == 'stderr':

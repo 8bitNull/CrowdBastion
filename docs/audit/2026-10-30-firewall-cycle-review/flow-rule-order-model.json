@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "scope": "in-memory iptables ordering model, all system commands mocked",
+  "rules": {
+    "iptables": {
+      "INPUT": [
+        "-j CROWDSEC_CHAIN",
+        "-i cbfw-in -s 198.18.233.0/24 -d 198.18.233.1 -p udp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -s 198.18.233.0/24 -d 198.18.233.1 -p tcp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT"
+      ],
+      "DOCKER-USER": [
+        "-j CROWDSEC_CHAIN",
+        "-i cbfw-out -o cbfw-in -s 198.18.234.2 -d 198.18.233.0/24 -p udp --sport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -o cbfw-out -s 198.18.233.0/24 -d 198.18.234.2 -p udp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-out -o cbfw-in -s 198.18.234.2 -d 198.18.233.0/24 -p tcp --sport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -o cbfw-out -s 198.18.233.0/24 -d 198.18.234.2 -p tcp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-j RETURN"
+      ]
+    },
+    "ip6tables": {
+      "INPUT": [
+        "-j CROWDSEC_CHAIN",
+        "-i cbfw-in -s fd42:cb:1::/64 -d fd42:cb:1::1 -p udp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -s fd42:cb:1::/64 -d fd42:cb:1::1 -p tcp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT"
+      ],
+      "DOCKER-USER": [
+        "-j CROWDSEC_CHAIN",
+        "-i cbfw-out -o cbfw-in -s fd42:cb:2::2 -d fd42:cb:1::/64 -p udp --sport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -o cbfw-out -s fd42:cb:1::/64 -d fd42:cb:2::2 -p udp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-out -o cbfw-in -s fd42:cb:2::2 -d fd42:cb:1::/64 -p tcp --sport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-i cbfw-in -o cbfw-out -s fd42:cb:1::/64 -d fd42:cb:2::2 -p tcp --dport 18080 -m comment --comment crowdbastion-flow -j ACCEPT",
+        "-j RETURN"
+      ]
+    }
+  }
+}

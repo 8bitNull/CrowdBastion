@@ -1,0 +1,9 @@
+2d51548018b4b3440c93d58afc54411b77d7a0bedb6ebbedeccf5b0889f83926  docs/audit/2026-10-30-vps2-followup/deployment.json
+b0166ed2ce373cd0787ef87bfcbbdaa87a11121a23482ea5bb4634b8450fcdde  docs/audit/2026-10-30-vps2-followup/health-after.txt
+5e95449b31f5a7da0063dd1a69953eda6e43ce4c4b5c297cb8ccbae2fc939504  docs/audit/2026-10-30-vps2-followup/health-tests.txt
+889701de86fa6b69606ea3431d1866b4f1471e97f3c26724c0004ca2b7b0fc10  docs/audit/2026-10-30-vps2-followup/verification-final.json
+e20fdaa7810806e431a1f503c86970d3f124c568a34b2f6cb525c9149336989b  docs/audit/2026-10-30-vps2-followup/verification-help.txt
+cdb7c5dd288aef236e2c0c0c226e9f86efd3e2320ae0ee311128b8885e506b79  docs/audit/2026-10-30-vps2-followup.md
+54eb53a6861be0bafc10939195c22afd2f0097a3ce2b395ea5bb5520862140dd  lib/crowdbastion_health.py
+64f8f493740f2e35925827ec91996dfc8fa308f244d0c1aea7a515075866913b  lib/health_summary.sh
+f670dc271edf56c6581f6eaa095755bbb9644758c23b366314cc41744b0150ce  tests/test_health_summary.py

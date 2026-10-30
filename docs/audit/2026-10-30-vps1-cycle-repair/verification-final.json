@@ -1,0 +1,65 @@
+{
+  "core_config": {
+    "exit": 0,
+    "output": ""
+  },
+  "nginx_config": {
+    "exit": 0,
+    "output": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful"
+  },
+  "services": {
+    "exit": 0,
+    "output": "active\nactive\nactive"
+  },
+  "timestamps": {
+    "exit": 0,
+    "output": "ExecMainStartTimestamp=Thu 2026-10-29 05:12:08 CST\n\nExecMainStartTimestamp=Sat 2026-10-24 13:14:52 CST"
+  },
+  "containers": {
+    "exit": 0,
+    "output": "rc-container-vps20261028-frontend-1\tUp 3 hours (healthy)\ncrowdsec-web-ui\tUp 3 hours (healthy)\nrc-container-vps20261028-backend-1\tUp 4 hours (healthy)\ncodeg-server\tUp 22 hours (healthy)\nopenvscode-gateway\tUp 26 hours (healthy)\nrc-container-vps20261028-mysql-1\tUp 37 hours (healthy)\nHermes-Agent\tUp 5 days\ncloudflared\tUp 5 days\nopenvscode-server\tUp 5 days (healthy)\nwatchtower\tUp 5 days (healthy)\nopenresty\tUp 5 days"
+  },
+  "membership": {
+    "active_decisions": 17380,
+    "expected_networks_over_15s": 17379,
+    "kernel_networks": 17379,
+    "missing": []
+  },
+  "rules": {
+    "iptables": "all original rules unchanged; all three entry points protected first",
+    "ip6tables": "all original rules unchanged; all three entry points protected first"
+  },
+  "managed_resources_restored": true,
+  "bouncer_config_sha256": "1da18507346affdf09307300046785e1b772cddda7ffd61cf73d658f5e176383",
+  "firewall_base_unchanged": true,
+  "temporary_decisions_absent": true,
+  "cleanup": {
+    "namespaces": true,
+    "interfaces": true,
+    "container": true,
+    "hold_table": true,
+    "rules": true,
+    "timers": true
+  },
+  "origin_codeg-x.688600.xyz": {
+    "exit": 0,
+    "output": "200"
+  },
+  "origin_test.688600.xyz": {
+    "exit": 0,
+    "output": "200"
+  },
+  "origin_waf.860525.xyz": {
+    "exit": 0,
+    "output": "200"
+  },
+  "health_exit": 2,
+  "release": "/usr/local/lib/crowdsec-1key/release-review-20261030-cycle4-d75639c0",
+  "source_hashes": {
+    "real_ip.sh": "4734bff20a52be82858f30843550c90c31c4b65f597fd73b6e326344dc2a3c69",
+    "nginx_reload.sh": "d75639c08c5f311e5419cbc02c09b99c26e9743522ccb8221b8567559df910b9"
+  },
+  "release_sources_match": true,
+  "bouncer_config_preserved": true,
+  "test_listeners_absent": true
+}

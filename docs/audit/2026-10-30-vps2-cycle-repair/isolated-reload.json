@@ -1,0 +1,17 @@
+{
+  "accepted": {
+    "exit": 0,
+    "seconds": 1.218
+  },
+  "syntax_with_rejected_init": 0,
+  "init_rejected": {
+    "exit": 1,
+    "seconds": 10.25
+  },
+  "old_workers_preserved": true,
+  "restored": {
+    "exit": 0,
+    "seconds": 1.284
+  },
+  "passed": true
+}

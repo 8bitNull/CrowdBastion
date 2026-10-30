@@ -30,7 +30,7 @@ health_probe() {
 
 health_verification_help() {
     printf '\n如何验证实际拦截\n'
-    if node_has_role web || [[ -z "$NODE_ROLES" ]]; then
+    if node_has_role web || [[ -z "$NODE_ROLES" ]] || node_web_deployed; then
         printf '从另一台设备访问你管理的网站；结合访问日志、真实来源 IP 和处理指标核对网站接入。\nAppSec 验证入口：--verify-appsec；执行前会说明请求并要求确认。\n'
     fi
     if node_has_role relay || node_has_role remote || node_has_role node; then

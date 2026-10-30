@@ -1,0 +1,120 @@
+{
+  "source_files": 56,
+  "source_matches_repository": true,
+  "core_config": {
+    "exit": 0,
+    "output": ""
+  },
+  "nginx_config": {
+    "exit": 0,
+    "output": "nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok\nnginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful\n"
+  },
+  "services": {
+    "exit": 0,
+    "output": "active\nactive\nactive\n"
+  },
+  "services_not_restarted": true,
+  "service_runtime": "MainPID=2978854\nNRestarts=2\nExecMainStartTimestamp=Sun 2026-10-25 10:21:14 CST\nId=crowdsec.service\n\nMainPID=1946\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-20 00:09:43 CST\nId=crowdsec-firewall-bouncer.service\n\nMainPID=709\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-10-20 00:09:34 CST\nId=docker.service\n",
+  "containers": [
+    {
+      "Names": "crowdsec-web-ui",
+      "Image": "ghcr.io/theduffman85/crowdsec-web-ui:latest",
+      "State": "running",
+      "Status": "Up 5 hours (healthy)",
+      "HealthStatus": "healthy"
+    },
+    {
+      "Names": "zhishangsheng-heartbeat",
+      "Image": "curlimages/curl:latest",
+      "State": "running",
+      "Status": "Up 33 hours",
+      "HealthStatus": "none"
+    },
+    {
+      "Names": "dujiao-next",
+      "Image": "dujiaonext/dujiao-next:latest",
+      "State": "running",
+      "Status": "Up 42 hours (healthy)",
+      "HealthStatus": "healthy"
+    },
+    {
+      "Names": "php8512",
+      "Image": "1panel-php-fpm:8.5.12",
+      "State": "running",
+      "Status": "Up 7 days",
+      "HealthStatus": "none"
+    },
+    {
+      "Names": "redis",
+      "Image": "redis:8.10.2",
+      "State": "running",
+      "Status": "Up 7 days",
+      "HealthStatus": "none"
+    },
+    {
+      "Names": "zhishangsheng-app",
+      "Image": "zhishangsheng:latest",
+      "State": "running",
+      "Status": "Up 8 days (healthy)",
+      "HealthStatus": "healthy"
+    },
+    {
+      "Names": "mysql",
+      "Image": "mysql:8.4.11",
+      "State": "running",
+      "Status": "Up 10 days",
+      "HealthStatus": "none"
+    },
+    {
+      "Names": "watchtower",
+      "Image": "containrrr/watchtower",
+      "State": "running",
+      "Status": "Up 10 days (healthy)",
+      "HealthStatus": "healthy"
+    },
+    {
+      "Names": "openresty",
+      "Image": "1panel/openresty:1.31.1.1-2-4-noble",
+      "State": "running",
+      "Status": "Up 10 days",
+      "HealthStatus": "none"
+    }
+  ],
+  "membership": {
+    "active_decisions": 16502,
+    "expected_networks_over_15s": 16478,
+    "kernel_networks": 16478,
+    "missing": []
+  },
+  "live_rules_unchanged_and_paths_present": true,
+  "credentials_and_policy_preserved": true,
+  "managed_assets_and_hooks_valid": true,
+  "isolated_reload": {
+    "normal_reload_confirmed": true,
+    "rejection_seconds": 10.309,
+    "config_test_passed_but_live_rejection_detected": true,
+    "recovered_reload_confirmed": true,
+    "container_removed": true
+  },
+  "websites": {
+    "aomway.com": {
+      "loopback_origin_status": "200",
+      "public_tls_exit": 0,
+      "public_https_status": "200"
+    },
+    "shop.node2api.com": {
+      "loopback_origin_status": "200",
+      "public_tls_exit": 0,
+      "public_https_status": "200"
+    },
+    "www.zhishangsheng.com": {
+      "loopback_origin_status": "200",
+      "public_tls_exit": 0,
+      "public_https_status": "200"
+    }
+  },
+  "health_exit": 2,
+  "obsolete_jobs_inactive": true,
+  "source_still_matches": true,
+  "production_services_still_not_restarted": true
+}

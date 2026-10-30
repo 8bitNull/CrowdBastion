@@ -1,0 +1,4 @@
+nginx: the configuration file /usr/local/openresty/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /usr/local/openresty/nginx/conf/nginx.conf test is successful
+2026/10/30 02:56:58 [notice] 46#46: signal process started
+[ERROR] 10 秒内未同时确认稳定的新 Nginx workers 及 master 接受重载的记录，重载未被证实。

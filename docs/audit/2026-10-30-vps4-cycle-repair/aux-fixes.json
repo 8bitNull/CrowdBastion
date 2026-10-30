@@ -1,0 +1,10 @@
+{
+  "old_firewall_restore_disabled": true,
+  "other_cron_entries_preserved": true,
+  "conflicting_proxy_stopped": true,
+  "conflicting_proxy_restart_disabled": true,
+  "compose_requires_explicit_disabled_profile": true,
+  "healthy_proxy_not_restarted": true,
+  "proxy_port_51080_preserved": true,
+  "credentials_and_command_preserved": true
+}

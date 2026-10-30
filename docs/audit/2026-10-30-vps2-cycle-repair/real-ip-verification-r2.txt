@@ -1,0 +1,19 @@
+e56b5ac9c8ed jc21/nginx-proxy-manager:latest npm
+1. 从当前主机发送一次正常页面请求
+2. 从外部设备访问生成的标记 URL，随后按回车核验
+[INFO] 修改前备份: /var/backups/crowdsec-1key/change.VYBx3zD5
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+[INFO] 正常请求核验 URL：https://32byte.cn/?crowdsec_ip_check=994e4d2907fcbfc5bc53e72e
+连接对端：179.255.121.95
+CF-Connecting-IP：缺失
+X-Forwarded-For：缺失
+访问日志 IP：179.255.121.95；Bouncer IP：179.255.121.95；预期 IP：179.255.121.95
+[SUCCESS] 同一正常请求的访问日志和 Bouncer IP 与预期来源一致，临时诊断代码即将恢复。
+[WARN] 已恢复本次修改前的配置。
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful

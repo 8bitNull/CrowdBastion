@@ -1,0 +1,6 @@
+{
+  "release": "/opt/crowdbastion/releases/review-20261030-cycle",
+  "root": "/root/crowdsec-1key",
+  "old_root": "/root/crowdsec-1key.before-20261030-cycle",
+  "source_files": 56
+}
