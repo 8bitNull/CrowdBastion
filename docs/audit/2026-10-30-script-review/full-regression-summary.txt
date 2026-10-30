@@ -1,0 +1,8 @@
+Ran 1135 tests in 433.979s
+OK (skipped=44)
+
+18: Lua-enabled Nginx required
+16: set CROWDSEC_TEST_RELEASE for official plugin checks
+1: optional official gost binary
+5: set CROWDSEC_TEST_RELEASE for official receipt checks
+4: pycdlib required for media validation

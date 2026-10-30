@@ -123,7 +123,7 @@ sudo bash crowdbastion.sh --relay-bouncer-status
 sudo bash crowdbastion.sh --remove-relay-bouncer
 ```
 
-URL 和密钥交互输入，密钥隐藏，不支持密钥命令行参数。URL 不允许用户信息、查询、片段或重定向。HTTPS 使用系统 CA 校验；HTTP 只接受字面环回、RFC1918 和 IPv6 ULA 地址，不接受公网地址或域名（含 `.local` 域名）。建议使用 WireGuard 私网或 TLS。认证预检访问真实 `/v1/decisions/stream?startup=true`，检查 HTTP 200 和 JSON 决策流结构；整个 helper 操作限制 15 秒。超时、错误密钥、TLS 或连接失败均不替换原配置。
+URL 和密钥交互输入，密钥隐藏，不支持密钥命令行参数。URL 不允许用户信息、查询、片段或重定向。HTTPS 使用系统 CA 校验；HTTP 只接受字面环回、RFC1918 和 IPv6 ULA 地址，不接受公网地址或域名（含 `.local` 域名）。建议使用 WireGuard 私网或 TLS。认证预检使用带密钥的 `HEAD /v1/decisions/stream`，检查 HTTP 200 和响应类型；不下载全量决策，也不推进正在运行的 Bouncer 的决策游标。服务不支持 HEAD、返回 HTML 登录页或重定向时拒绝配置，不回退到 GET。整个 helper 操作限制 15 秒。超时、错误密钥、TLS 或连接失败均不替换原配置。
 
 已有官方基础 YAML 保留；本工具仅写入 root-only `crowdsec-firewall-bouncer.yaml.local` 与无密钥 SHA256 托管标记。已有非托管 `.local`，或托管文件被外部修改，均拒绝接管/移除。覆盖配置指定 INPUT/FORWARD 和 nftables input/forward hooks，明确启用 TLS 校验和 API-key 认证；不会自动停止、卸载或配置已安装的 CrowdSec 核心，不注册中心账号、不修改其他 Bouncer。
 

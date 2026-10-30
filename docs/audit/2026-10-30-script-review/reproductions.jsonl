@@ -1,0 +1,6 @@
+{"case": "notify_core_validation_rollback", "exit": 1, "unit_exists": false, "still_active": true, "enabled_link": true, "commands": "systemctl show --property=LoadState --property=FragmentPath crowdbastion-notify.service\nsystemctl daemon-reload\nsystemctl enable crowdbastion-notify.service\nsystemctl restart crowdbastion-notify.service\nsystemctl daemon-reload\n"}
+{"case": "notify_sigterm_during_enable", "exit": 143, "route_restored": false, "webhook_route": true, "unit_exists": false}
+{"case": "telegram_changes_observation_guard", "semantic_decisions": [], "check_managed": "observation_guard_changed", "disable": "observation_guard_changed"}
+{"case": "remote_large_valid_stream", "decisions": 10000, "bytes": 1468914, "result": "远端认证预检失败（认证、TLS 或连接错误），原配置未改变。"}
+{"case": "native_remove_reload_not_accepted", "exit": 0, "claims_success": true, "reload_rejected": true, "account_deleted": true, "assets_exist": false, "checked_workers": false}
+{"case": "purge_leaves_v2bx_services", "exit": 0, "config_exists": false, "units_exist": [true, true], "v2bx_stop_called": false, "v2bx_disable_called": false}

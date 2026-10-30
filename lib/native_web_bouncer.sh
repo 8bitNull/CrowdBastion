@@ -20,8 +20,8 @@ select_native_container() {
 }
 
 upgrade_native_execution() (
-    local name=$1 mounts=$2 entry=$3 assets target updated effective committed=false changed=false
-    assets=$(web_tool get "$entry" host_assets) || return 1
+    local name=$1 mounts=$2 entry=$3 upgrade_assets target updated effective committed=false changed=false
+    upgrade_assets=$(web_tool get "$entry" host_assets) || return 1
     target=$(web_tool get "$entry" host_target) || return 1
     effective=$(mktemp) || return 1
     # shellcheck disable=SC2329 # invoked by EXIT trap
@@ -42,9 +42,9 @@ upgrade_native_execution() (
     trap execution_upgrade_exit EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
-    begin_config_change "$target" "$WEB_INSTALLS" "$assets/target.conf" "$assets/log.lua" \
-        "$assets/lib/crowdsec_1key/crowdsec.lua" "$assets/lib/crowdsec_1key/execution.lua" \
-        "$assets/lib/crowdsec_1key/plugins/crowdsec/config.lua" || return 1
+    begin_config_change "$target" "$WEB_INSTALLS" "$upgrade_assets/target.conf" "$upgrade_assets/log.lua" \
+        "$upgrade_assets/lib/crowdsec_1key/crowdsec.lua" "$upgrade_assets/lib/crowdsec_1key/execution.lua" \
+        "$upgrade_assets/lib/crowdsec_1key/plugins/crowdsec/config.lua" || return 1
     changed=true
     updated=$(web_tool upgrade-execution "$WEB_INSTALLS" "$name" "$mounts") || return 1
     if [[ "$updated" == updated ]]; then
@@ -74,7 +74,7 @@ install_docker_web_bouncer() (
         if [[ "$committed" != true ]]; then
             if [[ "$changed" == true ]]; then
                 if restore_config_change; then
-                    if ! docker exec "$NATIVE_ID" nginx -t || ! docker exec "$NATIVE_ID" nginx -s reload; then
+                    if ! nginx_reload_verified docker "$NATIVE_ID"; then
                         log_warn '恢复后重载失败，保留资源和账号；请恢复容器运行后执行 --remove-web-bouncer。'
                         web_tool recovery "$work/plan" "$WEB_INSTALLS" "$NATIVE_NAME" "$account" || log_err "恢复记录失败，需人工保留并核对资源 ${assets}、账号 ${account}。"
                         registered=false
@@ -164,7 +164,7 @@ install_docker_web_bouncer() (
     yaml_tool link-docker-bouncer "$config" "$APPSEC_DOCKER_LINKS" "$NATIVE_ID" "${remote_assets}/bouncer.conf" "$NATIVE_NAME" "$appsec_url" "${transport_args[@]}" || return 1
     yaml_tool web-bouncer "$config" "$appsec_url" || return 1
     chmod 600 "$config" || return 1
-    docker exec "$NATIVE_ID" nginx -t && docker exec "$NATIVE_ID" nginx -s reload || return 1
+    nginx_reload_verified docker "$NATIVE_ID" || return 1
     committed=true
     log_succ 'Web Bouncer 已首次安装并重载；请通过网站验证实际请求、原 WAF 与 AppSec 指标。'
 )
@@ -184,8 +184,9 @@ remove_docker_web_bouncer() (
         local result=$?
         trap - EXIT INT TERM
         if [[ "$changed" == true && "$committed" != true ]]; then
-            restore_config_change || log_err '回滚失败，请人工恢复网站配置。'
-            if ! docker exec "$selected" nginx -t || ! docker exec "$selected" nginx -s reload; then log_warn '回滚后重载失败。'; fi
+            if ! restore_config_change || ! nginx_reload_verified docker "$selected"; then
+                log_err '回滚配置或重载失败，请用修改前备份人工恢复网站配置。'
+            fi
         fi
         rm -rf -- "$work"
         exit "$result"
@@ -214,8 +215,9 @@ remove_docker_web_bouncer() (
         web_tool unlink-record "$APPSEC_DOCKER_LINKS" "${assets}/bouncer.conf" || return 1
         # Record pending cleanup before reload; rollback restores this state on failure.
         web_tool pending "$WEB_INSTALLS" "$selected" || return 1
-        docker exec "$selected" nginx -t && docker exec "$selected" nginx -s reload || return 1
     fi
+    # A pending record can survive a crash before the master accepted the reload.
+    nginx_reload_verified docker "$selected" || return 1
     committed=true
     if ! cscli bouncers delete "$account" >/dev/null 2>&1; then
         # A previous cleanup may already have revoked the account before failing.

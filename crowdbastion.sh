@@ -183,6 +183,7 @@ begin_config_change() {
     done
     log_info "修改前备份: ${backup}"
     if [[ -n "$HUB_TX_BACKUP" ]]; then HUB_TX_CONFIG=true; fi
+    # shellcheck disable=SC2031 # dynamically scoped by the caller, not exported from a subshell
     if [[ "$CORE_CONFIG_TRACKING" == true ]]; then CORE_CONFIG_PENDING=true; fi
 }
 
@@ -931,7 +932,22 @@ link_docker_appsec() (
     network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$selected") || return 1
     local work appsec_url='http://127.0.0.1:7422' transport_args=()
     work=$(mktemp -d) || return 1
-    trap 'rm -rf -- "$work"' EXIT
+    local changed=false committed=false
+    docker_link_exit() {
+        local status=$?
+        trap - EXIT INT TERM
+        if [[ "$changed" == true && "$committed" != true ]]; then
+            if ! restore_config_change || ! nginx_reload_verified docker "$selected"; then
+                log_err '容器接入回滚未完成，修改前备份已保留，请核对网站运行配置。'
+            fi
+            [[ "$status" != 0 ]] || status=1
+        fi
+        rm -rf -- "$work"
+        exit "$status"
+    }
+    trap docker_link_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     if [[ "$network" != host ]]; then
         require_commands ss || return 1
         transport_current "$selected" "$name" "$work" || return 1
@@ -968,21 +984,16 @@ link_docker_appsec() (
     stage="$work/staged"
     if ! yaml_tool stage-web-bouncer "$file" "$appsec_url" "$stage"; then return 1; fi
     begin_config_change "$file" "$APPSEC_DOCKER_LINKS" || { rm -f -- "$stage"; return 1; }
-    if ! yaml_tool link-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$selected" "$target" "$name" "$appsec_url" "${transport_args[@]}" || ! cp -- "$stage" "$file" || ! docker exec "$selected" nginx -t; then
-        restore_config_change
-        if ! docker exec "$selected" nginx -t || ! docker exec "$selected" nginx -s reload; then
-            log_warn '恢复配置后容器重载失败，请检查容器运行状态。'
-        fi
-        rm -f -- "$stage"
-        return 1
+    changed=true
+    yaml_tool link-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$selected" "$target" "$name" "$appsec_url" "${transport_args[@]}" &&
+        cp -- "$stage" "$file" && docker exec "$selected" nginx -t || return 1
+    if ! config_change_needed; then
+        committed=true
+        log_info '容器接入配置未变化，跳过重载。'
+        return 0
     fi
-    if ! config_change_needed; then log_info '容器接入配置未变化，跳过重载。'; return 0; fi
-    if ! docker exec "$selected" nginx -s reload; then
-        restore_config_change || return 1
-        if ! docker exec "$selected" nginx -t || ! docker exec "$selected" nginx -s reload; then log_warn '恢复后容器重载失败。'; fi
-        return 1
-    fi
-    rm -f -- "$stage"
+    nginx_reload_verified docker "$selected" || return 1
+    committed=true
     log_succ '容器内已有 Web Bouncer 的 AppSec 地址已配置并重载；请验证实际网站请求和指标。'
 )
 
@@ -1131,32 +1142,36 @@ verify_appsec() {
 }
 
 rollback_appsec_runtime() {
+    APPSEC_FILES_RESTORED=false
     restore_config_change || return 1
-    local target mode=host
+    APPSEC_FILES_RESTORED=true
+    local target mode=host failed=false
     for target in "$@"; do
         if [[ "$target" == -- ]]; then
             mode=docker
         elif [[ "$mode" == host ]]; then
-            systemctl reload "$target" || log_warn "恢复配置后 ${target} 重载失败。"
-        elif ! docker exec "$target" nginx -t || ! docker exec "$target" nginx -s reload; then
+            nginx_reload_verified "$target" || { log_warn "恢复配置后 ${target} 重载失败。"; failed=true; }
+        elif ! nginx_reload_verified docker "$target"; then
             log_warn "恢复配置后容器 ${target} 重载失败。"
+            failed=true
         fi
     done
+    [[ "$failed" != true ]]
 }
 
-disable_appsec() {
+disable_appsec() (
     require_core && require_yaml || return 1
     APPSEC_FILE=$(yaml_tool appsec-file "$CS_DIR") || return 1
     if [[ ! -f "$APPSEC_FILE" ]]; then log_info '本工具未配置 AppSec，外部接入保留。'; return 0; fi
     confirm '停用本工具配置的 AppSec？外部数据源和规则集合保留。' || return 0
     local files=("$APPSEC_FILE" "$APPSEC_LINKS") file service
     local reloaded=()
-    local docker_links='' container target resolved mounts running stage
+    local docker_links='' container web_target resolved mounts running stage
     local docker_reloaded=()
     if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then
         require_commands docker || return 1
         docker_links=$(yaml_tool docker-appsec-links "$APPSEC_DOCKER_LINKS") || return 1
-        while IFS=$'\t' read -r container file target; do
+        while IFS=$'\t' read -r container file web_target; do
             [[ -z "$container" ]] && continue
             running=$(docker inspect --format '{{.State.Running}}' "$container") || return 1
             [[ "$running" == true ]] || { log_err '管理的 Web 容器未运行；请先恢复容器再停用接入。'; return 1; }
@@ -1169,10 +1184,10 @@ disable_appsec() {
                 log_err '原 bridge 接入网络已变化，未停用引擎。'; return 1
             fi
             mounts=$(docker inspect --format '{{json .Mounts}}' "$container") || return 1
-            resolved=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$target") || return 1
+            resolved=$(printf '%s' "$mounts" | yaml_tool docker-bouncer-path "$web_target") || return 1
             [[ "$resolved" == "$file" ]] || { log_err '容器配置挂载已变化，请先核对接入；未停用引擎。'; return 1; }
             yaml_tool docker-link-current "$file" "$APPSEC_DOCKER_LINKS" || return 1
-            appsec_guard_config "$file" "$container" "$target" || return 1
+            appsec_guard_config "$file" "$container" "$web_target" || return 1
             files+=("$file")
         done <<< "$docker_links"
         files+=("$APPSEC_DOCKER_LINKS")
@@ -1180,39 +1195,52 @@ disable_appsec() {
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
         if [[ -f "$file" && -f "$APPSEC_LINKS" ]] && yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then appsec_guard_config "$file" || return 1; files+=("$file"); fi
     done
+    local committed=false core_apply_started=false APPSEC_FILES_RESTORED=false
+    local CORE_CONFIG_TRACKING=false CORE_CONFIG_PENDING=false
     begin_config_change "${files[@]}" || return 1
+    appsec_disable_exit() {
+        local status=$?
+        trap - EXIT INT TERM
+        if [[ "$committed" != true ]]; then
+            rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}" ||
+                log_err 'AppSec 恢复未完成，修改前备份已保留，请检查网站与核心状态。'
+            if [[ "$core_apply_started" == true && "$APPSEC_FILES_RESTORED" == true ]]; then
+                if ! crowdsec -t || ! systemctl restart crowdsec || ! systemctl is-active --quiet crowdsec; then
+                    log_err '恢复后的 AppSec 核心加载失败，请检查修改前备份。'
+                fi
+            fi
+            [[ "$status" != 0 ]] || status=1
+        fi
+        [[ -z "$stage" ]] || rm -f -- "$stage"
+        exit "$status"
+    }
+    trap appsec_disable_exit EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
     for file in "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" "${CS_DIR}/bouncers/crowdsec-openresty-bouncer.conf"; do
         if [[ ! -f "$file" || ! -f "$APPSEC_LINKS" ]] || ! yaml_tool link-owned "$file" "$APPSEC_LINKS" >/dev/null 2>&1; then continue; fi
         if grep -Fxq 'APPSEC_URL=http://127.0.0.1:7422' "$file"; then
-            yaml_tool unlink-web-bouncer "$file" "$APPSEC_LINKS" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
             service=nginx
             [[ "$file" == *openresty* ]] && service=openresty
-            if ! "$service" -t || ! systemctl reload "$service"; then
-                rollback_appsec_runtime "${reloaded[@]}" "$service" -- "${docker_reloaded[@]}"
-                return 1
-            fi
             reloaded+=("$service")
+            yaml_tool unlink-web-bouncer "$file" "$APPSEC_LINKS" && nginx_reload_verified "$service" || return 1
         fi
     done
-    while IFS=$'\t' read -r container file target; do
+    while IFS=$'\t' read -r container file web_target; do
         [[ -z "$container" ]] && continue
-        stage=$(mktemp) || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
-        if ! yaml_tool restore-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$stage" || ! cp -- "$stage" "$file" || ! docker exec "$container" nginx -t || ! docker exec "$container" nginx -s reload; then
-            rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}" "$container"
-            rm -f -- "$stage"
-            return 1
-        fi
-        rm -f -- "$stage"
+        stage=$(mktemp) || return 1
         docker_reloaded+=("$container")
+        yaml_tool restore-docker-bouncer "$file" "$APPSEC_DOCKER_LINKS" "$stage" &&
+            cp -- "$stage" "$file" && nginx_reload_verified docker "$container" || return 1
+        rm -f -- "$stage"
     done <<< "$docker_links"
-    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then rm -f -- "$APPSEC_DOCKER_LINKS" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }; fi
-    rm -f "$APPSEC_FILE" || { rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"; return 1; }
-    if ! apply_core_config; then
-        rollback_appsec_runtime "${reloaded[@]}" -- "${docker_reloaded[@]}"
-        return 1
-    fi
+    if [[ -f "$APPSEC_DOCKER_LINKS" ]]; then rm -f -- "$APPSEC_DOCKER_LINKS" || return 1; fi
+    rm -f "$APPSEC_FILE" || return 1
+    core_apply_started=true
+    apply_core_config || return 1
+    committed=true
     log_succ '本工具 AppSec 数据源及记录过的 Web Bouncer 地址已恢复；未管理的容器或外部代理请同步停用请求转发。'
-}
+)
 
 manage_waf_rules() {
     require_core || return 1
@@ -1797,13 +1825,40 @@ enable_sqlite_wal() {
     log_succ '已通过 db_config.use_wal 启用 WAL；未执行 VACUUM 或临时 PRAGMA。'
 }
 
+# The observation ledger is deliberately retained. Require explicit service
+# shutdown before removing the core that consumes its published events.
+v2bx_purge_preflight() {
+    local service info line loaded active enabled
+    for service in crowdsec-v2bx-alerts crowdsec-v2bx-observer; do
+        loaded='' active='' enabled=''
+        info=$(systemctl show --property=LoadState --property=ActiveState --property=UnitFileState "$service.service") || {
+            log_err "无法读取 ${service} 状态，未卸载核心。"; return 1;
+        }
+        while IFS= read -r line; do
+            case "$line" in
+                LoadState=*) loaded=${line#LoadState=} ;;
+                ActiveState=*) active=${line#ActiveState=} ;;
+                UnitFileState=*) enabled=${line#UnitFileState=} ;;
+            esac
+        done <<< "$info"
+        if [[ "$loaded" == not-found && "$active" == inactive && -z "$enabled" &&
+            ! -e "/etc/systemd/system/$service.service" && ! -L "/etc/systemd/system/$service.service" ]]; then continue; fi
+        if [[ "$loaded" == loaded && ( "$active" == inactive || "$active" == failed ) && "$enabled" == disabled ]]; then continue; fi
+        log_err "${service} 尚未停用或状态无法确认；请先 --disable-v2bx-alerts，再 --disable-v2bx-observer，随后重试卸载。"
+        return 1
+    done
+}
+
 audit_crowdsec_residuals() {
     local found=false path service
     log_info '残留检查（只读，不自动清理）：'
-    for path in "$CS_DIR" /var/lib/crowdsec "$WEBUI_DIR" "$CRON_FILE" "$MAINTENANCE_RUNTIME"; do
+    for path in "$CS_DIR" /var/lib/crowdsec "$WEBUI_DIR" "$CRON_FILE" "$MAINTENANCE_RUNTIME" \
+        /usr/local/lib/crowdsec-v2bx-observer /var/lib/crowdsec-v2bx-observer \
+        /usr/local/lib/crowdsec-v2bx-alerts /var/lib/crowdsec-v2bx-alerts \
+        /etc/systemd/system/crowdsec-v2bx-observer.service /etc/systemd/system/crowdsec-v2bx-alerts.service; do
         if [[ -e "$path" ]]; then printf '存在: %s\n' "$path"; found=true; fi
     done
-    for service in crowdsec crowdsec-firewall-bouncer; do
+    for service in crowdsec crowdsec-firewall-bouncer crowdsec-v2bx-alerts crowdsec-v2bx-observer; do
         if systemctl is-active --quiet "$service" 2>/dev/null; then printf '服务活跃: %s\n' "$service"; found=true; fi
     done
     if command -v pgrep >/dev/null 2>&1; then
@@ -1858,6 +1913,7 @@ deep_purge_residuals() {
             return 1
         fi
     done
+    v2bx_purge_preflight || return 1
     local packages=() package package_status query_status
     case "$OS_ID" in
         debian|ubuntu)
