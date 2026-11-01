@@ -1,0 +1,38 @@
+{
+  "checked_at": 1793538114.4424193,
+  "container_configuration_and_started_at_preserved": true,
+  "package_versions_preserved": true,
+  "bouncer_and_docker_pids_preserved": true,
+  "all_business_and_admin_listeners_preserved": true,
+  "containers": [
+    {
+      "name": "npm",
+      "image": "jc21/nginx-proxy-manager:latest",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "OOMKilled": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-01T10:03:18.099717926Z"
+      },
+      "network": "host",
+      "restart_policy": {
+        "Name": "always",
+        "MaximumRetryCount": 0
+      },
+      "mounts": [
+        {
+          "source": "/home/docker/npm/data",
+          "destination": "/data",
+          "rw": true
+        },
+        {
+          "source": "/home/docker/npm/letsencrypt",
+          "destination": "/etc/letsencrypt",
+          "rw": true
+        }
+      ]
+    }
+  ]
+}

@@ -29,9 +29,15 @@ class Workflows(unittest.TestCase):
         self.source = self.base / "manager.sh"
         self.source.write_text(source)
         (self.base / "lib").mkdir()
+        (self.base / "proc").mkdir()
         for helper in (ROOT/'lib').glob('*'):
             if helper.is_file() and helper.suffix in ('.py', '.sh', '.lua'):
-                (self.base/'lib'/helper.name).write_text(helper.read_text())
+                helper_source = helper.read_text()
+                # Keep process discovery inside the fixture like config/systemd.
+                # Concurrent config-validation subprocesses belong to other tests.
+                if helper.name == 'crowdsec_bot_settings.py':
+                    helper_source = helper_source.replace("Path('/proc')", f"Path({str(self.base/'proc')!r})")
+                (self.base/'lib'/helper.name).write_text(helper_source)
         self.trace = self.base / "trace"
         self.trace.touch()
         self.config = self.base / "etc/crowdsec"
@@ -90,6 +96,10 @@ cscli() {
 crowdsec() { record crowdsec "$@"; return 0; }
 systemctl() {
  record systemctl "$@"
+ if [[ "$1" == is-enabled ]]; then
+  [[ "$*" == *--quiet* ]] || echo enabled
+  return 0
+ fi
  if [[ "$1" == show && "$*" == *crowdsec-v2bx-* ]]; then
   printf 'LoadState=not-found\nActiveState=inactive\nUnitFileState=\n'; return 0
  fi
@@ -719,7 +729,7 @@ finally:
         self.assertEqual((profile.read_bytes(), notification.read_bytes()), before)
 
     def test_core_install_failure_stops_before_starting_services(self):
-        p = self.run_shell('install_crowdsec_core', '203.0.113.2\n', 'apt-get() { record apt-get "$@"; return 1; }')
+        p = self.run_shell('install_crowdsec_core', '203.0.113.2\ny\n', 'apt-get() { record apt-get "$@"; return 1; }')
         self.assertNotEqual(p.returncode, 0)
         self.assertNotIn('systemctl enable', self.commands())
 
@@ -1159,7 +1169,7 @@ finally:
         self.assertEqual(doc['other'], 'keep-me')
 
     def test_core_success_writes_whitelist_and_starts_services(self):
-        p = self.run_shell('install_crowdsec_core', '203.0.113.2\n')
+        p = self.run_shell('install_crowdsec_core', '203.0.113.2\ny\n')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         whitelist = yaml.safe_load((self.config/'parsers/s02-enrich/99-admin-whitelist.yaml').read_text())
         self.assertIn('203.0.113.2', whitelist['whitelist']['ip'])

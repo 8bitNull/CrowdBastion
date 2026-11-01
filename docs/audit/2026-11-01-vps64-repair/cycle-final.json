@@ -1,0 +1,10 @@
+{
+  "coverage": {
+    "expected": 15000,
+    "kernel": 15000,
+    "missing": 0
+  },
+  "test_decisions_remaining": 0,
+  "namespaces": "",
+  "audit": 0
+}

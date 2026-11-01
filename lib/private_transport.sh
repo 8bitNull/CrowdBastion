@@ -70,6 +70,7 @@ configure_docker_endpoints() (
     [[ "$selected" == 0 ]] || return 1
     work=$(mktemp -d) || return 1
     trap 'rm -rf -- "$work"' EXIT
+    log_info '连通性 1/4：核对容器及 bridge 网关网络。'
     transport_inspect "$NATIVE_ID" "$work" || return 1
     log_info '仅登记已经准备好的私有 LAPI/AppSec；保持核心 loopback、容器镜像和网络配置。'
     log_info '端点需精确绑定当前容器连接的私有 bridge 网关；可使用自行管理的网关 TCP 转发。'
@@ -80,10 +81,13 @@ configure_docker_endpoints() (
     transport_tool plan "$work/inspection" "$work/networks" "$api_url" "$appsec_url" "$work/transport" || return 1
     api_url=$(web_tool get "$work/transport" api_url) || return 1
     appsec_url=$(web_tool get "$work/transport" appsec_url) || return 1
+    log_info '连通性 2/4：核对私有网关地址及宿主机精确监听。'
     ss -H -lnt > "$work/listeners" || return 1
     transport_tool listeners "$work/transport" "$work/listeners" || return 1
+    log_info '连通性 3/4：从容器连接私有 LAPI（预期未认证响应）。'
     code=$(docker exec "$NATIVE_ID" curl -sS --noproxy '*' --connect-timeout 3 --max-time 8 -o /dev/null -w '%{http_code}' "${api_url%/}/v1/decisions") || return 1
     [[ "$code" == 401 || "$code" == 403 ]] || { log_err '私有 LAPI 未返回预期的未认证响应。'; return 1; }
+    log_info '连通性 4/4：从容器连接私有 AppSec（此步骤不发送攻击样本）。'
     code=$(docker exec "$NATIVE_ID" curl -sS --noproxy '*' --connect-timeout 3 --max-time 8 -o /dev/null -w '%{http_code}' "${appsec_url%/}/") || return 1
     [[ "$code" =~ ^[234][0-9][0-9]$ ]] || { log_err '容器无法取得私有 AppSec HTTP 响应。'; return 1; }
     confirm '登记上述私有端点？此检查只证明连通性，实际 AppSec 防护仍需网站请求验证。' || return 0

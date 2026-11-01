@@ -1,0 +1,67 @@
+EEEEEE
+======================================================================
+ERROR: test_collector_reads_canonical_firewall_and_node_observations (test_telegram_alignment.SharedHealth.test_collector_reads_canonical_firewall_and_node_observations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 123, in test_collector_reads_canonical_firewall_and_node_observations
+    collector = crowdsec_bot_health.HealthCollector(payload['config_path'], manager_path=str(manager))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: HealthCollector.__init__() got an unexpected keyword argument 'manager_path'
+
+======================================================================
+ERROR: test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy (test_telegram_alignment.SharedHealth.test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy) (payload={'version': 99, 'checked_at': 1750000000.0, 'config_path': '/tmp/codeg-acp/8-367d5f44/tmp97zqbajb/config.yaml', 'checks': {'core': 'ok', 'firewall_paths': 'fault', 'traffic': 'pending'}, 'summary': {'verdict': '发现问题，需要处理', 'status': 1, 'confirmed': '本地检测服务运行', 'attention': '双栈防火墙链入口不完整', 'additional': 1, 'impact': '部分输入或转发流量可能绕过 IP 封禁。', 'action': 'repair_existing', 'action_label': '检查并选择已有部署修复', 'next': '使用 --repair-existing 或维护菜单 7，先检查范围再逐项确认修复。'}, 'scope': '本地中转'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 138, in test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy
+    result = crowdsec_bot_health.HealthCollector(str(self.base / 'config.yaml'), manager_path=str(manager)).collect()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: HealthCollector.__init__() got an unexpected keyword argument 'manager_path'
+
+======================================================================
+ERROR: test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy (test_telegram_alignment.SharedHealth.test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy) (payload={'version': 1, 'checked_at': 1750000000.0, 'config_path': '/different/config.yaml', 'checks': {'core': 'ok', 'firewall_paths': 'fault', 'traffic': 'pending'}, 'summary': {'verdict': '发现问题，需要处理', 'status': 1, 'confirmed': '本地检测服务运行', 'attention': '双栈防火墙链入口不完整', 'additional': 1, 'impact': '部分输入或转发流量可能绕过 IP 封禁。', 'action': 'repair_existing', 'action_label': '检查并选择已有部署修复', 'next': '使用 --repair-existing 或维护菜单 7，先检查范围再逐项确认修复。'}, 'scope': '本地中转'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 138, in test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy
+    result = crowdsec_bot_health.HealthCollector(str(self.base / 'config.yaml'), manager_path=str(manager)).collect()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: HealthCollector.__init__() got an unexpected keyword argument 'manager_path'
+
+======================================================================
+ERROR: test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy (test_telegram_alignment.SharedHealth.test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy) (payload={'version': 1, 'checked_at': 1750000000.0, 'config_path': '/tmp/codeg-acp/8-367d5f44/tmp97zqbajb/config.yaml', 'checks': {'core': 'arbitrary-private-output', 'firewall_paths': 'fault', 'traffic': 'pending'}, 'summary': {'verdict': '发现问题，需要处理', 'status': 1, 'confirmed': '本地检测服务运行', 'attention': '双栈防火墙链入口不完整', 'additional': 1, 'impact': '部分输入或转发流量可能绕过 IP 封禁。', 'action': 'repair_existing', 'action_label': '检查并选择已有部署修复', 'next': '使用 --repair-existing 或维护菜单 7，先检查范围再逐项确认修复。'}, 'scope': '本地中转'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 138, in test_invalid_or_mismatched_manager_report_cannot_fall_back_to_healthy
+    result = crowdsec_bot_health.HealthCollector(str(self.base / 'config.yaml'), manager_path=str(manager)).collect()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: HealthCollector.__init__() got an unexpected keyword argument 'manager_path'
+
+======================================================================
+ERROR: test_manager_timeout_returns_incomplete_without_exposing_output (test_telegram_alignment.SharedHealth.test_manager_timeout_returns_incomplete_without_exposing_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 148, in test_manager_timeout_returns_incomplete_without_exposing_output
+    crowdsec_bot_runtime.read_manager_report(str(manager), str(self.base / 'config.yaml'), timeout=0.1)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'crowdsec_bot_runtime' has no attribute 'read_manager_report'
+
+======================================================================
+ERROR: test_json_cli_uses_same_readonly_collection_without_leaking_details (test_telegram_alignment.CanonicalHealthCLI.test_json_cli_uses_same_readonly_collection_without_leaking_details)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 167, in test_json_cli_uses_same_readonly_collection_without_leaking_details
+    report = json.loads(result.stdout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.054s
+
+FAILED (errors=6)

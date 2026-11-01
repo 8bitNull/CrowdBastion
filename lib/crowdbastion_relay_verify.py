@@ -149,7 +149,7 @@ def single_ip(value, public=False):
         raise Incomplete('请输入单个可用 IP；测试与对照来源需使用实际公网 IP，不使用网段或示例地址。') from None
 
 
-def verify(root, remote=False, ask=None, snapshot=None, env=None):
+def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=None):
     ask = ask or input
     snapshot = snapshot or (lambda scope: read_snapshot(root, scope))
     env = os.environ if env is None else env
@@ -157,6 +157,14 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None):
     failures, pending = [], []
     ban_shown, recovered, interrupted = False, False, False
     reason = 'crowdbastion-verify-'+uuid.uuid4().hex
+    config_fingerprint = None
+    if record_path:
+        from crowdbastion_ux import tree_fingerprint
+        try:
+            config_fingerprint = tree_fingerprint(root)
+        except (OSError, ValueError):
+            print('提示：配置指纹无法读取，本次不保存历史验收记录。')
+            record_path = None
 
     def answer(label):
         try:
@@ -292,6 +300,13 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None):
         print('已确认：外部连接对照、来源入集与退出、对应封禁规则计数增加。')
         print('证据说明：外部连接结果由操作者确认；集合计数也可能包含其他流量。')
         print('下一步：如还有其他入口、协议或地址族，分别验证；静态健康检查仍保留实际拦截待验证。')
+    if record_path and scope:
+        from crowdbastion_ux import save_acceptance
+        try:
+            save_acceptance(record_path, root, scope, 130 if interrupted else code, fingerprint=config_fingerprint)
+            print('本次范围与结论已保存；历史记录不替代当前健康检查，24 小时后提示重验。')
+        except (OSError, ValueError):
+            print('提示：历史验收记录保存失败；本次结论仍以上方输出为准。')
     return 130 if interrupted else code
 
 
@@ -299,8 +314,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', default='/etc/crowdsec')
     parser.add_argument('--remote', action='store_true')
+    parser.add_argument('--record', help='private local acceptance record')
     options = parser.parse_args()
-    return verify(options.root, remote=options.remote)
+    return verify(options.root, remote=options.remote, record_path=options.record)
 
 
 if __name__ == '__main__':

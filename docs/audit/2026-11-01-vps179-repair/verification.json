@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-11-01T13:07:06.218442+00:00",
+  "source_files_match_final_local_suite": 167,
+  "syntax": {
+    "bash": 18,
+    "python": 148,
+    "archived_python": 21
+  },
+  "git_diff_check_exit": 0,
+  "local_links_valid": 78,
+  "private_evidence_modes": "directory 0700, files 0600",
+  "credential_pattern_scan_files": 55,
+  "historical_artifacts": {
+    "2026-11-01-vps179-readonly": {
+      "report_unchanged": true,
+      "evidence_files_unchanged": 16
+    },
+    "2026-11-01-vps179-review": {
+      "report_unchanged": true,
+      "evidence_files_unchanged": 18
+    }
+  },
+  "empty_failed_probe_outputs": [
+    "preflight-before.json",
+    "round4-final-integrity.json"
+  ],
+  "supporting_index_digest_refresh": "prior review report/evidence unchanged; old manifest archived before updating only supporting index hash"
+}

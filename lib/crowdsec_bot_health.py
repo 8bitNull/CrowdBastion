@@ -5,14 +5,16 @@ import subprocess
 import time
 
 from crowdbastion_health import acquisition_state, parse_acquisition_metrics, summarize
+from crowdsec_bot_runtime import read_manager_report
 from crowdbastion_node import load as load_roles
 
 
 class HealthCollector:
     """Collect fixed observations and reuse them for thirty monotonic seconds."""
 
-    def __init__(self, config_path: str, roles_path='/var/lib/crowdbastion/node-roles.json'):
+    def __init__(self, config_path: str, roles_path='/var/lib/crowdbastion/node-roles.json', manager_path=None):
         self.config_path = config_path
+        self.manager_path = manager_path
         self.roles_path = Path(roles_path)
         self._cached = None
         self._cached_at = None
@@ -100,6 +102,17 @@ class HealthCollector:
         now = time.monotonic()
         if self._cached is not None and now - self._cached_at < 30:
             return self._cached
+        if self.manager_path is not None:
+            try:
+                report = read_manager_report(self.manager_path, self.config_path)
+            except (OSError, ValueError, RuntimeError, subprocess.SubprocessError, UnicodeError, RecursionError):
+                checks = {'check': 'unknown', 'traffic': 'pending'}
+                report = {'checked_at': time.time(), 'checks': checks,
+                          'summary': summarize(list(checks.items()), 1, 'overall', ''),
+                          'scope': '主脚本完整检查未完成；请在终端运行 --status 核对'}
+            self._cached = report
+            self._cached_at = time.monotonic()
+            return report
         deadline = now + 20
         checks = dict.fromkeys(('core', 'api', 'bouncer', 'registry', 'metrics', 'logs', 'remote'), 'unknown')
         checks['traffic'] = 'pending'
@@ -125,6 +138,7 @@ class HealthCollector:
                 scope = '本地 CrowdSec、LAPI、已配置防火墙 Bouncer 与日志解析'
         records = [(key, 'required') for key, state in checks.items() if state != 'optional']
         summary = summarize([*records, *checks.items()], 2, 'overall', ' '.join(roles))
+        scope = '轻量检查（旧配置，需更新机器人以接入完整检查）：'+scope
         self._cached = {'checked_at': time.time(), 'checks': checks, 'summary': summary, 'scope': scope}
         self._cached_at = time.monotonic()
         return self._cached

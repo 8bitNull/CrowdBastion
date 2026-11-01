@@ -1,0 +1,31 @@
+{
+  "python_ast_files": 150,
+  "bash_syntax_files": 19,
+  "shellcheck": {
+    "severity": "warning",
+    "excluded": [
+      "SC2317",
+      "SC2329",
+      "SC2120",
+      "SC2119"
+    ],
+    "exit_code": 0
+  },
+  "archive_hash_entries_checked": 208,
+  "archive_hash_mismatches": 0,
+  "local_markdown_links_checked": 315,
+  "broken_local_markdown_links": 0,
+  "explicit_audit_logs_added": 11,
+  "whitespace_preserved_in_raw_evidence": [
+    "docs/audit/2026-11-01-telegram-alignment/working-tree-review.txt",
+    "docs/audit/2026-11-01-telegram-noise-review/worktree-before.patch",
+    "docs/audit/2026-11-01-telegram-noise/reviewed-notify-diff.txt",
+    "docs/audit/2026-11-01-telegram-noise/worktree-before.patch",
+    "docs/audit/2026-11-01-telegram-responsive/reviewed-diff.txt",
+    "docs/audit/2026-11-01-vps179-readonly/notification-dependencies-proposed.patch",
+    "docs/audit/2026-11-01-vps179-review/reviewed-code-diff.txt"
+  ],
+  "maintained_code_test_document_diff_check_exit": 0,
+  "final_local_markdown_links_checked": 323,
+  "final_source_snapshot_files": 170
+}

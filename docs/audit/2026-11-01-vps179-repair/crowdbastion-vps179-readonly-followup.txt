@@ -1,0 +1,133 @@
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shlex
+import subprocess
+import time
+
+
+def run(argv, timeout=15):
+    try:
+        completed = subprocess.run(argv, capture_output=True, text=True, timeout=timeout,
+            env=dict(os.environ, LC_ALL='C', PYTHONDONTWRITEBYTECODE='1'))
+        return completed.returncode, completed.stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return None, ''
+
+
+def metadata(path):
+    path = Path(path)
+    if not path.is_file():
+        return {'exists': False}
+    info = path.stat()
+    return {'exists': True, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'mtime': info.st_mtime,
+        'size': info.st_size, 'mode': oct(info.st_mode & 0o7777), 'uid': info.st_uid}
+
+
+def rules_summary(text):
+    lines = [line for line in text.splitlines() if line and not line.startswith('#')]
+    static = [line for line in lines if not re.search('crowdsec|docker', line, re.I)]
+    return {'lines': len(lines), 'crowdsec_lines': sum(bool(re.search('crowdsec', line, re.I)) for line in lines),
+        'docker_lines': sum(bool(re.search('docker', line, re.I)) for line in lines),
+        'other_lines': len(static), 'other_sha256': hashlib.sha256(('\n'.join(static)+'\n').encode()).hexdigest(),
+        'default_policies': [line.split()[0:2] for line in lines if line.startswith(':') and not re.search('crowdsec|docker', line, re.I)]}
+
+
+report = {'checked_at': time.time()}
+root_cron = Path('/var/spool/cron/crontabs/root')
+report['root_cron_metadata'] = metadata(root_cron)
+report['restore_crons'] = []
+if root_cron.is_file():
+    for number, line in enumerate(root_cron.read_text().splitlines(), 1):
+        if line.lstrip().startswith('#') or not re.search(r'(?:ip6tables|iptables|nft)-restore|\bnft\s+-f\b', line):
+            continue
+        report['restore_crons'].append({'line': number, 'line_sha256': hashlib.sha256(line.encode()).hexdigest(),
+            'schedule': line.split()[:1] if line.lstrip().startswith('@') else line.split()[:5],
+            'delay_seconds': re.findall(r'\bsleep\s+(\d+)\b', line),
+            'binaries': re.findall(r'\b(?:ip6tables|iptables|nft)-restore\b', line),
+            'absolute_paths': re.findall(r'(?<!\w)/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+', line)})
+report['restore_units'] = {}
+for unit in ('netfilter-persistent.service', 'iptables.service', 'ip6tables.service'):
+    code, output = run(['systemctl', 'show', unit, '--no-pager', '--property=Id,Names,FragmentPath,UnitFileState,ActiveState,ActiveEnterTimestamp'])
+    values = dict(line.split('=', 1) for line in output.splitlines() if '=' in line)
+    fragment = Path(values.get('FragmentPath', '/nonexistent'))
+    values['fragment_metadata'] = metadata(fragment)
+    if fragment.is_file():
+        values['exec_directives'] = [line for line in fragment.read_text().splitlines() if line.startswith(('ExecStart=', 'ExecStop=', 'ExecReload='))]
+    report['restore_units'][unit] = values
+report['saved_rules'] = {}
+paths = {'/etc/iptables/rules.v4', '/etc/iptables/rules.v6'}
+for item in report['restore_crons']:
+    paths.update(path for path in item['absolute_paths'] if not path.endswith(('-restore', '/sleep')) and Path(path).is_file())
+for path in sorted(paths):
+    row = {'metadata': metadata(path)}
+    if Path(path).is_file():
+        row['rules'] = rules_summary(Path(path).read_text(errors='replace'))
+    report['saved_rules'][path] = row
+report['active_rules_summary'] = {}
+for command, family in (('iptables-save', 'ipv4'), ('ip6tables-save', 'ipv6')):
+    code, text = run([command])
+    report['active_rules_summary'][family] = {'exit': code, 'rules': rules_summary(text)}
+report['acquisition_configs'] = {}
+import yaml
+for path in [Path('/etc/crowdsec/acquis.yaml'), *sorted(Path('/etc/crowdsec/acquis.d').glob('*.yaml'))]:
+    if not path.is_file():
+        continue
+    try:
+        documents = list(yaml.safe_load_all(path.read_text()))
+        report['acquisition_configs'][str(path)] = [{'source': row.get('source'), 'filenames': row.get('filenames'), 'labels': {key: row.get('labels', {}).get(key) for key in ('type', 'service') if key in row.get('labels', {})}} for row in documents if isinstance(row, dict)]
+    except Exception as error:
+        report['acquisition_configs'][str(path)] = {'error': type(error).__name__}
+report['unparsed_log_sample_classes'] = {}
+for name in ('fallback_error.log', 'proxy-host-19_error.log'):
+    path = Path('/home/docker/npm/data/logs')/name
+    item = {'metadata': metadata(path)}
+    if path.is_file():
+        with path.open('rb') as stream:
+            stream.seek(max(0, path.stat().st_size-16384))
+            lines = stream.read().decode(errors='replace').splitlines()[-20:]
+        item['sample_lines'] = len(lines)
+        item['levels'] = {level: sum(bool(re.search(r'\['+level+r'\]', line)) for line in lines) for level in ('error', 'warn', 'notice', 'info')}
+        item['categories'] = {kind: sum(bool(re.search(pattern, line, re.I)) for line in lines) for kind, pattern in (
+            ('tls_handshake', r'SSL_do_handshake|SSL handshaking'), ('missing_file', r'open\(\).*failed'),
+            ('upstream_failure', r'upstream.*(?:timed out|refused|no live)'), ('crowdbastion_execution', r'CB_EXEC_V1'))}
+    report['unparsed_log_sample_classes'][name] = item
+report['parsers'] = []
+code, output = run(['cscli', 'parsers', 'list', '-o', 'json'])
+try:
+    payload = json.loads(output)
+    rows = payload.get('parsers', []) if isinstance(payload, dict) else payload
+    report['parsers'] = [{'name': row.get('name'), 'status': row.get('status'), 'version': row.get('version')} for row in rows if isinstance(row, dict)]
+except Exception as error:
+    report['parsers'] = {'error': type(error).__name__}
+code, output = run(['docker', 'inspect', 'npm'])
+container = json.loads(output)[0]
+report['npm_image_id'] = container['Image']
+code, output = run(['docker', 'image', 'inspect', container['Image']])
+try:
+    image = json.loads(output)[0]
+    report['npm_image'] = {'created': image.get('Created'), 'repo_digests': image.get('RepoDigests'),
+        'version_label': image.get('Config', {}).get('Labels', {}).get('org.opencontainers.image.version')}
+except Exception as error:
+    report['npm_image'] = {'error': type(error).__name__}
+report['runtime_processes'] = {}
+for pid in (2109, 2004, 505, 511):
+    root = Path('/proc')/str(pid)
+    if not root.exists():
+        continue
+    item = {'exe': os.readlink(root/'exe'), 'cwd': os.readlink(root/'cwd')}
+    # Only fixed executable/script paths are retained; no general process argv.
+    arguments = (root/'cmdline').read_bytes().decode(errors='replace').split('\0')
+    item['program_paths'] = [value for value in arguments if value.startswith('/') and (value.endswith(('.py', '.js')) or value in ('/usr/bin/crowdsec-firewall-bouncer', '/usr/local/bin/crowdsec-firewall-bouncer'))]
+    report['runtime_processes'][str(pid)] = item
+report['service_final'] = {}
+for name in ('crowdsec.service', 'crowdsec-firewall-bouncer.service', 'crowdsec-1key-bot.service', 'crowdbastion-notify.service', 'docker.service'):
+    code, output = run(['systemctl', 'show', name, '--no-pager', '--property=MainPID,ActiveState,UnitFileState,NRestarts,ExecMainStartTimestamp,FragmentPath'])
+    report['service_final'][name] = dict(line.split('=', 1) for line in output.splitlines() if '=' in line)
+report['protected_config_hashes'] = {name: metadata(name) for name in (
+    '/etc/crowdsec/config.yaml', '/etc/crowdsec/config.yaml.local', '/etc/crowdsec/crowdsec-1key-bot.json',
+    '/etc/crowdsec/crowdbastion-notify.json', '/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml',
+    '/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local', '/var/lib/crowdbastion/node-roles.json')}
+print(json.dumps(report, ensure_ascii=False, indent=2))

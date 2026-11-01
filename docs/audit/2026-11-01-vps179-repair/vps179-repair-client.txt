@@ -1,0 +1,22 @@
+from pathlib import Path
+import os
+import subprocess
+import sys
+
+SSH = ['ssh', '-F', '/dev/null', '-p', '53322', '-o', 'BatchMode=yes',
+       '-o', 'PreferredAuthentications=publickey', '-o', 'PasswordAuthentication=no',
+       '-o', 'KbdInteractiveAuthentication=no', '-o', 'IdentitiesOnly=yes',
+       '-o', 'StrictHostKeyChecking=yes', '-o', 'UserKnownHostsFile=/tmp/codeg-acp/8-367d5f44/crowdbastion-vps179-vot8t6ez/host-key-observed',
+       '-o', 'ConnectTimeout=10', '-o', 'ServerAliveInterval=10', '-o', 'ServerAliveCountMax=2',
+       '-i', '/root/.ssh/crowdbastion_vps_179_255_121_95', 'root@192.0.2.17']
+if __name__ == '__main__':
+    script, destination = Path(sys.argv[1]), Path(sys.argv[2])
+    result = subprocess.run(SSH+['env PYTHONDONTWRITEBYTECODE=1 python3 -B -'],
+                            input=script.read_bytes(), capture_output=True, timeout=55)
+    destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    destination.write_bytes(result.stdout)
+    destination.chmod(0o600)
+    print('SSH exit:', result.returncode, 'saved:', destination, 'bytes:', len(result.stdout))
+    if result.stderr:
+        print('stderr:', result.stderr.decode(errors='replace')[-2000:])
+    raise SystemExit(result.returncode)

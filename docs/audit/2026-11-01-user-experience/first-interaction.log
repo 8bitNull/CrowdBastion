@@ -1,0 +1,57 @@
+........F.......F..F.........F......................................................F........................................
+======================================================================
+FAIL: test_guidance_reads_service_state_without_claiming_deployment_pass (test_user_experience.Interaction.test_guidance_reads_service_state_without_claiming_deployment_pass)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 46, in test_guidance_reads_service_state_without_claiming_deployment_pass
+    self.assertIn('待验证', p.stdout)
+AssertionError: '待验证' not found in '\n安装或调整防护 — 本地中转 \n当前位置：首页 → 安装或调整防护\n按顺序完成适用步骤；已有配置可以直接检查。\n发现已有部署，建议先选 9 检查；再次安装会先预览变更并确认。\n1. 安装中转基础防护：检测本机系统和 SSH 日志 [已配置，服务未运行]\n2. 核对中转路径：确认封禁作用在哪个入口 [待核对路径；各入口、协议、地址族需单独验收]\n9. 检查当前防护情况\n0. 返回首页\n'
+
+======================================================================
+FAIL: test_combined_roles_have_both_sets_of_steps (test_guided_interaction.GuidedInteraction.test_combined_roles_have_both_sets_of_steps)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_guided_interaction.py", line 286, in test_combined_roles_have_both_sets_of_steps
+    self.assertEqual(self.commands(), '')
+AssertionError: 'systemctl is-active crowdsec\n' != ''
+- systemctl is-active crowdsec
+
+
+======================================================================
+FAIL: test_first_selection_enters_setup_with_real_lock (test_guided_interaction.GuidedInteraction.test_first_selection_enters_setup_with_real_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_guided_interaction.py", line 58, in test_first_selection_enters_setup_with_real_lock
+    self.assertEqual(self.commands(), '')
+AssertionError: 'systemctl is-active crowdsec\n' != ''
+- systemctl is-active crowdsec
+
+
+======================================================================
+FAIL: test_setup_cancel_and_eof_are_read_only (test_guided_interaction.GuidedInteraction.test_setup_cancel_and_eof_are_read_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_guided_interaction.py", line 52, in test_setup_cancel_and_eof_are_read_only
+    self.assertEqual(self.commands(), '')
+AssertionError: 'systemctl is-active crowdsec\n' != ''
+- systemctl is-active crowdsec
+
+
+======================================================================
+FAIL: test_tty_first_choice_and_return_have_no_extra_pause (test_node_guidance.Guidance.test_tty_first_choice_and_return_have_no_extra_pause)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_node_guidance.py", line 323, in test_tty_first_choice_and_return_have_no_extra_pause
+    self.assertEqual(self.commands(), '')
+AssertionError: 'systemctl is-active crowdsec\n' != ''
+- systemctl is-active crowdsec
+
+
+----------------------------------------------------------------------
+Ran 125 tests in 35.505s
+
+FAILED (failures=5)
+[正常] 日志采集：已读 10 行；HTTP 已解析 0 行。
+[异常] HTTP 日志有读取但无解析，请核对格式和标签。
+[尚未验证] 真实 IP：example.com；运行 --verify-real-ip 关联一次正常请求。
+[尚未验证] 真实 IP：example.com；运行 --verify-real-ip 关联一次正常请求。

@@ -1,0 +1,61 @@
+from pathlib import Path
+import ast,hashlib,json,os,re,stat,subprocess,time
+from datetime import datetime,timezone
+root=Path.cwd()
+folder=root/'docs/audit/2026-11-01-vps179-repair'
+report=root/'docs/audit/2026-11-01-vps179-repair.md'
+index=root/'docs/audit/README.md'
+source=json.loads((root/'docs/audit/2026-11-01-vps179-review/source-after.json').read_text())
+assert len(source)==167
+assert all(hashlib.sha256((root/name).read_bytes()).hexdigest()==digest for name,digest in source.items())
+syntax={'bash':0,'python':0,'archived_python':0}
+for name in source:
+    path=root/name
+    if path.suffix=='.py':ast.parse(path.read_text(),filename=name);syntax['python']+=1
+    if path.suffix=='.sh':subprocess.run(['bash','-n',str(path)],check=True,capture_output=True);syntax['bash']+=1
+for path in folder.glob('*.txt'):
+    if path.name.startswith(('vps179-','crowdbastion-vps179-')) or path.name=='verification-script.txt':ast.parse(path.read_text(),filename=path.name);syntax['archived_python']+=1
+subprocess.run(['git','diff','--check'],check=True,capture_output=True)
+links=0
+for doc in (report,index):
+    text=doc.read_text()
+    assert not any(line.rstrip()!=line for line in text.splitlines()),str(doc)
+    for match in re.finditer(r'(?<!!)\[[^\]]*\]\(([^\s)]+)\)',text):
+        target=match[1].split('#',1)[0]
+        if not target or '://' in target or target.startswith('mailto:'):continue
+        destination=(doc.parent/target).resolve()
+        assert destination.exists() or destination in (folder/'manifest.json',folder/'verification.json'),str(destination)
+        links+=1
+for path in folder.iterdir():assert path.is_file() and stat.S_IMODE(path.stat().st_mode)==0o600,str(path)
+assert stat.S_IMODE(folder.stat().st_mode)==0o700
+historical={}
+for name in ('2026-11-01-vps179-readonly','2026-11-01-vps179-review'):
+    base=root/'docs/audit'/name
+    manifest=json.loads((base/'manifest.json').read_text())
+    assert hashlib.sha256(base.with_suffix('.md').read_bytes()).hexdigest()==manifest['report_sha256']
+    for file,digest in manifest['files'].items():assert hashlib.sha256((base/file).read_bytes()).hexdigest()==digest,(name,file)
+    for file,digest in manifest.get('supporting_documents',{}).items():assert hashlib.sha256((root/file).read_bytes()).hexdigest()==digest,file
+    historical[name]={'report_unchanged':True,'evidence_files_unchanged':len(manifest['files'])}
+# Look for credential material, not schema key names or empty examples.
+patterns={
+    'telegram_token':re.compile(rb'\b\d{6,12}:[A-Za-z0-9_-]{30,}\b'),
+    'private_key':re.compile(rb'-----BEGIN (?:OPENSSH|RSA|EC|DSA|ENCRYPTED)? ?PRIVATE KEY-----'),
+    'secret_literal':re.compile(rb'["\x27](?:api_key|bot_token|password)["\x27]\s*:\s*["\x27][A-Za-z0-9_:/+.-]{16,}["\x27]')}
+scanned=[]
+for path in [report,index,*folder.iterdir()]:
+    if not path.is_file():continue
+    data=path.read_bytes()
+    for label,pattern in patterns.items():assert not pattern.search(data),(path.name,label)
+    scanned.append(str(path.relative_to(root)))
+result={'checked_at':datetime.now(timezone.utc).isoformat(),'source_files_match_final_local_suite':len(source),'syntax':syntax,'git_diff_check_exit':0,
+        'local_links_valid':links,'private_evidence_modes':'directory 0700, files 0600','credential_pattern_scan_files':len(scanned),
+        'historical_artifacts':historical,'empty_failed_probe_outputs':['preflight-before.json','round4-final-integrity.json'],
+        'supporting_index_digest_refresh':'prior review report/evidence unchanged; old manifest archived before updating only supporting index hash'}
+(folder/'verification.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n');(folder/'verification.json').chmod(0o600)
+manifest={'created_at':datetime.now(timezone.utc).isoformat(),'report_sha256':hashlib.sha256(report.read_bytes()).hexdigest(),
+          'supporting_documents':{str(index.relative_to(root)):hashlib.sha256(index.read_bytes()).hexdigest()},
+          'files':{path.name:hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(folder.iterdir()) if path.is_file() and path.name!='manifest.json'}}
+(folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(folder/'manifest.json').chmod(0o600)
+assert (folder/'manifest.json').exists() and (folder/'verification.json').exists()
+assert all(hashlib.sha256((folder/name).read_bytes()).hexdigest()==digest for name,digest in manifest['files'].items())
+print(json.dumps({**result,'manifest_files':len(manifest['files'])},ensure_ascii=False,indent=2))

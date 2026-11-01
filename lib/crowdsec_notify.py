@@ -355,16 +355,26 @@ class Store:
     def _aggregate(self, kind, rows, now):
         total = sum(row['count']-row['reported'] for row in rows)
         title = '📋 普通告警汇总' if kind == 'digest' else '⚠️ 需要关注'
-        lines = [f'{title} · {clean(self.config["node"])}', f'新增 {total} 条告警，涉及 {len(rows)} 类事件。']
-        for row in rows[:6]:
-            sources = self.db.execute("SELECT COUNT(DISTINCT source) FROM events WHERE incident=? AND source!=''", (row['id'],)).fetchone()[0]
-            lines.append(f'• {row["title"]}：新增 {row["count"]-row["reported"]} 条；留存记录来源 {sources} 个')
+        groups = {}
+        for row in rows:
+            groups.setdefault(row['fingerprint'], []).append(row)
+        groups = list(groups.values())
+        if kind == 'digest':
+            groups.sort(key=lambda group: sum(r['count']-r['reported'] for r in group), reverse=True)
+        lines = [f'{title} · {clean(self.config["node"])}', f'新增 {total} 条告警，涉及 {len(groups)} 类事件。']
+        for group in groups[:6]:
+            row = max(group, key=lambda r: r['last'])
+            count = sum(r['count']-r['reported'] for r in group)
+            sources = self.db.execute('''SELECT COUNT(DISTINCT e.source) FROM events e
+                JOIN incidents i ON i.id=e.incident WHERE i.fingerprint=? AND e.source!='' ''',
+                (row['fingerprint'],)).fetchone()[0]
+            lines.append(f'• {row["title"]}：新增 {count} 条；留存记录来源 {sources} 个')
             if row['kind'] == 'health':
                 lines.append(row['detail'])
             if row['alert_id']:
                 lines.append(f'  /inspect {row["alert_id"]}')
-        if len(rows) > 6:
-            lines.append(f'另有 {len(rows)-6} 类事件，详情在本机告警中查询。')
+        if len(groups) > 6:
+            lines.append(f'另有 {len(groups)-6} 类事件，详情在本机告警中查询。')
         lines.append('告警数量不等于实际拦截次数。')
         self._enqueue(kind, 0 if kind == 'digest' else 1, self._payload('\n'.join(lines), kind == 'digest'),
                       {'kind': kind, 'items': [[r['id'], r['count'], r['generation']] for r in rows]}, now)
@@ -392,7 +402,13 @@ class Store:
         with self.transaction():
             if now < self._get('api_retry'):
                 return False
-            row = self.db.execute('SELECT * FROM outbox WHERE due<=? ORDER BY priority DESC,due,slot LIMIT 1', (now,)).fetchone()
+            # A persisted/replaced aggregate must still obey the successful-send window.
+            row = self.db.execute('''SELECT * FROM outbox WHERE due<=?
+                AND (slot!='attention' OR ? >= ?)
+                AND (slot!='digest' OR ? >= ?)
+                ORDER BY priority DESC,due,slot LIMIT 1''',
+                (now, now, self._get('attention'),
+                 now, self._get('digest')+self.policy['digest_seconds'])).fetchone()
             if row is None:
                 return False
         # Network access must never hold the ingress/database lock.
@@ -402,8 +418,10 @@ class Store:
         with self.transaction():
             if not accepted:
                 delay = retry_after or min(300, 5 * 2**min(row['attempts'], 6))
-                self.db.execute('UPDATE outbox SET attempts=attempts+1,due=? WHERE slot=? AND snapshot=?',
-                                (now+delay, row['slot'], row['snapshot']))
+                # New ingress may replace the payload during the request. The current
+                # slot must retain backoff too; replacement must not trigger a hot retry.
+                self.db.execute('UPDATE outbox SET attempts=attempts+1,due=MAX(due,?) WHERE slot=?',
+                                (now+delay, row['slot']))
                 if retry_after:
                     self._set('api_retry', now+retry_after)
                 self._set('last_failure', now)
@@ -411,7 +429,13 @@ class Store:
             snapshot = json.loads(row['snapshot'])
             for identifier, count, generation in snapshot['items']:
                 current = self.db.execute('SELECT * FROM incidents WHERE id=?', (identifier,)).fetchone()
-                if current is None or current['generation'] != generation:
+                if current is None:
+                    continue
+                if current['generation'] != generation:
+                    # Severity changed, but the captured event counts were still sent.
+                    # Keep the newer severity's first notice/reminder state untouched.
+                    self.db.execute('UPDATE incidents SET reported=MAX(reported,?) WHERE id=?',
+                                    (count, identifier))
                     continue
                 delay = self.policy['cooldown_seconds']
                 reminder = current['reminder']
@@ -421,14 +445,25 @@ class Store:
                     reminder += 1
                 self.db.execute('''UPDATE incidents SET reported=MAX(reported,?),notified=1,
                     next_notice=?,reminder=? WHERE id=?''', (count, now+delay, reminder, identifier))
+                if (current['kind'] == 'health' and current['state'] != 'open'
+                        and self.db.execute('SELECT 1 FROM outbox WHERE slot=?',
+                                            ('recovery:'+identifier,)).fetchone()):
+                    # Recovery/scope may have been queued before this send succeeded.
+                    # Refresh its delivery note without recreating a cancelled notice.
+                    self._queue_recovery(identifier, now)
             if snapshot['kind'] == 'digest':
                 self._set('digest', now)
             if snapshot['kind'] == 'attention':
                 self._set('attention', now+self.policy['attention_interval_seconds'])
             if snapshot['kind'] == 'test':
                 self._set('test:'+snapshot['test_id'], now)
-            # A recovery/upgrade may have removed or replaced this slot during sending.
-            self.db.execute('DELETE FROM outbox WHERE slot=? AND snapshot=?', (row['slot'], row['snapshot']))
+            if snapshot['kind'] in ('attention', 'digest'):
+                # Only the captured counts were delivered. Later arrivals remain in
+                # incidents and are rebuilt after the next window, without a stale slot.
+                self.db.execute('DELETE FROM outbox WHERE slot=?', (row['slot'],))
+            else:
+                # A recovery/upgrade may have replaced this slot during sending.
+                self.db.execute('DELETE FROM outbox WHERE slot=? AND snapshot=?', (row['slot'], row['snapshot']))
             self._set('last_delivery', now)
         return True
 

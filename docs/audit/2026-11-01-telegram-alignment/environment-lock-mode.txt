@@ -1,0 +1,3 @@
+Read-only observations in the local workspace container; no VPS connection or host lock created.
+/run: mode=0o755, owner=0
+/run/lock: mode=0o1777, owner=0

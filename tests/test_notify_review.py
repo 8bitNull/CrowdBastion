@@ -157,6 +157,78 @@ class InstallationReview(unittest.TestCase):
     enable = fixtures.NotificationInstallation.enable
     OVERRIDES = fixtures.NotificationInstallation.OVERRIDES
 
+    def test_installed_worker_checks_configuration_without_source_imports(self):
+        self.setup_telegram()
+        result = self.enable()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        worker = self.base/'usr/local/lib/crowdbastion-notify/crowdsec_notify.py'
+        runner = ('import runpy, sys; from pathlib import Path; '
+                  'sys.path.insert(0, str(Path(sys.argv[1]).parent)); '
+                  'sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name="__main__")')
+        result = subprocess.run([sys.executable, '-I', '-B', '-c', runner, str(worker), 'check',
+                                 str(self.config/'crowdbastion-notify.json')],
+                                cwd=self.base, text=True, capture_output=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+
+    def test_failed_first_install_removes_helpers_and_restores_direct_route(self):
+        notification = self.setup_telegram()
+        original = notification.read_bytes()
+        result = self.enable('''
+cp() {
+ if [[ "$1" == -- && "$2" == "$SCRIPT_DIR/lib/crowdbastion_ux.py" ]]; then return 1; fi
+ command cp "$@"
+}
+''')
+        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(notification.read_bytes(), original)
+        self.assertFalse((self.config/'crowdbastion-notify.json').exists())
+        self.assertFalse((self.base/'etc/systemd/system/crowdbastion-notify.service').exists())
+        self.assertEqual(list((self.base/'usr/local/lib/crowdbastion-notify').glob('*.py')), [])
+        self.assertNotIn('回滚不完整', result.stderr)
+
+    def test_failed_or_interrupted_dependency_update_restores_code_and_preserves_queue(self):
+        notification = self.setup_telegram()
+        result = self.enable()
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        code = self.base/'usr/local/lib/crowdbastion-notify'
+        paths = [*code.glob('*.py'), notification, self.config/'crowdbastion-notify.json',
+                 self.config/'profiles.yaml', self.base/'etc/systemd/system/crowdbastion-notify.service']
+        original = {path: path.read_bytes() for path in paths}
+        config = json.loads((self.config/'crowdbastion-notify.json').read_text())
+        store = notify.Store(config, now=1000)
+        try:
+            store.ingest([fixtures.alert(scenario='review/unknown')], 1010)
+            store.schedule(1010)
+            self.assertEqual(store.status(1010)['pending'], 1)
+        finally:
+            store.close()
+        state = Path(config['state_dir'])
+        queue = {path: path.read_bytes() for path in state.iterdir() if path.is_file()}
+        self.assertTrue(queue)
+        source = self.base/'lib/crowdsec_bot_runtime.py'
+        source.write_text(source.read_text()+'\n# Candidate revision for rollback verification.\n')
+        for mode, expected in (('failure', 1), ('term', 143)):
+            with self.subTest(mode=mode):
+                self.trace.write_text('')
+                result = self.enable('REVIEW_INTERRUPT='+mode+'''
+cp() {
+ if [[ "$1" == -- && "$2" == "$SCRIPT_DIR/lib/crowdsec_bot_runtime.py" ]]; then
+  command cp "$@" || return $?
+  record copied-updated-runtime
+  if [[ "$REVIEW_INTERRUPT" == term ]]; then kill -TERM "$BASHPID"; fi
+  return 0
+ fi
+ if [[ "$1" == -- && "$2" == "$SCRIPT_DIR/lib/crowdbastion_ux.py" ]]; then return 1; fi
+ command cp "$@"
+}
+''')
+                self.assertEqual(result.returncode, expected, result.stdout+result.stderr)
+                self.assertIn('copied-updated-runtime', self.commands())
+                self.assertEqual({path: path.read_bytes() for path in paths}, original)
+                self.assertEqual({path: path.read_bytes() for path in state.iterdir() if path.is_file()}, queue)
+                self.assertIn('restart crowdbastion-notify.service', self.commands())
+                self.assertNotIn('回滚不完整', result.stderr)
+
     def test_existing_worker_update_without_notification_route_does_not_claim_success(self):
         notification = self.setup_telegram()
         self.assertEqual(self.enable().returncode, 0)

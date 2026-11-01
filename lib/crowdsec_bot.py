@@ -28,7 +28,7 @@ import html
 import re
 from datetime import datetime, timezone, timedelta
 from collections import Counter, namedtuple
-from threading import Thread
+from threading import Condition, RLock, Thread
 
 # ==================== 用户配置区 ====================
 BOT_TOKEN = "你的_BOT_TOKEN"           # 替换为 @BotFather 获取的 Token
@@ -47,38 +47,51 @@ _INSTANCE_LOCK = None
 _API_CLIENT = None
 _ACTION_STORE = None
 _HEALTH_COLLECTOR = None
+_HEALTH_WORKER = None
+_HELPERS_LOCK = RLock()
+HEALTH_VIEWS = {'overview', 'status'}
+MAINTENANCE_LOCK = '/run/lock/crowdsec-1key.lock'
+MIGRATION_STATE = '/var/lib/crowdbastion/firewall-migration'
+MANAGER_SCRIPT = None
 
 
 def sibling(name):
     """Resolve installed helpers even when an audit tool imports this script."""
-    target = Path(__file__).resolve().with_name(name+'.py')
-    module = sys.modules.get(name)
-    if module is None or Path(module.__file__).resolve() != target:
-        spec = importlib.util.spec_from_file_location(name, target)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[name] = module
-        spec.loader.exec_module(module)
-    return module
+    with _HELPERS_LOCK:
+        target = Path(__file__).resolve().with_name(name+'.py')
+        module = sys.modules.get(name)
+        if module is None or Path(module.__file__).resolve() != target:
+            spec = importlib.util.spec_from_file_location(name, target)
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[name] = module
+            try:
+                spec.loader.exec_module(module)
+            except BaseException:
+                sys.modules.pop(name, None)
+                raise
+        return module
 
 
 def get_api_client():
     global _API_CLIENT
-    key = (TG_API_BASE, STATE_DIR, BOT_TOKEN)
-    if _API_CLIENT is None or _API_CLIENT[0] != key:
-        _API_CLIENT = (key, sibling('crowdsec_bot_api').TelegramClient(*key))
-    return _API_CLIENT[1]
+    with _HELPERS_LOCK:
+        key = (TG_API_BASE, STATE_DIR, BOT_TOKEN)
+        if _API_CLIENT is None or _API_CLIENT[0] != key:
+            _API_CLIENT = (key, sibling('crowdsec_bot_api').TelegramClient(*key))
+        return _API_CLIENT[1]
 
 
 def get_action_store():
     global _ACTION_STORE
-    key = (STATE_DIR, BOT_TOKEN)
-    if _ACTION_STORE is None or _ACTION_STORE[0] != key:
-        _ACTION_STORE = (key, sibling('crowdsec_bot_actions').ActionStore(*key))
-    return _ACTION_STORE[1]
+    with _HELPERS_LOCK:
+        key = (STATE_DIR, BOT_TOKEN)
+        if _ACTION_STORE is None or _ACTION_STORE[0] != key:
+            _ACTION_STORE = (key, sibling('crowdsec_bot_actions').ActionStore(*key))
+        return _ACTION_STORE[1]
 
 
 def load_settings(path):
-    global BOT_TOKEN, ADMIN_CHAT_ID, ADMIN_USER_ID, DB_PATH, NPM_LOG_DIR, CSCLI_CONFIG, WHITELIST_FILE, STATE_DIR, TG_API_BASE, EXECUTION_LOG_DIRS
+    global BOT_TOKEN, ADMIN_CHAT_ID, ADMIN_USER_ID, DB_PATH, NPM_LOG_DIR, CSCLI_CONFIG, WHITELIST_FILE, STATE_DIR, TG_API_BASE, EXECUTION_LOG_DIRS, MAINTENANCE_LOCK, MIGRATION_STATE, MANAGER_SCRIPT
     config = json.loads(Path(path).read_text(encoding='utf-8'))
     BOT_TOKEN = config['bot_token']
     ADMIN_CHAT_ID = int(config['chat_id'])
@@ -95,6 +108,16 @@ def load_settings(path):
     CSCLI_CONFIG = config.get('crowdsec_config', CSCLI_CONFIG)
     WHITELIST_FILE = config.get('whitelist_file', WHITELIST_FILE)
     STATE_DIR = config.get('state_dir', STATE_DIR)
+    MAINTENANCE_LOCK = config.get('maintenance_lock', MAINTENANCE_LOCK)
+    MIGRATION_STATE = config.get('migration_state', MIGRATION_STATE)
+    bundled_runtime = Path(__file__).parent / 'runtime'
+    default_manager = str(bundled_runtime / 'current/manager.sh') if bundled_runtime.exists() or bundled_runtime.is_symlink() else None
+    MANAGER_SCRIPT = config.get('manager_script', default_manager)
+    for value in (MAINTENANCE_LOCK, MIGRATION_STATE):
+        if not isinstance(value, str) or not Path(value).is_absolute():
+            raise ValueError('维护路径必须为绝对路径')
+    if MANAGER_SCRIPT is not None and (not isinstance(MANAGER_SCRIPT, str) or not Path(MANAGER_SCRIPT).is_absolute()):
+        raise ValueError('检查路径必须为绝对路径')
     endpoint = config.get('api_endpoint', 'https://api.telegram.org').rstrip('/')
     parsed = urllib.parse.urlsplit(endpoint)
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
@@ -338,20 +361,28 @@ def module_health_status(details=False):
     try:
         sibling('crowdbastion_health')
         sibling('crowdbastion_node')
-        if _HEALTH_COLLECTOR is None or _HEALTH_COLLECTOR[0] != CSCLI_CONFIG:
-            _HEALTH_COLLECTOR = (CSCLI_CONFIG, sibling('crowdsec_bot_health').HealthCollector(CSCLI_CONFIG))
-        report = _HEALTH_COLLECTOR[1].collect()
+        key = (CSCLI_CONFIG, MANAGER_SCRIPT)
+        if _HEALTH_COLLECTOR is None or _HEALTH_COLLECTOR[0] != key:
+            _HEALTH_COLLECTOR = (key, sibling('crowdsec_bot_health').HealthCollector(CSCLI_CONFIG, manager_path=MANAGER_SCRIPT))
+        collector = _HEALTH_COLLECTOR[1]
+        previous = collector._cached
+        report = collector.collect()
+        cache_hit = report is previous
         labels = {'ok': '正常', 'fault': '异常', 'missing': '尚未配置', 'unknown': '暂时无法确认',
-                  'pending': '样本不足', 'optional': '未启用（可选）', 'verified': '已验证'}
+                  'pending': '待验证（样本不足）', 'optional': '未启用（可选）', 'verified': '已验证'}
         names = {'core': '检测服务', 'api': '检测接口', 'bouncer': '防火墙服务',
                  'registry': '组件登记', 'metrics': '运行指标', 'logs': '日志解析', 'remote': '远端连接'}
+        names.update({key: row[0] or '检查完整性' for key, row in sibling('crowdbastion_health').CATALOG.items() if key not in names})
+        names['traffic'] = '实际拦截验证'
         checks, summary = report['checks'], report['summary']
-        lines = ['🩺 <b>服务检查</b>']
+        lines = ['🩺 <b>服务检查</b>', '检查结论：'+esc(summary['verdict'], 120)]
         if any(state in ('fault', 'missing', 'unknown') for state in checks.values()):
             lines.append('⚠️ '+esc(summary.get('attention') or summary['verdict'], 140))
             if summary.get('next'):
                 lines.append('建议：'+esc(summary['next'], 180))
-        selected = names if details else ('core', 'bouncer', 'logs', 'remote')
+        selected = names if details else tuple(dict.fromkeys(
+            ('core', 'bouncer', 'logs', 'remote', 'traffic') + tuple(key for key, state in checks.items()
+                if state in ('fault', 'missing', 'unknown') and key not in ('traffic', 'check'))))
         for key in selected:
             state = checks.get(key)
             if state is None or (not details and state == 'optional'):
@@ -359,11 +390,14 @@ def module_health_status(details=False):
             label = '运行中' if state == 'ok' and key in ('core', 'bouncer') else labels.get(state, '暂时无法确认')
             lines.append(names[key]+'：'+label)
         if details:
-            lines.extend(['范围：'+esc(report['scope'], 120), '检查结论：'+esc(summary['verdict'], 120)])
+            lines.append('范围：'+esc(report['scope'], 120))
             if summary.get('impact'):
                 lines.append('影响：'+esc(summary['impact'], 160))
             lines.append('本页检查服务与配置；实际拦截请查看具体来源的拦截记录。')
-        lines.append('更新：'+datetime.fromtimestamp(report['checked_at'], timezone.utc).strftime('%m-%d %H:%M:%S UTC'))
+        if '轻量检查' in report['scope'] or '未完成' in report['scope']:
+            lines.append(esc(report['scope'], 140))
+        lines.append('采样：复用 30 秒内缓存' if cache_hit else '采样：本次采样（缓存 30 秒）')
+        lines.append('采样时间：'+datetime.fromtimestamp(report['checked_at'], timezone.utc).strftime('%m-%d %H:%M:%S UTC'))
         return '\n'.join(lines)
     except (OSError, ValueError, RuntimeError, ImportError, KeyError, TypeError):
         return '🩺 服务检查：暂时无法查询，请检查依赖或权限。'
@@ -942,8 +976,14 @@ DETAIL_VIEWS = {'overview', 'forensics', 'runtime', 'posture', 'sources', 'paths
                 'status', 'top', 'decisions', 'sites'}
 
 
-def render_view(view_id, *args, refresh_data=None, details=False, **kwargs):
+def render_view(view_id, *args, refresh_data=None, details=False, force_refresh=False,
+                requested_at=None, **kwargs):
     """Normalize existing renderers into cards with the same navigation rules."""
+    if force_refresh and view_id in HEALTH_VIEWS and _HEALTH_COLLECTOR is not None:
+        collector = _HEALTH_COLLECTOR[1]
+        # A sample completed after this request already satisfies a repeated refresh.
+        if requested_at is None or collector._cached_at is None or collector._cached_at < requested_at:
+            collector._cached = None
     if view_id == 'home':
         return home_card()
     view = VIEWS[view_id]
@@ -955,7 +995,10 @@ def render_view(view_id, *args, refresh_data=None, details=False, **kwargs):
     navigation = []
     base = refresh_data or 'nav:'+view_id
     if view.refresh:
-        navigation.append({'text': '🔄 刷新', 'callback_data': ('more:' if details else '')+base})
+        refresh = ('more:' if details else '')+base
+        if view_id in HEALTH_VIEWS:
+            refresh = 'fresh:'+refresh
+        navigation.append({'text': '🔄 刷新', 'callback_data': refresh})
     if view_id in DETAIL_VIEWS-{'forensics', 'decisions', 'sites'}:
         rows.append([detail_button(base, details)])
     if view.parent != 'home':
@@ -966,7 +1009,87 @@ def render_view(view_id, *args, refresh_data=None, details=False, **kwargs):
     return text, {'inline_keyboard': rows}
 
 
+class HealthViewWorker:
+    """One probe at a time, at most eight cards, and only each card's latest request."""
+
+    def __init__(self):
+        self._condition = Condition()
+        self._jobs = {}
+        self._closed = False
+        self._thread = Thread(target=self._run, daemon=True, name='health-views')
+        self._thread.start()
+
+    def submit(self, key, render, deliver):
+        with self._condition:
+            if self._closed or (key not in self._jobs and len(self._jobs) >= 8):
+                return False
+            self._jobs[key] = (render, deliver)
+            self._condition.notify()
+            return True
+
+    def invalidate(self, key=None):
+        with self._condition:
+            if key is None:
+                self._jobs.clear()
+            else:
+                self._jobs.pop(key, None)
+
+    def close(self):
+        with self._condition:
+            self._closed = True
+            self._jobs.clear()
+            self._condition.notify()
+        self._thread.join(timeout=40)
+
+    def _run(self):
+        while True:
+            with self._condition:
+                self._condition.wait_for(lambda: self._closed or self._jobs)
+                if self._closed:
+                    return
+                key = next(iter(self._jobs))
+                job = self._jobs[key]
+            try:
+                result = job[0]()
+            except Exception:
+                result = ('健康查询未完成，请稍后刷新或在终端核对。',
+                          {'inline_keyboard': [[{'text': '🏠 主菜单', 'callback_data': 'nav:home'}]]})
+            # Serialize delivery with invalidation; never hold this lock during probes.
+            with self._condition:
+                if self._jobs.get(key) is not job:
+                    continue
+                del self._jobs[key]
+                try:
+                    job[1](result)
+                except Exception:
+                    print('Telegram 健康查询回复失败；请重新查询。', file=sys.stderr)
+
+
+def edit_card(message_id, result):
+    text, keyboard = result
+    return tg_request('editMessageText', {'chat_id': ADMIN_CHAT_ID, 'message_id': message_id,
+        'text': text, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': keyboard})
+
+
+def queue_health_view(message_id, view_id, **kwargs):
+    requested_at = time.monotonic()
+    accepted = _HEALTH_WORKER.submit(message_id,
+        lambda: render_view(view_id, requested_at=requested_at, **kwargs),
+        lambda result: edit_card(message_id, result))
+    if not accepted:
+        edit_card(message_id, ('健康查询繁忙，请稍后刷新。', {'inline_keyboard': [
+            [{'text': '🔄 重试', 'callback_data': 'fresh:nav:'+view_id}],
+            [{'text': '🏠 主菜单', 'callback_data': 'nav:home'}]]}))
+    return accepted
+
+
 def send_view(view_id, *args, **kwargs):
+    if _HEALTH_WORKER is not None and view_id in HEALTH_VIEWS:
+        response = send_message('正在采集健康状态，请稍候；可先查看其他页面。',
+            reply_markup={'inline_keyboard': [[{'text': '🏠 主菜单', 'callback_data': 'nav:home'}]]})
+        if response and response.get('ok'):
+            queue_health_view(response['result']['message_id'], view_id, **kwargs)
+        return response
     text, keyboard = render_view(view_id, *args, **kwargs)
     return send_message(text, reply_markup=keyboard)
 
@@ -978,6 +1101,9 @@ def handle_view_callback(callback):
     message_id = callback.get('message', {}).get('message_id')
     if not isinstance(data, str) or not message_id:
         return False
+    force_refresh = data.startswith('fresh:')
+    if force_refresh:
+        data = data[6:]
     details = data.startswith('more:')
     if details:
         data = data[5:]
@@ -1010,17 +1136,19 @@ def handle_view_callback(callback):
         kwargs = {'alert_id': int(execution_detail[1]), 'decision_page': int(execution_detail[2])}
     elif data == 'em:view_white':
         view_id = 'whitelist'
-    if view_id is None:
+    if view_id is None or (force_refresh and view_id not in HEALTH_VIEWS):
         return False
     if details and view_id not in DETAIL_VIEWS | {'execution'}:
         return False
-    answer_callback(callback['id'], '正在查询…')
+    answer_callback(callback['id'], '正在重新采样…' if force_refresh else '正在查询…')
+    if view_id in HEALTH_VIEWS and _HEALTH_WORKER is not None:
+        queue_health_view(message_id, view_id, details=details, force_refresh=force_refresh, **kwargs)
+        return True
     if view_id == 'execution':
         text, keyboard = module_execution(details=details, **kwargs)
     else:
-        text, keyboard = render_view(view_id, details=details, **kwargs)
-    tg_request('editMessageText', {'chat_id': ADMIN_CHAT_ID, 'message_id': message_id,
-        'text': text, 'parse_mode': 'HTML', 'disable_web_page_preview': True, 'reply_markup': keyboard})
+        text, keyboard = render_view(view_id, details=details, force_refresh=force_refresh, **kwargs)
+    edit_card(message_id, (text, keyboard))
     return True
 
 
@@ -1263,6 +1391,7 @@ def request_action(action, params):
 
 
 def execute_confirmed(ticket):
+    global _HEALTH_COLLECTOR
     store = get_action_store()
     try:
         store.begin(ticket)
@@ -1271,7 +1400,16 @@ def execute_confirmed(ticket):
     try:
         actions = {'ban': action_ban, 'unban': action_unban, 'white': action_whitelist,
                    'reload': reload_engine, 'drop_caches': drop_caches}
-        result = actions[ticket['action']](*ticket['params'])
+        runtime = sibling('crowdsec_bot_runtime')
+        try:
+            with runtime.maintenance_guard(MAINTENANCE_LOCK, MIGRATION_STATE):
+                result = actions[ticket['action']](*ticket['params'])
+                if result.startswith('✅'):
+                    _HEALTH_COLLECTOR = None
+                    if _HEALTH_WORKER is not None:
+                        _HEALTH_WORKER.invalidate()
+        except runtime.MaintenanceRefused as error:
+            result = '❌ '+str(error)
         outcome = 'success' if result.startswith('✅') else 'failed'
     except Exception:
         # A command may have completed before its caller failed. Never replay it.
@@ -1337,6 +1475,8 @@ def handle_update(update):
         callback = update['callback_query']
         if not authorized(callback):
             return
+        if _HEALTH_WORKER is not None:
+            _HEALTH_WORKER.invalidate(callback.get('message', {}).get('message_id'))
         if handle_action_callback(callback) or handle_view_callback(callback):
             return
         return
@@ -1377,9 +1517,11 @@ def wait_for_retry(delay):
 
 
 def main():
+    global _HEALTH_WORKER
     # Honor saved polling backoff before startup makes any Telegram requests.
     wait_for_retry(get_api_client().retry_delay())
     register_bot_commands()
+    _HEALTH_WORKER = HealthViewWorker()
     if AUTO_NOTIFY:
         Thread(target=background_alert_watcher, daemon=True).start()
     try:

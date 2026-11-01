@@ -1,0 +1,38 @@
+{
+  "production_and_test_source_manifest": {
+    "files": 167,
+    "drift": []
+  },
+  "daily_entry_comparison": {
+    "same": 34,
+    "different": 19,
+    "missing": 9,
+    "remote_extra": 0
+  },
+  "same_service_pid_and_restarts": {
+    "crowdsec.service": true,
+    "crowdsec-firewall-bouncer.service": true,
+    "crowdsec-1key-bot.service": true,
+    "crowdbastion-notify.service": true,
+    "docker.service": true
+  },
+  "same_protected_configuration": {
+    "/etc/crowdsec/config.yaml": true,
+    "/etc/crowdsec/config.yaml.local": true,
+    "/etc/crowdsec/crowdsec-1key-bot.json": true,
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": true,
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": true,
+    "/var/lib/crowdbastion/node-roles.json": true
+  },
+  "isolated_notification_dependency_probe": {
+    "current_install_manifest_exit": 1,
+    "candidate_install_manifest_exit": 0,
+    "patch_applied": false,
+    "scope": "import only"
+  },
+  "proposed_patch_apply_check_exit": 0,
+  "local_document_links_checked": 63,
+  "credential_field_and_token_pattern_scan": "passed; collectors only emit explicitly selected fields",
+  "git_diff_check_exit": 0,
+  "scope": "read-only audit and documentation; production/test sources unchanged; known notification packaging failure remains open"
+}

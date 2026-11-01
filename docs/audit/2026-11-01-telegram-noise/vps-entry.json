@@ -1,0 +1,1 @@
+{"entry": "#!/bin/sh\n# CrowdBastion managed entry; execute the complete release.\nexec /bin/bash \"/opt/crowdbastion/releases/tg-responsive-20261101-73c519efafda/crowdbastion.sh\" \"$@\"\n"}

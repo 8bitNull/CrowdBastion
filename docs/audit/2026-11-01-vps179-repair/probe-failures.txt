@@ -1,0 +1,29 @@
+以下为根据本轮工具执行输出整理的失败说明；不是伪造的原始逐字终端日志。
+
+1. preflight-before.json（保留为空）
+   初次完整 reader 在 read_manager_report -> validate_private_destination -> safe_path
+   抛出 ValueError('unsafe preferences')。暂存归档带入工作区宽权限。
+   后续 round1-staging-permissions-red.json 捕获同一拒绝；仅规范暂存发布权限后复验通过。
+
+2. 开机修复第一次前置断言
+   错误假设原规则是 -i lo；实际为 ! -i lo。
+   iptables -C 断言失败，在创建 unit／改规则／改 cron 之前停止。
+   current-static-rules.json 精确保留实际规则，最终脚本修正此假设。
+   先前只读报告漏读 ! 的解释错误在本轮报告明确纠正，旧报告不改写。
+
+3. 开机修复第二次前置断言
+   把 crontab spool 物理行号 8／9 当作工具索引。
+   工具使用 crontab -l 输出索引 5／6；断言同样在写入前停止。
+   最终通过 family 和完整原文核对，采用工具返回的实际索引。
+   失败版本 /tmp 脚本后来被修正覆盖，当前归档为最终实际成功版本。
+
+4. round4-final-integrity.json（保留为空）
+   幂等应用、规则检查、指纹、保护配置和服务断言已通过后，最后清单核验失败：
+   FileNotFoundError: notify-consistent/queue-61b06add5f212d0c5b8c561f.sqlite3-shm。
+   原清单生成时 SQLite 连接尚未关闭，纳入临时 -wal／-shm 文件；进程结束后消失。
+   round5-backup-manifest-red.json 显示仅这两项缺失，所有稳定文件哈希均一致，
+   原数据库 immutable=1 独立 quick_check 为 ok，含 279 incidents／461 events。
+   保留 backup-manifest.initial.json，仅剔除临时项封存；主数据库字节完全不改。
+   round5-final-integrity-green.json 完整重跑并 exit 0。
+
+没有触发实际安装事务失败、回灌整表或恢复旧队列。

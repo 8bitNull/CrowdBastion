@@ -41,7 +41,7 @@ enable_prometheus_metrics() {
 status=$?
 flock -n "$MAINTENANCE_LOCK" true || exit 91
 flock -n "$HUB_LOCK_FILE" true || exit 92
-exit "$status"''', '203.0.113.2\n', stub)
+exit "$status"''', '203.0.113.2\ny\n', stub)
         self.assertEqual(p.returncode, 143, p.stdout+p.stderr)
         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
         self.assertFalse((self.config/'parsers/s02-enrich/99-admin-whitelist.yaml').exists())
@@ -53,7 +53,7 @@ exit "$status"''', '203.0.113.2\n', stub)
 
     def test_signal_during_config_load_without_hub_changes_loads_restored_state(self):
         before = (self.config/'config.yaml').read_bytes()
-        for action, answers in [('main --install-core', '203.0.113.2\n'),
+        for action, answers in [('main --install-core', '203.0.113.2\ny\n'),
                                 ('main --install-appsec', '')]:
             with self.subTest(action=action):
                 (self.config/'config.yaml').write_bytes(before)
@@ -84,7 +84,7 @@ systemctl() {
 
     def test_successful_config_load_without_hub_changes_keeps_new_config(self):
         import yaml
-        p = self.run_shell('main --install-core', '203.0.113.2\n', self.complete_inventory_stub())
+        p = self.run_shell('main --install-core', '203.0.113.2\ny\n', self.complete_inventory_stub())
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertTrue(yaml.safe_load((self.config/'config.yaml').read_text())['prometheus']['enabled'])
         self.assertNotIn('collections install', self.commands())
@@ -96,7 +96,7 @@ systemctl() {
     def test_signal_after_hub_commit_preserves_loaded_config(self):
         import yaml
         before = (self.config/'config.yaml').read_bytes()
-        for action, answers in [('main --install-core', '203.0.113.2\n'),
+        for action, answers in [('main --install-core', '203.0.113.2\ny\n'),
                                 ('main --optimize', 'y\nn\ny\ny\n')]:
             with self.subTest(action=action):
                 (self.config/'config.yaml').write_bytes(before)

@@ -41,13 +41,12 @@ def cleanup():
             attempt(lambda decision=decision: run(['cscli', 'decisions', 'delete', '--id', str(decision['id'])]))
     import shlex
     for binary in ('iptables', 'ip6tables'):
-        for chain in ('INPUT', 'DOCKER-USER'):
-            result = attempt(lambda: run([binary, '-S', chain]))
-            for line in result.stdout.splitlines() if result else []:
-                tokens = shlex.split(line)
-                if '--comment' in tokens and tokens[tokens.index('--comment')+1] == TAG:
-                    tokens[0] = '-D'
-                    attempt(lambda: run([binary, '-w', '5', *tokens]))
+        result = attempt(lambda: run([binary, '-S']))
+        for line in result.stdout.splitlines() if result else []:
+            tokens = shlex.split(line)
+            if tokens[:2] in (['-A', 'INPUT'], ['-A', 'DOCKER-USER']) and '--comment' in tokens and tokens[tokens.index('--comment')+1] == TAG:
+                tokens[0] = '-D'
+                attempt(lambda: run([binary, '-w', '5', *tokens]))
     for namespace in ('cbfw-src', 'cbfw-dst'):
         if pathlib.Path('/run/netns', namespace).exists():
             result = attempt(lambda: run(['ip', 'netns', 'pids', namespace]))

@@ -1,0 +1,79 @@
+{
+  "checked_at": 1793545818.9374652,
+  "fingerprint": "8762b626ab1f7f1d3944876da8e7a15b114c1926e34a4b53173fede9a5b77ec0",
+  "notify_sha256": "760bc26e003d5621f9ddccaeccc256cd610ff868e73c30a580ee1c21ccee2842",
+  "manager_changed_files": [
+    "lib/crowdsec_notify.py"
+  ],
+  "policy": {
+    "attention_interval_seconds": 3600,
+    "digest_seconds": 21600,
+    "cooldown_seconds": 1800
+  },
+  "status": {
+    "pending": 0,
+    "retrying": 0,
+    "open_critical": 0,
+    "heartbeat_age": 0.3943212032318115,
+    "last_delivery": 1793545250.5624275,
+    "last_failure": 1793314840.1300418,
+    "health_age": 18.135932207107544,
+    "state": "ready"
+  },
+  "services": {
+    "crowdsec": {
+      "MainPID": "116932",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "2109",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot": {
+      "MainPID": "195577",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "docker": {
+      "MainPID": "642",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdbastion-notify": {
+      "MainPID": "279489",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    }
+  },
+  "protected_files_preserved": 16,
+  "bot_poller": {
+    "status": "healthy",
+    "last_poll_at": 1793545805.5930214,
+    "checked_at": 1793545805.5930214
+  },
+  "health": {
+    "seconds": 11.291,
+    "exit": 2,
+    "summary": {
+      "verdict": "运行检查通过，实际拦截待验证",
+      "status": 2,
+      "confirmed": "本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则",
+      "attention": "",
+      "additional": 0,
+      "impact": "",
+      "action": "verify",
+      "action_label": "查看如何验证实际拦截",
+      "next": "按实际流量路径完成一次外部拦截验证。"
+    },
+    "traffic": "pending"
+  },
+  "telegram_test_sent": false,
+  "elapsed_six_hours_observed": false
+}

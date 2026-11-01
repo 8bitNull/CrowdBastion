@@ -1,0 +1,27 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib, json, sys, tarfile
+root = Path('/projects/script/CrowdBastion')
+sys.path.insert(0, str(root/'lib'))
+from crowdbastion_ux import code_fingerprint
+folder=root/'docs/audit/2026-11-01-vps179-repair'
+folder.mkdir(mode=0o700,exist_ok=True)
+validated=json.loads((root/'docs/audit/2026-11-01-vps179-review/source-after.json').read_text())
+assert all(hashlib.sha256((root/p).read_bytes()).hexdigest()==v for p,v in validated.items())
+fingerprint=code_fingerprint(root/'crowdbastion.sh')
+stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+state={'release':'/opt/crowdbastion/releases/review-20261101-vps179-'+fingerprint[:12],
+       'backup':'/var/backups/crowdbastion/vps179-cycle-'+stamp,
+       'code_fingerprint':fingerprint,'validated_source_files':len(validated),'stamp':stamp}
+files=[root/'crowdbastion.sh',root/'readme.md',*sorted((root/'lib').iterdir())]
+files=[p for p in files if p.is_file() and not p.is_symlink()]
+archive=Path('/tmp/crowdbastion-vps179-release.tar.gz')
+with tarfile.open(archive,'w:gz') as package:
+    for path in files:
+        package.add(path,arcname=str(path.relative_to(root)),recursive=False)
+    package.add(root/'install-crowdsec-1panel.sh',arcname='install-crowdsec-1panel.sh',recursive=False)
+state['archive_sha256']=hashlib.sha256(archive.read_bytes()).hexdigest()
+state['file_hashes']={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+(folder/'deployment.json').write_text(json.dumps(state,indent=2)+'\n')
+(folder/'deployment.json').chmod(0o600)
+print({k:v for k,v in state.items() if k!='file_hashes'})

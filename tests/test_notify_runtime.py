@@ -25,6 +25,14 @@ class NotificationRuntime(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='notify-runtime-')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        self.bundle = self.root/'installed'
+        self.bundle.mkdir()
+        manifest = subprocess.run(['bash', '-c',
+            'source "$1"; printf "%s\\n" "${NOTIFY_HELPERS[@]}"',
+            'notify-manifest', str(fixtures.ROOT/'lib/notify.sh')],
+            text=True, capture_output=True, check=True, timeout=5)
+        for name in manifest.stdout.splitlines():
+            shutil.copy2(fixtures.ROOT/'lib'/name, self.bundle/name)
         self.config = fixtures.configuration(self.root)
         self.config['policy'].update(health_interval_seconds=1, fault_seconds=1, recovery_seconds=1,
                                      critical_scenarios=['test/critical'])
@@ -124,8 +132,8 @@ crowdsec_bot_health.HealthCollector = functools.partial(
 sys.argv = sys.argv[1:]
 runpy.run_path(sys.argv[0], run_name='__main__')
 '''
-        self.process = subprocess.Popen([sys.executable, '-c', runner,
-            str(fixtures.ROOT/'lib/crowdsec_notify.py'), 'run', str(self.config_path), str(self.root/'roles.json')],
+        self.process = subprocess.Popen([sys.executable, '-I', '-B', '-c', runner,
+            str(self.bundle/'crowdsec_notify.py'), 'run', str(self.config_path), str(self.root/'roles.json')],
             env=self.env, stdin=subprocess.DEVNULL,
             stdout=self.stream, stderr=self.stream)
         self.wait_for(lambda: request(self.config, 'status')['state'] == 'ready')

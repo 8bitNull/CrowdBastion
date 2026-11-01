@@ -1,0 +1,37 @@
+from pathlib import Path
+import json
+import os
+import subprocess
+import sys
+sys.path.insert(0, '/projects/script/CrowdBastion/lib')
+from crowdbastion_ux import redact
+
+root = Path('/projects/script/CrowdBastion')
+folder = root/'docs/audit/2026-11-01-vps179-readonly'
+names = ('crowdsec_config', 'crowdsec_remote_bouncer', 'crowdbastion_health', 'crowdsec_firewall_runtime', 'crowdsec_firewall_evidence')
+sources = {name: (root/'lib'/f'{name}.py').read_text() for name in names}
+payload = 'MEMORY_SOURCES = '+repr(sources)+'\n'+Path('/tmp/crowdbastion-vps179-readonly-health.py').read_text()
+argv = ['ssh', '-F', '/dev/null', '-p', '53322', '-o', 'BatchMode=yes', '-o', 'PreferredAuthentications=publickey', '-o', 'PasswordAuthentication=no', '-o', 'KbdInteractiveAuthentication=no', '-o', 'IdentitiesOnly=yes', '-o', 'StrictHostKeyChecking=yes', '-o', 'UserKnownHostsFile=/tmp/codeg-acp/8-367d5f44/crowdbastion-vps179-vot8t6ez/host-key-observed', '-o', 'ConnectTimeout=10', '-o', 'ServerAliveInterval=10', '-o', 'ServerAliveCountMax=2', '-i', '/root/.ssh/crowdbastion_vps_179_255_121_95', 'root@192.0.2.17', 'PYTHONDONTWRITEBYTECODE=1 python3 -']
+try:
+    result = subprocess.run(argv, input=payload, capture_output=True, text=True, timeout=110)
+    if result.returncode:
+        raise RuntimeError(redact(result.stderr))
+    report = json.loads(result.stdout)
+    if 'existing_manager_status' in report:
+        for key in ('stdout', 'stderr'):
+            if key in report['existing_manager_status']:
+                report['existing_manager_status'][key] = redact(report['existing_manager_status'][key])
+    if 'firewall_binary_version' in report:
+        for key in ('stdout', 'stderr'):
+            if key in report['firewall_binary_version']:
+                report['firewall_binary_version'][key] = redact(report['firewall_binary_version'][key])
+    path = folder/'health.json'
+    path.write_text(json.dumps(report, ensure_ascii=False, indent=2)+'\n')
+    path.chmod(0o600)
+    (folder/'health-collection-exit.txt').write_text('0\n')
+except Exception as error:
+    path = folder/'health-collection-error.txt'
+    path.write_text(redact(str(error))+'\n')
+    path.chmod(0o600)
+    (folder/'health-collection-exit.txt').write_text('1\n')
+    raise

@@ -1,0 +1,15 @@
+{
+  "checked_at": 1793544642.2679818,
+  "full_suite": {
+    "exit": 0,
+    "seconds": 479.3064649105072,
+    "source_files": 168,
+    "stable": true,
+    "changed": []
+  },
+  "source_files_verified": 169,
+  "scripts_ast": 11,
+  "documents": 5,
+  "local_links_verified": 60,
+  "diff_check": true
+}

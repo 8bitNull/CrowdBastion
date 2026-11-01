@@ -27,6 +27,8 @@ class MenuNavigation(unittest.TestCase):
         self.bot.STATE_DIR = str(self.base / 'state')
         self.bot.DB_PATH = str(self.base / 'db.sqlite')
         self.bot.CSCLI_CONFIG = str(self.base / 'config.yaml')
+        self.bot.MAINTENANCE_LOCK = str(self.base / 'maintenance.lock')
+        self.bot.MIGRATION_STATE = str(self.base / 'migration')
         self.bot.WHITELIST_FILE = str(self.base / 'white.yaml')
         self.bot.NPM_LOG_DIR = str(self.base / 'logs')
         self.bot.BOT_TOKEN = '123:SYNTHETIC'

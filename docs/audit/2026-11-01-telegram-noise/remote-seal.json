@@ -1,0 +1,8 @@
+{
+  "backup": "/var/backups/crowdbastion/tg-noise-20261101T144115Z",
+  "files": 11,
+  "consistent_sqlite_quick_check": "ok",
+  "private_permissions_verified": true,
+  "manifest": "/var/backups/crowdbastion/tg-noise-20261101T144115Z/final-manifest.json",
+  "manifest_sha256": "d41b9693468b60633372e0b1250a4be64f0a9c4fbb78ba5dc051c96fc7f8ed3c"
+}

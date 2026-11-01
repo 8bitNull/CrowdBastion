@@ -1,0 +1,23 @@
+{
+  "checked_at": 1793537589.7542093,
+  "vantage": "coding workspace, IPv4",
+  "host": "192.0.2.17",
+  "ports": {
+    "80": {
+      "tcp": "connected",
+      "http_status_line": "HTTP/1.1 404 Not Found",
+      "seconds": 0.305
+    },
+    "81": {
+      "tcp": "failed",
+      "error": "TimeoutError",
+      "seconds": 4.004
+    },
+    "3000": {
+      "tcp": "failed",
+      "error": "TimeoutError",
+      "seconds": 4.005
+    }
+  },
+  "ipv6_external_test": "not run; VPS currently has no global IPv6 address"
+}

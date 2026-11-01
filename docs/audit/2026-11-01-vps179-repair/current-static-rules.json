@@ -1,0 +1,17 @@
+{
+  "iptables": [
+    "-P INPUT ACCEPT",
+    "-P FORWARD ACCEPT",
+    "-P OUTPUT ACCEPT",
+    "-A INPUT ! -i lo -p tcp -m tcp --dport 81 -j DROP"
+  ],
+  "ip6tables": [
+    "-P INPUT ACCEPT",
+    "-P FORWARD ACCEPT",
+    "-P OUTPUT ACCEPT"
+  ],
+  "exact_rule_check": {
+    "exit": 1,
+    "stderr": "iptables: Bad rule (does a matching rule exist in that chain?).\n"
+  }
+}

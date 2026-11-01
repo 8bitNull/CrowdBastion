@@ -49,13 +49,13 @@ interactive_health_check() { record recheck; }
         for inputs in ('0\n', ''):
             p = self.run_shell('guided_setup', inputs)
             self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
-            self.assertEqual(self.commands(), '')
+            self.assertTrue(all(line == 'systemctl is-active crowdsec' for line in self.commands().splitlines()))
 
     def test_first_selection_enters_setup_with_real_lock(self):
         p = self.run_terminal('show_main_menu', '2\n0\n0\n')
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertIn('1. 安装中转基础防护', p.stdout)
-        self.assertEqual(self.commands(), '')
+        self.assertEqual(self.commands(), 'systemctl is-active crowdsec\n')
 
     def test_setup_reloads_new_selection_after_real_lock(self):
         p = self.run_shell('guided_setup', '4\n0\n')
@@ -283,7 +283,7 @@ systemctl() { record systemctl "$@"; if [[ "$1" == show ]]; then echo loaded; el
         p = self.run_shell('guided_setup', '0\n')
         self.assertIn('1. 安装中转基础防护', p.stdout)
         self.assertIn('3. 管理 V2bX', p.stdout)
-        self.assertEqual(self.commands(), '')
+        self.assertEqual(self.commands(), 'systemctl is-active crowdsec\n')
 
     def test_interactive_report_can_recheck_after_action(self):
         self.roles('relay')

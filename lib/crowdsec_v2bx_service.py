@@ -46,7 +46,10 @@ def read_json(path):
 
 
 def load_config(path):
-    config = read_json(path)
+    return validate_config(read_json(path))
+
+
+def validate_config(config):
     if not isinstance(config, dict) or set(config)-{'poll_interval', 'sources'}:
         raise ValueError('invalid_config')
     interval = config.get('poll_interval', 1)

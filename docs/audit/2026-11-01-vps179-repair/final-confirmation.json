@@ -1,0 +1,51 @@
+{
+  "checked_at": 1793538117.6495092,
+  "decision_membership": {
+    "expected": 16841,
+    "kernel": 16841,
+    "missing": 0,
+    "state": "ok"
+  },
+  "cron_risks": [],
+  "restore_services": [],
+  "remaining_restore_crons": [],
+  "chain_coverage": "ok",
+  "notify_status": {
+    "pending": 0,
+    "retrying": 0,
+    "open_critical": 0,
+    "heartbeat_age": 0.17776894569396973,
+    "last_delivery": 1793535842.4864154,
+    "last_failure": 1793314840.1300418,
+    "health_age": 12.370129346847534,
+    "state": "ready"
+  },
+  "uptime": 10732.04,
+  "services": {
+    "crowdsec": {
+      "MainPID": "116932",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "2109",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "docker": {
+      "MainPID": "642",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdsec-1key-bot": {
+      "MainPID": "114599",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    },
+    "crowdbastion-notify": {
+      "MainPID": "116759",
+      "NRestarts": "0",
+      "ActiveState": "active"
+    }
+  }
+}

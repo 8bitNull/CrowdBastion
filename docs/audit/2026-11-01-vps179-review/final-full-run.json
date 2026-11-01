@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests"
+  ],
+  "started_at": 1793535100.3278863,
+  "completed_at": 1793535544.3838885,
+  "exit": 0
+}

@@ -1,0 +1,78 @@
+{
+  "started_at": 1793541466.3453705,
+  "finished_at": 1793541468.3069863,
+  "release": "/opt/crowdbastion/releases/tg-responsive-20261101-73c519efafda",
+  "backup": "/var/backups/crowdbastion/tg-responsive-20261101T134928Z",
+  "fingerprint": "73c519efafda0ac96a6614621ff7b163c285363f124cb12dfaa6ea412afe48cc",
+  "config_bytes_preserved": true,
+  "protected_configs_preserved": 7,
+  "offsets_checked": 1,
+  "audits_checked": 0,
+  "services_before": {
+    "crowdsec": {
+      "MainPID": "116932",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "2109",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot": {
+      "MainPID": "114599",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdbastion-notify": {
+      "MainPID": "116759",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "docker": {
+      "MainPID": "642",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    }
+  },
+  "services_after": {
+    "crowdsec": {
+      "MainPID": "116932",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer": {
+      "MainPID": "2109",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot": {
+      "MainPID": "195577",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "crowdbastion-notify": {
+      "MainPID": "116759",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    },
+    "docker": {
+      "MainPID": "642",
+      "NRestarts": "0",
+      "ActiveState": "active",
+      "UnitFileState": "enabled"
+    }
+  },
+  "code_status_exit": 0,
+  "code_status": "源码程序指纹：102faa53a2d0cc61\n已安装机器人：102faa53a2d0cc61（一致）\n源码主脚本指纹：73c519efafda0ac9\n机器人随附主脚本：73c519efafda0ac9（一致）\n此结果只比较代码；源码、定时任务副本、机器人副本分别更新，不证明服务或 TG 轮询正常。\n",
+  "update_output": "\n可选交互机器人\n1. 配置/更新并启用\n2. 只读检查\n3. 停用交互机器人\n4. 只读代码版本检查\n5. 保留配置更新代码\n0. 返回\n源码程序指纹：102faa53a2d0cc61\n已安装机器人：0f2f79d5721670ef（不同）\n源码主脚本指纹：73c519efafda0ac9\n机器人随附主脚本：29689b60aa5410dc（不同）\n此结果只比较代码；源码、定时任务副本、机器人副本分别更新，不证明服务或 TG 轮询正常。\n[INFO] 更新预览：替换机器人程序、辅助模块及随附主脚本；保留配置、轮询进度和审计；原运行服务会短暂停止并重启，原停用服务保持停用。\n[INFO] 不会更新定时任务副本；失败恢复原文件、主脚本指针和服务状态。\n机器人配置格式有效；未连接 Telegram，也未验证运行状态。\n[INFO] 修改前备份: /var/backups/crowdsec-1key/change.DfHqwauO\n机器人配置格式有效；未连接 Telegram，也未验证运行状态。\n[SUCCESS] 交互机器人代码已更新、服务已启动；保留配置和状态。服务活跃不代表 Telegram 轮询成功。\n\n可选交互机器人\n1. 配置/更新并启用\n2. 只读检查\n3. 停用交互机器人\n4. 只读代码版本检查\n5. 保留配置更新代码\n0. 返回\n\n"
+}

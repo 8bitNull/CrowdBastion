@@ -245,7 +245,8 @@ class Migration:
             atomic(self.state/(binary+'.before'), run([binary+'-save']).stdout.encode())
         # Timer uses a private immutable copy, independent of future repo updates.
         for name in ('crowdsec_firewall_migrate.py', 'crowdsec_firewall_runtime.py',
-                     'crowdsec_firewall_flow.py', 'crowdsec_config.py', 'crowdbastion_health.py'):
+                     'crowdsec_firewall_flow.py', 'crowdsec_firewall_evidence.py',
+                     'crowdsec_remote_bouncer.py', 'crowdsec_config.py', 'crowdbastion_health.py'):
             atomic(self.state/name, Path(__file__).with_name(name).read_bytes())
         self.mark('prepared')
 
@@ -300,6 +301,12 @@ class Migration:
 
     def membership(self, native=False):
         expected = networks(live(self.config), 15)
+        if not native:
+            from crowdsec_firewall_evidence import membership
+            report = membership(expected, iptables_references(self.config, True), run(['ipset', 'save']).stdout)
+            if report['missing']:
+                raise MigrationError('有效封禁未完整进入实际引用的内核集合。')
+            return report
         buckets = {}
         if native:
             ruleset = json.loads(run(['nft', '-j', 'list', 'ruleset']).stdout)
@@ -319,18 +326,6 @@ class Migration:
                         else:
                             raise MigrationError('无法核查原 nftables 集合成员；保留临时保护。')
                 buckets[key] = actual
-        else:
-            references = iptables_references(self.config, True)
-            buckets = {(4, 'all'): set(), (6, 'all'): set()}
-            for line in run(['ipset', 'save']).stdout.splitlines():
-                tokens = line.split()
-                if len(tokens) >= 3 and tokens[0] == 'add':
-                    for version, names in references.items():
-                        if tokens[1] in names:
-                            net = ipaddress.ip_network(tokens[2], strict=False)
-                            if net.version != version:
-                                raise MigrationError('封禁集合地址族不匹配。')
-                            buckets[(version, 'all')].add(net)
         from bisect import bisect_right
         for (version, _), actual in buckets.items():
             collapsed = list(ipaddress.collapse_addresses(actual))
@@ -456,6 +451,11 @@ class Migration:
                                      'cleanup', str(self.state)], timeout=90, capture_output=True)
             if result.returncode or self.marker('flow-active'):
                 raise MigrationError('流量测试资源尚未清理；保留保护和回退资料。')
+            stopped = run(['systemctl', 'stop', 'crowdbastion-flow-cleanup.timer'], check=False)
+            if stopped.returncode:
+                loaded = run(['systemctl', 'show', 'crowdbastion-flow-cleanup.timer', '--property=LoadState', '--value'], check=False).stdout.strip()
+                if loaded != 'not-found':
+                    raise MigrationError('流量清理定时器未停止；保留恢复标识。')
             (self.state/'flow-launching').unlink(missing_ok=True)
 
     def cleanup(self):

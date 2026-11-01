@@ -1,0 +1,99 @@
+{
+  "fingerprint": "29689b60aa5410dc1baa296594fecd519be4f1b3e8d715bd5d2851804a34e573",
+  "manager_seconds": 8.915,
+  "manager_exit": 2,
+  "manager_report": {
+    "version": 1,
+    "checked_at": 1793537094.5876126,
+    "config_path": "/etc/crowdsec/config.yaml",
+    "checks": {
+      "traffic": "pending",
+      "core": "ok",
+      "bouncer": "ok",
+      "api": "ok",
+      "config": "ok",
+      "registry": "ok",
+      "metrics": "ok",
+      "renewal": "ok",
+      "firewall_startup": "ok",
+      "firewall_paths": "ok",
+      "decisions": "ok",
+      "appsec": "ok",
+      "logs": "ok",
+      "acquisition": "ok",
+      "web": "ok",
+      "rules": "ok"
+    },
+    "required": [
+      "traffic",
+      "core",
+      "logs",
+      "web",
+      "bouncer",
+      "api",
+      "config",
+      "registry",
+      "metrics",
+      "renewal",
+      "firewall_startup",
+      "firewall_paths",
+      "decisions",
+      "appsec",
+      "rules"
+    ],
+    "summary": {
+      "verdict": "运行检查通过，实际拦截待验证",
+      "status": 2,
+      "confirmed": "本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则",
+      "attention": "",
+      "additional": 0,
+      "impact": "",
+      "action": "verify",
+      "action_label": "查看如何验证实际拦截",
+      "next": "按实际流量路径完成一次外部拦截验证。"
+    },
+    "roles": [
+      "relay"
+    ],
+    "scope": "网站、本地中转"
+  },
+  "reader_report": {
+    "checked_at": 1793537103.8608203,
+    "checks": {
+      "traffic": "pending",
+      "core": "ok",
+      "bouncer": "ok",
+      "api": "ok",
+      "config": "ok",
+      "registry": "ok",
+      "metrics": "ok",
+      "renewal": "ok",
+      "firewall_startup": "ok",
+      "firewall_paths": "ok",
+      "decisions": "ok",
+      "appsec": "ok",
+      "logs": "ok",
+      "acquisition": "ok",
+      "web": "ok",
+      "rules": "ok"
+    },
+    "summary": {
+      "verdict": "运行检查通过，实际拦截待验证",
+      "status": 2,
+      "confirmed": "本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则",
+      "attention": "",
+      "additional": 0,
+      "impact": "",
+      "action": "verify",
+      "action_label": "查看如何验证实际拦截",
+      "next": "按实际流量路径完成一次外部拦截验证。"
+    },
+    "scope": "网站、本地中转"
+  },
+  "manager_file_metadata": {
+    "mode": "0o755",
+    "uid": 0
+  },
+  "reader_seconds": 9.306,
+  "startup_audit": "[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 16848，实际集合网络 16848，遗漏 0。\n"
+}

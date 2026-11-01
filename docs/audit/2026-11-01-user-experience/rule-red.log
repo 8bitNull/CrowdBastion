@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_unchanged_config_with_lost_rules_still_restarts_to_repair (test_firewall_runtime.StartupTransactions.test_unchanged_config_with_lost_rules_still_restarts_to_repair)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_firewall_runtime.py", line 461, in test_unchanged_config_with_lost_rules_still_restarts_to_repair
+    self.assertTrue(Path(str(self.trace)+'.changed').exists(), 'rule-only repair must trigger a health refresh')
+AssertionError: False is not true : rule-only repair must trigger a health refresh
+
+----------------------------------------------------------------------
+Ran 1 test in 0.245s
+
+FAILED (failures=1)

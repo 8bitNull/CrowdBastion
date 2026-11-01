@@ -108,8 +108,8 @@ manage_v2bx_observer() {
     local choice
     local V2BX_OBSERVER_CONFIG="${V2BX_OBSERVER_CONFIG:-}"
     while true; do
-        printf '\n持续记录落地节点日志\n首次使用先选 4 准备配置，再选 1；记录健康后返回落地菜单开启异常告警。\n1. 使用已准备的配置开始记录\n2. 查看记录情况\n3. 停止记录，保留已有数据\n4. 查看配置示例与准备步骤\n0. 返回\n'
-        prompt choice '请选择 [0-4]: ' || return 0
+        printf '\n持续记录落地节点日志\n首次使用可选 5 交互生成配置，或选 4 查看多源示例，再选 1；记录健康后返回落地菜单开启异常告警。\n1. 使用已准备的配置开始记录\n2. 查看记录情况\n3. 停止记录，保留已有数据\n4. 查看配置示例与准备步骤\n5. 交互生成并校验单源配置\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1)
                 if [[ -z "$V2BX_OBSERVER_CONFIG" ]]; then
@@ -120,6 +120,7 @@ manage_v2bx_observer() {
             2) v2bx_observer_service status ;;
             3) locked_operation v2bx_observer_service disable ;;
             4) show_v2bx_observer_config_help ;;
+            5) generate_v2bx_observer_config ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac

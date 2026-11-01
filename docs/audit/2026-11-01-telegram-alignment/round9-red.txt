@@ -1,0 +1,31 @@
+EE
+======================================================================
+ERROR: test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports (test_telegram_alignment.MaintenanceGuard.test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports) (existing=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 52, in test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports
+    with maintenance_guard(lock, migration):
+  File "/usr/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/lib/crowdsec_bot_runtime.py", line 180, in maintenance_guard
+    raise MaintenanceRefused('维护锁或迁移状态无法安全确认，本次未执行；请在终端核对。') from None
+crowdsec_bot_runtime.MaintenanceRefused: 维护锁或迁移状态无法安全确认，本次未执行；请在终端核对。
+
+======================================================================
+ERROR: test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports (test_telegram_alignment.MaintenanceGuard.test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports) (existing=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 52, in test_sticky_lock_directory_allows_safe_shared_lock_but_not_private_reports
+    with maintenance_guard(lock, migration):
+  File "/usr/lib/python3.11/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/lib/crowdsec_bot_runtime.py", line 180, in maintenance_guard
+    raise MaintenanceRefused('维护锁或迁移状态无法安全确认，本次未执行；请在终端核对。') from None
+crowdsec_bot_runtime.MaintenanceRefused: 维护锁或迁移状态无法安全确认，本次未执行；请在终端核对。
+
+----------------------------------------------------------------------
+Ran 1 test in 0.033s
+
+FAILED (errors=2)

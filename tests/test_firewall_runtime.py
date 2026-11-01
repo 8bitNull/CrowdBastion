@@ -87,6 +87,37 @@ class RuntimeTests(unittest.TestCase):
     def rules(self):
         return '\n'.join('-A '+c+' -j CROWDSEC_CHAIN' for c in ('INPUT', 'FORWARD', 'DOCKER-USER'))+'\n-A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-0 src -j DROP\n'
 
+    def test_official_rule_comments_do_not_change_drop_coverage(self):
+        rules = self.rules().replace(' src -j DROP', ' src -m comment --comment "CrowdSec: crowdsec" -j DROP')
+        self.assertEqual(self.coverage(v4=rules), 'ok')
+        rules = self.rules().replace(' src -j DROP', ' src -j DROP -m comment --comment "CrowdSec: crowdsec"')
+        self.assertEqual(self.coverage(v4=rules), 'ok')
+
+    def test_comments_do_not_hide_restricted_drop_rules(self):
+        rules = self.rules().replace(' src -j DROP', ' src -p tcp -m comment --comment "CrowdSec: crowdsec" -j DROP')
+        self.assertEqual(self.coverage(v4=rules), 'fault')
+
+    def test_idle_family_without_drop_is_checked_against_live_decisions(self):
+        empty = '\n'.join('-A '+c+' -j CROWDSEC_CHAIN' for c in ('INPUT', 'FORWARD', 'DOCKER-USER'))+'\n-N CROWDSEC_CHAIN\n'
+        with patch.object(runtime, 'active_ban_families', return_value={4}):
+            self.assertEqual(self.coverage(v6=empty), 'ok')
+        with patch.object(runtime, 'active_ban_families', return_value={4, 6}):
+            self.assertEqual(self.coverage(v6=empty), 'fault')
+        with patch.object(runtime, 'active_ban_families', side_effect=ValueError('unavailable')):
+            self.assertEqual(self.coverage(v6=empty), 'unknown')
+
+    def test_absent_idle_chain_is_still_a_fault(self):
+        empty = '\n'.join('-A '+c+' -j CROWDSEC_CHAIN' for c in ('INPUT', 'FORWARD', 'DOCKER-USER'))+'\n'
+        with patch.object(runtime, 'active_ban_families', return_value=set()):
+            self.assertEqual(self.coverage(v6=empty), 'fault')
+
+    def test_missing_jumps_take_precedence_over_unavailable_decisions(self):
+        empty = '-N CROWDSEC_CHAIN\n'
+        with patch.object(runtime, 'active_ban_families', side_effect=ValueError('unavailable')):
+            self.assertEqual(self.coverage(v4=empty), 'fault')
+            idle = '\n'.join('-A '+c+' -j CROWDSEC_CHAIN' for c in ('INPUT', 'FORWARD', 'DOCKER-USER'))+'\n-N CROWDSEC_CHAIN\n'
+            self.assertEqual(self.coverage(v4=idle, v6=empty), 'fault')
+
     def coverage(self, v4=None, v6=None):
         def execute(argv):
             output = (v6 if argv[0] == 'ip6tables' else v4) or self.rules()
@@ -171,6 +202,8 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(applied['custom'], 'keep')
         self.assertEqual(self.config.read_bytes(), self.original)
         self.assertTrue((self.state/'crowdsec_firewall_flow.py').is_file())
+        self.assertTrue((self.state/'crowdsec_firewall_evidence.py').is_file())
+        self.assertTrue((self.state/'crowdsec_remote_bouncer.py').is_file())
         self.assertEqual(self.state.stat().st_mode & 0o777, 0o700)
 
     def test_rollback_restores_existing_local_and_absent_dropin(self):
@@ -215,7 +248,7 @@ class MigrationTests(unittest.TestCase):
     def test_kernel_membership_accepts_superset_but_rejects_missing_ipv6(self):
         rows = self.rows+[{'type': 'ban', 'scope': 'Range', 'value': '2001:db8::/64', 'duration': '2m'}]
         with patch.object(migrate, 'live', return_value=rows), patch.object(migrate, 'run', return_value=
-                subprocess.CompletedProcess([], 0, 'add crowdsec-blacklists-2 198.51.100.0/24\nadd crowdsec6-blacklists-2 2001:db8::/48\n')):
+                subprocess.CompletedProcess([], 0, 'create crowdsec-blacklists-0 hash:net family inet\ncreate crowdsec-blacklists-2 hash:net family inet\ncreate crowdsec6-blacklists-0 hash:net family inet6\ncreate crowdsec6-blacklists-2 hash:net family inet6\nadd crowdsec-blacklists-2 198.51.100.0/24\nadd crowdsec6-blacklists-2 2001:db8::/48\n')):
             self.assertEqual(self.tx.membership()['missing'], 0)
         with patch.object(migrate, 'live', return_value=rows), patch.object(migrate, 'run', return_value=
                 subprocess.CompletedProcess([], 0, 'add unrelated 198.51.100.7\n')):
@@ -230,7 +263,7 @@ class MigrationTests(unittest.TestCase):
             self.assertEqual(self.tx.membership(native=True)['missing'], 0)
 
     def test_expiring_decisions_do_not_cause_false_missing(self):
-        with patch.object(migrate, 'live', return_value=[dict(self.rows[0], duration='5s')]):
+        with patch.object(migrate, 'live', return_value=[dict(self.rows[0], duration='5s')]), patch.object(migrate, 'run', return_value=subprocess.CompletedProcess([], 0, 'create crowdsec-blacklists-0 hash:net family inet\ncreate crowdsec-blacklists-2 hash:net family inet\ncreate crowdsec6-blacklists-0 hash:net family inet6\ncreate crowdsec6-blacklists-2 hash:net family inet6\n')):
             self.assertEqual(self.tx.membership()['expected'], 0)
 
     def test_old_ssh_connection_cannot_commit_even_after_flow(self):
@@ -384,6 +417,7 @@ firewall_write_startup() {
  printf '[Unit]\\nAfter=docker.service\\n' > "$FIREWALL_DROPIN"
 }
 check_firewall_runtime() { return 0; }
+wait_firewall_decisions() { return 0; }
 '''
         return local, overrides
 
@@ -420,15 +454,26 @@ check_firewall_runtime() {
  [[ "$count" != 2 ]]
 }
 '''
-        result = self.run_shell('repair_firewall_startup && repair_firewall_startup', overrides=overrides)
+        result = self.run_shell('repair_firewall_startup && rm -f -- "$CROWDBASTION_HEALTH_CHANGED" && repair_firewall_startup',
+                                overrides=overrides+'\nexport CROWDBASTION_HEALTH_CHANGED="$TRACE.changed"\n')
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(self.commands().count('restart crowdsec-firewall-bouncer'), 2)
+        self.assertTrue(Path(str(self.trace)+'.changed').exists(), 'rule-only repair must trigger a health refresh')
 
     def test_chain_failure_rolls_back_startup_changes(self):
         local, overrides = self.setup_config()
         overrides += '\ncheck_firewall_runtime() { return 1; }\n'
         result = self.run_shell('repair_firewall_startup', overrides=overrides)
         self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(local.read_text(), 'api_key: preserve\n')
+        self.assertFalse(Path(str(self.trace)+'.order').exists())
+
+    def test_decision_sync_failure_rolls_back_startup_changes(self):
+        local, overrides = self.setup_config()
+        overrides += '\nwait_firewall_decisions() { record wait-decisions; return 2; }\n'
+        result = self.run_shell('repair_firewall_startup', overrides=overrides)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('wait-decisions', self.commands())
         self.assertEqual(local.read_text(), 'api_key: preserve\n')
         self.assertFalse(Path(str(self.trace)+'.order').exists())
 

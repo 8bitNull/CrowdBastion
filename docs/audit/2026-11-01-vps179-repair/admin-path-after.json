@@ -1,0 +1,19 @@
+{
+  "127.0.0.1:81": {
+    "status": 200
+  },
+  "127.0.0.1:3000": {
+    "status": 200
+  },
+  "[::1]:81": {
+    "status": 200
+  },
+  "[::1]:3000": {
+    "status": 200
+  },
+  "npm_configuration": {
+    "exit": 0,
+    "api_uses_loopback_3000": true
+  },
+  "ipv6_global_addresses": []
+}

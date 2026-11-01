@@ -45,7 +45,7 @@ class RelayVerification(unittest.TestCase):
                                      options.get('hook', 'input'),
                                      '1.1.1.1' if family == 'ip' else '2606:4700:4700::1111')
 
-    def run_wizard(self, answers=None, snapshots=None, remote=False):
+    def run_wizard(self, answers=None, snapshots=None, remote=False, root='/unused', record_path=None):
         inputs = iter(answers or [
             '9.9.9.9', '8443', '1', '1', '1.1.1.1', '8.8.8.8', '', 'y',
             '1', '1', 'y', '2', '1', 'y', '1', '1'])
@@ -59,8 +59,8 @@ class RelayVerification(unittest.TestCase):
             except StopIteration:
                 raise EOFError from None
         with contextlib.redirect_stdout(output):
-            status = self.tool.verify('/unused', remote=remote, ask=ask,
-                                      snapshot=lambda scope: next(reads),
+            status = self.tool.verify(root, remote=remote, ask=ask,
+                                      snapshot=lambda scope: next(reads), record_path=record_path,
                                       env={'SSH_CONNECTION': '4.2.2.2 1234 9.9.9.9 22'})
         return status, output.getvalue()
 
@@ -75,6 +75,29 @@ class RelayVerification(unittest.TestCase):
         self.assertIn('--duration 2m', text)
         self.assertNotIn('全节点防护通过', text)
         self.assertNotIn('decisions delete --ip', text)
+
+    def test_complete_acceptance_persists_scoped_summary_without_source_ips(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            record = root/'acceptance.json'
+            code, text = self.run_wizard(root=root, record_path=record)
+            self.assertEqual(code, 0, text)
+            data = json.loads(record.read_text())
+            self.assertEqual(data['code'], 0)
+            self.assertEqual(data['scope']['target'], '9.9.9.9')
+            self.assertNotIn('1.1.1.1', record.read_text())
+            self.assertNotIn('8.8.8.8', record.read_text())
+            self.assertEqual(record.stat().st_mode & 0o777, 0o600)
+
+    def test_history_write_failure_keeps_current_acceptance_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            record = root/'existing-directory'
+            record.mkdir()
+            code, text = self.run_wizard(root=root, record_path=record)
+            self.assertEqual(code, 0, text)
+            self.assertIn('本次入口验证通过', text)
+            self.assertIn('保存失败', text)
 
     def test_reachable_banned_source_is_a_failure_even_if_counter_increases(self):
         answers = ['9.9.9.9', '8443', '1', '1', '1.1.1.1', '8.8.8.8', '', 'y',
@@ -353,6 +376,7 @@ cscli() { record UNEXPECTED_CSCLI; return 99; }
         self.assertEqual(run.returncode, 2, run.stdout+run.stderr)
         self.assertIn('--remote', self.commands())
         self.assertIn('crowdbastion_relay_verify.py', self.commands())
+        self.assertIn('--record', self.commands())
         self.assertNotIn('UNEXPECTED_CSCLI', self.commands())
 
 

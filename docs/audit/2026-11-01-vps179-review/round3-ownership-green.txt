@@ -1,0 +1,8 @@
+test_unknown_file_symlink_or_fifo_is_rejected_before_snapshot (__main__.DependencyOwnership.test_unknown_file_symlink_or_fifo_is_rejected_before_snapshot) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.046s
+
+OK
+
+exit=0

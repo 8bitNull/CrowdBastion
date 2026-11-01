@@ -158,6 +158,7 @@ class MigrationReview(unittest.TestCase):
         cleanup = next(i for i, argv in enumerate(events) if 'cleanup' in argv)
         stop = events.index(['systemctl', 'stop', runtime.UNIT])
         self.assertLess(cleanup, stop)
+        self.assertIn(['systemctl', 'stop', 'crowdbastion-flow-cleanup.timer'], events)
         self.assertFalse(self.tx.marker('flow-launching'))
 
     def test_failed_flow_cleanup_preserves_new_config_and_protection(self):
@@ -169,6 +170,19 @@ class MigrationReview(unittest.TestCase):
         self.assertFalse(self.tx.marker('rolled-back'))
         self.assertIn(b'mode: iptables', self.tx.local.read_bytes())
         self.assertNotIn(['systemctl', 'stop', runtime.UNIT], self.commands)
+
+    def test_collected_cleanup_timer_does_not_block_recovery(self):
+        self.tx.mark('flow-launching')
+        def command(argv, **kwargs):
+            if 'crowdbastion-flow-cleanup.timer' in argv:
+                if 'show' in argv:
+                    self.assertFalse(kwargs.get('check', True))
+                    return subprocess.CompletedProcess(argv, 1, 'not-found\n')
+                return subprocess.CompletedProcess(argv, 5, '')
+            return subprocess.CompletedProcess(argv, 0, 'not-found\n')
+        with patch.object(migrate, 'run', side_effect=command), patch.object(migrate.subprocess, 'run', return_value=subprocess.CompletedProcess([], 0)):
+            self.tx.clean_flow()
+        self.assertFalse(self.tx.marker('flow-launching'))
 
     def test_native_parser_accepts_archived_real_vps_structure(self):
         archive = Path(__file__).resolve().parents[1]/'docs/audit/2026-10-19-second-vps-readonly-evidence.json'
@@ -194,6 +208,17 @@ class FlowReview(unittest.TestCase):
     setUp = prior.FlowTests.setUp
     rows = prior.FlowTests.rows
 
+    def test_cleanup_accepts_confirmed_absent_docker_chain(self):
+        (self.root/'flow-active').touch()
+        def command(argv, *args, **kwargs):
+            if argv[:2] in (['iptables', '-S'], ['ip6tables', '-S']) and len(argv) > 2:
+                raise ValueError('chain absent')
+            output = 'not-found\n' if '--property=LoadState' in argv else '[]' if '-j' in argv else '-P INPUT ACCEPT\n'
+            return subprocess.CompletedProcess(argv, 0, output)
+        with patch.object(self.flow, 'decisions', return_value=[]), patch.object(self.flow, 'run', side_effect=command):
+            self.flow.cleanup()
+        self.assertFalse((self.root/'flow-active').exists())
+
     def test_lapi_cleanup_failure_does_not_skip_rule_and_interface_cleanup(self):
         (self.root/'flow-active').touch()
         commands = []
@@ -205,7 +230,7 @@ class FlowReview(unittest.TestCase):
              patch.object(self.flow, 'run', side_effect=command):
             with self.assertRaises(ValueError):
                 self.flow.cleanup()
-        self.assertIn(['iptables', '-S', 'INPUT'], commands)
+        self.assertIn(['iptables', '-S'], commands)
         self.assertIn(['ip', 'link', 'del', 'cbfw-in'], commands)
         self.assertTrue((self.root/'flow-active').exists())
 

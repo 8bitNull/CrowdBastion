@@ -1,0 +1,16 @@
+{
+  "static_ipv4_rules": [
+    {
+      "table": "*filter",
+      "chain": "INPUT",
+      "options": {
+        "-p": "tcp",
+        "--dport": "81",
+        "-i": "lo",
+        "-j": "DROP"
+      },
+      "has_source_match": false,
+      "has_destination_match": false
+    }
+  ]
+}

@@ -82,7 +82,8 @@ health_start_service() {
         journalctl -u "$unit" -n 30 --no-pager
         return 1
     fi
-    printf '服务已启动；请返回选择 3 重新检查防护情况。\n'
+    printf '服务已启动；返回检查页后将自动复查防护情况。\n'
+    health_note_change
 }
 
 health_service_diagnose() {
@@ -120,6 +121,7 @@ health_service_diagnose() {
 
 health_recommended_action() {
     case "$1" in
+        repair_existing) locked_operation repair_existing_deployment ;;
         verify) health_verification_help ;;
         core_logs) health_service_diagnose core ;;
         bouncer_logs) health_service_diagnose bouncer ;;
@@ -138,7 +140,12 @@ health_recommended_action() {
 }
 
 health_report() (
-    local scope="$1" mode="${2:-summary}" context="${3:-}" work result=0 choice action label
+    local scope="$1" mode="${2:-summary}" context="${3:-}" work result=0 choice action label before after action_status
+    if [[ "$mode" == interactive && -t 0 ]]; then
+        # Consumed by health_stage while detailed output is captured.
+        # shellcheck disable=SC2034
+        exec {CROWDBASTION_PROGRESS_FD}>&1
+    fi
     umask 077
     work=$(mktemp -d "${TMPDIR:-/tmp}/crowdbastion-health.XXXXXXXX") || { log_err '无法准备检查报告。'; return 1; }
     trap 'rm -rf -- "$work"' EXIT
@@ -149,6 +156,7 @@ health_report() (
         rm -f -- "$work/action"
         export CROWDBASTION_HEALTH_EVENTS="$work/events" PYTHONDONTWRITEBYTECODE=1
         : > "$work/events"
+        health_stage '准备只读检查'
         case "$scope" in
             overall) check_health_status_raw > "$work/details" 2>&1 || result=$? ;;
             relay) check_relay_status_raw "$context" > "$work/details" 2>&1 || result=$? ;;
@@ -159,6 +167,10 @@ health_report() (
         fi
         # Unknown exit statuses still mean a failed check, never a successful result.
         [[ "$result" == 0 || "$result" == 2 ]] || result=1
+        if [[ "$mode" == json ]]; then
+            python3 "${SCRIPT_DIR}/lib/crowdbastion_health.py" json "$work/events" "$result" "$scope" "$NODE_ROLES" "${CS_DIR}/config.yaml"
+            return $?
+        fi
         local rendered=0
         python3 "${SCRIPT_DIR}/lib/crowdbastion_health.py" "$work/events" "$result" "$scope" "$NODE_ROLES" "$work/action" > "$work/summary" 2> "$work/report-errors" || rendered=$?
         if [[ ( "$rendered" == 0 || "$rendered" == 1 || "$rendered" == 2 ) && -s "$work/action" ]]; then
@@ -170,6 +182,7 @@ health_report() (
             cat -- "$work/report-errors" >> "$work/details"
             result=1
         fi
+        if [[ "$scope" != node ]] && { node_has_role relay || node_has_role remote; }; then show_relay_acceptance; fi
         if [[ "$mode" == details ]]; then cat -- "$work/details"; return "$result"; fi
         if [[ "$mode" != interactive || ! -t 0 ]]; then
             printf '查看详情：%s\n' "$(case "$scope" in overall) printf '%s' --status-details;; relay) printf '%s' --relay-status-details;; node) printf '%s' --diagnose-v2bx-details;; esac)"
@@ -179,13 +192,27 @@ health_report() (
         # No check output or event context is allowed to leak into a later action.
         unset CROWDBASTION_HEALTH_EVENTS
         while true; do
-            printf '\n1. %s（推荐）\n2. 查看技术详情\n3. 重新检查\n0. 返回\n' "$label"
-            prompt choice '请选择 [0-3]: ' || return 0
+            printf '\n1. %s（推荐）\n2. 查看技术详情\n3. 重新检查\n4. 导出脱敏诊断报告\n0. 返回\n' "$label"
+            prompt choice '请选择 [0-4]: ' || return 0
             case "$choice" in
                 0) return 0 ;;
-                1) health_recommended_action "$action" "$work/details"; printf '\n操作已返回。处理后请选择 3 重新检查；检查结果以复查为准。\n' ;;
-                2) cat -- "$work/details" ;;
+                1)
+                    before=$(ux_config_fingerprint) || before=''
+                    export CROWDBASTION_HEALTH_CHANGED="$work/changed"
+                    rm -f -- "$work/changed"
+                    action_status=0
+                    health_recommended_action "$action" "$work/details" || action_status=$?
+                    after=$(ux_config_fingerprint) || after=''
+                    unset CROWDBASTION_HEALTH_CHANGED
+                    if [[ "$action_status" == 0 ]] && { [[ -f "$work/changed" ]] || [[ -n "$before" && -n "$after" && "$before" != "$after" ]]; }; then
+                        printf '\n检测到已执行的修改，正在自动复查（只读）…\n'
+                        break
+                    fi
+                    if [[ "$action_status" != 0 ]]; then printf '\n操作未完成，请按上方错误处理；选择 3 可复查当前情况。\n'
+                    else printf '\n未检测到配置或服务修改；返回或取消不会改变检查结论。选择 3 可重新检查。\n'; fi ;;
+                2) show_health_details "$work/details" ;;
                 3) break ;;
+                4) export_health_details "$work/details" ;;
                 *) log_warn '无效选项。' ;;
             esac
         done

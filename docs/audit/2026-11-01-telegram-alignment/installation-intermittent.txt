@@ -1,0 +1,14 @@
+Intermittent installation failure: excerpt captured from the task-1 tool output and its log before a later successful task-done run overwrote that log. This is an excerpt, not the original full output.
+
+FAIL: test_null_maintenance_paths_are_rejected_by_config_validation (test_telegram_alignment.BotDeployment.test_null_maintenance_paths_are_rejected_by_config_validation)
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_alignment.py", line 423, in test_null_maintenance_paths_are_rejected_by_config_validation
+    self.assertEqual(self.setup_bot().returncode, 0)
+AssertionError: 1 != 0
+
+Ran 68 tests in 17.813s
+FAILED (failures=1)
+
+task-done: test command exited 1; Task 1 NOT recorded.
+
+The assertion did not retain the setup subprocess output; cause remains undetermined. The isolated test, 20 isolated installations, and subsequent 68-test combination passed. See installation-repeat.txt, nullpath-repeat.txt and task-1.txt. No fix is claimed for this unreproduced failure.

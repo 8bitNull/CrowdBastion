@@ -1,0 +1,21 @@
+FF
+======================================================================
+FAIL: test_six_hour_digest_merges_idle_incidents_of_same_rule_and_sources (test_notify_noise.NotificationNoise.test_six_hour_digest_merges_idle_incidents_of_same_rule_and_sources)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_noise.py", line 121, in test_six_hour_digest_merges_idle_incidents_of_same_rule_and_sources
+    self.assertIn('新增 3 条告警，涉及 1 类事件', text)
+AssertionError: '新增 3 条告警，涉及 1 类事件' not found in '📋 普通告警汇总 · test-node\n新增 3 条告警，涉及 3 类事件。\n• crowdsecurity/http-probing：新增 1 条；留存记录来源 1 个\n  /inspect 1\n• crowdsecurity/http-probing：新增 1 条；留存记录来源 1 个\n  /inspect 2\n• crowdsecurity/http-probing：新增 1 条；留存记录来源 1 个\n  /inspect 3\n告警数量不等于实际拦截次数。'
+
+======================================================================
+FAIL: test_hourly_attention_merges_unsent_idle_incidents_of_same_rule (test_notify_noise.NotificationNoise.test_hourly_attention_merges_unsent_idle_incidents_of_same_rule)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_notify_noise.py", line 133, in test_hourly_attention_merges_unsent_idle_incidents_of_same_rule
+    self.assertIn('新增 2 条告警，涉及 1 类事件', self.sent[-1]['text'])
+AssertionError: '新增 2 条告警，涉及 1 类事件' not found in '⚠️ 需要关注 · test-node\n新增 2 条告警，涉及 2 类事件。\n• new-rule：新增 1 条；留存记录来源 1 个\n  /inspect 2\n• new-rule：新增 1 条；留存记录来源 1 个\n  /inspect 3\n告警数量不等于实际拦截次数。'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.093s
+
+FAILED (failures=2)

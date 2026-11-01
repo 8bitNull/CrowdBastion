@@ -1,0 +1,87 @@
+{
+  "checked_at": 1793533091.384903,
+  "persistent_vs_live": {
+    "ipv4": {
+      "live": {
+        "sha256": "1d9b69aa829286bec2f68bd77972e6d0b7165b8b6e982eb03298957c18ba1152",
+        "tables": [
+          "*filter",
+          "*nat",
+          "*raw"
+        ],
+        "static_rule_count": 1
+      },
+      "saved": {
+        "sha256": "1d9b69aa829286bec2f68bd77972e6d0b7165b8b6e982eb03298957c18ba1152",
+        "tables": [
+          "*filter",
+          "*nat",
+          "*raw"
+        ],
+        "static_rule_count": 1
+      },
+      "non_docker_non_crowdsec_equal_without_counters": true
+    },
+    "ipv6": {
+      "live": {
+        "sha256": "82b5043939552f72edeadf7ff2c3285964ff199dde090ed5ccccf897fa9afe73",
+        "tables": [
+          "*filter",
+          "*nat"
+        ],
+        "static_rule_count": 0
+      },
+      "saved": {
+        "sha256": "82b5043939552f72edeadf7ff2c3285964ff199dde090ed5ccccf897fa9afe73",
+        "tables": [
+          "*filter",
+          "*nat"
+        ],
+        "static_rule_count": 0
+      },
+      "non_docker_non_crowdsec_equal_without_counters": true
+    }
+  },
+  "installed_bot_health": {
+    "checked_at": 1793533091.9497557,
+    "checks": {
+      "core": "ok",
+      "api": "ok",
+      "bouncer": "ok",
+      "registry": "ok",
+      "metrics": "ok",
+      "logs": "fault",
+      "remote": "optional",
+      "traffic": "pending"
+    },
+    "summary": {
+      "verdict": "发现问题，需要处理",
+      "status": 1,
+      "confirmed": "本地检测服务运行、防火墙防护服务运行",
+      "attention": "日志已读取，但没有成功解析",
+      "additional": 0,
+      "impact": "相关日志中的攻击可能无法被识别。",
+      "action": "log_help",
+      "action_label": "查看日志解析排查方法",
+      "next": "核对日志格式、采集标签与解析器；详见检查详情。"
+    },
+    "scope": "本地 CrowdSec、LAPI、已配置防火墙 Bouncer 与日志解析"
+  },
+  "npm_processes": {
+    "exit": 0,
+    "stdout": "PID                 COMMAND\n1494                s6-svscan\n1573                s6-supervise\n1576                s6-linux-init-s\n1587                s6-supervise\n1588                s6-supervise\n1589                s6-supervise\n1590                s6-supervise\n1591                s6-supervise\n1599                s6-ipcserverd\n1970                bash\n1972                nginx\n2004                node\n2005                nginx\n2006                nginx\n",
+    "stderr": ""
+  },
+  "firewall_binary_version": {
+    "exit": 0,
+    "stdout": "version: v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56\nBuildDate: 2026-08-04_11:27:10\nGoVersion: 1.26.3\nPlatform: linux\n",
+    "stderr": ""
+  },
+  "nginx_warning_categories": {
+    "buffered_to_tempfile": 3,
+    "conflicting_server_name": 0,
+    "duplicate_mime": 0,
+    "ssl_stapling": 0,
+    "other_warn": 3
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-11-01T12:21:10.886572+00:00",
+  "report_sha256": "928cda6b7ef5be4d1db5243b0d5122545295aa1f578a7691e9677a959b288db4",
+  "supporting_documents": {
+    "docs/audit/README.md": "90262fe3cdea3ea398da2908805922cd9b20b83d0ab20128ca4e7d18657a1713",
+    "docs/telegram-noise-control.md": "31cc2a8fec729e89673809b3dc1934afb609253190ffda48198158661486d301"
+  },
+  "files": {
+    "candidate-comparison.json": "a375050dd0d79acc3913a67fbebb107582096971d22278f5f4c150c945617506",
+    "final-full-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "final-full-run.json": "c37ac0b58bab307b8d488921119ada173fdc238e5da9979c0547d56a1e5e0455",
+    "final-full.pid": "c0e15d3f7a1b5b516ba8447a400dffac2ceea41d7399c4619894576ab4651766",
+    "final-full.txt": "7b36d1f4aaa5103fcc2efc9cedcd72c53f02440ec40c1c6ae3df96575fecac84",
+    "full-suite-runner.txt": "074ef2928b59c88c9ad53bd1affbbcbb8fe822a64100c2bf28d0964744500426",
+    "guard-verification-script.txt": "c515469d39c3589b588c268bcc37d9d1f90298c128f83c56d455745a839b593a",
+    "reviewed-code-diff.txt": "1368afb85767e671bdfe6631613cd9042c516c2daf36c24d72b41da7be61e677",
+    "round1-green.txt": "3717abe86c1a0d1bb1d552194ff5f5b6150b876cbfca88f65cbe5186908ca4ef",
+    "round1-harness-adjustment.txt": "34f02dd781be67cce19eb6d4b0b9c147b53d6fb4e0594706afcd26dd66c13290",
+    "round1-red.txt": "c83bd1f8a190450d055b34a01236f2df772d4c0310d090c861700f91517c5da3",
+    "round2-notification-green.txt": "6fdda59ba7d2aaf91b4cbb6199570a9ec297cb18338f1404cea8cd2510ac4dfa",
+    "round3-ownership-green.txt": "6bd768b92a2646154ac907c9663663e1bb45cce9c4fd3b4b49b848621d2c4af7",
+    "source-after.json": "2d363cb5e4d7cf9a5737259a6ca4f81bcf9d922808d1fe8c4290552e853ecc34",
+    "source-before.json": "a73c5941379eb43701a38a45ac135ca7b3313c01ec37712aa558a8eaedf090a9",
+    "static-checks.json": "74e231b2f3ff8356c9dc5310ed520b353fa796c9afc12031e7de1cd03830bc10",
+    "verification-script.txt": "e1d8f852d1b2753ab7634844d9703bdefc35b66793626541e1bed54590b1b120",
+    "verification.json": "7c273c54ece7ce3532fd41d81eb989db6e3853990ef05ffb4cb9f80cdac2277c"
+  },
+  "supporting_documents_refreshed_at": "2026-11-01T13:04:29.716000+00:00"
+}

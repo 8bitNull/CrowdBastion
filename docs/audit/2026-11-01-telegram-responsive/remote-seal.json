@@ -1,0 +1,11 @@
+{
+  "completed_at": 1793541782.8309448,
+  "bundle_path": "/var/backups/crowdbastion/tg-responsive-20261101T134928Z/tg-responsive-audit.tar.gz",
+  "bundle_sha256": "3eeeea538aabec5017601ade79c80a21082513dd9ac3ea33aa40972c64e87227",
+  "bundle_files": 46,
+  "credential_values_checked": 5,
+  "credential_value_leaks": [],
+  "backup_manifest_path": "/var/backups/crowdbastion/tg-responsive-20261101T134928Z/final-manifest.json",
+  "backup_manifest_sha256": "798ea9153ea7e1c865067591a42da4bd4e8dd8dc5916cca6e4a4d555cd1470b8",
+  "backup_manifest_files": 137
+}

@@ -1,0 +1,10 @@
+{
+  "completed_at": 1793538426.8272886,
+  "bundle_path": "/var/backups/crowdbastion/vps179-cycle-20261101T123337Z/audit-review.tar.gz",
+  "bundle_sha256": "7c66fbdc470605b28e26eed827f4ee2db8aa67e5dfff19e73d24a63400861a5c",
+  "credential_values_checked": 5,
+  "credential_value_leaks": [],
+  "backup_manifest_path": "/var/backups/crowdbastion/vps179-cycle-20261101T123337Z/final-manifest.json",
+  "backup_manifest_sha256": "cfbcab896cabd0e968fcac5fedaa4f2017556deb78edbda4d6ea6eb93802d234",
+  "backup_manifest_files": 87
+}

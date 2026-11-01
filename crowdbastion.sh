@@ -8,6 +8,8 @@ MANAGER_FILE="${BASH_SOURCE[0]}"
 CONFIG_HELPER="${SCRIPT_DIR}/lib/crowdsec_config.py"
 CS_DIR="/etc/crowdsec"
 NODE_ROLES_FILE="/var/lib/crowdbastion/node-roles.json"
+RELAY_ACCEPTANCE_FILE="/var/lib/crowdbastion/relay-acceptance.json"
+V2BX_OBSERVER_INSTALLED_CONFIG="/usr/local/lib/crowdsec-v2bx-observer/config.json"
 NODE_ROLES=''
 WEBUI_DIR="/opt/crowdsec-web-ui"
 CRON_FILE="/etc/cron.d/crowdsec-autoupdate"
@@ -66,6 +68,8 @@ source "${SCRIPT_DIR}/lib/remote_bouncer.sh"
 source "${SCRIPT_DIR}/lib/health_summary.sh"
 # shellcheck source=lib/node_guidance.sh
 source "${SCRIPT_DIR}/lib/node_guidance.sh"
+# shellcheck source=lib/user_experience.sh
+source "${SCRIPT_DIR}/lib/user_experience.sh"
 FIREWALL_MIGRATION_STATE='/var/lib/crowdbastion/firewall-migration'
 FIREWALL_DROPIN='/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf'
 # shellcheck source=lib/firewall.sh
@@ -197,7 +201,7 @@ restore_config_change() {
         if [[ -f "${BACKUP_COPIES[$i]}.absent" ]]; then
             rm -f -- "${BACKUP_PATHS[$i]}" || return 1
         elif [[ -L "${BACKUP_COPIES[$i]}" || -L "${BACKUP_PATHS[$i]}" ]]; then
-            cp -a --remove-destination -- "${BACKUP_COPIES[$i]}" "${BACKUP_PATHS[$i]}" || return 1
+            cp -a -T --remove-destination -- "${BACKUP_COPIES[$i]}" "${BACKUP_PATHS[$i]}" || return 1
         else
             cp -a -- "${BACKUP_COPIES[$i]}" "${BACKUP_PATHS[$i]}" || return 1
         fi
@@ -244,6 +248,7 @@ apply_core_config() {
     CORE_RULES_CHANGED=false
     CORE_CONFIG_LOADING=''
     CORE_CONFIG_PENDING=false
+    health_note_change
 }
 
 install_packages() {
@@ -319,8 +324,24 @@ install_crowdsec_core() (
     if [[ -z "$CURRENT_IP" ]]; then
         prompt CURRENT_IP '管理员公网 IP（留空仅放行内网；Ctrl+D 取消）: ' || return 1
     fi
+    # Validate the address with the standard library before any dependency install.
+    if [[ -n "$CURRENT_IP" ]] && ! python3 -c 'import ipaddress,sys; ipaddress.ip_address(sys.argv[1])' "$CURRENT_IP" 2>/dev/null; then
+        log_err '管理员 IP 无效，尚未安装或修改配置。'
+        return 1
+    fi
     local fresh=true
     if command -v crowdsec >/dev/null 2>&1 && [[ -f "${CS_DIR}/config.yaml" ]]; then fresh=false; fi
+    printf '\n本次变更预览\n系统：%s / %s；安装用途：%s\n' "$OS_ID" "$(uname -m)" "$profile"
+    if [[ "$fresh" == true ]]; then
+        printf '已有部署：未发现完整的本地核心；将配置官方软件源并安装 CrowdSec。\n'
+    else
+        printf '已有部署：发现本地核心，保留现有软件源及核心版本，补齐缺少的组件。\n'
+    fi
+    printf '软件包：系统依赖、CrowdSec、Firewall Bouncer；已有后端沿用，新装使用 iptables/ipset。\n'
+    printf '配置：补齐 %s 规则与采集、管理员放行、Prometheus 指标；配置修改前备份到 %s。\n' "$profile" "$UPDATE_BACKUPS"
+    printf '服务：启用并按配置变化重启 CrowdSec，启动防火墙 Bouncer；管理员放行来源：%s。\n' "${CURRENT_IP:-未指定公网 IP，仅放行内网}"
+    printf '防火墙 Bouncer 将写入封禁规则；管理员 AllowList 同时旁路 AppSec，请确认来源准确。\n软件包和软件源不提供整体事务回滚；实际流量阻断需另行验收。\n'
+    confirm '按上述范围继续安装或补齐配置？' || { log_info '已取消安装，未安装软件包或修改防护配置。'; return 0; }
     [[ "$OS_ID" =~ ^(debian|ubuntu)$ && "$fresh" == true ]] && { apt-get update || return 1; }
     case "$OS_ID" in
         debian|ubuntu) install_packages curl ca-certificates python3 python3-yaml || return 1 ;;
@@ -1526,6 +1547,7 @@ repair_firewall_bouncer() (
     fi
     if [[ "$(yaml_tool bouncer-mode "$cfg")" == iptables ]]; then check_firewall_runtime || return 1; fi
     committed=true
+    health_note_change
     log_succ 'Bouncer 服务已运行；现有其他 Bouncer 凭据保留。'
     cscli bouncers list || return 1
     firewall_status
@@ -2228,13 +2250,14 @@ show_main_menu() {
         else
             printf '\n用途配置无法读取，请在高级管理中重新设置。\n'
         fi
-        printf '1. 检查防护情况（建议先看这里）\n2. 安装或调整防护（按用途引导）\n3. 管理封禁与放行\n4. 高级管理（规则、通知、专项排查等）\n0. 退出\n'
-        prompt choice '请选择 [0-4]（Ctrl+D 退出）: ' || return 0
+        printf '1. 检查防护情况（建议先看这里）\n2. 安装或调整防护（按用途引导）\n3. 管理封禁与放行\n4. 高级管理（规则、通知、专项排查等）\n5. 常用操作（防火墙、验收、落地、维护副本）\n0. 退出\n'
+        prompt choice '请选择 [0-5]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
             1) interactive_health_check ;;
             2) guided_setup ;;
             3) locked_operation manage_firewall_ops ;;
             4) manage_advanced ;;
+            5) manage_quick_actions ;;
             0) return 0 ;;
             *) log_warn '无效选项，请输入菜单编号。' ;;
         esac
@@ -2275,6 +2298,13 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 首页：1 检查防护情况；2 安装或调整防护；3 管理封禁与放行；4 高级管理。
 高级管理保留安装、规则、专项排查、通知、卸载与用途设置入口。
 首次终端运行显示用途引导；选择只保存偏好。原命令行操作参数保持兼容。
+
+常用入口（查看详情可用终端滚动或分页）：
+  sudo bash crowdbastion.sh --status           查看当前防护和下一步
+  sudo bash crowdbastion.sh --status-details   查看完整检查证据
+  sudo bash crowdbastion.sh --repair-existing  修复已有部署（逐项确认）
+  sudo bash crowdbastion.sh --runtime-status   检查源码与维护副本是否一致
+  首页 5：防火墙、入口验收、V2bX、通知与维护副本快捷入口。
 
 安装和网站接入：
   --install-core       安装检测服务和防火墙防护
@@ -2326,14 +2356,20 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --install-waf        安装 Web 日志检测规则（不等同于 AppSec）
   --update-hub         更新检测规则（更新失败时恢复备份）
   --enable-cron        每天 03:30 自动更新检测规则
+  --runtime-status     比较当前源码与定时任务维护副本
+  --sync-runtime       同步维护副本，保留 cron 原执行时间
+  --relay-acceptance   查看上次中转验收的范围、时间与配置变化提示
+  --prepare-v2bx-observer 交互生成并校验私有持续记录配置
   --reset-baseline     补齐基础检测规则，保留自定义规则和网站请求检测
   --reset-56           兼容旧名称，功能同 --reset-baseline，不保证场景数量
   --uninstall-waf      确认后移除已知的网站和防火墙日志规则
   --status             按已保存用途只读检查，显示简短结论与一个下一步
   --status-details     显示整体检查结论与完整技术详情
+  --status-json        同源只读检查，输出版本化 JSON（不含原始诊断）
   --check-logs         只读检查新增日志、漏采和重复采集
   --repair-logs        按实际网站配置补齐漏采的访问日志
   --firewall-check     只读检查开机规则覆盖、Docker 顺序和双栈链
+  --repair-existing    检查并修复已有防火墙部署（逐项确认、备份和复查）
   --firewall-maintenance 防火墙启动修复与分阶段迁移（带自动回退）
   --repair-bouncer     修复防火墙与检测服务的连接地址
   --optimize           检查基础配置，选择需要修复的项目并确认后应用
@@ -2398,6 +2434,7 @@ main_operation() {
         --disable-appsec) disable_appsec ;;
         --clean-redundant) check_and_clean_redundant_instances ;;
         --firewall-check) check_firewall_runtime ;;
+        --repair-existing) repair_existing_deployment ;;
         --firewall-maintenance) manage_firewall_maintenance ;;
         --repair-bouncer) repair_firewall_bouncer ;;
         --admin-allowlist) manage_admin_allowlist ;;
@@ -2416,6 +2453,10 @@ main_operation() {
         --check-clean) audit_crowdsec_residuals ;;
         --deep-clean|--purge|--uninstall) deep_purge_residuals ;;
         --enable-cron) enable_auto_update ;;
+        --runtime-status) show_maintenance_runtime_status ;;
+        --sync-runtime) sync_maintenance_runtime ;;
+        --relay-acceptance) show_relay_acceptance ;;
+        --prepare-v2bx-observer) generate_v2bx_observer_config ;;
         --update-hub) update_hub_logged ;;
         --check-logs) check_log_inventory ;;
         --telegram) manage_telegram ;;
@@ -2427,6 +2468,7 @@ main_operation() {
         --optimize) smart_audit_and_optimize ;;
         --enable-wal) enable_sqlite_wal ;;
         --status) check_health_status ;;
+        --status-json) check_health_status json ;;
         --status-details) check_health_status details ;;
         *) log_err "未知参数: $1"; show_help; return 1 ;;
     esac
@@ -2435,7 +2477,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--firewall-check|--status|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
+        ''|--help|-h|--runtime-status|--relay-acceptance|--firewall-check|--status|--status-json|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

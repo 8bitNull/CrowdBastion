@@ -341,7 +341,7 @@ systemctl() {{
         unit.parent.mkdir(parents=True)
         ordinary='[Unit]\nDescription=The firewall bouncer for CrowdSec\n[Service]\nExecStart=/usr/bin/crowdsec-firewall-bouncer\n'
         unit.write_text(ordinary)
-        r=self.run_shell('install_crowdsec_core relay','203.0.113.2\n')
+        r=self.run_shell('install_crowdsec_core relay','203.0.113.2\ny\n')
         self.assertEqual(r.returncode,0,r.stdout+r.stderr)
         self.assertIn('systemctl restart crowdsec',self.commands())
         self.assertEqual(unit.read_text(),ordinary)

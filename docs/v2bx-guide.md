@@ -48,6 +48,12 @@ sudo python3 lib/crowdsec_v2bx.py \
   --json
 ```
 
+## 交互准备持续记录配置
+
+首页 `5 → 3` 进入 V2bX，选择持续记录菜单的 `5`，或运行 `sudo bash crowdbastion.sh --prepare-v2bx-observer`。依次填写内核 `xray` / `sing` / `hysteria2`、已有独立日志文件绝对路径、xray 日志实际时区、中转出口 CIDR 和配置保存路径；输入 `q` 或 Ctrl+D 取消。
+
+生成器复用常驻服务配置校验器，先展示 JSON 预览，确认后以 `0600` 保存单源配置。目录须已存在、归当前运行用户所有，且上级目录不能由其他用户替换，不覆盖已有文件，也不改内核日志设置或启动服务。同一菜单会记住生成路径，可再选 `1` 安装并开始记录。另开终端时用 `V2BX_OBSERVER_CONFIG` 指定该文件；多源或 journal 配置仍按下文示例准备。
+
 ## 报告含义
 
 - 配置：支持 JSON，以及上游支持的注释、尾逗号。支持扁平节点与 `ApiConfig`/`Options` 格式。读取本机 Include，不下载远程 Include，不递归解析嵌套 Include。不可读取的节点显示未知。

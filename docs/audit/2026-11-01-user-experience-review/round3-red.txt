@@ -1,0 +1,45 @@
+FFFFF
+======================================================================
+FAIL: test_report_masks_spaced_keys_cookies_and_control_split_credentials (test_user_experience.Artifacts.test_report_masks_spaced_keys_cookies_and_control_split_credentials) (secret='Q7k9xV1w')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 203, in test_report_masks_spaced_keys_cookies_and_control_split_credentials
+    self.assertNotIn(secret, clean)
+AssertionError: 'Q7k9xV1w' unexpectedly found in 'API Key: Q7k9xV1w\napi_key: B6m2zH8n\nCookie: session=D4s8cR3p\nSet-Cookie: session=F9a1jT5v\n'
+
+======================================================================
+FAIL: test_report_masks_spaced_keys_cookies_and_control_split_credentials (test_user_experience.Artifacts.test_report_masks_spaced_keys_cookies_and_control_split_credentials) (secret='B6m2zH8n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 203, in test_report_masks_spaced_keys_cookies_and_control_split_credentials
+    self.assertNotIn(secret, clean)
+AssertionError: 'B6m2zH8n' unexpectedly found in 'API Key: Q7k9xV1w\napi_key: B6m2zH8n\nCookie: session=D4s8cR3p\nSet-Cookie: session=F9a1jT5v\n'
+
+======================================================================
+FAIL: test_report_masks_spaced_keys_cookies_and_control_split_credentials (test_user_experience.Artifacts.test_report_masks_spaced_keys_cookies_and_control_split_credentials) (secret='D4s8cR3p')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 203, in test_report_masks_spaced_keys_cookies_and_control_split_credentials
+    self.assertNotIn(secret, clean)
+AssertionError: 'D4s8cR3p' unexpectedly found in 'API Key: Q7k9xV1w\napi_key: B6m2zH8n\nCookie: session=D4s8cR3p\nSet-Cookie: session=F9a1jT5v\n'
+
+======================================================================
+FAIL: test_report_masks_spaced_keys_cookies_and_control_split_credentials (test_user_experience.Artifacts.test_report_masks_spaced_keys_cookies_and_control_split_credentials) (secret='F9a1jT5v')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 203, in test_report_masks_spaced_keys_cookies_and_control_split_credentials
+    self.assertNotIn(secret, clean)
+AssertionError: 'F9a1jT5v' unexpectedly found in 'API Key: Q7k9xV1w\napi_key: B6m2zH8n\nCookie: session=D4s8cR3p\nSet-Cookie: session=F9a1jT5v\n'
+
+======================================================================
+FAIL: test_report_keeps_evidence_after_terminal_hyperlinks (test_user_experience.Artifacts.test_report_keeps_evidence_after_terminal_hyperlinks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_user_experience.py", line 208, in test_report_keeps_evidence_after_terminal_hyperlinks
+    self.assertIn('diagnostic label', clean)
+AssertionError: 'diagnostic label' not found in ''
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.005s
+
+FAILED (failures=5)

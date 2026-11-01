@@ -1,0 +1,29 @@
+from pathlib import Path
+import hashlib,json,os,subprocess,sys,time
+release=Path('/opt/crowdbastion/releases/review-20261101-vps179-29689b60aa54')
+backup=Path('/var/backups/crowdbastion/vps179-cycle-20261101T123337Z')
+sys.path.insert(0,str(release/'lib'))
+from crowdbastion_ux import redact
+config=Path('/etc/crowdsec/crowdsec-1key-bot.json')
+original=config.read_bytes()
+settings=json.loads(original)
+state=Path(settings.get('state_dir','/var/lib/crowdsec-1key-bot'))
+offsets={path.name:int(path.read_text()) for path in state.glob('offset-*') if path.is_file()}
+audits={path.name:path.read_bytes() for path in state.glob('bot-actions-*.jsonl*') if path.is_file()}
+started=time.time()
+command=subprocess.run(['/bin/bash',str(release/'crowdbastion.sh'),'--custom-bot'],input='5\ny\n0\n',capture_output=True,text=True,timeout=40)
+(backup/'bot-update-output.txt').write_text(command.stdout+'\n'+command.stderr)
+assert command.returncode==0
+assert config.read_bytes()==original,'bot config bytes changed'
+assert all(int((state/name).read_text())>=value for name,value in offsets.items()),'offset regressed'
+assert all((state/name).read_bytes().startswith(value) for name,value in audits.items()),'audit prefix changed'
+status=subprocess.run(['/bin/bash','-c','source "$1"; custom_bot_code_status','--',str(release/'crowdbastion.sh')],capture_output=True,text=True,timeout=10)
+assert status.returncode==0,(status.returncode,status.stdout,status.stderr)
+service=subprocess.run(['systemctl','show','crowdsec-1key-bot.service','--property=ActiveState,UnitFileState,MainPID,NRestarts,ExecMainStartTimestamp'],capture_output=True,text=True,check=True).stdout
+values=dict(line.split('=',1) for line in service.splitlines() if '=' in line)
+assert values['ActiveState']=='active' and values['UnitFileState']=='enabled'
+report={'started_at':started,'completed_at':time.time(),'code_status_exit':status.returncode,'code_status':status.stdout.strip(),
+        'config_sha256':hashlib.sha256(original).hexdigest(),'config_bytes_preserved':True,'offsets_checked':len(offsets),'audit_files_checked':len(audits),
+        'service':values,'update_output':redact(command.stdout+'\n'+command.stderr)}
+(backup/'bot-deployment.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+print(json.dumps(report,ensure_ascii=False,indent=2))

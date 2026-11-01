@@ -1,0 +1,18 @@
+{
+  "decisions_by_origin": {
+    "cscli": 4,
+    "CAPI": 15000,
+    "crowdsec": 1
+  },
+  "decisions_by_family": {
+    "4": 14931,
+    "6": 71
+  },
+  "coverage": {
+    "expected": 15002,
+    "kernel": 15002,
+    "missing": 0
+  },
+  "audit": 0,
+  "idle_live_restart_proven": false
+}

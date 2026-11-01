@@ -251,7 +251,8 @@ class CustomBot(unittest.TestCase):
              patch.object(self.bot, 'tg_request', side_effect=SystemExit), patch.object(self.bot, 'Thread') as thread:
             with self.assertRaises(SystemExit):
                 self.bot.main()
-        self.assertFalse(thread.called)
+        thread.assert_called_once_with(target=self.bot._HEALTH_WORKER._run, daemon=True,
+                                       name='health-views')
         self.assertFalse(send.called, "service restart must not send unsolicited chat messages")
 
     def test_update_offset_is_scoped_to_bot_token(self):
@@ -308,9 +309,11 @@ class BotService(unittest.TestCase):
         self.assertEqual(self.setup_bot().returncode, 0)
         config = self.config/'crowdsec-1key-bot.json'
         before = config.read_bytes()
-        result = self.setup_bot('systemctl() { record systemctl "$@"; [[ "$1" != show ]] || printf "LoadState=loaded\\nFragmentPath=%s\\n" "$CUSTOM_BOT_UNIT"; [[ "$*" != "restart crowdsec-1key-bot.service" ]]; }')
+        self.trace.write_text('')
+        result = self.setup_bot('systemctl() { record systemctl "$@"; [[ "$1" != show ]] || printf "LoadState=loaded\\nFragmentPath=%s\\n" "$CUSTOM_BOT_UNIT"; [[ "$1" != is-enabled ]] || echo enabled; [[ "$*" != "restart crowdsec-1key-bot.service" ]]; }')
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(config.read_bytes(), before)
+        self.assertIn('systemctl restart crowdsec-1key-bot.service', self.commands())
 
     def test_foreign_bot_service_is_preserved_and_blocks_install(self):
         result = self.setup_bot('systemctl() { record systemctl "$@"; if [[ "$1" == list-unit-files ]]; then echo "crowdsec-bot.service enabled"; fi; return 0; }')

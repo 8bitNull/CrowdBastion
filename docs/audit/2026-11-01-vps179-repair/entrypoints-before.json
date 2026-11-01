@@ -1,0 +1,14 @@
+{
+  "/usr/local/bin/crowdbastion": {
+    "exists": false
+  },
+  "/usr/local/bin/crowdbastion.sh": {
+    "exists": false
+  },
+  "/root/crowdbastion.sh": {
+    "exists": false
+  },
+  "/root/install-crowdsec-1panel.sh": {
+    "exists": false
+  }
+}

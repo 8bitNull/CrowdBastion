@@ -86,7 +86,7 @@ node_recommendation() {
 
 # Keep role-specific steps together; only an explicit step changes deployment.
 guided_setup() {
-    local choice role number result
+    local choice role number result before
     local steps=() labels=()
     load_node_roles || { log_warn '用途配置无法读取，请重新选择。'; NODE_ROLES=''; }
     if [[ -z "$NODE_ROLES" ]]; then
@@ -111,9 +111,10 @@ guided_setup() {
         esac
     done
     while true; do
-        printf '\n安装或调整防护 — %s\n按顺序完成适用步骤；已有配置可以直接检查。\n' "$(node_role_label)"
+        printf '\n安装或调整防护 — %s\n当前位置：首页 → 安装或调整防护\n按顺序完成适用步骤；已有配置可以直接检查。\n' "$(node_role_label)"
+        [[ ! -f "${CS_DIR}/config.yaml" ]] || printf '发现已有部署，建议先选 9 检查；再次安装会先预览变更并确认。\n'
         for ((number=0; number<${#steps[@]}; number++)); do
-            printf '%s. %s\n' "$((number+1))" "${labels[number]}"
+            printf '%s. %s [%s]\n' "$((number+1))" "${labels[number]}" "$(guided_step_state "${steps[number]}")"
         done
         node_has_role node && printf 'V2bX 日志观察本身不提供业务攻击自动封禁。\n'
         node_has_role web && printf '第 2 项先选择网站运行方式；Docker bridge 按引擎、私有地址、拦截组件的顺序接入。\n'
@@ -127,6 +128,7 @@ guided_setup() {
             log_warn '请选择上面列出的步骤。'; continue
         fi
         result=0
+        before=$(ux_config_fingerprint) || before=''
         case "${steps[choice-1]}" in
             web) locked_operation install_crowdsec_core web || result=$? ;;
             website) guided_website_setup || result=$? ;;
@@ -136,16 +138,12 @@ guided_setup() {
             relaypath) check_relay_path || result=$? ;;
             node) manage_v2bx_node || result=$? ;;
         esac
-        if [[ "$result" == 0 ]]; then
-            printf '\n本步骤已返回。选择下一项继续，或选择 9 检查当前防护。\n'
-        else
-            printf '\n本步骤未完成，请先处理上方原因；选择 9 可重新检查。\n'
-        fi
+        ux_operation_feedback "$before" "$result"
     done
 }
 
 guided_website_setup() {
-    local runtime choice result
+    local runtime choice result before
     printf '\n网站运行在哪里？\n1. 宿主机 Nginx/OpenResty\n2. Docker host 网络\n3. Docker bridge 网络\n0. 返回\n'
     while true; do
         prompt runtime '请选择 [0-3]: ' || return 0
@@ -154,13 +152,14 @@ guided_website_setup() {
     while true; do
         printf '\n网站请求防护 — 按顺序完成适用步骤\n1. 配置网站请求检测引擎\n'
         if [[ "$runtime" == 3 ]]; then
-            printf '2. 登记已准备好的私有连接地址\n先准备可从该容器访问的私有 LAPI/AppSec 网关；本工具不创建网关。\n'
+            printf '2. 登记已准备好的私有连接地址\n前提：容器所在 bridge 的私有网关、精确绑定的 LAPI/AppSec 监听、容器内可用 curl。\n本工具不创建网关；登记时依次核对网络、监听、容器内 LAPI 和 AppSec 响应。\n'
         else
-            printf '宿主机或 Docker host 网络无需登记 bridge 私有地址。\n'
+            printf '2. 私有连接地址（不适用：宿主机或 Docker host 网络无需登记）\n'
         fi
         printf '3. 安装或接入网站拦截组件\n4. 发送测试请求验证网站防护（需要确认）\n5. 查看网站请求检测状态\n6. 查看停用、移除与卸载顺序\n0. 返回\n'
         prompt choice '请选择步骤: ' || return 0
         result=0
+        before=$(ux_config_fingerprint) || before=''
         case "$choice" in
             1) locked_operation setup_appsec engine-only || result=$? ;;
             2)
@@ -173,8 +172,7 @@ guided_website_setup() {
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
-        if [[ "$result" == 0 ]]; then printf '\n操作已返回，请选择下一步；实际接入以状态和请求验证为准。\n'
-        else printf '\n本步骤未完成，请处理上方原因后重试。\n'; fi
+        ux_operation_feedback "$before" "$result"
     done
 }
 
@@ -213,6 +211,7 @@ check_health_status_raw() {
         health_expect logs
         health_expect web
         local legacy=0
+        health_stage '本地检测服务、日志和网站接入'
         check_web_health_status || legacy=$?
         node_recommendation
         return "$legacy"
@@ -229,6 +228,7 @@ check_health_status_raw() {
         health_expect bouncer
         health_expect rules
         log_info '远端执行节点：检测由中心负责，不要求本地 CrowdSec，不检查本地 LAPI 或 SSH 采集。'
+        health_stage '远端连接和防火墙规则'
         remote_bouncer_status || status=$?
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
         status=0
@@ -248,6 +248,7 @@ check_health_status_raw() {
         health_expect logs
         [[ "$web" == true ]] && health_expect web
         status=0
+        health_stage '本地检测服务、采集和已部署的网站组件'
         if [[ "$web" == true ]]; then check_web_health_status || status=$?
         else check_web_health_status system || status=$?; fi
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
@@ -255,6 +256,7 @@ check_health_status_raw() {
         if node_has_role relay || node_has_role node; then
             health_expect bouncer
             health_expect rules
+            health_stage '防火墙服务、封禁集合和入口规则'
             status=0; check_relay_status || status=$?
             [[ "$status" != 0 && "$status" != 2 ]] && result=1
             [[ "$result" == 0 && "$status" == 2 ]] && result=2
@@ -267,6 +269,7 @@ check_health_status_raw() {
         health_expect v2bx
         health_expect v2bx_service
         health_expect sockets
+        health_stage 'V2bX 配置、连接来源和日志'
         status=0; diagnose_v2bx || status=$?
         [[ "$status" != 0 && "$status" != 2 ]] && result=1
         [[ "$result" == 0 && "$status" == 2 ]] && result=2

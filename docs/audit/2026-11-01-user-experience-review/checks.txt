@@ -1,0 +1,12 @@
+Bash syntax: 18 files passed
+Python compilation without bytecode writes: 146 files passed
+ShellCheck warning level: all 8 related Bash files passed
+13:  sudo bash crowdbastion.sh --runtime-status   检查源码与维护副本是否一致
+66:  --runtime-status     比较当前源码与定时任务维护副本
+67:  --sync-runtime       同步维护副本，保留 cron 原执行时间
+68:  --relay-acceptance   查看上次中转验收的范围、时间与配置变化提示
+69:  --prepare-v2bx-observer 交互生成并校验私有持续记录配置
+git diff --check: passed
+Local Markdown link targets: 8 documents, 165 targets passed before final result links
+Final local Markdown link targets: 8 documents, 172 targets passed
+Final git diff --check after report and archives: passed

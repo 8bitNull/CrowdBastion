@@ -32,7 +32,7 @@ class HostEnvironment(unittest.TestCase):
         path = self.config/'parsers/s02-enrich/99-admin-whitelist.yaml'
         path.parent.mkdir(parents=True)
         path.write_text('name: custom/admin-whitelist\nwhitelist:\n  reason: custom\n  ip: [203.0.113.9]\n  expression: ["evt.Meta.source_ip == \'203.0.113.10\'"]\n')
-        result = self.run_shell('install_crowdsec_core', '203.0.113.2\n')
+        result = self.run_shell('install_crowdsec_core', '203.0.113.2\ny\n')
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         rules = yaml.safe_load(path.read_text())['whitelist']
         self.assertIn('203.0.113.9', rules['ip'])
@@ -47,7 +47,7 @@ class HostEnvironment(unittest.TestCase):
         path = directory/'web-sites.yaml'
         content = 'source: syslog\nlisten_addr: 127.0.0.1:1514\nlabels: {type: syslog}\n'
         path.write_text(content)
-        result = self.run_shell('install_crowdsec_core', '203.0.113.2\n')
+        result = self.run_shell('install_crowdsec_core', '203.0.113.2\ny\n')
         self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertEqual(path.read_text(), content)
         self.assertFalse((self.config/'acquis.d/web-sites.yaml').exists())

@@ -1,0 +1,86 @@
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib
+import json
+import re
+import subprocess
+from urllib.parse import unquote, urlsplit
+
+root = Path('/projects/script/CrowdBastion')
+folder = root/'docs/audit/2026-11-01-vps179-review'
+sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+assert (folder/'final-full-exit.txt').read_text().strip() == '0'
+output = (folder/'final-full.txt').read_text()
+assert re.search(r'^Ran 1395 tests in 443\.763s$', output, re.M)
+assert re.search(r'^OK \(skipped=89\)$', output, re.M)
+assert not re.search(r'^FAILED \(', output, re.M)
+
+before = json.loads((folder/'source-before.json').read_text())
+after = json.loads((folder/'source-after.json').read_text())
+assert len(before) == len(after) == 167
+assert all(sha(root/name) == value for name, value in after.items())
+changed = sorted(name for name in before if before[name] != after[name])
+assert changed == ['lib/notify.sh', 'tests/test_notify_review.py', 'tests/test_notify_runtime.py']
+
+old_folder = root/'docs/audit/2026-11-01-vps179-readonly'
+old = json.loads((old_folder/'manifest.json').read_text())
+assert sha(root/'docs/audit/2026-11-01-vps179-readonly.md') == old['report_sha256']
+assert all(sha(old_folder/name) == value for name, value in old['files'].items())
+patch = subprocess.run(['git', 'apply', '--reverse', '--check', str(old_folder/'notification-dependencies-proposed.patch')],
+    cwd=root, capture_output=True, text=True)
+assert patch.returncode == 0, patch.stderr
+
+# Create the manifest before link checks; it is replaced with the final hashes below.
+manifest = folder/'manifest.json'
+if not manifest.exists():
+    manifest.write_text('{}\n')
+
+checked_links = 0
+for path in (root/'docs/audit/2026-11-01-vps179-review.md', root/'docs/audit/README.md',
+             root/'docs/telegram-noise-control.md'):
+    for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)', path.read_text()):
+        target = target.strip('<>')
+        parts = urlsplit(target)
+        if parts.scheme or target.startswith('//'):
+            continue
+        linked = (path.parent/unquote(parts.path)).resolve() if parts.path else path
+        assert linked.exists(), (path, target)
+        if parts.fragment:
+            titles = re.findall(r'^#{1,6} +(.+?)\s*#*$', linked.read_text(), re.M)
+            anchors = set()
+            counts = {}
+            for title in titles:
+                title = re.sub(r'<[^>]+>', '', title).lower()
+                title = re.sub(r'[^\w\- ]', '', title).replace(' ', '-')
+                number = counts.get(title, 0)
+                anchors.add(title + ('-'+str(number) if number else ''))
+                counts[title] = number+1
+            assert unquote(parts.fragment) in anchors, (path, target)
+        checked_links += 1
+
+diff = subprocess.run(['git', 'diff', '--check'], cwd=root, capture_output=True, text=True)
+assert diff.returncode == 0, diff.stderr
+verification = {
+    'checked_at': datetime.now(timezone.utc).isoformat(),
+    'full_suite': {'total':1395, 'passed':1306, 'skipped':89, 'seconds':443.763, 'exit':0},
+    'current_source_hashes_verified':len(after),
+    'changed_code_or_test_files':changed,
+    'historical_report_hash_unchanged':True,
+    'historical_evidence_hashes_verified':len(old['files']),
+    'original_candidate_patch_reverse_apply_check_exit':patch.returncode,
+    'checked_local_links':checked_links,
+    'git_diff_check_exit':diff.returncode,
+    'remote_operations_in_this_review':False,
+}
+(folder/'verification.json').write_text(json.dumps(verification, indent=2)+'\n')
+(folder/'manifest.json').write_text(json.dumps({
+    'created_at':datetime.now(timezone.utc).isoformat(),
+    'report_sha256':sha(root/'docs/audit/2026-11-01-vps179-review.md'),
+    'supporting_documents': {name:sha(root/name) for name in ('docs/audit/README.md', 'docs/telegram-noise-control.md')},
+    'files': {path.name:sha(path) for path in sorted(folder.iterdir()) if path.is_file() and path.name != 'manifest.json'},
+}, indent=2)+'\n')
+folder.chmod(0o700)
+for path in folder.iterdir():
+    if path.is_file():
+        path.chmod(0o600)
+print(json.dumps(verification, indent=2))

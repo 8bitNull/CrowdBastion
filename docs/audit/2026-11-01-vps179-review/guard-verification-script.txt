@@ -1,0 +1,54 @@
+"""Reproducible fixture-only guard checks for newly bundled private helpers."""
+import os
+from pathlib import Path
+import stat
+import unittest
+import test_notify as fixtures
+
+
+class DependencyOwnership(unittest.TestCase):
+    setUp = fixtures.NotificationInstallation.setUp
+    run_shell = fixtures.NotificationInstallation.run_shell
+    commands = fixtures.NotificationInstallation.commands
+    setup_telegram = fixtures.NotificationInstallation.setup_telegram
+    enable = fixtures.NotificationInstallation.enable
+    OVERRIDES = fixtures.NotificationInstallation.OVERRIDES
+
+    def test_unknown_file_symlink_or_fifo_is_rejected_before_snapshot(self):
+        notification = self.setup_telegram()
+        original = notification.read_bytes()
+        code = self.base/'usr/local/lib/crowdbastion-notify'
+        code.mkdir(parents=True)
+        foreign = self.base/'foreign-module'
+        foreign.write_text('# foreign-owned content\n')
+        backups = self.base/'var/backups/crowdsec-1key'
+        before = set(backups.glob('change.*'))
+        for name in ('crowdsec_bot_runtime.py', 'crowdbastion_ux.py'):
+            for kind in ('regular', 'symlink', 'fifo'):
+                with self.subTest(name=name, kind=kind):
+                    path = code/name
+                    if kind == 'regular':
+                        path.write_bytes(foreign.read_bytes())
+                    elif kind == 'symlink':
+                        path.symlink_to(foreign)
+                    else:
+                        os.mkfifo(path)
+                    try:
+                        previous = path.lstat()
+                        self.trace.write_text('')
+                        result = self.enable()
+                        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+                        self.assertEqual(notification.read_bytes(), original)
+                        self.assertFalse((self.config/'crowdbastion-notify.json').exists())
+                        self.assertEqual(set(backups.glob('change.*')), before)
+                        self.assertEqual(path.lstat().st_ino, previous.st_ino)
+                        self.assertEqual(stat.S_IFMT(path.lstat().st_mode), stat.S_IFMT(previous.st_mode))
+                        self.assertEqual(foreign.read_text(), '# foreign-owned content\n')
+                        self.assertNotIn('stop crowdbastion-notify', self.commands())
+                        self.assertNotIn('restart crowdbastion-notify', self.commands())
+                    finally:
+                        path.unlink()
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

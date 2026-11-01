@@ -157,7 +157,7 @@ class AuditOps(unittest.TestCase):
         active = self.base/'active/acquis'
         (self.config/'config.yaml.local').write_text(yaml.safe_dump({'crowdsec_service': {'acquisition_dir': str(active)}}))
         self.web_log('opt/1panel/www/sites/example/log/access.log')
-        p = self.run_shell('install_crowdsec_core', '203.0.113.2\n')
+        p = self.run_shell('install_crowdsec_core', '203.0.113.2\ny\n')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertTrue((active/'crowdsec-1key-log-repair.yaml').exists())
         self.assertFalse((self.config/'acquis.d/web-sites.yaml').exists())

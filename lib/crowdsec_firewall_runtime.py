@@ -127,6 +127,15 @@ class PathCoverageError(ValueError):
     """A readable ruleset has a confirmed missing or bypassed path."""
 
 
+class IncompletePathError(ValueError):
+    """Decision state cannot establish whether an empty chain is idle."""
+
+
+def active_ban_families(config):
+    from crowdsec_firewall_evidence import live, networks
+    return {network.version for network in networks(live(config), 0)}
+
+
 def iptables_references(config, docker):
     """Return only sets on unconditional source DROP paths in both families."""
     data = merged_config(config)
@@ -134,6 +143,8 @@ def iptables_references(config, docker):
     if data.get('mode') != 'iptables' or not isinstance(chain, str) or not re.fullmatch(r'[\w-]+', chain):
         raise PathCoverageError('Bouncer 后端或链名称无效。')
     references = {}
+    active = None
+    incomplete = False
     for binary, family in [('iptables', 'v4'), ('ip6tables', 'v6')]:
         if data.get('disable_ipv4' if family == 'v4' else 'disable_ipv6', False):
             raise PathCoverageError('无法确认被禁用地址族的双栈覆盖。')
@@ -143,10 +154,35 @@ def iptables_references(config, docker):
         names = [names] if isinstance(names, str) else names
         if not isinstance(names, list) or not names or not all(isinstance(n, str) and n for n in names):
             raise PathCoverageError('封禁集合名称配置无效。')
-        drops = [t for t in lines if t[:2] == ['-A', chain]]
+        drops = []
+        for tokens in lines:
+            if tokens[:2] != ['-A', chain]:
+                continue
+            # Official Bouncers optionally annotate rules. Remove only the
+            # exact comment module; all packet matching conditions remain.
+            normalized = []
+            index = 0
+            while index < len(tokens):
+                if tokens[index:index+3] == ['-m', 'comment', '--comment'] and index+3 < len(tokens):
+                    index += 4
+                else:
+                    normalized.append(tokens[index])
+                    index += 1
+            drops.append(normalized)
         # A preceding ACCEPT/RETURN, negation or protocol condition invalidates
         # coverage even when a later rule has the expected source-set DROP.
-        if not drops or not all(len(t) == 9 and t[2:5] == ['-m', 'set', '--match-set']
+        if not drops:
+            if ['-N', chain] not in lines:
+                raise PathCoverageError('CrowdSec 链不存在。')
+            if active is None:
+                try:
+                    active = active_ban_families(config)
+                except (OSError, ValueError, TypeError, yaml.YAMLError, subprocess.SubprocessError):
+                    incomplete = True
+                    active = set()
+            if (4 if family == 'v4' else 6) in active:
+                raise PathCoverageError('有效决策所在地址族缺少封禁规则。')
+        if not all(len(t) == 9 and t[2:5] == ['-m', 'set', '--match-set']
                                 and t[6:] == ['src', '-j', 'DROP']
                                 and any(re.fullmatch(re.escape(name)+r'(?:-\d+)?', t[5]) for name in names)
                                 for t in drops):
@@ -156,6 +192,8 @@ def iptables_references(config, docker):
             if not rules or rules[0] != ['-A', entry, '-j', chain]:
                 raise PathCoverageError('入口未首先无条件跳转 CrowdSec。')
         references[4 if family == 'v4' else 6] = {t[5] for t in drops}
+    if incomplete:
+        raise IncompletePathError('无法确认空链对应地址族是否有有效决策。')
     return references
 
 
@@ -167,10 +205,12 @@ def chain_coverage(config, docker):
         iptables_references(config, docker)
     except PathCoverageError:
         return 'fault'
+    except IncompletePathError:
+        return 'unknown'
     return 'ok'
 
 
-def audit(config):
+def audit(config, decisions=True):
     states = []
     for key in ('firewall_startup', 'firewall_paths'):
         emit(key, 'required')
@@ -206,7 +246,12 @@ def audit(config):
     states.append(state)
     print({'ok': '[已检查]', 'fault': '[异常]', 'unknown': '[尚未验证]'}[state],
           'IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。')
-    return 1 if 'fault' in states else 2 if 'unknown' in states else 0
+    if decisions:
+        from crowdsec_firewall_evidence import inspect, render
+        report = inspect(config, docker)
+        render(report)
+        states.append(report['state'])
+    return 1 if 'fault' in states else 2 if any(s in ('unknown', 'pending') for s in states) else 0
 
 
 def main():

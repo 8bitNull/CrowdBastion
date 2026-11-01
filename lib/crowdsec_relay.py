@@ -270,7 +270,14 @@ def audit(root, core_required=True):
             if not isinstance(hooks, list) or any(not isinstance(hook, str) for hook in hooks):
                 raise ValueError('invalid nftables hooks')
             rule_states.append(bool(hooks) and {hook.upper() for hook in hooks} <= found)
-    emit('rules', 'ok' if rule_states and all(rule_states) else 'unknown')
+    if mode == 'iptables':
+        from crowdsec_firewall_runtime import audit as runtime_audit
+        print('以上为规则引用清单；下面使用统一检查核对入口顺序及决策同步。')
+        status = runtime_audit(path)
+        emit('rules', 'fault' if status == 1 else 'unknown' if status == 2 else 'ok')
+        error = error or status == 1
+    else:
+        emit('rules', 'ok' if rule_states and all(rule_states) else 'unknown')
     print('[尚未验证] 实际业务阻断尚未验证；规则引用不证明顺序、匹配范围、LAPI 决策同步或已建立连接被阻断。')
     print('多跳/隧道节点可能只看到上游 IP；先核对来源，避免封禁整条链路。')
     print('此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。')

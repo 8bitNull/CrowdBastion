@@ -25,6 +25,8 @@ class ConfirmedFlows(unittest.TestCase):
         self.bot.BOT_TOKEN = '123:PRIVATE'
         self.bot.ADMIN_USER_ID, self.bot.ADMIN_CHAT_ID = 12, -34
         self.bot.CSCLI_CONFIG = str(self.base / 'config.yaml')
+        self.bot.MAINTENANCE_LOCK = str(self.base / 'maintenance.lock')
+        self.bot.MIGRATION_STATE = str(self.base / 'migration')
         self.sent = []
         self.tg = patch.object(self.bot, 'tg_request', side_effect=self.telegram)
         self.tg.start()

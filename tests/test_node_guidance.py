@@ -320,7 +320,7 @@ request_audit_tool() { return 2; }
         self.assertNotIn('按回车', p.stdout)
         path = self.base/'var/lib/crowdbastion/node-roles.json'
         self.assertEqual(json.loads(path.read_text())['roles'], ['relay'])
-        self.assertEqual(self.commands(), '')
+        self.assertEqual(self.commands(), 'systemctl is-active crowdsec\n')
 
     def test_v2bx_nested_returns_and_invalid_choices_have_no_pause(self):
         self.roles('node')

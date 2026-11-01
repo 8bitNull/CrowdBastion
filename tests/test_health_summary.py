@@ -69,6 +69,14 @@ class Verdicts(unittest.TestCase):
         self.assertEqual(report['verdict'], '检查未完成，暂时无法判断')
         self.assertEqual(report['status'], 1)
 
+    def test_missing_kernel_decisions_recommends_confirmed_repair(self):
+        report = self.report(('core', 'ok'), ('logs', 'ok'), ('rules', 'ok'), ('decisions', 'fault'))
+        self.assertEqual(report['action'], 'repair_existing')
+        self.assertEqual(report['status'], 1)
+        report = self.report(('core', 'ok'), ('logs', 'ok'), ('rules', 'ok'), ('decisions', 'pending'))
+        self.assertEqual(report['action'], 'details')
+        self.assertEqual(report['status'], 2)
+
 
 class SummaryWorkflow(unittest.TestCase):
     setUp = test_workflows.Workflows.setUp

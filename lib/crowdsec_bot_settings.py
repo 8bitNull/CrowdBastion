@@ -25,7 +25,7 @@ def legacy_settings(path):
     return values
 
 
-def configure(target, root, state_dir, legacy):
+def configure(target, root, state_dir, legacy, manager_script, maintenance_lock, migration_state):
     config = json.loads(Path(target).read_text()) if Path(target).exists() else {}
     if Path(target).is_symlink():
         raise ValueError('不接受符号链接配置')
@@ -41,7 +41,8 @@ def configure(target, root, state_dir, legacy):
                   npm_log_dir=npm or config.get('npm_log_dir', prior.get('NPM_LOG_DIR', '/home/docker/npm/data/logs')),
                   api_endpoint=endpoint or config.get('api_endpoint', 'https://api.telegram.org'),
                   crowdsec_config=str(Path(root)/'config.yaml'), state_dir=state_dir,
-                  notification_callbacks=1,
+                  notification_callbacks=1, manager_script=manager_script,
+                  maintenance_lock=maintenance_lock, migration_state=migration_state,
                   whitelist_file=str(Path(root)/'parsers/s02-enrich/crowdsec-1key-tg-whitelist.yaml'))
     effective = merged_config(str(Path(root)/'config.yaml'))
     config['db_path'] = effective.get('db_config', {}).get('db_path') or prior.get('DB_PATH', '/var/lib/crowdsec/data/crowdsec.db')

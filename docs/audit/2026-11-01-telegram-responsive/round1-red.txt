@@ -1,0 +1,103 @@
+FFFFEEFFFF
+======================================================================
+ERROR: test_refresh_can_share_sample_completed_after_request (test_telegram_responsive.HealthCards.test_refresh_can_share_sample_completed_after_request)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 76, in test_refresh_can_share_sample_completed_after_request
+    self.bot.render_view('status', force_refresh=True, requested_at=self.collector._cached_at - 1)
+  File "/projects/script/CrowdBastion/lib/crowdsec_bot.py", line 971, in render_view
+    result = globals()[view.renderer](*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: module_status() got an unexpected keyword argument 'force_refresh'
+
+======================================================================
+ERROR: test_refresh_samples_again_but_detail_navigation_reuses (test_telegram_responsive.HealthCards.test_refresh_samples_again_but_detail_navigation_reuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 68, in test_refresh_samples_again_but_detail_navigation_reuses
+    self.bot.render_view('status', force_refresh=True)
+  File "/projects/script/CrowdBastion/lib/crowdsec_bot.py", line 971, in render_view
+    result = globals()[view.renderer](*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: module_status() got an unexpected keyword argument 'force_refresh'
+
+======================================================================
+FAIL: test_cache_source_and_sample_time_are_visible (test_telegram_responsive.HealthCards.test_cache_source_and_sample_time_are_visible)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 59, in test_cache_source_and_sample_time_are_visible
+    self.assertIn('采样：本次采样', first)
+AssertionError: '采样：本次采样' not found in '🩺 <b>服务检查</b>\n检测服务：运行中\n防火墙服务：运行中\n更新：06-15 15:06:40 UTC'
+
+======================================================================
+FAIL: test_failed_complete_check_is_never_replaced_with_success (test_telegram_responsive.HealthCards.test_failed_complete_check_is_never_replaced_with_success)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 84, in test_failed_complete_check_is_never_replaced_with_success
+    self.assertIn('检查未完成', text)
+AssertionError: '检查未完成' not found in '🩺 <b>服务检查</b>\n⚠️ 部分检查没有取得完整结果\n建议：查看检查详情，先解决依赖、权限或读取失败。\n更新：06-15 15:06:40 UTC'
+
+======================================================================
+FAIL: test_pending_is_neutral_and_verdict_visible_in_both_sizes (test_telegram_responsive.HealthCards.test_pending_is_neutral_and_verdict_visible_in_both_sizes) (details=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 52, in test_pending_is_neutral_and_verdict_visible_in_both_sizes
+    self.assertIn('检查结论：运行检查通过，实际拦截待验证', text)
+AssertionError: '检查结论：运行检查通过，实际拦截待验证' not found in '🩺 <b>服务检查</b>\n检测服务：运行中\n防火墙服务：运行中\n更新：06-15 15:06:40 UTC'
+
+======================================================================
+FAIL: test_pending_is_neutral_and_verdict_visible_in_both_sizes (test_telegram_responsive.HealthCards.test_pending_is_neutral_and_verdict_visible_in_both_sizes) (details=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 52, in test_pending_is_neutral_and_verdict_visible_in_both_sizes
+    self.assertIn('检查结论：运行检查通过，实际拦截待验证', text)
+AssertionError: '检查结论：运行检查通过，实际拦截待验证' not found in '🩺 <b>服务检查</b>\n检测服务：运行中\n防火墙服务：运行中\n实际拦截验证通过：样本不足\n范围：网站、本地中转\n检查结论：检查未完成，暂时无法判断\n影响：本次检查不足以判断整体运行情况。\n本页检查服务与配置；实际拦截请查看具体来源的拦截记录。\n更新：06-15 15:06:40 UTC'
+
+======================================================================
+FAIL: test_exception_does_not_kill_worker_or_disclose_diagnostic (test_telegram_responsive.WorkerTests.test_exception_does_not_kill_worker_or_disclose_diagnostic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 149, in test_exception_does_not_kill_worker_or_disclose_diagnostic
+    worker = self.make_worker()
+             ^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 100, in make_worker
+    self.assertTrue(hasattr(self.bot, 'HealthViewWorker'), 'bounded health worker missing')
+AssertionError: False is not true : bounded health worker missing
+
+======================================================================
+FAIL: test_invalidate_all_discards_inflight_result (test_telegram_responsive.WorkerTests.test_invalidate_all_discards_inflight_result)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 161, in test_invalidate_all_discards_inflight_result
+    worker = self.make_worker()
+             ^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 100, in make_worker
+    self.assertTrue(hasattr(self.bot, 'HealthViewWorker'), 'bounded health worker missing')
+AssertionError: False is not true : bounded health worker missing
+
+======================================================================
+FAIL: test_pending_cards_are_bounded_and_same_card_keeps_latest (test_telegram_responsive.WorkerTests.test_pending_cards_are_bounded_and_same_card_keeps_latest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 132, in test_pending_cards_are_bounded_and_same_card_keeps_latest
+    worker = self.make_worker()
+             ^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 100, in make_worker
+    self.assertTrue(hasattr(self.bot, 'HealthViewWorker'), 'bounded health worker missing')
+AssertionError: False is not true : bounded health worker missing
+
+======================================================================
+FAIL: test_slow_query_does_not_block_main_menu_and_navigation_supersedes_result (test_telegram_responsive.WorkerTests.test_slow_query_does_not_block_main_menu_and_navigation_supersedes_result)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 111, in test_slow_query_does_not_block_main_menu_and_navigation_supersedes_result
+    worker = self.make_worker()
+             ^^^^^^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion/tests/test_telegram_responsive.py", line 100, in make_worker
+    self.assertTrue(hasattr(self.bot, 'HealthViewWorker'), 'bounded health worker missing')
+AssertionError: False is not true : bounded health worker missing
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.202s
+
+FAILED (failures=8, errors=2)
