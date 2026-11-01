@@ -89,5 +89,5 @@ if __name__ == '__main__':
     try:
         sys.exit(main(sys.argv[1:]))
     except (ValueError, OSError, UnicodeError):
-        print('[ERROR] 节点用途配置无效或不安全；内容损坏可从菜单 [7] 重设，权限、归属或链接问题须先人工修正。未执行安装或修复。', file=sys.stderr)
+        print('[ERROR] 节点用途配置无效或不安全；内容损坏可从菜单 [4] → [7] 重设，权限、归属或链接问题须先人工修正。未执行安装或修复。', file=sys.stderr)
         sys.exit(1)

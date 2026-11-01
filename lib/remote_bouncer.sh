@@ -198,6 +198,23 @@ remote_bouncer_status() {
     log_info '服务运行；不会自动采集 SSH 日志，状态输出不代表真实业务阻断已验证。'
 }
 
+manage_remote_firewall_ops() {
+    local choice
+    while true; do
+        printf '\n远端执行 — 封禁与放行\n决策、告警和管理员放行名单仅在检测中心管理。\n1. 查看本机连接和防火墙执行状态\n2. 查看检测中心的封禁与放行操作说明\n3. 核对本机连接来源和转发路径\n4. 引导验证本机入口拦截\n0. 返回\n'
+        prompt choice '请选择 [0-4]: ' || return 0
+        case "$choice" in
+            1) remote_bouncer_status; check_remote_firewall_status ;;
+            2)
+                printf '\n以下命令仅在检测中心执行：\nsudo cscli decisions list\nsudo cscli alerts list --limit 20\nsudo cscli bouncers list\n封禁、解封与管理员 AllowList 请在中心核对来源和决策后操作。\n中央 AllowList 会使来源跳过 AppSec；本节点不会代为提交变更。\n' ;;
+            3) check_relay_path remote ;;
+            4) verify_relay remote ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。' ;;
+        esac
+    done
+}
+
 manage_remote_bouncer() {
     local choice
     while true; do

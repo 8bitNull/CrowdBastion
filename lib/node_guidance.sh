@@ -66,20 +66,142 @@ node_core_present() {
 
 node_recommendation() {
     if node_has_role remote; then
-        log_info '建议：远端连接状态 --relay-bouncer-status；连接来源和转发路径 --relay-path。连接配置入口 [1] → [6]。'
+        log_info '建议：远端连接状态 --relay-bouncer-status；连接来源和转发路径 --relay-path。首页 [2] 可引导连接。'
+    elif [[ "$NODE_ROLES" == node ]] && ! node_core_present; then
+        log_info '建议：先检查 V2bX 配置与日志；此用途不要求安装本地 CrowdSec。'
     elif ! node_core_present; then
         if node_has_role web || [[ -z "$NODE_ROLES" ]]; then
-            log_info '建议：安装网站基础防护 [1] → [1]，或 --install-core。'
+            log_info '建议：从首页 [2] 安装网站基础防护，或 --install-core。'
         else
-            log_info '建议：如需本机系统/SSH 防护，安装基础防护 [1] → [5]，或 --install-relay。'
+            log_info '建议：从首页 [2] 安装本机系统/SSH 基础防护，或 --install-relay。'
         fi
     elif node_has_role web || node_web_deployed || [[ -z "$NODE_ROLES" ]]; then
-        log_info '建议：排查网站 [4] → [2]；真实 IP 检查 --diagnose-real-ip。实际网站接入验证需明确选择 --verify-appsec。'
+        log_info '建议：排查网站 [4] → [4] → [2]；真实 IP 检查 --diagnose-real-ip。实际网站接入验证需明确选择 --verify-appsec。'
     else
-        log_info '建议：先检查连接来源和转发路径 [4] → [3] → [2]，或 --relay-path；规则引用不等于流量阻断验收。'
+        log_info '建议：先检查连接来源和转发路径 [4] → [4] → [3] → [2]，或 --relay-path；规则引用不等于流量阻断验收。'
     fi
     node_has_role node && log_info '落地建议：检查 V2bX 配置与连接来源 --diagnose-v2bx；运行日志 --v2bx-log-check。'
     return 0
+}
+
+# Keep role-specific steps together; only an explicit step changes deployment.
+guided_setup() {
+    local choice role number result
+    local steps=() labels=()
+    load_node_roles || { log_warn '用途配置无法读取，请重新选择。'; NODE_ROLES=''; }
+    if [[ -z "$NODE_ROLES" ]]; then
+        locked_operation select_node_roles || return $?
+        load_node_roles || return 1
+        [[ -n "$NODE_ROLES" ]] || return 0
+    fi
+    for role in $NODE_ROLES; do
+        case "$role" in
+            web)
+                steps+=(web website realip)
+                labels+=('安装网站基础防护：检测日志并执行 IP 封禁' '按网站运行方式接入请求防护' '核对访客真实 IP：确保识别的是访问者') ;;
+            relay)
+                steps+=(relay relaypath)
+                labels+=('安装中转基础防护：检测本机系统和 SSH 日志' '核对中转路径：确认封禁作用在哪个入口') ;;
+            remote)
+                steps+=(remote relaypath)
+                labels+=('连接检测中心：由中心检测，本机执行封禁' '核对中转路径：确认封禁作用在哪个入口') ;;
+            node)
+                steps+=(node)
+                labels+=('管理 V2bX：检查配置、分析样本、持续记录与告警') ;;
+        esac
+    done
+    while true; do
+        printf '\n安装或调整防护 — %s\n按顺序完成适用步骤；已有配置可以直接检查。\n' "$(node_role_label)"
+        for ((number=0; number<${#steps[@]}; number++)); do
+            printf '%s. %s\n' "$((number+1))" "${labels[number]}"
+        done
+        node_has_role node && printf 'V2bX 日志观察本身不提供业务攻击自动封禁。\n'
+        node_has_role web && printf '第 2 项先选择网站运行方式；Docker bridge 按引擎、私有地址、拦截组件的顺序接入。\n'
+        printf '9. 检查当前防护情况\n0. 返回首页\n'
+        prompt choice '请选择步骤: ' || return 0
+        case "$choice" in
+            0) return 0 ;;
+            9) interactive_health_check; continue ;;
+        esac
+        if [[ ! "$choice" =~ ^[1-8]$ ]] || (( choice > ${#steps[@]} )); then
+            log_warn '请选择上面列出的步骤。'; continue
+        fi
+        result=0
+        case "${steps[choice-1]}" in
+            web) locked_operation install_crowdsec_core web || result=$? ;;
+            website) guided_website_setup || result=$? ;;
+            realip) locked_operation manage_real_ip || result=$? ;;
+            relay) locked_operation install_crowdsec_core relay || result=$? ;;
+            remote) locked_operation manage_remote_bouncer || result=$? ;;
+            relaypath) check_relay_path || result=$? ;;
+            node) manage_v2bx_node || result=$? ;;
+        esac
+        if [[ "$result" == 0 ]]; then
+            printf '\n本步骤已返回。选择下一项继续，或选择 9 检查当前防护。\n'
+        else
+            printf '\n本步骤未完成，请先处理上方原因；选择 9 可重新检查。\n'
+        fi
+    done
+}
+
+guided_website_setup() {
+    local runtime choice result
+    printf '\n网站运行在哪里？\n1. 宿主机 Nginx/OpenResty\n2. Docker host 网络\n3. Docker bridge 网络\n0. 返回\n'
+    while true; do
+        prompt runtime '请选择 [0-3]: ' || return 0
+        case "$runtime" in 0) return 0 ;; 1|2|3) break ;; *) log_warn '无效选项。' ;; esac
+    done
+    while true; do
+        printf '\n网站请求防护 — 按顺序完成适用步骤\n1. 配置网站请求检测引擎\n'
+        if [[ "$runtime" == 3 ]]; then
+            printf '2. 登记已准备好的私有连接地址\n先准备可从该容器访问的私有 LAPI/AppSec 网关；本工具不创建网关。\n'
+        else
+            printf '宿主机或 Docker host 网络无需登记 bridge 私有地址。\n'
+        fi
+        printf '3. 安装或接入网站拦截组件\n4. 发送测试请求验证网站防护（需要确认）\n5. 查看网站请求检测状态\n6. 查看停用、移除与卸载顺序\n0. 返回\n'
+        prompt choice '请选择步骤: ' || return 0
+        result=0
+        case "$choice" in
+            1) locked_operation setup_appsec engine-only || result=$? ;;
+            2)
+                if [[ "$runtime" != 3 ]]; then log_warn '当前运行方式无需此步骤。'; continue; fi
+                locked_operation configure_docker_endpoints || result=$? ;;
+            3) locked_operation guided_website_bouncer "$runtime" || result=$? ;;
+            4) locked_operation verify_appsec || result=$? ;;
+            5) check_appsec_status || result=$? ;;
+            6) show_website_withdrawal_help ;;
+            0) return 0 ;;
+            *) log_warn '无效选项。'; continue ;;
+        esac
+        if [[ "$result" == 0 ]]; then printf '\n操作已返回，请选择下一步；实际接入以状态和请求验证为准。\n'
+        else printf '\n本步骤未完成，请处理上方原因后重试。\n'; fi
+    done
+}
+
+guided_website_bouncer() {
+    local choice service
+    printf '\n网站拦截组件\n1. 首次安装组件（已有宿主机组件可复用）\n2. 重新接入已有组件\n0. 返回\n'
+    prompt choice '请选择 [0-2]: ' || return 0
+    case "$choice" in
+        1) install_web_bouncer ;;
+        2)
+            if [[ "$1" == 1 ]]; then
+                prompt service '宿主机服务 [nginx/openresty，留空返回]: ' || return 0
+                case "$service" in
+                    nginx|openresty)
+                        if [[ ! -f "${CS_DIR}/bouncers/crowdsec-${service}-bouncer.conf" ]]; then
+                            log_err '未发现已有组件配置，请先选择首次安装。'; return 1
+                        fi
+                        install_host_web_bouncer "$service" ;;
+                    '') return 0 ;;
+                    *) log_err '请选择 nginx 或 openresty。'; return 1 ;;
+                esac
+            else
+                link_docker_appsec
+            fi ;;
+        0|'') return 0 ;;
+        *) log_err '无效选项。'; return 1 ;;
+    esac
 }
 
 check_health_status_raw() {

@@ -23,7 +23,7 @@
 
 ## 配置 AppSec
 
-菜单 `1 → 2 → 1` 或 `--install-appsec` 安装集合，并创建：
+菜单 `4 → 1 → 2 → 1` 或 `--install-appsec` 安装集合，并创建：
 
 ```yaml
 source: appsec
@@ -53,7 +53,7 @@ labels:
 
 ## Docker 网络与端点登记
 
-Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。Docker host 网络可以连接宿主机 loopback；bridge 的 loopback 指向容器自身。bridge 接入先用 `--configure-docker-endpoints`（菜单 `1 → 4`）登记已经准备好的私有 IPv4 网关 LAPI/AppSec，要求匹配实际 NetworkID/IPAM、精确私有监听、容器可达及 LAPI 密钥认证。
+Firewall Bouncer 支持 IP 封禁，但[不支持 AppSec HTTP 转发](https://docs.crowdsec.net/u/bouncers/firewall/)。Docker host 网络可以连接宿主机 loopback；bridge 的 loopback 指向容器自身。bridge 接入先用 `--configure-docker-endpoints`（菜单 `4 → 1 → 4`）登记已经准备好的私有 IPv4 网关 LAPI/AppSec，要求匹配实际 NetworkID/IPAM、精确私有监听、容器可达及 LAPI 密钥认证。
 
 端点监听、转发和防火墙放行由部署者准备，脚本保持核心 loopback，不安装转发器、更换网络或发布端口。配置连通性与真实网站阻断分别核验。
 
@@ -65,13 +65,13 @@ Docker internal bridge 没有默认网关时，容器检查结果中的 `Gateway
 
 ## 验证网站阻断
 
-验证方式：菜单 `1 → 2 → 4` 或 `--verify-appsec` 输入自己管理的网站根地址。明确确认后发送带唯一标识的 GET `/.env` 请求，读取 HTTP 状态及 AppSec 指标，输出通过（返回 0）、失败（1）或无法判断（2）。通过条件包括 403、Processed/Blocked 增量和 `crowdsecurity/vpatch-env-access` 命中；累计增量可能来自其他请求，仍需按唯一标识关联日志。优先从另一台设备验证，单独一个 403 不能证明 AppSec 生效。
+验证方式：菜单 `4 → 1 → 2 → 4` 或 `--verify-appsec` 输入自己管理的网站根地址。明确确认后发送带唯一标识的 GET `/.env` 请求，读取 HTTP 状态及 AppSec 指标，输出通过（返回 0）、失败（1）或无法判断（2）。通过条件包括 403、Processed/Blocked 增量和 `crowdsecurity/vpatch-env-access` 命中；累计增量可能来自其他请求，仍需按唯一标识关联日志。优先从另一台设备验证，单独一个 403 不能证明 AppSec 生效。
 
 `--verify-appsec` 会在发送请求前提示 Self-Report 风险并要求确认；取消或 EOF 不发送验证请求。该命令从当前主机访问 `/.env`，即使使用公网域名，也可能绕回本机并产生针对本机地址的告警。推荐从另一台设备验证；定时健康检查使用正常页面或专用 `/healthz`。验证入口不删除历史告警、封禁决策或修改白名单。
 
 ## 正文与故障策略
 
-AppSec 正文/故障策略可用 `--appsec-policy` 或菜单 `1 → 2 → 5` 检查并明确设置。支持标准宿主机 Bouncer，或输入 `docker` 选择持久化容器配置；不修改原 `APPSEC_URL`。`APPSEC_DROP_UNREADABLE_BODY=true` 会拒绝无法分析的正文，`APPSEC_FAILURE_ACTION=deny` 会按上游故障策略拒绝请求，需先评估业务。
+AppSec 正文/故障策略可用 `--appsec-policy` 或菜单 `4 → 1 → 2 → 5` 检查并明确设置。支持标准宿主机 Bouncer，或输入 `docker` 选择持久化容器配置；不修改原 `APPSEC_URL`。`APPSEC_DROP_UNREADABLE_BODY=true` 会拒绝无法分析的正文，`APPSEC_FAILURE_ACTION=deny` 会按上游故障策略拒绝请求，需先评估业务。
 
 官方 OpenResty Bouncer 1.2.3 的 AppSec 故障拒绝分支原先可能返回 HTTP 200。本项目生成的原生容器 Bouncer 已修正为 403。已有本工具托管容器可重新运行 `--install-web-bouncer`，选择原容器，升级受管 Lua、策略解析器及执行记录钩子；保留原账号、凭据和策略，更新资源摘要并校验重载，失败回滚。非托管安装需单独核对。故障测试还应检查业务后端是否收到请求。
 
@@ -91,4 +91,4 @@ AppSec 正文/故障策略可用 `--appsec-policy` 或菜单 `1 → 2 → 5` 检
 
 停用入口只处理本工具数据源和记录过的 Web Bouncer 接入，并恢复接入前的 `APPSEC_URL`；外部配置和 AppSec 集合保留。管理的 Docker 接入按容器名称与实际持久化挂载核对，支持容器重建后安全恢复；手工改过地址、挂载或网络时先停止并要求核对。失败时恢复配置并重载已变更的服务/容器。未由本工具接入的容器和外部代理需要自行同步停用转发。
 
-菜单 `1 → 2 → 7` 或 `--remove-web-bouncer` 撤销本工具首次安装的原生容器 Bouncer：核对挂载和文件内容，先恢复原网站/WAF 配置并重载，再注销账号、清理资源。清理失败保留 `cleanup-pending` 记录，可重复执行；已经删除的账号/资源不会阻止重试。手工修改过的配置或资源会保留并要求核对。宿主机官方软件包的撤销请按[官方 Nginx](https://docs.crowdsec.net/u/bouncers/nginx/)或 [OpenResty](https://docs.crowdsec.net/u/bouncers/openresty/)文档进行，先确认网站正常再卸载核心。
+菜单 `4 → 1 → 2 → 7` 或 `--remove-web-bouncer` 撤销本工具首次安装的原生容器 Bouncer：核对挂载和文件内容，先恢复原网站/WAF 配置并重载，再注销账号、清理资源。清理失败保留 `cleanup-pending` 记录，可重复执行；已经删除的账号/资源不会阻止重试。手工修改过的配置或资源会保留并要求核对。宿主机官方软件包的撤销请按[官方 Nginx](https://docs.crowdsec.net/u/bouncers/nginx/)或 [OpenResty](https://docs.crowdsec.net/u/bouncers/openresty/)文档进行，先确认网站正常再卸载核心。

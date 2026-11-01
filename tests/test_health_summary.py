@@ -60,6 +60,10 @@ class Verdicts(unittest.TestCase):
         report = self.report(('core', 'missing'), ('bouncer', 'fault'), status=1)
         self.assertEqual(report['verdict'], '发现问题，需要处理')
 
+    def test_mixed_issue_types_are_all_counted(self):
+        report = self.report(('core', 'missing'), ('bouncer', 'fault'), ('logs', 'pending'), ('rules', 'unknown'))
+        self.assertEqual(report['additional'], 3)
+
     def test_nonzero_without_reason_cannot_invent_a_fault_or_pass(self):
         report = self.report(('core', 'ok'), ('logs', 'ok'), ('rules', 'ok'), status=1)
         self.assertEqual(report['verdict'], '检查未完成，暂时无法判断')
@@ -172,7 +176,7 @@ check_health_status_raw() {
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertEqual(self.commands().count('check-once'), 1)
         self.assertIn('DETAIL MARKER', p.stdout)
-        self.assertIn('2. 查看检查详情', p.stdout)
+        self.assertIn('2. 查看技术详情', p.stdout)
         self.assertNotIn('按回车', p.stdout)
         report_dir = Path(self.commands().splitlines()[1]).parent
         self.assertFalse(report_dir.exists())

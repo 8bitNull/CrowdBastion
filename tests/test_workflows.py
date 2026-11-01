@@ -592,7 +592,7 @@ finally:
     def test_all_main_menu_entries_dispatch(self):
         names = ['manage_installation','manage_waf_rules','manage_firewall_ops','manage_diagnostics','manage_integrations','manage_uninstall_center']
         overrides = '\n'.join(f'{name}() {{ record invoked {name}; }}' for name in names)
-        p = self.run_shell('show_main_menu', '\n'.join(map(str, range(1,7)))+'\n0\n', overrides)
+        p = self.run_shell('manage_advanced', '\n'.join(map(str, range(1,7)))+'\n0\n', overrides)
         self.assertEqual(p.returncode, 0)
         for name in names:
             self.assertIn('invoked '+name, self.commands())
@@ -607,7 +607,7 @@ finally:
         for path in paths:
             with self.subTest(path=path):
                 self.trace.write_text('')
-                p = self.run_shell('show_main_menu', path+'0\n')
+                p = self.run_shell('show_main_menu', '4\n'+path+'0\n')
                 self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
                 self.assertEqual(self.commands(), '')
                 self.assertNotIn('无效选项', p.stderr)

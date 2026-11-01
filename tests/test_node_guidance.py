@@ -134,7 +134,8 @@ class Guidance(unittest.TestCase):
         self.assertEqual(p.returncode, 2, p.stdout+p.stderr)
         self.assertIn('V2bX diagnosis', p.stdout)
         self.assertNotIn('cscli', self.commands())
-        self.assertIn('--install-relay', p.stdout)
+        self.assertIn('此用途不要求安装本地 CrowdSec', p.stdout)
+        self.assertNotIn('--install-relay', p.stdout)
 
     def test_combination_keeps_abnormal_precedence(self):
         self.roles('remote', 'node')
@@ -314,7 +315,7 @@ request_audit_tool() { return 2; }
 
     def test_tty_first_choice_and_return_have_no_extra_pause(self):
         # Pipe tests cannot observe pause's isatty branch.
-        p = self.run_terminal('show_main_menu', '2\n4\n3\n0\n0\n0\n', 'locked_operation() { "$@"; }')
+        p = self.run_terminal('show_main_menu', '2\n0\n4\n4\n3\n0\n0\n0\n0\n', 'locked_operation() { "$@"; }')
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertNotIn('按回车', p.stdout)
         path = self.base/'var/lib/crowdbastion/node-roles.json'
@@ -323,15 +324,15 @@ request_audit_tool() { return 2; }
 
     def test_v2bx_nested_returns_and_invalid_choices_have_no_pause(self):
         self.roles('node')
-        p = self.run_terminal('show_main_menu', '4\n4\n3\ninvalid\n0\n4\n0\n0\n0\n0\n')
+        p = self.run_terminal('show_main_menu', '4\n4\n4\n3\ninvalid\n0\n4\n0\n0\n0\n0\n0\n')
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertNotIn('按回车', p.stdout)
         self.assertEqual(self.commands(), '')
 
-    def test_next_action_uses_relay_installer_under_lock_and_pauses_once(self):
+    def test_next_action_uses_relay_installer_under_lock_and_keeps_recheck_available(self):
         self.roles('relay')
         (self.config/'config.yaml').unlink()
-        p = self.run_terminal('interactive_health_check', '1\n\n', '''
+        p = self.run_terminal('interactive_health_check', '1\n0\n', '''
 check_relay_status() { return 2; }
 install_crowdsec_core() { record install-profile "$@"; }
 locked_operation() { record lock "$@"; "$@"; }
@@ -339,7 +340,8 @@ locked_operation() { record lock "$@"; "$@"; }
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertIn('lock install_crowdsec_core relay', self.commands())
         self.assertIn('install-profile relay', self.commands())
-        self.assertEqual(p.stdout.count('按回车'), 1)
+        self.assertNotIn('按回车', p.stdout)
+        self.assertIn('3. 重新检查', p.stdout)
 
     def test_cli_status_on_terminal_never_prompts_or_saves_preferences(self):
         p = self.run_terminal('main --status', '')

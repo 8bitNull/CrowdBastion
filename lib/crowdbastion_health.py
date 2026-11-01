@@ -40,12 +40,12 @@ RANK = {'optional': 0, 'ok': 1, 'verified': 1, 'pending': 2, 'unknown': 3, 'miss
 LABELS = {'web': '网站', 'relay': '本地中转', 'remote': '远端执行', 'node': 'V2bX 落地'}
 ACTIONS = {
     'verify': ('查看如何验证实际拦截', '按实际流量路径完成一次外部拦截验证。'),
-    'core_logs': ('查看检测服务日志', '查看检测服务日志：journalctl -u crowdsec -n 50 --no-pager'),
-    'bouncer_logs': ('查看防火墙防护服务日志', '查看启动失败原因：journalctl -u crowdsec-firewall-bouncer -n 50 --no-pager'),
-    'v2bx_logs': ('查看 V2bX 服务日志', '查看落地服务日志：journalctl -u V2bX.service -n 50 --no-pager'),
-    'install_web': ('安装网站基础防护', '安装网站基础防护：[1] → [1]，或 --install-core。'),
-    'install_relay': ('安装本机系统/SSH 基础防护', '安装本机系统/SSH 基础防护：[1] → [5]，或 --install-relay。'),
-    'install_remote': ('配置远端检测中心连接', '配置远端检测中心连接：[1] → [6]。'),
+    'core_logs': ('排查检测服务并选择处理方式', '先排查配置和服务状态；菜单选择 1 开始，命令行可查看 journalctl -u crowdsec -n 50 --no-pager'),
+    'bouncer_logs': ('排查防火墙封禁服务并选择处理方式', '先排查服务为什么没有运行；菜单选择 1 开始，命令行可查看 journalctl -u crowdsec-firewall-bouncer -n 50 --no-pager'),
+    'v2bx_logs': ('排查 V2bX 服务', '检查落地服务启动原因；命令行可查看 journalctl -u V2bX.service -n 50 --no-pager'),
+    'install_web': ('安装网站基础防护', '首页 [2] 按用途安装，或 --install-core。'),
+    'install_relay': ('安装本机系统/SSH 基础防护', '首页 [2] 按用途安装，或 --install-relay。'),
+    'install_remote': ('配置远端检测中心连接', '首页 [2] 按用途连接远端检测中心。'),
     'details': ('查看检查详情和未完成原因', '查看检查详情，先解决依赖、权限或读取失败。'),
     'log_help': ('查看日志解析排查方法', '核对日志格式、采集标签与解析器；详见检查详情。'),
     'path_help': ('查看封禁路径核验方法', '核对连接来源和转发路径：--relay-path。'),
@@ -141,7 +141,7 @@ def summarize(records, status, scope, roles):
     important = [CATALOG[k][0] for k in ('core', 'bouncer', 'logs', 'rules', 'remote', 'v2bx', 'v2bx_service', 'appsec') if states.get(k) == 'ok']
     return {'verdict': verdict, 'status': 1 if status == 1 else 0 if verdict == '运行与防护验证通过' else 2,
             'confirmed': '、'.join((important or confirmed)[:4]), 'attention': attention,
-            'additional': max(0, len(faults or missing or unknown) - 1), 'impact': impact,
+            'additional': max(0, len(faults + missing + unknown) - 1), 'impact': impact,
             'action': action, 'action_label': ACTIONS[action][0], 'next': ACTIONS[action][1]}
 
 
@@ -152,6 +152,12 @@ def main(args):
     path, status, scope, roles, action_path = args
     records = [line.split('\t') for line in Path(path).read_text().splitlines()]
     report = summarize(records, int(status), scope, roles)
+    if report['attention']:
+        print(f"当前情况：有 {report['additional'] + 1} 项需要处理或确认，先看下面第一项。")
+    elif report['status'] == 2:
+        print('当前情况：本次没有发现运行问题。是否确实能拦截攻击，还需要单独验证。')
+    else:
+        print('当前情况：本次适用的运行检查和防护验证均已通过。')
     print('检查结论：'+report['verdict'])
     checked_roles = set(roles.split())
     if scope == 'overall' and any(key == 'web' and state == 'required' for key, state in records):

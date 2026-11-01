@@ -4,7 +4,9 @@
 
 ## 使用
 
-菜单 `4 → 4 → 1`，或运行：
+首页 `2` 的落地步骤进入完整 V2bX 菜单，按配置与连接来源检查、已有日志样本分析、持续记录、异常告警顺序接入。菜单诊断项提供交互报告；CLI 诊断保持短报告。样本分析需要本机文件路径及内核类型，不自动读取全部近期日志。
+
+菜单 `4 → 4 → 4 → 1`，或运行：
 
 ```bash
 sudo bash crowdbastion.sh --diagnose-v2bx
@@ -64,7 +66,7 @@ sudo python3 lib/crowdsec_v2bx.py \
 
 ## 日志样本离线核查（第二阶段离线部分）
 
-菜单 `4 → 4 → 2` 或 `--v2bx-log-check`。每次选择一个内核，混合 unit 的其他格式会计入忽略项，不猜测协议。下面的时区、路径和中转网段是示例，必须替换为实际值：
+菜单 `4 → 4 → 4 → 2` 或 `--v2bx-log-check`。每次选择一个内核，混合 unit 的其他格式会计入忽略项，不猜测协议。下面的时区、路径和中转网段是示例，必须替换为实际值：
 
 ```bash
 sudo env V2BX_LOG_FILE=/root/v2bx-xray-sample.log \
@@ -166,9 +168,11 @@ bash crowdbastion.sh --v2bx-observe
 
 ## 落地常驻仅观察服务
 
-菜单 `4 → 4 → 3`，或使用以下三个命令。它将每个内核的独立文件日志接入持久 Observer；不安装 CrowdSec acquisition、场景或 profiles，也不创建告警、封禁或限速规则。真实 VPS 部署仍须按[部署验收](v2bx-deployment-acceptance.md)核实。
+菜单 `4 → 4 → 4 → 3`，或使用以下三个命令。它将每个内核的独立文件日志接入持久 Observer；不安装 CrowdSec acquisition、场景或 profiles，也不创建告警、封禁或限速规则。真实 VPS 部署仍须按[部署验收](v2bx-deployment-acceptance.md)核实。
 
 先在本机建立 root 所有、权限 `0600` 的 JSON 配置，路径按真实日志修改。中转 CIDR 示例必须换成实际出口；三个内核需要三个不同文件，xray 文件日志必须指定实际时区偏移：
+
+持续记录子菜单第 `4` 项可查看单源配置样板及准备步骤，只显示说明，不创建文件。准备好后选第 `1` 项输入绝对路径开始记录；第 `2` 项检查记录健康，再返回落地菜单第 `4` 项接入告警。多源配置使用下方完整格式。
 
 ```json
 {
@@ -200,7 +204,7 @@ sudo bash crowdbastion.sh --disable-v2bx-observer
 
 ## 常驻仅观察告警接入
 
-菜单 `4 → 4 → 4` 的 `1/2/3` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
+菜单 `4 → 4 → 4 → 4` 的 `1/2/3` 分别为接入、只读状态和停用。先完成健康的常驻采集器和实际来源核对，再在隔离副本验证本机 CrowdSec 配置；当前自动接入仅支持 `/etc/crowdsec` 标准 config_dir／acquis.d 布局，要求 CrowdSec 可用且运行、Prometheus acquisition 指标可查询。官方模拟验收固定 CrowdSec 1.8.1，不等于其他版本或真实 VPS 已放行。
 
 ```bash
 sudo bash crowdbastion.sh --enable-v2bx-alerts

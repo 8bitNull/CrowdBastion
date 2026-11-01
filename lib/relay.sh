@@ -57,7 +57,7 @@ relay_after_install() {
             verify_relay "$mode" || true
         fi
     else
-        log_info '实际入口验证：--verify-relay，或菜单 [4] → [3] → [3]。'
+        log_info '实际入口验证：--verify-relay，或菜单 [4] → [4] → [3] → [3]。'
     fi
     # Report installation separately from runtime checks or optional acceptance.
     return 0
@@ -74,7 +74,7 @@ check_relay_path() {
     # EOF/cancel returns before any local checks, including the Bouncer audit.
     [[ "$path_result" -eq 0 ]] && return 0
     [[ "$path_result" -eq 2 ]] || return 1
-    check_relay_status || bouncer_result=$?
+    check_relay_status summary "${1:-}" || bouncer_result=$?
     [[ "$bouncer_result" -eq 0 || "$bouncer_result" -eq 2 ]] || return 1
     return 2
 }

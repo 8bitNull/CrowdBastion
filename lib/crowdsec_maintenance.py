@@ -240,7 +240,19 @@ def main(args):
         directory, single, _ = acquisition_locations(args[0])
         names = ('web-sites.yaml', 'crowdsec-1key-log-repair.yaml', 'crowdsec-1key-appsec.yaml')
         candidates = [Path(directory)/name for name in names]
-        return 0 if any(path.exists() or path.is_symlink() for path in candidates) else 1
+        if any(path.exists() or path.is_symlink() for path in candidates):
+            return 0
+        sources = ([Path(single)] if single else []) + list(Path(directory).glob('*.yaml')) + list(Path(directory).glob('*.yml'))
+        for path in sources:
+            if not path.exists():
+                continue
+            for doc in read(path, True):
+                if not isinstance(doc, dict):
+                    continue
+                labels = doc.get('labels') or {}
+                if doc.get('source') == 'appsec' or (isinstance(labels, dict) and labels.get('type') in ('nginx', 'nginx-proxy-manager', 'appsec')):
+                    return 0
+        return 1
     elif action == 'audit-acquisition':
         return int(audit_acquisition(args[0]))
     elif action == 'prune-snapshots':

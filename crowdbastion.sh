@@ -160,9 +160,9 @@ require_core() {
     require_commands crowdsec cscli systemctl || return 1
     if [[ ! -f "${CS_DIR}/config.yaml" ]]; then
         if node_has_role relay || { node_has_role node && ! node_has_role web; }; then
-            log_err '请先通过菜单 [1] → [5] 或 --install-relay 安装本机系统/SSH 基础防护。'
+            log_err '请先通过首页 [2] 的用途引导或 --install-relay 安装本机系统/SSH 基础防护。'
         else
-            log_err '请先通过菜单 [1] → [1] 或 --install-core 安装 CrowdSec 核心。'
+            log_err '请先通过首页 [2] 的用途引导或 --install-core 安装 CrowdSec 核心。'
         fi
         return 1
     fi
@@ -372,7 +372,7 @@ install_crowdsec_core() (
         return 1
     fi
     log_succ 'CrowdSec 和 Firewall Bouncer 服务已启动。'
-    log_info '请用菜单 [4] → [1] 检查日志采集和 Bouncer 注册；Docker 转发流量需要对应防火墙链。'
+    log_info '请用首页 [1] 检查日志采集和 Bouncer 注册；Docker 转发流量需要对应防火墙链。'
     if [[ "$profile" == relay ]]; then
         log_info '请用 cscli metrics 核验 SSH 日志读取与解析；自定义 SSH unit/日志路径需人工核对。'
         log_info '使用 --relay-status 检查 INPUT/FORWARD 和 IPv4/IPv6 规则；实际中转业务阻断尚未验证。'
@@ -826,11 +826,31 @@ install_baseline_collections() {
 }
 
 reset_waf_to_core_baseline() (
+    local baseline_profile=web web_status=0
+    if [[ "${1:-}" == purpose ]]; then
+        load_node_roles || return 1
+        if [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]] || { node_has_role remote && [[ ! -e "${CS_DIR}/config.yaml" && ! -L "${CS_DIR}/config.yaml" ]]; }; then
+            log_info '远端执行节点的检测规则应在检测中心维护；本机不补齐规则。'
+            return 0
+        fi
+        if node_has_role relay && ! node_has_role web; then
+            node_web_deployed || web_status=$?
+            case "$web_status" in
+                0) ;;
+                1) baseline_profile=relay ;;
+                *) log_err '无法确认已有网站采集配置，请先检查配置格式和读取权限；本次未补齐规则。'; return 1 ;;
+            esac
+        fi
+    fi
     trap hub_workflow_exit EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM
     log_info '补齐基础日志检测集合，保留自定义规则和已配置的 AppSec；Hub 场景数量随版本变化。'
-    install_baseline_collections || return $?
+    if [[ "$baseline_profile" == relay ]]; then
+        install_collections crowdsecurity/linux crowdsecurity/sshd crowdsecurity/whitelist-good-actors || return $?
+    else
+        install_baseline_collections || return $?
+    fi
     reload_core_rules || return 1
     log_succ '基础集合已补齐。'
 )
@@ -1035,6 +1055,7 @@ setup_appsec() (
         return 1
     fi
     log_info 'AppSec 配置已校验，127.0.0.1:7422 存在监听；网站接入仍需 Web Bouncer。'
+    [[ "${1:-}" == engine-only ]] && return 0
     local choice service file
     diagnose_appsec_containers || return 1
     [[ -f "${CS_DIR}/bouncers/crowdsec-nginx-bouncer.conf" ]] && command -v nginx >/dev/null 2>&1 && printf '1. 接入宿主机 Nginx 已有的网站拦截组件\n'
@@ -1250,6 +1271,11 @@ disable_appsec() (
 )
 
 manage_waf_rules() {
+    load_node_roles || return 1
+    if [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]] || { node_has_role remote && [[ ! -e "${CS_DIR}/config.yaml" && ! -L "${CS_DIR}/config.yaml" ]]; }; then
+        log_info '远端执行节点的检测规则应在检测中心维护；本机不添加、更新或删除检测规则。'
+        return 0
+    fi
     require_core || return 1
     local choice
     while true; do
@@ -1259,7 +1285,7 @@ manage_waf_rules() {
             1) manage_rule_installation; continue ;;
             2) cscli collections list ;;
             3) manage_rule_updates; continue ;;
-            4) reset_waf_to_core_baseline ;;
+            4) reset_waf_to_core_baseline purpose ;;
             5) manage_rule_removal; continue ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
@@ -1506,6 +1532,15 @@ repair_firewall_bouncer() (
 )
 
 manage_firewall_ops() {
+    load_node_roles || return 1
+    if [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]] || { node_has_role remote && [[ ! -e "${CS_DIR}/config.yaml" && ! -L "${CS_DIR}/config.yaml" ]]; }; then
+        manage_remote_firewall_ops
+        return $?
+    fi
+    if [[ "$NODE_ROLES" == node ]] && ! node_core_present; then
+        log_info '当前仅配置 V2bX 观察，尚无本地检测核心；请从首页 2 选择本地检测或远端执行部署。'
+        return 0
+    fi
     require_core && require_yaml || return 1
     local choice ip duration reason
     while true; do
@@ -1828,7 +1863,7 @@ smart_audit_and_optimize() (
     log_succ '已完成所选基础修复并校验配置；请求识别与实际防护仍需分别核验。'
     if [[ "$logs" == true ]]; then log_info '日志采集请通过新增访问与 cscli metrics 核验。'; fi
     log_info 'SQLite WAL 可使用 --enable-wal，在确认数据库位于本地磁盘后启用官方 db_config.use_wal。'
-    log_info '上游不确定时先用 --diagnose-real-ip 或菜单 [4] → [2] → [3] 选择目标并只读诊断；确认代理后再用 --repair-real-ip 修复。'
+    log_info '上游不确定时先用 --diagnose-real-ip 或菜单 [4] → [4] → [2] → [3] 选择目标并只读诊断；确认代理后再用 --repair-real-ip 修复。'
 )
 
 enable_sqlite_wal() {
@@ -2026,19 +2061,35 @@ manage_installation() {
     done
 }
 
+show_website_withdrawal_help() {
+    cat <<'EOF'
+
+网站停用、移除与卸载顺序（本页只提供说明）
+1. 撤销本工具真实 IP 配置：Docker 用 --restore-real-ip；宿主机用 --restore-host-real-ip。
+2. 网站防护接入第 6 项停用本工具 AppSec 请求检测，恢复记录过的接入。
+3. 容器使用第 7 项移除本工具安装的 Web Bouncer；已有外部组件按其安装方式移除。
+4. 宿主机 Web Bouncer 需按上游文档撤销 Nginx/OpenResty 集成；当前没有自动移除入口。
+5. 核对配置、重载和正常网站访问后，再从高级管理的卸载与清理移除核心。
+每一步都应核对实际结果；停用请求检测不会自动卸载所有网站组件。
+EOF
+}
+
 manage_website_protection() {
     local choice
     while true; do
-        printf '\n网站防护接入\n1. 配置网站请求检测并接入网站\n2. 安装网站拦截组件（需先配置请求检测）\n3. 查看网站请求检测状态\n4. 发送测试请求验证网站防护（需要确认）\n5. 设置请求正文检查和检测故障时的处理方式\n6. 停用本工具的网站请求检测\n7. 移除本工具安装的容器网站拦截组件\n0. 返回\n'
-        prompt choice '请选择 [0-7]: ' || return 0
+        printf '\n网站防护接入\n1. 配置网站请求检测并接入网站\n2. 安装网站拦截组件（需先配置请求检测）\n3. 查看网站请求检测状态\n4. 发送测试请求验证网站防护（需要确认）\n5. 设置请求正文检查和检测故障时的处理方式\n6. 停用本工具的网站请求检测\n7. 移除本工具安装的容器网站拦截组件\n8. Docker bridge：登记已准备好的私有连接地址（安装拦截组件前；host 网络可跳过）\n0. 返回\n'
+        printf '9. 查看停用、移除与卸载顺序\n'
+        prompt choice '请选择 [0-9]: ' || return 0
         case "$choice" in
-            1) setup_appsec ;;
+            1) setup_appsec '' ;;
             2) install_web_bouncer ;;
             3) check_appsec_status ;;
             4) verify_appsec ;;
             5) configure_appsec_policy ;;
             6) disable_appsec ;;
             7) remove_docker_web_bouncer ;;
+            8) configure_docker_endpoints ;;
+            9) show_website_withdrawal_help ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2128,13 +2179,14 @@ manage_relay_diagnostics() {
 manage_basic_repairs() {
     local choice
     while true; do
-        printf '\n修复基础配置\n1. 排查服务器自身 IP 被封禁的问题\n2. 修复防火墙与检测服务的连接\n3. 检查后选择需要修复的项目\n4. 改善日志数据库写入（需使用本地磁盘）\n0. 返回\n'
-        prompt choice '请选择 [0-4]: ' || return 0
+        printf '\n修复基础配置\n1. 排查服务器自身 IP 被封禁的问题\n2. 修复防火墙与检测服务的连接\n3. 检查后选择需要修复的项目\n4. 改善日志数据库写入（需使用本地磁盘）\n5. 防火墙启动检查、修复与迁移\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) diagnose_self_report ;;
             2) locked_operation repair_firewall_bouncer ;;
             3) locked_operation smart_audit_and_optimize ;;
             4) locked_operation enable_sqlite_wal ;;
+            5) locked_operation manage_firewall_maintenance ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2159,39 +2211,7 @@ manage_integrations() {
 }
 
 show_startup_banner() {
-    local banner_cyan='' banner_green='' banner_reset=''
-    if [[ -t 1 && "${TERM:-dumb}" != dumb && -z "${NO_COLOR+x}" ]] &&
-        command -v tput >/dev/null 2>&1 && tput setaf 6 >/dev/null 2>&1; then
-        banner_cyan=$'\033[1;36m'
-        banner_green=$'\033[1;32m'
-        banner_reset=$'\033[0m'
-    fi
-    printf '\n%s' "$banner_cyan"
-    cat <<'EOF'
-   ______                        ______             __  _
-  / ____/________ _      _______/ __  /____ ______/ /_(_)___  ____
- / /   / ___/ __ \ | /| / / __  / __  / __ `/ ___/ __/ / __ \/ __ \
-/ /___/ /  / /_/ / |/ |/ / /_/ / /_/ / /_/ (__  ) /_/ / /_/ / / / /
-\____/_/   \____/|__/|__/\__,_/_____/\__,_/____/\__/_/\____/_/ /_/
-EOF
-    printf '\n%s%s' "$banner_reset" "$banner_green"
-    cat <<'EOF'
- ─────────────────────────────────────────────────────────────────
-                      C R O W D B A S T I O N
-
-                    SERVER DEFENSE & OPERATIONS
-
-                         Web / Relay / Node
-                        Powered by CrowdSec
-
-                  github.com/8bitNull/CrowdBastion
- ─────────────────────────────────────────────────────────────────
- >> CROWDBASTION v3.0 | Next-Gen Lightweight VPS Sentinel
- >> NPM Host Mode + Firewall Enforcement + Mobile Telegram SOC
- >> 100% Pure Python 3.13 StdLib | Resident Memory < 16MB
- ─────────────────────────────────────────────────────────────────
-EOF
-    printf '%s\n' "$banner_reset"
+    printf '\nCrowdBastion · 服务器防护\n先了解当前情况，再按提示安装或处理问题。\n'
 }
 
 show_main_menu() {
@@ -2200,15 +2220,36 @@ show_main_menu() {
     load_node_roles || roles_status=$?
     if [[ "$roles_status" == 0 && -z "$NODE_ROLES" && -t 0 ]]; then
         locked_operation select_node_roles
+        if load_node_roles && [[ -n "$NODE_ROLES" ]]; then guided_setup; fi
     fi
     while true; do
         if load_node_roles; then
-            printf '\nCrowdBastion 防护管理中心 — 节点用途：%s\n' "$(node_role_label)"
-            node_recommendation
+            printf '\n这台服务器的用途：%s\n' "$(node_role_label)"
+        else
+            printf '\n用途配置无法读取，请在高级管理中重新设置。\n'
+        fi
+        printf '1. 检查防护情况（建议先看这里）\n2. 安装或调整防护（按用途引导）\n3. 管理封禁与放行\n4. 高级管理（规则、通知、专项排查等）\n0. 退出\n'
+        prompt choice '请选择 [0-4]（Ctrl+D 退出）: ' || return 0
+        case "$choice" in
+            1) interactive_health_check ;;
+            2) guided_setup ;;
+            3) locked_operation manage_firewall_ops ;;
+            4) manage_advanced ;;
+            0) return 0 ;;
+            *) log_warn '无效选项，请输入菜单编号。' ;;
+        esac
+    done
+}
+
+manage_advanced() {
+    local choice
+    while true; do
+        if load_node_roles; then
+            printf '\n高级管理 — 节点用途：%s\n' "$(node_role_label)"
         else
             log_warn '用途配置不可用，请选择 [7] 重新设置；现有专项操作仍可使用。'
         fi
-        printf '1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n7. 设置节点用途\n8. 按用途检查并选择下一步\n0. 退出\n'
+        printf '1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n7. 设置节点用途\n8. 按用途检查并选择下一步\n0. 返回首页\n'
         prompt choice '请选择 [0-8]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
             1) locked_operation manage_installation; continue ;;
@@ -2231,9 +2272,8 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 用法：sudo bash crowdbastion.sh [操作]
 兼容入口：install-crowdsec-1panel.sh；已有服务和配置沿用旧版运行标识。
 不带参数进入交互菜单。命令行保留交互确认，失败返回非零状态。
-主菜单：1 安装与接入；2 检测规则；3 IP 封禁与放行；
-        4 检查与修复；5 控制台与通知；6 卸载与清理。
-节点用途：7（可组合）；按用途检查与下一步：8 或 4 → 1。
+首页：1 检查防护情况；2 安装或调整防护；3 管理封禁与放行；4 高级管理。
+高级管理保留安装、规则、专项排查、通知、卸载与用途设置入口。
 首次终端运行显示用途引导；选择只保存偏好。原命令行操作参数保持兼容。
 
 安装和网站接入：
@@ -2348,7 +2388,7 @@ main_operation() {
         --install-webui) deploy_web_ui ;;
         --reset-webui-credentials) reset_webui_credentials ;;
         --install-waf) install_web_rules ;;
-        --install-appsec) setup_appsec ;;
+        --install-appsec) setup_appsec '' ;;
         --install-web-bouncer) install_web_bouncer ;;
         --remove-web-bouncer) remove_docker_web_bouncer ;;
         --appsec-status) check_appsec_status ;;
