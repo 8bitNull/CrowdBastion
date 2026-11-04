@@ -315,12 +315,12 @@ request_audit_tool() { return 2; }
 
     def test_tty_first_choice_and_return_have_no_extra_pause(self):
         # Pipe tests cannot observe pause's isatty branch.
-        p = self.run_terminal('show_main_menu', '2\n0\n4\n4\n3\n0\n0\n0\n0\n', 'locked_operation() { "$@"; }')
+        p = self.run_terminal('show_main_menu', '3\n1\ny\n4\n4\n3\n0\n0\n0\n0\n', 'locked_operation() { "$@"; }')
         self.assertEqual(p.returncode, 0, p.stdout)
         self.assertNotIn('按回车', p.stdout)
         path = self.base/'var/lib/crowdbastion/node-roles.json'
         self.assertEqual(json.loads(path.read_text())['roles'], ['relay'])
-        self.assertEqual(self.commands(), 'systemctl is-active crowdsec\n')
+        self.assertEqual(self.commands(), '')
 
     def test_v2bx_nested_returns_and_invalid_choices_have_no_pause(self):
         self.roles('node')

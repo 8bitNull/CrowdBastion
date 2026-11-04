@@ -74,7 +74,7 @@ def scenarios():
                                      '1\n1\n', '1\n1\n2\n0\n', '1\n1\n2\n')):
         yield f'cancel-{index}', 'guided_protocol_status', answers, ''
     yield 'invalid-choice', 'guided_protocol_status', '$(false)\n01\n3\n9\n2\n1\n', ''
-    yield 'full-home', 'show_main_menu', '5\n9\n1\n3\n1\n4\n3\n0\n0\n0\n', 'pause() { :; }'
+    yield 'full-home', 'show_main_menu', '4\n11\n1\n3\n1\n4\n3\n0\n0\n0\n', 'pause() { :; }'
     plan = {'version': 1, 'state': 'ready', 'changes': [], 'scope': {'ingress': []}}
     cases = [
         ('status', '', {'version': 1, 'state': 'absent'}, 0, 0),

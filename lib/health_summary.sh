@@ -92,6 +92,7 @@ health_service_diagnose() {
         core) unit=crowdsec; label='检测服务' ;;
         bouncer) unit=crowdsec-firewall-bouncer; label='防火墙封禁服务' ;;
         v2bx) unit="${V2BX_UNIT:-V2bX.service}"; label='V2bX 服务' ;;
+        observer) unit=crowdsec-v2bx-observer; label='持续日志观察服务' ;;
         *) return 1 ;;
     esac
     printf '\n排查%s\n' "$label"
@@ -108,10 +109,11 @@ health_service_diagnose() {
     fi
     printf '\n最近启动日志（供进一步排查）：\n'
     journalctl -u "$unit" -n 30 --no-pager
-    if [[ "$key" != v2bx && "$valid" == true && ( "$state" == inactive || "$state" == failed ) ]]; then
+    if [[ "${2:-}" != readonly && ( "$key" == core || "$key" == bouncer ) && "$valid" == true && ( "$state" == inactive || "$state" == failed ) ]]; then
         printf '\n可以尝试启动%s；启动成功后仍需重新检查。\n' "$label"
         if confirm '现在尝试启动服务？'; then
-            locked_operation health_start_service "$key"
+            if [[ -n "${3:-}" ]]; then locked_operation flow_start_service "$3" "$key"
+            else locked_operation health_start_service "$key"; fi
             return $?
         fi
     fi

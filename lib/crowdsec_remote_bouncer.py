@@ -1,44 +1,16 @@
 #!/usr/bin/env python3
 """Private remote credentials overlay. Secrets are accepted only on stdin."""
 import hashlib
-import ipaddress
 import json
 import os
 from pathlib import Path
-import re
 import sys
 import tempfile
 import urllib.request
-from urllib.parse import urlsplit
 import yaml
 from crowdsec_config import canonical_iptables_chains, merged_config, read_mapping
 
-class RemoteError(ValueError):
-    pass
-
-def validate(url, key):
-    if not isinstance(url,str) or not isinstance(key,str) or not key or len(key)>4096 or re.search(r'[\s\x00-\x1f\x7f]',key):
-        raise RemoteError('URL 或密钥格式无效。')
-    if re.search(r'[\s\x00-\x1f\x7f]',url):
-        raise RemoteError('URL 格式无效。')
-    parts=urlsplit(url)
-    if parts.scheme not in ('http','https') or not parts.hostname or parts.username is not None or parts.password is not None or parts.query or parts.fragment:
-        raise RemoteError('URL 必须为无用户信息、查询或片段的 HTTP(S) 地址。')
-    try:
-        parts.port
-    except ValueError:
-        raise RemoteError('URL 端口无效。') from None
-    try:
-        address=ipaddress.ip_address(parts.hostname)
-    except ValueError:
-        address=None
-    if parts.scheme=='http':
-        # Names (including .local) do not prove transport is private; use a
-        # literal RFC1918/ULA/loopback address, or verified TLS instead.
-        networks=['10.0.0.0/8','172.16.0.0/12','192.168.0.0/16','127.0.0.0/8','::1/128','fc00::/7']
-        if address is None or not any(address in ipaddress.ip_network(n) for n in networks):
-            raise RemoteError('明文 HTTP 仅允许环回、RFC1918 或 ULA 地址；其他地址必须使用 HTTPS。')
-    return url.rstrip('/')+'/'
+from crowdsec_remote_input import RemoteError, validate
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs):

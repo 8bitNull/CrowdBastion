@@ -7,10 +7,14 @@ select_native_container() {
     containers=$(appsec_containers) || return 1
     [[ -n "$containers" ]] || { log_err '未发现运行中的 Web 容器。'; return 1; }
     printf '%s\n' "$containers"
-    prompt requested '输入容器 ID 或名称（留空取消）: ' || return 2
+    if [[ "${CROWDBASTION_FLOW_TARGET:-}" == docker:* ]]; then
+        requested=${CROWDBASTION_FLOW_TARGET#docker:}
+    else
+        prompt requested '输入容器 ID 或名称（留空取消）: ' || return 2
+    fi
     [[ -n "$requested" ]] || return 2
     while read -r id image name; do
-        if [[ "$requested" == "$id" || "$requested" == "$name" ]]; then
+        if [[ "$requested" == "$id" || "$requested" == "$name" || ( "${CROWDBASTION_FLOW_TARGET:-}" == docker:* && "$requested" == "$id"* ) ]]; then
             NATIVE_ID=$id NATIVE_IMAGE=$image NATIVE_NAME=$name
             return 0
         fi

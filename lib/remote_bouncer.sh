@@ -16,6 +16,34 @@ remote_bouncer_input() {
     unset remote_key
 }
 
+remote_bouncer_prepare() (
+    set +x
+    umask 077
+    local output="${1:-}" stage yaml_package
+    [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]] || { log_err '远端预览必须在管理锁外完成。'; return 75; }
+    [[ -n "$output" && ! -e "$output" && ! -L "$output" ]] || { log_err '批准计划路径必须尚不存在。'; return 1; }
+    require_commands python3 || return 1
+    case "$OS_ID" in
+        debian|ubuntu) yaml_package=python3-yaml ;;
+        centos|rhel|almalinux|rocky|fedora) yaml_package=python3-pyyaml ;;
+        *) log_err '未支持的 Bouncer-only 平台。'; return 1 ;;
+    esac
+    stage=$(mktemp -d) || return 1
+    chmod 700 "$stage" || { rm -rf -- "$stage"; return 1; }
+    trap 'rm -rf -- "$stage"' EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    remote_bouncer_input "$stage/input.json" || { log_info '已取消远端预览，未安装软件包或修改防护配置。'; return 0; }
+    python3 "${SCRIPT_DIR}/lib/crowdsec_remote_input.py" validate "$stage/input.json" || return 1
+    printf '\n远端防火墙安装预览\n依赖包：python3 %s curl ca-certificates；新装另需 iptables ipset。\n' "$yaml_package"
+    printf '配置：%s/bouncers/crowdsec-firewall-bouncer.yaml；写入 .local 与 .remote.json 托管覆盖。\n' "$CS_DIR"
+    printf '新装下载校验官方二进制 %s，并创建服务 %s。\n' "$REMOTE_BINARY" "$REMOTE_UNIT"
+    printf '服务影响：可能写入防火墙启动依赖；daemon-reload、restart 和必要时 enable crowdsec-firewall-bouncer，防火墙会生效。\n'
+    printf '回滚边界：失败恢复原托管覆盖与服务状态；新装失败清理新增二进制/服务/基础配置；已安装的依赖包不会自动卸载。\n'
+    confirm '确认上述软件包、配置和服务变更并批准安装？' || { log_info '已取消远端安装，未安装软件包或修改防护配置。'; return 0; }
+    python3 "${SCRIPT_DIR}/lib/crowdsec_remote_input.py" publish "$stage/input.json" "$output"
+)
+
 remote_bouncer_release() {
     local stage="$1" arch asset digest archive unpack
     case "$(uname -m)" in x86_64) arch=amd64 ;; aarch64|arm64) arch=arm64 ;; *) log_err 'Bouncer-only 安装仅支持 amd64/arm64。'; return 1 ;; esac
@@ -70,8 +98,17 @@ EOF
 
 remote_bouncer_change() (
     set +x
+    umask 077
     local action="$1" stage success=false active=false enabled_state=disabled enable_touched=false fresh=false service_touched=false
+    local prepared="${2:-}"
     local paths copies index path
+    if (( $# > 1 )); then
+        [[ -n "$prepared" && "$action" == install && "${MAINTENANCE_LOCK_HELD:-}" == true ]] || { log_err '批准计划只能在持有管理锁时用于安装。'; return 75; }
+        stage=$(mktemp -d) || return 1
+        chmod 700 "$stage" || { rm -rf -- "$stage"; return 1; }
+        trap 'rm -rf -- "$stage"' EXIT
+        python3 "${SCRIPT_DIR}/lib/crowdsec_remote_input.py" read "$prepared" > "$stage/input.json" || return 1
+    fi
     if [[ "$action" == install ]]; then
         case "$OS_ID" in
             debian|ubuntu) install_packages python3 python3-yaml curl ca-certificates ;;
@@ -81,7 +118,7 @@ remote_bouncer_change() (
     fi
     require_yaml && require_commands python3 timeout systemctl || return 1
     REMOTE_CONFIG="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml"
-    stage=$(mktemp -d) || return 1
+    [[ -n "$stage" ]] || stage=$(mktemp -d) || return 1
     chmod 700 "$stage" || return 1
     paths=("${REMOTE_CONFIG}.local" "${REMOTE_CONFIG}.remote.json" "$FIREWALL_DROPIN")
     copies=(local state dropin)
@@ -146,7 +183,7 @@ remote_bouncer_change() (
         log_succ '已移除托管远端配置并停用 Firewall Bouncer；基础配置、二进制与包保留。'
         return 0
     fi
-    remote_bouncer_input "$stage/input.json" || return 1
+    if [[ -z "$prepared" ]]; then remote_bouncer_input "$stage/input.json" || return 1; fi
     remote_bouncer_tool preflight < "$stage/input.json" || return 1
     if [[ "$action" == install && ! -f "$REMOTE_CONFIG" ]]; then
         # Reject an existing unit/binary rather than replace another install.

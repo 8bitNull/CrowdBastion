@@ -1,7 +1,7 @@
 # Protocol capability and diagnosis boundary
 
 
-交互使用：从首页 `5 → 9` 选择程序、协议、实际传输和拓扑，无需设置环境变量；V2bX 专项菜单 `5` 也可进入选择器。选择仅用于本次只读指导，不保存用途或业务配置。完整导航见[使用说明](usage-guide.md#代理协议使用导航)。旧 `--protocol-status` 保持非交互，声明画像仍返回 `2`。
+交互使用：从首页 `4 → 11` 选择程序、协议、实际传输和拓扑，无需设置环境变量；V2bX 专项菜单 `5` 也可进入选择器。选择仅用于本次只读指导，不保存用途或业务配置。完整导航见[使用说明](usage-guide.md#代理协议使用导航)。旧 `--protocol-status` 保持非交互，声明画像仍返回 `2`。
 Research began after Tasks 1–3 general fixes were accepted, on 2026-11-03 UTC. Runtime definitions are shipped in `lib/crowdbastion_protocols.py`; no runtime reads this document, source receipts, or temporary downloads. [protocol-source-receipts.json](protocol-source-receipts.json) records each successful official fetch URL, time, byte count and SHA-256. A digest of a fetched documentation page is a **documentation snapshot**, not proof of an installed program version. Failed 404/403 requests are not support evidence.
 
 `--diagnose-v2bx` / `--diagnose-v2bx-details` retain the existing bounded V2bX config and xray/sing/hysteria2 inventory. Their added capability profiles describe configuration declarations and the standard protocol envelope. They do not discover panel transport, runtime protocol options, ciphers, users or QUIC controllers. Existing `transport_status=panel_or_runtime_required` remains authoritative. In particular, VMess/VLESS are never assigned TCP from their name.

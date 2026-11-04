@@ -29,7 +29,7 @@ select_node_roles() {
     [[ -f "${CS_DIR}/config.yaml" ]] && log_info '发现本地检测配置；请根据实际用途选择。'
     [[ -f "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]] && log_info '发现托管远端连接；请选择远端执行或远端执行 + 落地。'
     log_info '远端执行不能与网站／本地中转同选。选择用途只保存偏好。'
-    log_info '独立 AnyTLS/Hysteria/TUIC 等程序可从首页 [5] → [9] 进入协议导航，无需选择 V2bX 用途。'
+    log_info '独立 AnyTLS/Hysteria/TUIC 等程序可从首页 [4] → [11] 进入协议导航，无需选择 V2bX 用途。'
     while true; do
         prompt answer '用途编号 [0-4，可用空格组合]: ' || return 0
         [[ "$answer" == 0 ]] && return 0
@@ -67,14 +67,14 @@ node_core_present() {
 
 node_recommendation() {
     if node_has_role remote; then
-        log_info '建议：远端连接状态 --relay-bouncer-status；连接来源和转发路径 --relay-path。首页 [2] 可引导连接。'
+        log_info '建议：远端连接状态 --relay-bouncer-status；连接来源和转发路径 --relay-path。首页 [3] 设置目标后，[1] 可引导连接。'
     elif [[ "$NODE_ROLES" == node ]] && ! node_core_present; then
         log_info '建议：先检查 V2bX 配置与日志；此用途不要求安装本地 CrowdSec。'
     elif ! node_core_present; then
         if node_has_role web || [[ -z "$NODE_ROLES" ]]; then
-            log_info '建议：从首页 [2] 安装网站基础防护，或 --install-core。'
+            log_info '建议：设置首页 [3] 目标后，按 [1] 推荐任务安装网站基础防护，或 --install-core。'
         else
-            log_info '建议：从首页 [2] 安装本机系统/SSH 基础防护，或 --install-relay。'
+            log_info '建议：设置首页 [3] 目标后，按 [1] 推荐任务安装本机系统/SSH 基础防护，或 --install-relay。'
         fi
     elif node_has_role web || node_web_deployed || [[ -z "$NODE_ROLES" ]]; then
         log_info '建议：排查网站 [4] → [4] → [2]；真实 IP 检查 --diagnose-real-ip。实际网站接入验证需明确选择 --verify-appsec。'

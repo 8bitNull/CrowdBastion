@@ -34,7 +34,7 @@ protocol_choose() {
 }
 
 guided_protocol_status() {
-    local program protocol transport topology
+    local program protocol transport topology result=0 observation="${1:-}"
     local transports=('unknown|不确定（保持未知，不推断 TCP）')
     printf '\n协议与传输选择（只读）\n选择只用于本次说明，不保存配置、不安装程序或应用调优。\n程序名称不是协议；TLS 仅表示安全层；不确定时保持未知。\n'
     protocol_choose program '运行的是哪个程序？' \
@@ -68,16 +68,20 @@ guided_protocol_status() {
     protocol_choose topology '入口拓扑是什么？' 'unknown|不确定' \
         'direct|客户端直连' 'shared-relay|经共享中转（不能据 socket 识别真实用户）' || return 0
     NODE_PROGRAM="$program" NODE_PROTOCOL="$protocol" NODE_TRANSPORT="$transport" \
-        NODE_TOPOLOGY="$topology" NODE_VERSION='' protocol_status
+        NODE_TOPOLOGY="$topology" NODE_VERSION='' protocol_status || result=$?
+    if [[ -n "$observation" && ( "$result" == 0 || "$result" == 2 ) && ! -e "$observation" ]]; then
+        flow_tool write-observation "$observation" proxy_guidance || return 1
+    fi
+    return "$result"
 }
 
 manage_proxy_guidance() {
-    local choice
+    local choice observation="${1:-}"
     while true; do
         printf '\n代理协议使用导航\n适用指导：AnyTLS、VMess、VLESS、Shadowsocks/2022、Trojan、Hysteria 1/2、TUIC。\n先确认程序、协议、实际传输与中转路径；未知项保持未知。\n1. 交互选择程序、协议和传输，查看指导（只读）\n2. 短时环境压力检查（只读）\n3. 查看 TCP 配置归属与运行值（只读）\n4. 管理选定入口端口策略（修改需另行确认）\n5. 可选 TCP 配置管理（修改需另行确认）\n6. V2bX 专项检测、日志观察与告警\nQUIC 使用程序自身的拥塞控制；TCP 配置核验不代表 QUIC 调优或真实吞吐提升。\n独立代理程序无需套用网站/AppSec 接入；协议指导不代表已有专项日志检测。\n0. 返回\n'
         prompt choice '请选择 [0-6]: ' || return 0
         case "$choice" in
-            1) guided_protocol_status ;;
+            1) guided_protocol_status "$observation" ;;
             2) environment_tool --human ;;
             3) change_human_action network status ;;
             4) manage_port_policy; continue ;;

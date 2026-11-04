@@ -55,3 +55,11 @@ python3 -m venv .venv
 剩余 44 项专项已补齐依赖并全部实际通过（Lua Nginx18、官方通知21、种子/gost5）。原工作区可先 `source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh`，再运行 `tests/run_tests.py --tier integration --require-no-skips`；该环境脚本仅保留在本地，引用已校验的 /tmp 资源。新克隆需按上文准备依赖并设置对应变量，不能直接使用该路径。可选 Python 依赖在 `tests/requirements-integration.txt`。设置该环境后的发现阶段没有依赖跳过；本轮是分组验证，未重新运行完整套件。详细版本、SHA256 和边界见对应审计记录。
 
 原始验收输出、临时脚本与计划仅在本地归档。现有回归直接引用的两份节点脚本和一份脱敏 JSON 仍随仓库分发，见 [发布范围](../docs/repository-layout.md)，普通测试不依赖未跟踪的本地证据。
+
+智能流程回归：`test_user_flow` 验证目标与任务依赖、私有状态和证据有效性，`test_user_flow_probe` 验证只读探测、预算及实例证据，`test_user_flow_shell` 验证真实 shell 导航、确认、续办、失败和锁内拒绝过时计划。普通单测使用临时树和系统命令替身，不代表已执行生产流量验收。
+
+2026-11-04 智能流程变更后完整发现 1,728 项：1,684 通过、44 因环境条件跳过、无失败或错误，约 534 秒；新增智能流程 59 项全部通过。跳过和真实网络验收边界见 [交付记录](../docs/audit/2026-11-04-intelligent-user-flow.md)。
+
+后续六轮复审修复后的最新稳定 full：1,826 项，1,782 通过、44 环境跳过、0 失败或错误，624.44 秒。六个智能流程模块共 157 项，包含原三个模块及 `test_flow_review_regressions`、`test_flow_probe_review`、`test_flow_remote_plan`，均已纳入完整运行；覆盖事务扫描完整性、来源前提、逐实例执行、远端计划、Docker 实际 AppSec 端点和共享时间预算。详见[循环复审记录](../docs/audit/2026-11-04-intelligent-flow-review.md)。
+
+提交前补充修复 Nginx 发行版模块链接误拒绝及宿主机 AppSec 端点误判后，最新 full 为 1,828 项：1,788 通过、40 环境跳过、0 失败或错误，583.15 秒；六个智能流程模块共 159 项通过。跳过项为 Lua Nginx 18 项、可选官方 gost 1 项、未设置 `CROWDSEC_TEST_RELEASE` 的官方插件 16 项和回执检查 5 项。214 个源码及测试文件在完整运行期间无变化；跳过项及真实网络验收仍不视为通过。详情见上述循环复审记录的提交前补充复核。

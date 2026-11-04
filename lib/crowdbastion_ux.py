@@ -283,7 +283,7 @@ def save_acceptance(path, root, scope, code, now=None, fingerprint=None):
             os.unlink(temporary)
 
 
-def acceptance_summary(path, root, now=None):
+def acceptance_summary(path, root, now=None, *, fingerprint=None):
     path = Path(os.path.abspath(path))
     if not path.exists() and not path.is_symlink():
         return '历史验收：尚无中转入口验收记录；使用 --verify-relay。'
@@ -299,7 +299,7 @@ def acceptance_summary(path, root, now=None):
         raise ValueError('invalid scope')
     age = (time.time() if now is None else now) - data['time']
     freshness = '记录过期，请重验' if age < 0 or age > 24*3600 else '24 小时内的历史记录'
-    if data['fingerprint'] != tree_fingerprint(root):
+    if data['fingerprint'] != (tree_fingerprint(root) if fingerprint is None else fingerprint):
         freshness = '检测到配置变化，请重验'
     verdict = {0: '通过（人工确认）', 1: '未通过', 2: '未完成', 130: '已中断'}[data['code']]
     verification = data.get('verification', 'basic')

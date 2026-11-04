@@ -35,6 +35,8 @@
 
 ## 验收、历史与计划
 
+2026-11-04 [智能首页与任务流程交付](audit/2026-11-04-intelligent-user-flow.md)记录新首页、业务目标、推荐与续办；[循环复审记录](audit/2026-11-04-intelligent-flow-review.md)汇总六轮修复及完整回归边界。
+
 2026-11-03 [脚本保护与协议说明交付记录](audit/2026-11-03-script-hardening-delivery.md)记录本轮行为、兼容性裁决及验证边界；最终复审、全仓回归与同步证据由交付阶段追加。
 
 [验证记录](verification.md)保存各轮检查方法和结果；[验收索引](audit/README.md)指向报告及证据。系统试用放行以 [VPS 修复进度](audit/2026-10-12-vps-repair-progress.md)和 [兼容性矩阵](audit/2026-10-12-vps-compatibility.md)为准，不能用源码测试数量替代目标系统验收。

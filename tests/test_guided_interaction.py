@@ -15,12 +15,12 @@ class GuidedInteraction(unittest.TestCase):
 
     def test_home_dispatches_common_tasks_and_advanced_menu(self):
         self.roles('relay')
-        names = ('interactive_health_check', 'guided_setup', 'manage_firewall_ops', 'manage_advanced')
+        names = ('flow_next', 'flow_daily', 'flow_choose_goals', 'flow_advanced')
         overrides = '\n'.join(f'{name}() {{ record invoked {name}; }}' for name in names)
         p = self.run_shell('show_main_menu', '1\n2\n3\n4\n0\n', overrides)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual(self.commands().splitlines(), ['invoked '+name for name in names])
-        self.assertIn('[1]  检查防护情况', p.stdout)
+        self.assertIn('当前情况：', p.stdout)
         self.assertNotIn('Next-Gen', p.stdout)
 
     def test_setup_dispatches_role_specific_steps_and_recheck(self):
@@ -51,11 +51,11 @@ interactive_health_check() { record recheck; }
             self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
             self.assertTrue(all(line == 'systemctl is-active crowdsec' for line in self.commands().splitlines()))
 
-    def test_first_selection_enters_setup_with_real_lock(self):
-        p = self.run_terminal('show_main_menu', '2\n0\n0\n')
+    def test_first_goal_selection_saves_intent_with_real_lock(self):
+        p = self.run_terminal('show_main_menu', '3\n1\ny\n0\n')
         self.assertEqual(p.returncode, 0, p.stdout)
-        self.assertIn('1. 安装中转基础防护', p.stdout)
-        self.assertEqual(self.commands(), 'systemctl is-active crowdsec\n')
+        self.assertIn('防护目标已保存', p.stdout)
+        self.assertEqual(self.commands(), '')
 
     def test_setup_reloads_new_selection_after_real_lock(self):
         p = self.run_shell('guided_setup', '4\n0\n')

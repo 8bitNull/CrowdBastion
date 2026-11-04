@@ -8,6 +8,7 @@ MANAGER_FILE="${BASH_SOURCE[0]}"
 CONFIG_HELPER="${SCRIPT_DIR}/lib/crowdsec_config.py"
 CS_DIR="/etc/crowdsec"
 NODE_ROLES_FILE="/var/lib/crowdbastion/node-roles.json"
+USER_FLOW_FILE="/var/lib/crowdbastion/user-flow.json"
 RELAY_ACCEPTANCE_FILE="/var/lib/crowdbastion/relay-acceptance.json"
 V2BX_OBSERVER_INSTALLED_CONFIG="/usr/local/lib/crowdsec-v2bx-observer/config.json"
 NODE_ROLES=''
@@ -74,6 +75,8 @@ source "${SCRIPT_DIR}/lib/health_summary.sh"
 source "${SCRIPT_DIR}/lib/node_guidance.sh"
 # shellcheck source=lib/user_experience.sh
 source "${SCRIPT_DIR}/lib/user_experience.sh"
+# shellcheck source=lib/user_flow.sh
+source "${SCRIPT_DIR}/lib/user_flow.sh"
 FIREWALL_MIGRATION_STATE='/var/lib/crowdbastion/firewall-migration'
 FIREWALL_DROPIN='/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf'
 # shellcheck source=lib/firewall.sh
@@ -168,9 +171,9 @@ require_core() {
     require_commands crowdsec cscli systemctl || return 1
     if [[ ! -f "${CS_DIR}/config.yaml" ]]; then
         if node_has_role relay || { node_has_role node && ! node_has_role web; }; then
-            log_err '请先通过首页 [2] 的用途引导或 --install-relay 安装本机系统/SSH 基础防护。'
+            log_err '请先通过首页 [3] 设置目标后，按 [1] 推荐任务或 --install-relay 安装本机系统/SSH 基础防护。'
         else
-            log_err '请先通过首页 [2] 的用途引导或 --install-core 安装 CrowdSec 核心。'
+            log_err '请先通过首页 [3] 设置目标后，按 [1] 推荐任务或 --install-core 安装 CrowdSec 核心。'
         fi
         return 1
     fi
@@ -308,6 +311,7 @@ detect_admin_ip() {
 
 install_crowdsec_core() (
     local profile="${1:-web}" acquisition_paths=()
+    local prepared_plan="${2:-}" preparation="${3:-}"
     case "$profile" in web|relay) ;; *) log_err '未知安装模式。'; return 1 ;; esac
     remote_bouncer_local_core_guard || return 1
     if [[ -f "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" ]]; then
@@ -324,9 +328,14 @@ install_crowdsec_core() (
         *) log_err "当前系统不在安装支持范围: ${OS_ID}"; return 1 ;;
     esac
     require_commands systemctl || return 1
-    detect_admin_ip
-    if [[ -z "$CURRENT_IP" ]]; then
-        prompt CURRENT_IP '管理员公网 IP（留空仅放行内网；Ctrl+D 取消）: ' || return 1
+    if [[ "$preparation" == apply ]]; then
+        [[ "${MAINTENANCE_LOCK_HELD:-}" == true ]] || return 75
+        CURRENT_IP=$(flow_tool core-plan-read "$prepared_plan" "$profile") || return 1
+    else
+        detect_admin_ip
+        if [[ -z "$CURRENT_IP" ]]; then
+            prompt CURRENT_IP '管理员公网 IP（留空仅放行内网；Ctrl+D 取消）: ' || return 1
+        fi
     fi
     # Validate the address with the standard library before any dependency install.
     if [[ -n "$CURRENT_IP" ]] && ! python3 -c 'import ipaddress,sys; ipaddress.ip_address(sys.argv[1])' "$CURRENT_IP" 2>/dev/null; then
@@ -335,6 +344,7 @@ install_crowdsec_core() (
     fi
     local fresh=true
     if command -v crowdsec >/dev/null 2>&1 && [[ -f "${CS_DIR}/config.yaml" ]]; then fresh=false; fi
+    if [[ "$preparation" != apply ]]; then
     printf '\n本次变更预览\n系统：%s / %s；安装用途：%s\n' "$OS_ID" "$(uname -m)" "$profile"
     if [[ "$fresh" == true ]]; then
         printf '已有部署：未发现完整的本地核心；将配置官方软件源并安装 CrowdSec。\n'
@@ -346,6 +356,11 @@ install_crowdsec_core() (
     printf '服务：启用并按配置变化重启 CrowdSec，启动防火墙 Bouncer；管理员放行来源：%s。\n' "${CURRENT_IP:-未指定公网 IP，仅放行内网}"
     printf '防火墙 Bouncer 将写入封禁规则；管理员 AllowList 同时旁路 AppSec，请确认来源准确。\n软件包和软件源不提供整体事务回滚；实际流量阻断需另行验收。\n'
     confirm '按上述范围继续安装或补齐配置？' || { log_info '已取消安装，未安装软件包或修改防护配置。'; return 0; }
+    fi
+    if [[ "$preparation" == prepare ]]; then
+        flow_tool core-plan "$prepared_plan" "$profile" "${CURRENT_IP:-}"
+        return $?
+    fi
     [[ "$OS_ID" =~ ^(debian|ubuntu)$ && "$fresh" == true ]] && { apt-get update || return 1; }
     case "$OS_ID" in
         debian|ubuntu) install_packages curl ca-certificates python3 python3-yaml || return 1 ;;
@@ -488,29 +503,40 @@ prepare_log_repair() {
     LOG_PRESET_FILE=$(yaml_tool web-log-file "$CS_DIR") || return 1
     LOG_REPAIR_STAGE=$(mktemp -d) || return 1
     LOG_REPAIR_COUNT=0
-    local containers id image kind mounts service
-    configure_log_acquis "${LOG_REPAIR_STAGE}/presets.yaml" >/dev/null || { cleanup_log_repair; return 1; }
+    local containers id image kind mounts service scope="${CROWDBASTION_FLOW_TARGET:-}" scope_mode='' selected_seen=false
+    if [[ -n "$scope" && "$scope" != - ]]; then
+        scope_mode=selected
+        : > "${LOG_REPAIR_STAGE}/presets.yaml"
+    else
+        configure_log_acquis "${LOG_REPAIR_STAGE}/presets.yaml" >/dev/null || { cleanup_log_repair; return 1; }
+    fi
     : > "${LOG_REPAIR_STAGE}/mounts.tsv"
     : > "${LOG_REPAIR_STAGE}/discovered.jsonl"
     for service in nginx openresty; do
+        [[ "$scope_mode" != selected || "$scope" == "host:$service" ]] || continue
         command -v "$service" >/dev/null 2>&1 || continue
         if "$service" -T > "${LOG_REPAIR_STAGE}/runtime-nginx.txt" 2>/dev/null; then
+            selected_seen=true
             if ! python3 "${SCRIPT_DIR}/lib/crowdsec_host.py" "${LOG_REPAIR_STAGE}/runtime-nginx.txt" "${LOG_REPAIR_STAGE}/runtime-mounts.json" ||
                 ! maintenance_tool runtime-logs nginx "${LOG_REPAIR_STAGE}/runtime-mounts.json" "${LOG_REPAIR_STAGE}/runtime-nginx.txt" "${LOG_REPAIR_STAGE}/discovered.jsonl"; then cleanup_log_repair; return 1; fi
         else
+            if [[ "$scope_mode" == selected ]]; then cleanup_log_repair; log_err '所选实例有效配置不可读，未按目录猜测日志。'; return 1; fi
             log_warn "宿主机 ${service} 的有效配置读取失败，仅检查已知日志。"
         fi
     done
-    if command -v docker >/dev/null 2>&1; then
+    if [[ "$scope_mode" != selected || "$scope" == docker:* ]] && command -v docker >/dev/null 2>&1; then
         if containers=$(docker ps --format '{{.ID}} {{.Image}}'); then
             while read -r id image; do
                 [[ -z "$id" ]] && continue
+                [[ "$scope_mode" != selected || "$scope" == "docker:$id"* ]] || continue
+                selected_seen=true
                 case "$image" in
                     *nginx-proxy-manager*) kind=nginx-proxy-manager ;;
                     *nginx*|*openresty*) kind=nginx ;;
-                    *) continue ;;
+                    *) if [[ "$scope_mode" == selected ]]; then kind=nginx; else continue; fi ;;
                 esac
                 if ! mounts=$(docker inspect --format '{{json .Mounts}}' "$id"); then
+                    if [[ "$scope_mode" == selected ]]; then cleanup_log_repair; log_err '所选容器挂载无法读取，未接入日志。'; return 1; fi
                     log_warn "无法读取 ${id} 的挂载，使用预设路径继续检查。"
                     continue
                 fi
@@ -519,6 +545,7 @@ prepare_log_repair() {
                 if docker exec "$id" nginx -T > "${LOG_REPAIR_STAGE}/runtime-nginx.txt" 2>/dev/null; then
                     maintenance_tool runtime-logs "$kind" "${LOG_REPAIR_STAGE}/runtime-mounts.json" "${LOG_REPAIR_STAGE}/runtime-nginx.txt" "${LOG_REPAIR_STAGE}/discovered.jsonl" || { cleanup_log_repair; return 1; }
                 else
+                    if [[ "$scope_mode" == selected ]]; then cleanup_log_repair; log_err '所选容器有效配置不可读，未按挂载目录猜测日志。'; return 1; fi
                     log_warn "${id} 的运行配置读取失败，仅按挂载与预设发现日志。"
                 fi
             done <<< "$containers"
@@ -526,7 +553,10 @@ prepare_log_repair() {
             log_warn 'Docker 不可用，仅检查预设日志目录。'
         fi
     fi
-    if ! LOG_REPAIR_COUNT=$(yaml_tool repair-log-acquis "$CS_DIR" "${LOG_REPAIR_STAGE}/presets.yaml" "${LOG_REPAIR_STAGE}/mounts.tsv" "${LOG_REPAIR_STAGE}/repaired.yaml" "${LOG_REPAIR_STAGE}/discovered.jsonl"); then
+    if [[ "$scope_mode" == selected && "$selected_seen" != true ]]; then
+        cleanup_log_repair; log_err '未找到选定的运行实例，请重新检查并选择。'; return 1
+    fi
+    if ! LOG_REPAIR_COUNT=$(yaml_tool repair-log-acquis "$CS_DIR" "${LOG_REPAIR_STAGE}/presets.yaml" "${LOG_REPAIR_STAGE}/mounts.tsv" "${LOG_REPAIR_STAGE}/repaired.yaml" "${LOG_REPAIR_STAGE}/discovered.jsonl" "$scope_mode"); then
         cleanup_log_repair
         return 1
     fi
@@ -916,14 +946,29 @@ appsec_default_listener_ready() {
 }
 
 appsec_containers() {
-    command -v docker >/dev/null 2>&1 || return 0
-    local containers id image name
+    local containers id image name scope="${CROWDBASTION_FLOW_TARGET:-}" selected_seen=false
+    if ! command -v docker >/dev/null 2>&1; then
+        [[ "$scope" != docker:* ]] || { log_err 'Docker 不可用，无法核验所选容器。'; return 1; }
+        return 0
+    fi
     containers=$(docker ps --format '{{.ID}} {{.Image}} {{.Names}}') || { log_warn 'Docker 不可用，容器接入检查未完成。'; return 1; }
     while read -r id image name; do
+        [[ -n "$id" ]] || continue
+        if [[ "$scope" == docker:* ]]; then
+            [[ "$scope" == "docker:$id"* ]] || continue
+            selected_seen=true
+            docker exec "$id" nginx -T >/dev/null 2>&1 || { log_err '所选容器有效配置不可读，无法接入。'; return 1; }
+            printf '%s %s %s\n' "$id" "$image" "$name"
+            continue
+        fi
         case "$image" in
             *nginx*|*openresty*) printf '%s %s %s\n' "$id" "$image" "$name" ;;
         esac
     done <<< "$containers"
+    if [[ "$scope" == docker:* && "$selected_seen" != true ]]; then
+        log_err '未找到选定的运行容器，请重新检查并选择。'; return 1
+    fi
+    return 0
 }
 
 diagnose_appsec_containers() {
@@ -975,10 +1020,11 @@ link_docker_appsec() (
     containers=$(appsec_containers) || return 1
     [[ -n "$containers" ]] || { log_err '没有检测到运行中的 Nginx/OpenResty 容器。'; return 1; }
     printf '%s\n' "$containers"
-    prompt selected '输入上面容器 ID 或名称（留空取消）: ' || return 0
+    if [[ "${CROWDBASTION_FLOW_TARGET:-}" == docker:* ]]; then selected=${CROWDBASTION_FLOW_TARGET#docker:}
+    else prompt selected '输入上面容器 ID 或名称（留空取消）: ' || return 0; fi
     [[ -n "$selected" ]] || return 0
     while read -r id image name; do
-        if [[ "$selected" == "$id" || "$selected" == "$name" ]]; then selected="$id"; break; fi
+        if [[ "$selected" == "$id" || "$selected" == "$name" || ( "${CROWDBASTION_FLOW_TARGET:-}" == docker:* && "$selected" == "$id"* ) ]]; then selected="$id"; break; fi
     done <<< "$containers"
     [[ "$selected" == "$id" ]] || { log_err '请选择列表中的容器。'; return 1; }
     network=$(docker inspect --format '{{.HostConfig.NetworkMode}}' "$selected") || return 1
@@ -1150,10 +1196,11 @@ check_appsec_status() {
 
 verify_appsec() {
     require_core && require_yaml && require_commands curl || return 1
-    local target='' marker probe metrics_url work http verdict result attempt
+    local target='' marker probe metrics_url work http verdict result attempt observation="${1:-}" flow_snapshot="${2:-}" flow_target="${3:-}"
     prompt target '输入你管理的网站根地址（如 https://example.com，留空取消）: ' || return 0
     [[ -z "$target" ]] && return 0
     appsec_audit_tool validate-url "$target" || return 1
+    [[ -z "$observation" ]] || flow_tool check-test-url "$flow_snapshot" "$flow_target" "$target" || return 1
     marker=$(python3 -c 'import secrets; print(secrets.token_hex(12))') || return 1
     probe="${target%/}/.env?crowdsec_1key_probe=${marker}"
     log_warn '该操作从本机发送 /.env 验证请求；localhost、回环地址或经公网绕回本机的请求可能产生 Self-Report 告警。'
@@ -1185,7 +1232,11 @@ verify_appsec() {
     cscli metrics show appsec || { rm -rf -- "$work"; return 1; }
     log_info "HTTP=${http}；唯一请求标识=${marker}"
     case "$verdict" in
-        passed) log_info 'passed / 通过（辅助证据）：HTTP 403，Processed、Blocked 与 crowdsecurity/vpatch-env-access 规则命中均增长。' ;;
+        passed)
+            log_info 'passed / 通过（辅助证据）：HTTP 403，Processed、Blocked 与 crowdsecurity/vpatch-env-access 规则命中均增长。'
+            if [[ -n "$observation" ]]; then
+                flow_tool write-observation "$observation" web_auxiliary "$flow_target" "$target" "$marker" || { rm -rf -- "$work"; return 1; }
+            fi ;;
         failed) log_err 'failed / 失败：测试未阻断，且 AppSec 请求/阻断/规则计数没有增长。' ;;
         *) log_warn 'inconclusive / 无法判断：HTTP 与 AppSec 请求/阻断/规则证据不足、指标不可读或发生重置。' ;;
     esac
@@ -1564,7 +1615,7 @@ manage_firewall_ops() {
         return $?
     fi
     if [[ "$NODE_ROLES" == node ]] && ! node_core_present; then
-        log_info '当前仅配置 V2bX 观察，尚无本地检测核心；请从首页 2 选择本地检测或远端执行部署。'
+        log_info '当前仅配置 V2bX 观察，尚无本地检测核心；请从首页 3 确认本机检测或接收中心结果目标。'
         return 0
     fi
     require_core && require_yaml || return 1
@@ -2256,33 +2307,7 @@ manage_integrations() {
 }
 
 show_main_menu() {
-    local choice roles_status=0 role_label show_banner=true
-    load_node_roles || roles_status=$?
-    if [[ "$roles_status" == 0 && -z "$NODE_ROLES" && -t 0 ]]; then
-        locked_operation select_node_roles
-        if load_node_roles && [[ -n "$NODE_ROLES" ]]; then guided_setup; fi
-    fi
-    while true; do
-        roles_status=0
-        if load_node_roles; then
-            role_label=$(node_role_label)
-        else
-            roles_status=1
-            role_label=''
-        fi
-        ux_tool home-menu "$role_label" "$roles_status" "$show_banner" || return 1
-        show_banner=false
-        prompt choice '  请选择 [0-5] > ' || return 0
-        case "$choice" in
-            1) interactive_health_check ;;
-            2) guided_setup ;;
-            3) locked_operation manage_firewall_ops ;;
-            4) manage_advanced ;;
-            5) manage_quick_actions ;;
-            0) return 0 ;;
-            *) log_warn '无效选项，请输入菜单编号。' ;;
-        esac
-    done
+    flow_run
 }
 
 manage_advanced() {
@@ -2294,7 +2319,8 @@ manage_advanced() {
             log_warn '用途配置不可用，请选择 [7] 重新设置；现有专项操作仍可使用。'
         fi
         printf '1. 安装与接入\n2. 检测规则\n3. IP 封禁与放行\n4. 检查与修复\n5. 控制台与通知\n6. 卸载与清理\n7. 设置节点用途\n8. 按用途检查并选择下一步\n0. 返回首页\n'
-        prompt choice '请选择 [0-8]（Ctrl+D 退出）: ' || return 0
+        printf '9. 查看本次检查详情\n10. 查看待办与恢复暂缓项\n11. 代理协议使用导航\n'
+        prompt choice '请选择 [0-11]（Ctrl+D 退出）: ' || return 0
         case "$choice" in
             1) locked_operation manage_installation; continue ;;
             2) locked_operation manage_waf_rules; continue ;;
@@ -2304,6 +2330,9 @@ manage_advanced() {
             6) locked_operation manage_uninstall_center; continue ;;
             7) locked_operation select_node_roles ;;
             8) interactive_health_check ;;
+            9) if [[ -n "${FLOW_WORK:-}" ]]; then flow_details "$FLOW_WORK/snapshot" "$FLOW_WORK"; else interactive_health_check; fi ;;
+            10) if [[ -n "${FLOW_WORK:-}" ]]; then flow_task_list "$FLOW_WORK/snapshot"; else log_info '请从智能首页查看待办。'; fi ;;
+            11) manage_proxy_guidance ;;
             0) return 0 ;;
             *) log_warn '无效选项，请输入菜单编号。' ;;
         esac
@@ -2317,19 +2346,19 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 兼容入口：install-crowdsec-1panel.sh；已有服务和配置沿用旧版运行标识。
 不带参数进入交互菜单。命令行保留交互确认，失败返回非零状态。
 修改操作需要预先安装 Python3，以安全取得管理锁；缺少时停止，不自动绕过锁安装。
-首页：1 检查防护情况；2 安装或调整防护；3 管理封禁与放行；4 高级管理。
+首页：1 当前推荐任务；2 日常管理；3 调整防护目标；4 高级工具与检查详情。
 高级管理保留安装、规则、专项排查、通知、卸载与用途设置入口。
 高级管理 4 → 检查与修复 4：6 环境压力；7 TCP 配置；8 端口策略；9 协议画像。
-首页 5 → 9：代理协议使用导航；交互选择程序、协议、传输与拓扑，无需设置环境变量。
-安装/调整页 8 或检查与修复 10 也可进入；旧菜单编号与用途设置保持兼容。
-首次终端运行显示用途引导；选择只保存偏好。原命令行操作参数保持兼容。
+高级工具 4 → 11：代理协议使用导航；交互选择程序、协议、传输与拓扑，无需设置环境变量。
+兼容用途引导 8 或检查与修复 10 也可进入；高级管理内部编号和 CLI 保持兼容。
+启动先只读识别已有部署；保存目标不安装组件。按证据推荐一步，执行后复查，退出可续办。
 
 常用入口（查看详情可用终端滚动或分页）：
   sudo bash crowdbastion.sh --status           查看当前防护和下一步
   sudo bash crowdbastion.sh --status-details   查看完整检查证据
   sudo bash crowdbastion.sh --repair-existing  修复已有部署（逐项确认）
   sudo bash crowdbastion.sh --runtime-status   检查源码与维护副本是否一致
-  首页 5：防火墙、入口验收、V2bX、通知与维护副本快捷入口。
+  首页 2：封禁、通知、规则与维护副本；高级 4 → 9/10：本次详情与待办。
 
 安装和网站接入：
   --install-core       安装检测服务和防火墙防护

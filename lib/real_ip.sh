@@ -5,7 +5,10 @@ request_audit_tool() { python3 "${SCRIPT_DIR}/lib/crowdsec_request_audit.py" "$@
 
 real_ip_select_runtime() {
     if [[ "${1:-}" == host ]]; then
-        prompt REALIP_HOST_SERVICE '选择宿主机服务 [nginx/openresty]（留空取消）: ' || return 2
+        case "${CROWDBASTION_FLOW_TARGET:-}" in
+            host:nginx|host:openresty) REALIP_HOST_SERVICE=${CROWDBASTION_FLOW_TARGET#host:} ;;
+            *) prompt REALIP_HOST_SERVICE '选择宿主机服务 [nginx/openresty]（留空取消）: ' || return 2 ;;
+        esac
         [[ -n "$REALIP_HOST_SERVICE" ]] || return 2
         case "$REALIP_HOST_SERVICE" in nginx|openresty) ;; *) log_err '服务选择无效。'; return 1 ;; esac
         require_commands "$REALIP_HOST_SERVICE" || return 1

@@ -96,7 +96,7 @@ pause() { :; }
 
     def test_home_to_protocol_wizard_and_back_is_fully_readonly(self):
         p = self.run_shell('show_main_menu',
-                           '5\n9\n1\n3\n1\n4\n3\n0\n0\n0\n',
+                           '4\n11\n1\n3\n1\n4\n3\n0\n0\n0\n',
                            'pause() { :; }')
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertIn('协议=anytls；传输=udp-over-tcp；网络=tcp', p.stdout)

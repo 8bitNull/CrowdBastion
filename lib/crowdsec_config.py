@@ -365,14 +365,16 @@ def go_escape(path):
     return ''.join('\\'+char if char in '\\*?[]' else char for char in path)
 
 
-def stage_log_repair(root, presets, mounts, destination, discovered=None):
+def stage_log_repair(root, presets, mounts, destination, discovered=None, scope=''):
     """Add existing, unacquired HTTP files to a dedicated acquisition file."""
     npm_names = ['*host*_access.log', '*host*_error.log',
                  'fallback_http_access.log', 'fallback_http_error.log',
                  'letsencrypt-requests_access.log', 'letsencrypt-requests_error.log']
     directory, single, original = acquisition_locations(root)
     legacy = Path(directory)/'web-sites.yaml'
-    migrate = (legacy.is_file() and not legacy.is_symlink()
+    if scope not in ('', 'selected'):
+        raise ValueError('未知日志接入范围')
+    migrate = (scope != 'selected' and legacy.is_file() and not legacy.is_symlink()
                and read(legacy, True) == read(presets, True))
     candidates, hidden, visible = [], set(), set()
     if discovered:
@@ -381,7 +383,7 @@ def stage_log_repair(root, presets, mounts, destination, discovered=None):
             if entry['kind'] not in ('nginx', 'nginx-proxy-manager'):
                 raise ValueError('未知日志类型')
             candidates.append((glob.escape(entry['path']), entry['kind']))
-    for line in Path(mounts).read_text().splitlines():
+    for line in ([] if scope == 'selected' else Path(mounts).read_text().splitlines()):
         kind, encoded = line.split('\t', 1)
         if kind not in ['nginx', 'nginx-proxy-manager']:
             raise ValueError('未知日志类型')
@@ -425,7 +427,7 @@ def stage_log_repair(root, presets, mounts, destination, discovered=None):
                         visible.add(canonical)
                         candidates.append((glob.escape(filename), kind))
 
-    for doc in read(presets, multiple=True):
+    for doc in ([] if scope == 'selected' else read(presets, multiple=True)):
         kind = doc.get('labels', {}).get('type')
         if kind in ['nginx', 'nginx-proxy-manager', 'syslog']:
             candidates.extend((pattern, kind) for pattern in doc.get('filenames', []))
@@ -459,7 +461,7 @@ def stage_log_repair(root, presets, mounts, destination, discovered=None):
             retained = []
             for pattern in doc['filenames']:
                 matches = go_glob(pattern)
-                if matches and all(os.path.realpath(filename) in acquired for filename in matches):
+                if scope != 'selected' and matches and all(os.path.realpath(filename) in acquired for filename in matches):
                     removed += len(matches)
                     continue
                 retained.append(pattern)
