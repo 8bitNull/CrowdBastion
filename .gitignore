@@ -2,6 +2,20 @@ __pycache__/
 *.py[cod]
 .venv/
 .env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.kdbx
+# Keep raw host evidence and scanner reports outside published documentation.
+private-audit/
+gitleaks-report*.json
+trufflehog-report*.json
 *.log
 *.db
 *.db-shm
