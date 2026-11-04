@@ -1,3 +1,0 @@
-PASS: isolated main --sync-runtime / repair; cron unchanged; exit 0
-PASS: isolated main --sync-runtime / unrelated; cron unchanged; exit 1
-PASS: isolated main --sync-runtime / cancel; cron unchanged; exit 0

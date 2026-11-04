@@ -45,7 +45,7 @@
 
 最近的 V2bX [混合入口实验](audit/2026-10-13-v2bx-mixed-ingress.md)已取得基础组合的双账号、IPv4/IPv6 和 TCP/UDP 应用载荷证据；生产观察仍未部署。历史报告记录当时的版本、配置与检测缺口，后续变化以对应新报告为准。
 
-实施计划位于 `superpowers/plans/`，设计位于 `superpowers/specs/`；V2bX 的后续顺序见 [防护路线](superpowers/plans/2026-10-13-v2bx-protection-roadmap.md)。旧的安装设计、功能审计和实施计划保留作历史背景，不替代当前使用指南。
+实施计划位于本地 `superpowers/plans/`，设计位于本地 `superpowers/specs/`，不随远程仓库分发。已交付能力与使用顺序以当前指南为准，旧计划不代表功能已交付。
 
 ## 仓库结构
 
@@ -54,13 +54,13 @@
 | `crowdbastion.sh` | 菜单与命令行主入口 |
 | `install-crowdsec-1panel.sh` | 指向主入口的兼容链接，供旧命令和验证工具使用 |
 | `lib/` | Bash 功能模块与 Python 配置、诊断、观察工具；运行时必须保留 |
-| `docs/` | 使用与部署指南；`audit/` 保存验收报告及证据，`superpowers/` 保存计划与设计 |
+| `docs/` | 公开使用指南与脱敏验收结论；原始证据、计划与草稿仅在本地保留，见 [发布范围](repository-layout.md) |
 | `tests/` | 自动回归及需要外部官方程序的隔离验证工具 |
 | `tools/` | 可选辅助工具 |
 | `rules/v2bx/` | 未安装的 V2bX 仅观察规则样板 |
 | `experimental/` | 固定版本实验源码补丁，不自动替换生产程序 |
 
-验收归档脚本可能依赖各轮临时环境；复现前先阅读对应报告，不将其当作安装入口。
+历史报告中的“本地归档”路径不随远程仓库分发。归档脚本可能依赖各轮临时环境；复现前先阅读对应报告，不将其当作安装入口。
 
 历史验收记录、设计与计划保留当时的 `crowdsec-1key` 名称及脚本路径；当前入口与兼容说明见 [更名与升级](project-rename.md)。
 

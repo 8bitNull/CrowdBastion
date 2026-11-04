@@ -28,7 +28,7 @@
 
 早期 Debian 13 直接控制台采证尝试在关机后缺少案例输出，不计通过；更换为 systemd journal/console 输出后，新建独立 overlay 重做。另一次 portable QEMU 磁盘准备因库路径不足未能启动，明确未测试。原日志、失败及最终成功均保留。Debian 最终 overlay 从未启动过客机的只读扩容父镜像新建，之前所有测试使用 `snapshot=on`，没有复用已安装状态。
 
-原始结果与脱敏日志、逐 seed 源码对应关系见 [验收 JSON](2026-10-12-core-install-results.json)。采证源码按内容哈希归档到 [证据目录](core-install-evidence)，不归档含私有 LAPI 配置的完整 payload。客机源码是实验程序，需在隔离客机内运行。
+原始结果与脱敏日志、逐 seed 源码对应关系见 验收 JSON（本地归档：`2026-10-12-core-install-results.json`）。采证源码按内容哈希归档到 证据目录（本地归档：`core-install-evidence`），不归档含私有 LAPI 配置的完整 payload。客机源码是实验程序，需在隔离客机内运行。
 
 此轮不复测 ARM64、RPM、业务吞吐、长期内存容量或远程转本地自动迁移。原迁移保护仍拒绝保留的远程独立 unit；先前 ARM64 失败继续保持原结论。1 GiB 仅为本轮短功能验收条件，不是所有负载下的资源保证。
 

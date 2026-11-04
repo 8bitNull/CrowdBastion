@@ -4,9 +4,9 @@
 
 ## 根因证据
 
-[原始 512 MiB 安装失败](vps-repair-evidence/debian12-512m-install-oom.json)：实际 MemTotal 480260 KiB，两次内核 OOM；原轮次未记录完整命令，不能单独指定根因。
+原始 512 MiB 安装失败（本地归档：`vps-repair-evidence/debian12-512m-install-oom.json`）：实际 MemTotal 480260 KiB，两次内核 OOM；原轮次未记录完整命令，不能单独指定根因。
 
-[独立诊断](vps-repair-evidence/debian12-512m-oom-diagnostic.json) 与 [串口](vps-repair-evidence/debian12-512m-oom-diagnostic.serial.log)：同一默认生产源码、1 vCPU / 512 MiB，有限白名单进程身份/RSS 采样。PID 1987 为 `crowdsec_maintenance.py`，RSS 从 94820 升至 246652 KiB，随后内核在 uptime 485.954 秒将该 PID 杀死，anon RSS 262132 KiB。不记录完整参数或凭据；这不是默认资格验收。
+独立诊断（本地归档：`vps-repair-evidence/debian12-512m-oom-diagnostic.json`） 与 串口（本地归档：`vps-repair-evidence/debian12-512m-oom-diagnostic.serial.log`）：同一默认生产源码、1 vCPU / 512 MiB，有限白名单进程身份/RSS 采样。PID 1987 为 `crowdsec_maintenance.py`，RSS 从 94820 升至 246652 KiB，随后内核在 uptime 485.954 秒将该 PID 杀死，anon RSS 262132 KiB。不记录完整参数或凭据；这不是默认资格验收。
 
 完整快照生命周期回归使用 61 MiB City + 11 MiB ASN 文件和 160 MiB 地址空间限制，旧代码在 `before` 的 `base64.b64encode(path.read_bytes())` 处触发 MemoryError。文件原文、编码内容及 JSON 同时驻留；之前只分块计算 JSON 校验值仍不能解决完整内容驻留。
 
@@ -16,15 +16,15 @@
 
 读取和恢复检查全部内容、普通文件类型、符号链接、大小/哈希及私有目录；FIFO 使用无阻塞打开并立即拒绝。缺目录的读取不创建目录。恢复之前的冲突检查、数据库/WAL 排除及受管理链接保护保持有效。旧 format 2 内嵌快照和历史 manifest 可恢复；旧内嵌内容读取仍可能需要较大内存，未自动迁移或删除历史快照。
 
-已有核心集成 scope 现强制原生仓库、包安装和初始配置保留证据，缺任一项即失败。测试各阶段异常退出通过 OnFailure 输出固定失败标记并关机；完整案例不能覆盖这个标记。[真实失败注入](vps-repair-evidence/debian12-harness-failure-injection.json) 中测试脚本故意退出 42，观察到失败标记与 QEMU 正常退出；缺系统身份是此故障注入的预期现象，不代表正常安装验收。
+已有核心集成 scope 现强制原生仓库、包安装和初始配置保留证据，缺任一项即失败。测试各阶段异常退出通过 OnFailure 输出固定失败标记并关机；完整案例不能覆盖这个标记。真实失败注入（本地归档：`vps-repair-evidence/debian12-harness-failure-injection.json`） 中测试脚本故意退出 42，观察到失败标记与 QEMU 正常退出；缺系统身份是此故障注入的预期现象，不代表正常安装验收。
 
 ## 验证
 
-[最终资源 fixture](vps-repair-evidence/blob-memory-fixture.json)：完整创建、修改记录、恢复成功，峰值 RSS 19424 KiB（约 19 MiB），地址空间限制 160 MiB。腐坏、符号链接、FIFO、非法路径、缺/宽权限内容目录、空快照以及旧格式恢复均有回归。独立审查未发现剩余 Critical/Important。
+最终资源 fixture（本地归档：`vps-repair-evidence/blob-memory-fixture.json`）：完整创建、修改记录、恢复成功，峰值 RSS 19424 KiB（约 19 MiB），地址空间限制 160 MiB。腐坏、符号链接、FIFO、非法路径、缺/宽权限内容目录、空快照以及旧格式恢复均有回归。独立审查未发现剩余 Critical/Important。
 
-[最终源码回归](vps-repair-evidence/blob-final-regression-v2.json)：578 项全部通过、无跳过；启用官方 gost 与 CrowdSec 插件可选测试。ShellCheck（既有排除项）、Bash 语法、Python 编译及 diff 检查通过。每个生产辅助模块和测试源文件 SHA256 都记录在报告中。
+最终源码回归（本地归档：`vps-repair-evidence/blob-final-regression-v2.json`）：578 项全部通过、无跳过；启用官方 gost 与 CrowdSec 插件可选测试。ShellCheck（既有排除项）、Bash 语法、Python 编译及 diff 检查通过。每个生产辅助模块和测试源文件 SHA256 都记录在报告中。
 
-[CentOS v2](vps-repair-evidence/centos9-cold-core-v2.json) 是新健康观察器、旧内存代码的完整成功：实际 781240 KiB、6 案例、三次重启与实际增删同步、QEMU 0、1906.215 秒。新内存版本使用独立 `/tmp/crowdsec-vps-repair-centos-blob-v3-20261012` 复测，不能把这份旧成功追溯成新版本验收。
+CentOS v2（本地归档：`vps-repair-evidence/centos9-cold-core-v2.json`） 是新健康观察器、旧内存代码的完整成功：实际 781240 KiB、6 案例、三次重启与实际增删同步、QEMU 0、1906.215 秒。新内存版本使用独立 `/tmp/crowdsec-vps-repair-centos-blob-v3-20261012` 复测，不能把这份旧成功追溯成新版本验收。
 
 ## 正在执行与未关闭
 
@@ -37,4 +37,4 @@
 
 ## 后续客机证据与判定边界
 
-新生产版本 CentOS Stream 9 空白本地核心生命周期已通过（实际内存 781240 KiB，三次重启/实际增删同步，QEMU 0），见 [结果](vps-repair-evidence/centos9-blob-v3-observer-v5-revalidated.json)。Debian 12 / 512 MiB 首次/重复安装与三次重启均通过且未观察 OOM，但旧 120 秒负载失败，**整轮仍失败**，见 [保留的失败报告](vps-repair-evidence/debian12-512m-blob-v4-soak-failed.json)。新就绪与同时间采样观察器另起独立轮次，不重写旧证据。最新 581 项源码回归全部通过、无跳过。上述结果不授予恢复、24 小时稳定性或原生 ARM64资格。
+新生产版本 CentOS Stream 9 空白本地核心生命周期已通过（实际内存 781240 KiB，三次重启/实际增删同步，QEMU 0），见 结果（本地归档：`vps-repair-evidence/centos9-blob-v3-observer-v5-revalidated.json`）。Debian 12 / 512 MiB 首次/重复安装与三次重启均通过且未观察 OOM，但旧 120 秒负载失败，**整轮仍失败**，见 保留的失败报告（本地归档：`vps-repair-evidence/debian12-512m-blob-v4-soak-failed.json`）。新就绪与同时间采样观察器另起独立轮次，不重写旧证据。最新 581 项源码回归全部通过、无跳过。上述结果不授予恢复、24 小时稳定性或原生 ARM64资格。

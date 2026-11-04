@@ -6,7 +6,7 @@
 
 ## 查阅资料与实施依据
 
-本轮实际下载了以下资料，URL、内容 SHA256 及下载路径见 [sources.json](2026-11-03-vps216-tcp-retune/sources.json)。正文未将外部网页作为操作指令执行。
+本轮实际下载了以下资料，URL、内容 SHA256 及下载路径见 sources.json（本地归档：`2026-11-03-vps216-tcp-retune/sources.json`）。正文未将外部网页作为操作指令执行。
 
 - [Linux v6.18 IP sysctl 文档](https://github.com/torvalds/linux/blob/v6.18/Documentation/networking/ip-sysctl.rst)：重试、缓冲自适应、metrics 缓存、TIME_WAIT、全局 TCP 内存和 UDP 内存参数的作用。
 - [Linux v6.18 TCP 初始化实现](https://github.com/torvalds/linux/blob/v6.18/net/ipv4/tcp_ipv4.c)：核对实际初始化行为，特别是 orphan_retries=0 与文档所述有效重试语义的区别；同时下载了 tcp.c。
@@ -37,13 +37,13 @@
 
 变更前连续三次全量 LAPI 查询读取 15,350 条记录，耗时 0.522、0.455、0.486 秒；无新增 UDP 缓冲错误、TCP 内存压力或监听溢出。
 
-应用阶段每次只改一个参数，读回并查询 LAPI、检查回环 8443 TCP 连接后才继续。七次 API 耗时为 0.476、0.435、0.475、0.416、0.437、0.455、0.476 秒，全部通过；之后才原子替换持久配置。独立验证见 [verification.json](2026-11-03-vps216-tcp-retune/verification.json)：
+应用阶段每次只改一个参数，读回并查询 LAPI、检查回环 8443 TCP 连接后才继续。七次 API 耗时为 0.476、0.435、0.475、0.416、0.437、0.455、0.476 秒，全部通过；之后才原子替换持久配置。独立验证见 verification.json（本地归档：`2026-11-03-vps216-tcp-retune/verification.json`）：
 
 - 64 项运行值、文件摘要、唯一 active 赋值及 systemd 开机配置解析全部匹配。
 - 独立三次 API 查询为 0.511、0.501、0.427 秒；决策适用网络 15,350、内核网络 15,350、遗漏 0。
 - 短观察窗口 TCP OutSegs 增加 416，重传增加 0；双栈 UDP 缓冲错误、TCP 内存压力、监听溢出和丢弃均无新增。该窗口负载低，不能代表全天或满载表现。
 - V2bX/CrowdSec/Bouncer/Docker PID 保持 661/6185/1306/700，NRestarts=0。eth0 仍为 fq；本轮即时 vmstat 采样 I/O wait 为 0，首行历史平均数不作为即时数据。
-- 5244/51080 双栈回环可访问，已有公网限制及 CrowdSec 第一条跳转保持。独立外部 IPv4 TCP 测试中 SSH/8443 可连接、5244/51080 超时，公网 HTTPS 首页返回 200，见 [external.json](2026-11-03-vps216-tcp-retune/external.json)。未冒称外部 IPv6 实测。
+- 5244/51080 双栈回环可访问，已有公网限制及 CrowdSec 第一条跳转保持。独立外部 IPv4 TCP 测试中 SSH/8443 可连接、5244/51080 超时，公网 HTTPS 首页返回 200，见 external.json（本地归档：`2026-11-03-vps216-tcp-retune/external.json`）。未冒称外部 IPv6 实测。
 
 ## 回退、审查及交付状态
 
@@ -51,7 +51,7 @@
 
 独立审查指出失败路径无条件停回退定时器的风险，以及单项读取失败会中止其他参数恢复的问题，均在实际应用前修正。当前失败路径只有在回退确实成功、errors=[] 时才停止定时器；回退逐项捕获错误，恢复其他项，汇总失败并保留漂移值。
 
-[隔离回退检查](2026-11-03-vps216-tcp-retune/scripts/check-rollback.py)验证：一个运行值读取缺失时其余参数仍恢复、配置恢复且新增文件移除、之后重试可完成、外部修改值不被覆盖，四项通过；只操作本地临时夹具，没有执行生产回退演练。归档 Python AST 与 JSON 语法检查通过。相关 [维护脚本](2026-11-03-vps216-tcp-retune/scripts/)供审阅；未改产品代码、未跑无关全仓测试、未提交或推送仓库。
+隔离回退检查（本地归档：`2026-11-03-vps216-tcp-retune/scripts/check-rollback.py`）验证：一个运行值读取缺失时其余参数仍恢复、配置恢复且新增文件移除、之后重试可完成、外部修改值不被覆盖，四项通过；只操作本地临时夹具，没有执行生产回退演练。归档 Python AST 与 JSON 语法检查通过。相关 维护脚本（本地归档：`2026-11-03-vps216-tcp-retune/scripts/`）供审阅；未改产品代码、未跑无关全仓测试、未提交或推送仓库。
 
 ## 结论及边界
 

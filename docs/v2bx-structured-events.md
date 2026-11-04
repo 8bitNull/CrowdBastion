@@ -13,7 +13,7 @@
 | xray Trojan | 无效用户记录在fallback处理前，当前只记fallback_candidate | 若扩展，需要“认证失败且最终无fallback接管”的明确终态，不能从既有候选行直接启用封禁 |
 | Shadowsocks | AEAD message authentication failed有来源，但损坏密文也可触发 | 保持integrity_failure；需要独立误报和负载证据才讨论检测场景，不改名为确定认证失败 |
 
-源码版本、URL和SHA-256见 [本阶段源码证据](audit/v2bx-observation-stability-2026-10-13/log-source-check.json)。生产版本可能不同，应先核实实际buildinfo再选择落点。
+源码版本、URL和SHA-256见 本阶段源码证据（本地归档：`audit/v2bx-observation-stability-2026-10-13/log-source-check.json`）。生产版本可能不同，应先核实实际buildinfo再选择落点。
 
 ## 建议的最小事件契约
 

@@ -25,3 +25,42 @@ trufflehog-report*.json
 *.sqlite-shm
 *.sqlite-wal
 *.sqlite-journal
+
+# Local development environments, editor state and generated test output.
+/.superpowers/
+node_modules/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Publish audit conclusions; retain raw evidence and one-off scripts locally.
+# Explicit exceptions are required by the existing regression suite.
+/docs/audit/*
+!/docs/audit/*.md
+!/docs/audit/2026-10-19-second-vps-readonly-evidence.json
+!/docs/audit/2026-11-02-vps45-repair/
+/docs/audit/2026-11-02-vps45-repair/*
+!/docs/audit/2026-11-02-vps45-repair/scripts/
+/docs/audit/2026-11-02-vps45-repair/scripts/*
+!/docs/audit/2026-11-02-vps45-repair/scripts/static-policy.py
+!/docs/audit/2026-11-02-vps167-optimize-review/
+/docs/audit/2026-11-02-vps167-optimize-review/*
+!/docs/audit/2026-11-02-vps167-optimize-review/scripts/
+/docs/audit/2026-11-02-vps167-optimize-review/scripts/*
+!/docs/audit/2026-11-02-vps167-optimize-review/scripts/rollback-manager-v2.py
+
+# Internal work plans and superseded drafts are not release documentation.
+/docs/superpowers/
+/docs/appsec-installation-design.md
+/docs/appsec-installation-plan.md
+/docs/implementation-plan.md
+/docs/2026-10-20-telegram-card-copy-draft.md

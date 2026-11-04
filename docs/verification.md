@@ -34,13 +34,13 @@ VPS 系统、架构及防火墙的分层验收见 [2026-10-12 兼容性矩阵](a
 - NPM、宿主机 Nginx/OpenResty 隔离适配器：正常请求 200、AppSec 403、攻击未到后端、缓冲日志与 Bouncer IP 关联通过。
 - 本轮没有执行真实 Docker bridge 运行时测试，自动回归覆盖其接入/登记/漂移/诊断边界；2026-10-11 真实部署记录作为历史证据保留。本轮没有部署或重载生产服务。
 
-输出与检查摘要见 [整合验证结果](audit/2026-10-12-integration-results.json)。下列测试数量、主机状态及部署观察均为各自日期的历史记录。
+输出与检查摘要见 整合验证结果（本地归档：`audit/2026-10-12-integration-results.json`）。下列测试数量、主机状态及部署观察均为各自日期的历史记录。
 
 ## 审查优化验证（2026-10-11，历史记录）
 
 本节记录审查建议实施后的结果；后续章节保留历史验证，不代表当前测试数量。实施分支为 `fix/audit-optimizations-20261011`，未部署到用户 VPS。
 
-本轮组件版本、结果摘要与运行输出保存于 [优化验证结果](audit/2026-10-11-optimization-results.json)。
+本轮组件版本、结果摘要与运行输出保存于 优化验证结果（本地归档：`audit/2026-10-11-optimization-results.json`）。
 
 - 完整 unittest：**245 项**，涵盖正常、失败、取消、重复执行，以及有效配置、`.local` 冲突、卸载未知状态、自封地址、Hub 快照/互斥/回滚和凭据保护。
 - Bash 语法、全量 ShellCheck、`git diff --check`。
@@ -220,13 +220,13 @@ sudo python3 tests/verify_relay_network.py --gost /path/to/gost \
 
 2026-10-12 在无外部网卡、无宿主机共享目录的 QEMU TCG 客体中完成真实 nftables 验收：Debian Linux **6.1.0-47-amd64**、gost **3.3.0**、realm **2.9.6**、官方 Firewall Bouncer **0.0.36**。gost/realm/NAT × IPv4/IPv6 × TCP/UDP **12/12 通过**，每项均验证封禁来源不可达、未封禁来源仍可达、真实 DROP 计数增加和解封恢复。后端来源全部为中转节点 `10.231.3.1` 或 `fd42:231:3::1`，说明用户态转发及本次 MASQUERADE 拓扑会隐藏原始客户端地址。
 
-原始报告：[隔离中转验收结果](audit/2026-10-12-relay-network-results.json)。精简客体先后缺少 `nft_objref`、`nft_nat`，各自独立复现缺失模块错误并补齐后重跑；这不是生产脚本自动调整内核模块的功能。测试使用真实程序和内核规则，但决策 API 为合成 fixture，不证明目标 VPS 的规则顺序、日志检测、既有长连接或防攻击容量。
+原始报告：隔离中转验收结果（本地归档：`audit/2026-10-12-relay-network-results.json`）。精简客体先后缺少 `nft_objref`、`nft_nat`，各自独立复现缺失模块错误并补齐后重跑；这不是生产脚本自动调整内核模块的功能。测试使用真实程序和内核规则，但决策 API 为合成 fixture，不证明目标 VPS 的规则顺序、日志检测、既有长连接或防攻击容量。
 
 同阶段完整回归 **422 项：415 通过、7 项可选跳过**；另行启用官方通知插件的 **7 项通过**。中转专项 **51/51**、loopback 真实转发 **8/8**、Bash/Python 语法与 ShellCheck 通过。
 
 ## 中转性能工具验证
 
-2026-10-12 新增 `tests/benchmark_relay.py` 与性能指标文档。真实 loopback 测量 **8/8 无错误**；无外部网卡/共享目录的 QEMU TCG 客体中，gost/realm × TCP/UDP × 无 Bouncer/空决策/1000 决策 × 2 重复，共 **24 次测量无错误**，生成 **8 组、每组 2 个 block 的配对比较**。这些数据验证工具流程，不是低配 VPS 的开销或容量结论。原始数据及客体标记见 [性能工具烟雾报告](audit/2026-10-12-relay-benchmark-smoke.json)，定义和目标节点测量方法见 [性能测量](relay-benchmark.md)。
+2026-10-12 新增 `tests/benchmark_relay.py` 与性能指标文档。真实 loopback 测量 **8/8 无错误**；无外部网卡/共享目录的 QEMU TCG 客体中，gost/realm × TCP/UDP × 无 Bouncer/空决策/1000 决策 × 2 重复，共 **24 次测量无错误**，生成 **8 组、每组 2 个 block 的配对比较**。这些数据验证工具流程，不是低配 VPS 的开销或容量结论。原始数据及客体标记见 性能工具烟雾报告（本地归档：`audit/2026-10-12-relay-benchmark-smoke.json`），定义和目标节点测量方法见 [性能测量](relay-benchmark.md)。
 
 独立复核修正了负载 JSON 超过 pipe 容量可能挂起、失败条件丢失、未按事务数加权延迟样本的问题。gost UDP 默认响应后关闭虚拟会话的持续负载错误独立复现，基准明确启用并记录 `keepAlive=true`；原来的新会话阻断验收配置未改动。10 项基准测试（含实际官方 gost 回归和 PyYAML 缺失预检）通过，中转专项 61/61 通过。
 
@@ -258,7 +258,7 @@ ARM64 后续实际客机诊断：见 [Debian 13 ARM64 启动诊断](audit/2026-1
 
 在实际准备发布的检出目录重新执行全仓 unittest：**581 项全部通过、无跳过**，166.984 秒；ShellCheck、Bash 语法、Python 编译及暂存区 diff 检查通过。README、新使用说明和相关状态文档的 91 个本地链接及说明中的 29 个脚本参数核对通过。公开归档串口日志按原始字节保存，避免换行转换破坏 SHA256；新增文档和归档进行了凭据模式检查。
 
-[发布前检查记录](audit/2026-10-13-documentation-publication.json)记录源码和主说明文档 hashes。上述是源码与文档发布检查，不授予长期稳定性、独立恢复或原生 ARM64试用资格；长测最新状态见[修复进度](audit/2026-10-12-vps-repair-progress.md)。
+发布前检查记录（本地归档：`audit/2026-10-13-documentation-publication.json`）记录源码和主说明文档 hashes。上述是源码与文档发布检查，不授予长期稳定性、独立恢复或原生 ARM64试用资格；长测最新状态见[修复进度](audit/2026-10-12-vps-repair-progress.md)。
 
 ## 菜单、维护与 Bridge 修复历史摘要
 
@@ -303,7 +303,7 @@ ShellCheck 排除项对应 trap/间接函数调用与默认可选参数的已知
 
 机器人专项 **26/26**；全仓 **607 项：603 通过、4 项可选跳过，无失败**。官方 CrowdSec **1.8.1** 临时引擎的真实 LAPI/SQLite/CLI 验证告警事件路径/UA/按钮及保留的查询菜单，白名单通过真实 `crowdsec -t`；系统重载为模拟，未调用真实 Telegram API。Bash/Python 语法、ShellCheck、diff-check 与独立复审通过。复审发现的四项重要问题均有修复及回归。
 
-原上传文件及 VPS `/usr/local/bin/crowdsec_bot.py` 未覆盖；新服务安装入口为 `--custom-bot` 或 TG 菜单第 5 项。迁移需先核对并停用旧轮询服务/cron，不能同时轮询同一 Token。说明见 [自定义机器人修复与接入](2026-10-13-custom-telegram-bot.md)，原始输出见 [验收记录](audit/2026-10-13-custom-telegram-bot-results.json)。
+原上传文件及 VPS `/usr/local/bin/crowdsec_bot.py` 未覆盖；新服务安装入口为 `--custom-bot` 或 TG 菜单第 5 项。迁移需先核对并停用旧轮询服务/cron，不能同时轮询同一 Token。说明见 [自定义机器人修复与接入](2026-10-13-custom-telegram-bot.md)，原始输出见 验收记录（本地归档：`audit/2026-10-13-custom-telegram-bot-results.json`）。
 
 ## V2bX 只读诊断第一阶段（2026-10-13）
 

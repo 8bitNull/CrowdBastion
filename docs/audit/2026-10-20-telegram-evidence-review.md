@@ -33,4 +33,4 @@
 
 真实 Telegram 发送/编辑测试证据见[首次上线验收](2026-10-20-telegram-evidence-copy.md)；本轮未重复发送消息，重新核对了服务实际轮询和真实数据读取。用户真实点击回调、消息已读及防火墙实际丢包仍不是本轮已验证内容。集合成员及 Web 回执的证据边界保持。
 
-机器可读结果见[复审结果](2026-10-20-telegram-evidence-review-results.json)。
+机器可读结果见复审结果（本地归档：`2026-10-20-telegram-evidence-review-results.json`）。

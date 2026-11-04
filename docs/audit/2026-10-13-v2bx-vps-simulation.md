@@ -8,7 +8,7 @@
 
 客机内分离受控测试客户端、健康客户端、落地和中心网络命名空间。探针每次建立新 TCP/UDP socket，校验随机回显 token 和服务收到的 peer IP。DROP 必须由真实 nftables 计数增加佐证；进程超时不能代替阻断证据。
 
-使用真实官方 CrowdSec LAPI/Bouncer，gost/realm，以及 Linux DNAT/MASQUERADE。源脚本/二进制 SHA-256 见 [sources.json](v2bx-vps-sim-2026-10-13/sources.json)，实际磁盘二进制与源树逐一核对，见 [disk-binaries.json](v2bx-vps-sim-2026-10-13/disk-binaries.json)。`landing.py` 等是仅用于本轮验收的临时探针，不是生产安装器。
+使用真实官方 CrowdSec LAPI/Bouncer，gost/realm，以及 Linux DNAT/MASQUERADE。源脚本/二进制 SHA-256 见 sources.json（本地归档：`v2bx-vps-sim-2026-10-13/sources.json`），实际磁盘二进制与源树逐一核对，见 disk-binaries.json（本地归档：`v2bx-vps-sim-2026-10-13/disk-binaries.json`）。`landing.py` 等是仅用于本轮验收的临时探针，不是生产安装器。
 
 ## 两组矩阵
 
@@ -20,15 +20,15 @@
 
 ## 失败与时限对照
 
-首轮使用仓库原有 5 秒探针进程等待预算，两个矩阵均因探针进程超时失败，未算作成功或封禁。LAPI 认证预检和配置生成已通过。原始失败结果见 [attempt-1-results.json](v2bx-vps-sim-2026-10-13/attempt-1-results.json)，QEMU 状态见 [attempt-1-runner.json](v2bx-vps-sim-2026-10-13/attempt-1-runner.json)。QEMU 正常退出不代表客机验收通过。
+首轮使用仓库原有 5 秒探针进程等待预算，两个矩阵均因探针进程超时失败，未算作成功或封禁。LAPI 认证预检和配置生成已通过。原始失败结果见 attempt-1-results.json（本地归档：`v2bx-vps-sim-2026-10-13/attempt-1-results.json`），QEMU 状态见 attempt-1-runner.json（本地归档：`v2bx-vps-sim-2026-10-13/attempt-1-runner.json`）。QEMU 正常退出不代表客机验收通过。
 
-隔离对照中，访问本机关闭端口的最小 Python socket 启动耗时约 0.25 秒，完整探针约 2.23 秒；五个完整探针并发时完成耗时约 12.22 秒，证实 TCG 单核导入/进程启动竞争超过原 5 秒预算。空闲对照见 [startup-idle.json](v2bx-vps-sim-2026-10-13/startup-idle.json)，并发对照见 [startup-loaded.json](v2bx-vps-sim-2026-10-13/startup-loaded.json)。
+隔离对照中，访问本机关闭端口的最小 Python socket 启动耗时约 0.25 秒，完整探针约 2.23 秒；五个完整探针并发时完成耗时约 12.22 秒，证实 TCG 单核导入/进程启动竞争超过原 5 秒预算。空闲对照见 startup-idle.json（本地归档：`v2bx-vps-sim-2026-10-13/startup-idle.json`），并发对照见 startup-loaded.json（本地归档：`v2bx-vps-sim-2026-10-13/startup-loaded.json`）。
 
-后续轮次只在客机副本中将探针进程等待预算从 5 秒改为 20 秒，套接字超时仍为 1.5 秒；仓库现有测试和生产默认不变。该调整不能补算首轮通过，亦不能用于推算真实 VPS 性能。保留副本见 [verify_relay_network-simulation.py](v2bx-vps-sim-2026-10-13/verify_relay_network-simulation.py)。
+后续轮次只在客机副本中将探针进程等待预算从 5 秒改为 20 秒，套接字超时仍为 1.5 秒；仓库现有测试和生产默认不变。该调整不能补算首轮通过，亦不能用于推算真实 VPS 性能。保留副本见 verify_relay_network-simulation.py（本地归档：`v2bx-vps-sim-2026-10-13/verify_relay_network-simulation.py`）。
 
 ## 调整后轮次的实测结果
 
-实际版本：CrowdSec/cscli 1.8.1-909b5157，Firewall Bouncer 0.0.36，gost 3.3.0，realm 2.9.6。运行耗时 326.67 秒，任务退出 0，QEMU 退出 0，无超时；完整结构化结果见 [results.json](v2bx-vps-sim-2026-10-13/results.json)，启动参数/退出状态见 [runner.json](v2bx-vps-sim-2026-10-13/runner.json)。没有将首轮失败改为通过。
+实际版本：CrowdSec/cscli 1.8.1-909b5157，Firewall Bouncer 0.0.36，gost 3.3.0，realm 2.9.6。运行耗时 326.67 秒，任务退出 0，QEMU 退出 0，无超时；完整结构化结果见 results.json（本地归档：`v2bx-vps-sim-2026-10-13/results.json`），启动参数/退出状态见 runner.json（本地归档：`v2bx-vps-sim-2026-10-13/runner.json`）。没有将首轮失败改为通过。
 
 | 实际检查 | 调整后轮次结果 |
 | --- | --- |

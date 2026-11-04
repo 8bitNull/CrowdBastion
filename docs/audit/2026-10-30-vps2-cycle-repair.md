@@ -64,4 +64,4 @@ NPM 原主日志级别为 warn，不具备重载接受证据；持久化自定�
 
 防火墙人工恢复入口：`python3 /var/backups/crowdbastion/vps2-cycle-20261030/migrate.py manual-rollback`。它检查配置漂移，使用临时封禁快照，并恢复原 `.yaml.local`（包括其凭据）。该入口已检查语法，提交后没有执行；恢复将回到已知存在续封缺陷的旧后端，不能当作日常维护步骤。
 
-证据：[最终验证](2026-10-30-vps2-cycle-repair/verification-final.json)、[修复前复现](2026-10-30-vps2-cycle-repair/flow-before.json)、[修复后流量验收](2026-10-30-vps2-cycle-repair/flow-after.json)、[隔离重载验证](2026-10-30-vps2-cycle-repair/isolated-reload.json)、[真实 IP 核验](2026-10-30-vps2-cycle-repair/real-ip-verification-r2.txt)、[健康结论](2026-10-30-vps2-cycle-repair/health-final.txt)。证据目录的 `SHA256SUMS` 包含本轮报告、证据及相关源码摘要。
+证据：最终验证（本地归档：`2026-10-30-vps2-cycle-repair/verification-final.json`）、修复前复现（本地归档：`2026-10-30-vps2-cycle-repair/flow-before.json`）、修复后流量验收（本地归档：`2026-10-30-vps2-cycle-repair/flow-after.json`）、隔离重载验证（本地归档：`2026-10-30-vps2-cycle-repair/isolated-reload.json`）、真实 IP 核验（本地归档：`2026-10-30-vps2-cycle-repair/real-ip-verification-r2.txt`）、健康结论（本地归档：`2026-10-30-vps2-cycle-repair/health-final.txt`）。证据目录的 `SHA256SUMS` 包含本轮报告、证据及相关源码摘要。

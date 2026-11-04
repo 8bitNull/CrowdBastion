@@ -13,7 +13,7 @@
 | 3 | 未完成的本地 HTTP 请求无限创建处理线程 | 50 项全部通过 |
 | 4 | 恢复监测后旧“停止监测”通知仍待发送；失败待重试消息被正常状态或另一条成功消息掩盖 | 52 项全部通过 |
 
-原始失败及修复后结果：第 [1 轮失败](telegram-noise-review-2026-10-29/round1-before.txt)／[通过](telegram-noise-review-2026-10-29/round1-after.txt)、第 [2 轮失败](telegram-noise-review-2026-10-29/round2-before.txt)／[通过](telegram-noise-review-2026-10-29/round2-after.txt)、第 [3 轮失败](telegram-noise-review-2026-10-29/round3-before.txt)／[通过](telegram-noise-review-2026-10-29/round3-after.txt)、第 [4 轮失败](telegram-noise-review-2026-10-29/round4-before.txt)／[通过](telegram-noise-review-2026-10-29/round4-after.txt)。
+原始失败及修复后结果：第 1 轮失败（本地归档：`telegram-noise-review-2026-10-29/round1-before.txt`）／通过（本地归档：`telegram-noise-review-2026-10-29/round1-after.txt`）、第 2 轮失败（本地归档：`telegram-noise-review-2026-10-29/round2-before.txt`）／通过（本地归档：`telegram-noise-review-2026-10-29/round2-after.txt`）、第 3 轮失败（本地归档：`telegram-noise-review-2026-10-29/round3-before.txt`）／通过（本地归档：`telegram-noise-review-2026-10-29/round3-after.txt`）、第 4 轮失败（本地归档：`telegram-noise-review-2026-10-29/round4-before.txt`）／通过（本地归档：`telegram-noise-review-2026-10-29/round4-after.txt`）。
 
 关键行为变化：
 
@@ -26,11 +26,11 @@
 
 ## 验证范围
 
-最终[全仓回归](telegram-noise-review-2026-10-29/full.txt)：**1135 项，1069 通过、66 可选跳过、0 失败**，298.969 秒。66 项跳过不计入通过证据。Bash 语法、ShellCheck、Python 编译及 `git diff --check` 均通过，见[静态检查](telegram-noise-review-2026-10-29/static.txt)。归档文件的 [SHA256SUMS](telegram-noise-review-2026-10-29/SHA256SUMS) 用于核对证据内容。初次验收的 1118 项结果保留为历史，不作为本轮结果。
+最终全仓回归（本地归档：`telegram-noise-review-2026-10-29/full.txt`）：**1135 项，1069 通过、66 可选跳过、0 失败**，298.969 秒。66 项跳过不计入通过证据。Bash 语法、ShellCheck、Python 编译及 `git diff --check` 均通过，见静态检查（本地归档：`telegram-noise-review-2026-10-29/static.txt`）。归档文件的 SHA256SUMS（本地归档：`telegram-noise-review-2026-10-29/SHA256SUMS`） 用于核对证据内容。初次验收的 1118 项结果保留为历史，不作为本轮结果。
 
-最终通知专项 52 项全部通过，包含 2 项官方 CrowdSec 1.8.1 插件集成和 1 项真实 worker 进程测试。现有机器人回归 [179 项全部通过](telegram-noise-review-2026-10-29/bot.txt)。各项数量与全仓覆盖重叠，不相加作为独立测试数。
+最终通知专项 52 项全部通过，包含 2 项官方 CrowdSec 1.8.1 插件集成和 1 项真实 worker 进程测试。现有机器人回归 179 项全部通过（本地归档：`telegram-noise-review-2026-10-29/bot.txt`）。各项数量与全仓覆盖重叠，不相加作为独立测试数。
 
-真实进程测试启动实际通知 worker 与本地 TLS 模拟 Telegram API，使用临时证书信任而不关闭 HTTPS 证书验证，隔离节点用途文件和健康采集命令。实测首次 429 后停止并重启 worker，第二次请求仍至少等待 4 秒，然后完成紧急发送、事件确认、同一告警重放去重、组件故障及一次恢复通知；普通事件保留在汇总窗口内。[独立运行记录](telegram-noise-review-2026-10-29/runtime.txt)。
+真实进程测试启动实际通知 worker 与本地 TLS 模拟 Telegram API，使用临时证书信任而不关闭 HTTPS 证书验证，隔离节点用途文件和健康采集命令。实测首次 429 后停止并重启 worker，第二次请求仍至少等待 4 秒，然后完成紧急发送、事件确认、同一告警重放去重、组件故障及一次恢复通知；普通事件保留在汇总窗口内。独立运行记录（本地归档：`telegram-noise-review-2026-10-29/runtime.txt`）。
 
 官方插件测试验证实际生成的有限字段投影、持久化接收和本地模拟 API 成功回执；不证明公网 Telegram 送达或使用者已读。profiles 校验仅确认通道引用，不执行任意过滤表达式。外部 API 成功后、SQLite 提交前崩溃仍可能重复发送，不保证严格恰好一次。
 

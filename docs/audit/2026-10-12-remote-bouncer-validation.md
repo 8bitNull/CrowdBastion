@@ -1,6 +1,6 @@
 # 远端 LAPI 与 Bouncer-only 实际验收
 
-2026-10-12，在独立 QEMU TCG 客机中使用官方 CrowdSec 1.8.1（`-no-cs`，仅 LAPI）、Firewall Bouncer 0.0.36、gost 3.3.0、realm 2.9.6。客机 1 vCPU / 1024 MiB，无外网 NIC、无宿主目录共享，快照磁盘；中心与中转为不同网络命名空间。原始结果：[JSON](2026-10-12-remote-bouncer-results.json)。
+2026-10-12，在独立 QEMU TCG 客机中使用官方 CrowdSec 1.8.1（`-no-cs`，仅 LAPI）、Firewall Bouncer 0.0.36、gost 3.3.0、realm 2.9.6。客机 1 vCPU / 1024 MiB，无外网 NIC、无宿主目录共享，快照磁盘；中心与中转为不同网络命名空间。原始结果：JSON（本地归档：`2026-10-12-remote-bouncer-results.json`）。
 
 ## 通过的实际检查
 

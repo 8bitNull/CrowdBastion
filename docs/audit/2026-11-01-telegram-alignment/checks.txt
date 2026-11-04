@@ -1,6 +1,0 @@
-Bash syntax: 18 files passed
-Python compilation without bytecode writes: 148 files passed
-ShellCheck warning level: all 9 related Bash files passed
-Actual CLI help: exit 0, all four status/bot/runtime options present
-Local Markdown links: 8 documents, 184 targets passed; new bot section anchors passed
-git diff --check: passed

@@ -25,7 +25,7 @@ python3 -m venv .venv
 # 已备齐该专项全部依赖时，禁止用跳过项冒充验收通过
 .venv/bin/python tests/run_tests.py --tier integration --require-no-skips
 
-# 特定节点历史脚本的回归；保留原始审计脚本和用例
+# 特定节点历史脚本的回归；所需的两份脚本仍随仓库分发
 .venv/bin/python tests/run_tests.py --tier archive
 
 # 只看清单，不运行 setUp/用例
@@ -52,4 +52,6 @@ python3 -m venv .venv
 
 官方 Web 归档已在本机准备并校验：`/tmp/crowdsec-official-openresty.tgz`（OpenResty Bouncer v1.2.3）和 `/tmp/crowdsec-http`（lua-resty-http v0.17.1）。此前因这两份资源缺失而跳过的 45 项已全部补跑通过，剩余 44 项仍需其它环境依赖。本次是定向补跑，未产生新的整仓运行结果；测试总数仍为 1669。资源未随仓库分发，/tmp 清理后需从上游重新下载，并按 `lib/crowdsec_web.py` 固定 SHA256 校验。
 
-剩余 44 项专项已补齐依赖并全部实际通过（Lua Nginx18、官方通知21、种子/gost5）。本机可先 `source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh`，再运行 `tests/run_tests.py --tier integration --require-no-skips`；该环境只引用已校验的 /tmp 资源。可选 Python 依赖在 `tests/requirements-integration.txt`。设置该环境后的发现阶段没有依赖跳过；本轮是分组验证，未重新运行完整套件。详细版本、SHA256 和边界见对应审计记录。
+剩余 44 项专项已补齐依赖并全部实际通过（Lua Nginx18、官方通知21、种子/gost5）。原工作区可先 `source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh`，再运行 `tests/run_tests.py --tier integration --require-no-skips`；该环境脚本仅保留在本地，引用已校验的 /tmp 资源。新克隆需按上文准备依赖并设置对应变量，不能直接使用该路径。可选 Python 依赖在 `tests/requirements-integration.txt`。设置该环境后的发现阶段没有依赖跳过；本轮是分组验证，未重新运行完整套件。详细版本、SHA256 和边界见对应审计记录。
+
+原始验收输出、临时脚本与计划仅在本地归档。现有回归直接引用的两份节点脚本和一份脱敏 JSON 仍随仓库分发，见 [发布范围](../docs/repository-layout.md)，普通测试不依赖未跟踪的本地证据。

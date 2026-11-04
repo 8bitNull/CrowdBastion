@@ -1,1 +1,0 @@
-{"status": "pending", "rollback_seconds": 720, "guard": "crowdbastion_vps144_guard"}

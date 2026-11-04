@@ -1,7 +1,0 @@
-net.ipv4.tcp_syn_retries = 6
-net.ipv4.tcp_synack_retries = 5
-net.ipv4.tcp_orphan_retries = 0
-net.ipv4.tcp_fin_timeout = 60
-net.ipv4.tcp_autocorking = 1
-net.ipv4.tcp_no_metrics_save = 0
-net.ipv4.tcp_tw_reuse = 2

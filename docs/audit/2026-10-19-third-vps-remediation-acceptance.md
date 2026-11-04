@@ -2,7 +2,7 @@
 
 用户确认后，已在第三台 VPS 启用 **AppSec 与 LAPI 查询故障拒绝（403）**，补齐 6 个站点的日志采集，并将 3 套 Hub 更新任务合并为 1 套。部署开始于 **13:14:30 UTC**，复核采样开始于 **13:15:41 UTC**（服务器本地时间分别为 21:14、21:15 CST）。
 
-原问题见[只读检查](2026-10-19-third-vps-readonly-acceptance.md)，本次结构化结果见[脱敏证据](2026-10-19-third-vps-remediation-evidence.json)。本次只操作已确认的第三台 VPS；公网地址、域名、密钥和原始命令输出保留在私有证据目录。
+原问题见[只读检查](2026-10-19-third-vps-readonly-acceptance.md)，本次结构化结果见脱敏证据（本地归档：`2026-10-19-third-vps-remediation-evidence.json`）。本次只操作已确认的第三台 VPS；公网地址、域名、密钥和原始命令输出保留在私有证据目录。
 
 ## 已完成变更
 

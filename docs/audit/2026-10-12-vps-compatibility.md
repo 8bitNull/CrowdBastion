@@ -24,7 +24,7 @@
 
 首轮远程模式 8 个组合通过、ARM64 1 个失败；本地核心完整通过 4 个组合，3 个 DEB 系统失败，CentOS 原尝试未完成、后续仅安装案例通过，ARM64 已有核心集成失败。这些计数不是对脚本所有功能的验收。
 
-原始结果：[Debian / Ubuntu](2026-10-12-vps-deb-results.json)、[RPM / ARM64](2026-10-12-vps-rpm-arm-results.json)。首轮三个 amd64 DEB 系统的包配置失败，后续已定位为官方辅助脚本在单色终端中初始化颜色失败，并完成修复复测；详见上方定位报告。ARM64 原失败仍未在该后续轮次复测，不能据此宣称 ARM64 不支持。历史早期 3 秒重启采样、输出观察器阻塞、磁盘不足和超时记录保留；最终运行增加了有界自启等待和 journal/console 观察，不抹去旧记录。
+原始结果：Debian / Ubuntu（本地归档：`2026-10-12-vps-deb-results.json`）、RPM / ARM64（本地归档：`2026-10-12-vps-rpm-arm-results.json`）。首轮三个 amd64 DEB 系统的包配置失败，后续已定位为官方辅助脚本在单色终端中初始化颜色失败，并完成修复复测；详见上方定位报告。ARM64 原失败仍未在该后续轮次复测，不能据此宣称 ARM64 不支持。历史早期 3 秒重启采样、输出观察器阻塞、磁盘不足和超时记录保留；最终运行增加了有界自启等待和 journal/console 观察，不抹去旧记录。
 
 ARM64 最新后续复测：原生包安装和重启前远程配置/实际决策同步通过；重启后核心启动前检查超时，Bouncer 连接 LAPI 失败，整轮仍未通过。后续本地核心集成未执行；见 [ARM64 启动诊断](2026-10-12-arm64-followup.md)。后续实验与首轮结果分别保存。
 
@@ -37,7 +37,7 @@ ARM64 最新后续复测：原生包安装和重启前远程配置/实际决策�
 | iptables 中转阻断 | 相同 12 个案例 | 真实 iptables-legacy / ipset 过滤，NAT 使用 nftables；决策 API 为合成接收器 |
 | 远程真实 LAPI | 相同 12 个流量案例及生命周期检查 | 官方 CrowdSec LAPI、官方 Bouncer；独立网络命名空间中的中心，不能推断公网质量 |
 
-对应原始报告：[分支矩阵](2026-10-12-vps-fixture-results.json)、[nftables](2026-10-12-relay-network-results.json)、[iptables](2026-10-12-relay-iptables-results.json)、[远程 LAPI](2026-10-12-remote-bouncer-results.json)。iptables 首两次未通过的尝试单独保留：第一次启动等待预算不足；第二次集合名识别及精简测试内核模块缺失。第三次结果不抹去原失败。
+对应原始报告：分支矩阵（本地归档：`2026-10-12-vps-fixture-results.json`）、nftables（本地归档：`2026-10-12-relay-network-results.json`）、iptables（本地归档：`2026-10-12-relay-iptables-results.json`）、远程 LAPI（本地归档：`2026-10-12-remote-bouncer-results.json`）。iptables 首两次未通过的尝试单独保留：第一次启动等待预算不足；第二次集合名识别及精简测试内核模块缺失。第三次结果不抹去原失败。
 
 ## 已发现的安装边界
 
@@ -49,7 +49,7 @@ Rocky Linux 真实客机发现：远程 Bouncer 模式移除操作按设计保�
 
 CentOS Stream 9 的 1 GiB 客机实际 `MemTotal` 为 781252 KiB，核心安装阶段记录了全局 OOM：Python 进程匿名 RSS 490028 KiB 被杀死；安装命令未完成，不能因两个服务曾启动便算通过。精确的被杀命令未记录，尚不能将 OOM 唯一归因于某个辅助程序。
 
-隔离实验另行确认 Hub 快照校验计算存在额外完整 JSON/编码副本的内存开销。改为分段 SHA256 后，快照格式及旧校验字节保持一致。96 MiB 记录的校验测试在 220 MiB 地址空间限制下由 `MemoryError` 转为通过；72 MiB 合成下载文件的完整快照生命周期在 600 MiB 限制下旧计算失败、新计算完成。快照内容仍在内存中，这不是固定内存上限或所有低配 VPS 的成功保证。详见 [内存实验记录](2026-10-12-hub-snapshot-memory-results.json)；相同内存配置的 CentOS 后续核心安装返回 0，核心及 Bouncer active，未再观察到 OOM；但测试程序随后清理时报错，缺少最终完成标记，不能算整次运行通过。原 OOM 保留，不据此承诺所有 1 GiB 节点都够用。发行版矩阵另列案例与运行状态。
+隔离实验另行确认 Hub 快照校验计算存在额外完整 JSON/编码副本的内存开销。改为分段 SHA256 后，快照格式及旧校验字节保持一致。96 MiB 记录的校验测试在 220 MiB 地址空间限制下由 `MemoryError` 转为通过；72 MiB 合成下载文件的完整快照生命周期在 600 MiB 限制下旧计算失败、新计算完成。快照内容仍在内存中，这不是固定内存上限或所有低配 VPS 的成功保证。详见 内存实验记录（本地归档：`2026-10-12-hub-snapshot-memory-results.json`）；相同内存配置的 CentOS 后续核心安装返回 0，核心及 Bouncer active，未再观察到 OOM；但测试程序随后清理时报错，缺少最终完成标记，不能算整次运行通过。原 OOM 保留，不据此承诺所有 1 GiB 节点都够用。发行版矩阵另列案例与运行状态。
 
 ## 资源与未覆盖范围
 

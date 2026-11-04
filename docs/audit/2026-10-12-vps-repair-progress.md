@@ -1,6 +1,6 @@
 # 试用前修复执行记录（2026-10-12）
 
-状态：进行中，尚未满足试用资格。用户已确认执行 [修复计划](../superpowers/plans/2026-10-12-vps-repair-before-trial.md)，无需再次确认同一范围。
+状态：进行中，尚未满足试用资格。用户已确认执行 修复计划（本地归档：`../superpowers/plans/2026-10-12-vps-repair-before-trial.md`），无需再次确认同一范围。
 
 本轮生产安装脚本 SHA256 仍为 `222b807f5b5012476f6eec7919f5d8fd06ad6b138befd21e6dfb5cf263d9eaf5`。目前修复测试设施，没有因 TCG 失败改生产默认超时。原工作区脏变更和历史失败保留；实现先在隔离 worktree `/tmp/crowdsec-vps-repair-worktree`，交付时按基线 hash 检查冲突后回写。
 
@@ -26,7 +26,7 @@
 | `/tmp/crowdsec-vps-repair-pilot-v2-20261012` | Debian 12 / 1 GiB、实际 995588 KiB | 空白核心 | 已完整结束：首次/重复安装、配置保留、三次重启及每次决策增删同步通过；7 案例，QEMU 退出 0，1003.853 秒。仅空白核心 scope，不含远程/恢复/长测 |
 | `/tmp/crowdsec-vps-repair-soak-smoke-20261012` | Debian 12 / 1 GiB | 空白核心 + 120 秒烟雾 | 已结束，QEMU 0 / 1118.887 秒；核心三重启通过，120 秒负载失败。此旧 seed 缺 gost UDP keepAlive 与最新最终采样；另有宿主/客机观察器版本差异，不能归为生产失稳 |
 
-每一轮的源码/seed hash 独立记录，后续代码修改不能追溯成为先前客机实测。进程结束后归档结果和串口校验值。已归档 [Debian 12 空白核心结果](vps-repair-evidence/debian12-cold-core-v2.json) 与 [seed 光驱主动停止记录](vps-repair-evidence/debian12-seed-cdrom-stopped.json)。旧版 [烟雾失败结果](vps-repair-evidence/debian12-soak-observer-v1-failed.json) 单独保留；其中最终 OOM/健康测量缺失不表示真实发生 OOM/重启。CentOS [v1 原始结果](vps-repair-evidence/centos9-cold-core-v1.json) 已归档，严格新健康观察器另起独立 v2 轮次。新增 `/tmp/crowdsec-vps-repair-soak-512-v2-20261012` 为最终调度器的 Debian 12 / 512 MiB / 120 秒烟雾，已因实际安装 OOM 主动停止，详见下文。
+每一轮的源码/seed hash 独立记录，后续代码修改不能追溯成为先前客机实测。进程结束后归档结果和串口校验值。已归档 Debian 12 空白核心结果（本地归档：`vps-repair-evidence/debian12-cold-core-v2.json`） 与 seed 光驱主动停止记录（本地归档：`vps-repair-evidence/debian12-seed-cdrom-stopped.json`）。旧版 烟雾失败结果（本地归档：`vps-repair-evidence/debian12-soak-observer-v1-failed.json`） 单独保留；其中最终 OOM/健康测量缺失不表示真实发生 OOM/重启。CentOS v1 原始结果（本地归档：`vps-repair-evidence/centos9-cold-core-v1.json`） 已归档，严格新健康观察器另起独立 v2 轮次。新增 `/tmp/crowdsec-vps-repair-soak-512-v2-20261012` 为最终调度器的 Debian 12 / 512 MiB / 120 秒烟雾，已因实际安装 OOM 主动停止，详见下文。
 
 ## 尚未关闭
 
@@ -57,7 +57,7 @@ CentOS 最新独立复测目录为 `/tmp/crowdsec-vps-repair-centos-v2-20261012`
 
 Debian 12 / 512 MiB 请求内存（实际 MemTotal 480260 KiB）在首次核心安装阶段触发两次实际 OOM：客机 uptime 536.868 秒与 554.327 秒，python3 PID 2036 / 2037 被内核杀死，anon RSS 分别 311412 / 322296 KiB。生产安装未返回 `core_relay_install` 案例，不能计为成功；尚未唯一确认受害进程命令，不能先归因到 Hub 快照。
 
-该轮已主动停止并保留 [结果](vps-repair-evidence/debian12-512m-install-oom.json) 与 [原始串口](vps-repair-evidence/debian12-512m-install-oom.serial.log)。长测控制器进入 blocked，未启动 1 小时/24 小时。旧烟雾轮次只是采样缺失，此轮有内核 OOM 证据，两者不可混淆。
+该轮已主动停止并保留 结果（本地归档：`vps-repair-evidence/debian12-512m-install-oom.json`） 与 原始串口（本地归档：`vps-repair-evidence/debian12-512m-install-oom.serial.log`）。长测控制器进入 blocked，未启动 1 小时/24 小时。旧烟雾轮次只是采样缺失，此轮有内核 OOM 证据，两者不可混淆。
 
 独立诊断客机 `/tmp/crowdsec-vps-oom-diagnostic-20261012` 使用同一生产源码、1 vCPU / 512 MiB，额外记录 Python 脚本白名单身份及 RSS；不记录完整参数、配置或秘密。它属于诊断 scope，不自动授予默认验收资格。
 
@@ -81,7 +81,7 @@ CentOS v2 严格观察器原源码复测已通过：6 案例、三次重启、QE
 
 ## 最终宿主观察器补充（16:10 UTC）
 
-安装/前一重启发生的裸内核 OOM 即使后续服务恢复，也强制整轮失败；只检查原始内核发送者行，`VPS_NOTE` 和 Python 日志引用示例不会误报。反例红→绿、独立只读复核通过。最终源码 **578 项通过、无跳过**，173.180 秒；[新版回归记录](vps-repair-evidence/blob-final-regression-v2.json) 保留旧 577 项报告，未覆盖历史。
+安装/前一重启发生的裸内核 OOM 即使后续服务恢复，也强制整轮失败；只检查原始内核发送者行，`VPS_NOTE` 和 Python 日志引用示例不会误报。反例红→绿、独立只读复核通过。最终源码 **578 项通过、无跳过**，173.180 秒；新版回归记录（本地归档：`vps-repair-evidence/blob-final-regression-v2.json`） 保留旧 577 项报告，未覆盖历史。
 
 当前控制器改为 `/tmp/crowdsec-vps-blob-v6-queue.py`、状态 `/tmp/crowdsec-vps-blob-v6-queue.json`、冻结观察器 `/tmp/crowdsec-vps-blob-v6-pinned-repo`。v4/v5 在尚未启动长测时停止，避免引用旧宿主观察器；生产 lib 和客机 seed/hash 没有因此变化。客机原 JSON 保留，使用独立 pinned-v6-revalidated JSON 重算；最终短测、hour、day 及 CentOS seed 的生产源码 hashes 全部一致。
 
@@ -90,11 +90,11 @@ CentOS v2 严格观察器原源码复测已通过：6 案例、三次重启、QE
 
 ## 最新验证与负载观察器修复（16:30 UTC）
 
-源码回归 **581 项全部通过、无跳过**，166.925 秒；ShellCheck、Bash 语法、Python 编译及 diff-check 通过。[新回归记录](vps-repair-evidence/blob-final-regression-v3.json) 保留先前 577/578 项报告。
+源码回归 **581 项全部通过、无跳过**，166.925 秒；ShellCheck、Bash 语法、Python 编译及 diff-check 通过。新回归记录（本地归档：`vps-repair-evidence/blob-final-regression-v3.json`） 保留先前 577/578 项报告。
 
-新快照生产版本的 CentOS Stream 9 / 请求 1 GiB（实际 781240 KiB）已完成首次安装、重复安装/配置保留、三次独立重启及每次实际决策增删。6 案例、QEMU 0、1853.309 秒；原始结果和最新宿主观察器独立重算均通过，没有观察到内核 OOM。[原始结果](vps-repair-evidence/centos9-blob-v3.json)、[重算结果](vps-repair-evidence/centos9-blob-v3-observer-v5-revalidated.json)。仅证明空白本地核心 scope，不含远程、恢复、卸载和长测。
+新快照生产版本的 CentOS Stream 9 / 请求 1 GiB（实际 781240 KiB）已完成首次安装、重复安装/配置保留、三次独立重启及每次实际决策增删。6 案例、QEMU 0、1853.309 秒；原始结果和最新宿主观察器独立重算均通过，没有观察到内核 OOM。原始结果（本地归档：`vps-repair-evidence/centos9-blob-v3.json`）、重算结果（本地归档：`vps-repair-evidence/centos9-blob-v3-observer-v5-revalidated.json`）。仅证明空白本地核心 scope，不含远程、恢复、卸载和长测。
 
-Debian 12 / 512 MiB 的 blob-v4 轮次已结束，**整体失败**：首次/重复安装、配置保留、三次重启和实际增删同步通过；没有观察到 OOM，但 120 秒负载四条路径各有 7 次错误，成功率不足 99.9%，另有分钟负载间隔失败。QEMU 0、1129.712 秒。[原始失败结果](vps-repair-evidence/debian12-512m-blob-v4-soak-failed.json)、[独立 pinned-v6 重算](vps-repair-evidence/debian12-512m-blob-v4-pinned-v6-revalidated.json) 均保留，不能将安装部分成功扩展为整轮通过。
+Debian 12 / 512 MiB 的 blob-v4 轮次已结束，**整体失败**：首次/重复安装、配置保留、三次重启和实际增删同步通过；没有观察到 OOM，但 120 秒负载四条路径各有 7 次错误，成功率不足 99.9%，另有分钟负载间隔失败。QEMU 0、1129.712 秒。原始失败结果（本地归档：`vps-repair-evidence/debian12-512m-blob-v4-soak-failed.json`）、独立 pinned-v6 重算（本地归档：`vps-repair-evidence/debian12-512m-blob-v4-pinned-v6-revalidated.json`） 均保留，不能将安装部分成功扩展为整轮通过。
 
 负载设施定位到固定等候 2 秒没有确认转发器就绪，以及外部查询前的时间戳与查询后的计数不一致。现增加四路径实际 TCP/UDP 回显就绪检查（总上限 30 秒，独立 setup 事件），在开始负载前采集零计数基线；运行中时间戳和计数在同一个锁内获取。setup 缺失、重复、未就绪或超时均失败。实测错误不清零，成功率/分钟连续性门槛不放宽。14 项 soak 与 74 项 VPS 测试通过，并完成只读复核。
 
@@ -112,14 +112,14 @@ Debian 12 / 512 MiB 的 blob-v4 轮次已结束，**整体失败**：首次/重�
 
 实际四路径就绪耗时 4.713 秒（上限 30 秒）；零计数初始样本、60.484 秒每路径 61 成功/0 错误、120.511 秒每路径 121 成功/0 错误；最终 121.009 秒仍为每路径 121/0。最低 MemAvailable 261188 KiB，核心采样峰值 RSS 133828608 bytes、Bouncer 19648512 bytes。CPU/吞吐仅为 TCG 实验数据，不代表真实 VPS 容量。
 
-[原始短测结果](vps-repair-evidence/debian12-512m-soak-v5-smoke.json) 与 [冻结观察器独立重算](vps-repair-evidence/debian12-512m-soak-v5-pinned-v7-revalidated.json) 均通过；原 blob-v4 负载失败记录仍保留，不改写。串口 SHA256 `5638edbdccbe75fad1054def79daa843169e7c3929f49f9ca920e0b03f6198dc`。
+原始短测结果（本地归档：`vps-repair-evidence/debian12-512m-soak-v5-smoke.json`） 与 冻结观察器独立重算（本地归档：`vps-repair-evidence/debian12-512m-soak-v5-pinned-v7-revalidated.json`） 均通过；原 blob-v4 负载失败记录仍保留，不改写。串口 SHA256 `5638edbdccbe75fad1054def79daa843169e7c3929f49f9ca920e0b03f6198dc`。
 
 v7 控制器在 16:43:37 UTC 实际启动 `/tmp/crowdsec-vps-repair-512-soak-v5-hour-20261012` 独立客机，重新安装/重复安装/三次重启后执行 3600 秒负载。当前 hour 正在运行，day 尚未启动；只有 hour 完整通过才推进独立 86400 秒轮次。`qualified_24h=false`、`recovery_qualified=false`、`trial_qualified=false`；本短测不关闭长测、恢复、其他组合和原生 ARM64缺口。
 
 
 ## 已有核心集成整轮通过（16:46 UTC）
 
-Debian 12 / 请求 1 GiB（实际 MemTotal 995588 KiB）独立 `existing_core_integration` 轮次已完整结束。[结果](vps-repair-evidence/debian12-existing-core-v1.json) 包含官方原生仓库配置及包安装、预先存在配置 sentinel 保留、脚本集成、重复安装和三次重启实际决策增删同步、最终独立健康检查；QEMU 0，无超时/主动停止，未观察到内核 OOM。此证据单独计已有核心集成，不当作空白首次安装、远程生命周期或长期恢复验证。
+Debian 12 / 请求 1 GiB（实际 MemTotal 995588 KiB）独立 `existing_core_integration` 轮次已完整结束。结果（本地归档：`vps-repair-evidence/debian12-existing-core-v1.json`） 包含官方原生仓库配置及包安装、预先存在配置 sentinel 保留、脚本集成、重复安装和三次重启实际决策增删同步、最终独立健康检查；QEMU 0，无超时/主动停止，未观察到内核 OOM。此证据单独计已有核心集成，不当作空白首次安装、远程生命周期或长期恢复验证。
 
 当前唯一活动 QEMU 为 512 MiB 独立 hour 轮次；控制器继续保持仅 hour 完整通过才启动 day。整体计划仍未完成，不授予试用资格。
 

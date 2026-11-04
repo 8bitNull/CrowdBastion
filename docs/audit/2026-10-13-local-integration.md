@@ -6,8 +6,8 @@ README 从 149 行收敛为 70 行；菜单、目录结构与详细验收分别�
 
 ## 验证
 
-- 合并前完整回归：689 项，669 通过、20 按环境条件跳过、0 失败，170.845 秒，见[原始输出](local-integration-2026-10-13/premerge-unittest.txt)。
-- 相同源码树合并后 V2bX 专项：68 项全部通过，3.556 秒，见[原始输出](local-integration-2026-10-13/postmerge-v2bx-tests.txt)。
+- 合并前完整回归：689 项，669 通过、20 按环境条件跳过、0 失败，170.845 秒，见原始输出（本地归档：`local-integration-2026-10-13/premerge-unittest.txt`）。
+- 相同源码树合并后 V2bX 专项：68 项全部通过，3.556 秒，见原始输出（本地归档：`local-integration-2026-10-13/postmerge-v2bx-tests.txt`）。
 - Bash/Python 语法、ShellCheck（既有排除项）及 diff 空白检查通过；索引内本地 Markdown 目标及 134 个归档文件哈希核验通过。
 
 命令使用临时依赖环境：

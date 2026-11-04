@@ -1,6 +1,0 @@
-{
-  "ssh_exit": 0,
-  "seconds": 24.118,
-  "stdout": "{\n  \"checked_at\": 1793622594.4065826,\n  \"uid\": 0,\n  \"os_release\": \"PRETTY_NAME=\\\"Debian GNU/Linux 12 (bookworm)\\\"\\nNAME=\\\"Debian GNU/Linux\\\"\\nVERSION_ID=\\\"12\\\"\\nVERSION=\\\"12 (bookworm)\\\"\\nVERSION_CODENAME=bookworm\\nID=debian\\nHOME_URL=\\\"https://www.debian.org/\\\"\\nSUPPORT_URL=\\\"https://www.debian.org/support\\\"\\nBUG_REPORT_URL=\\\"https://bugs.debian.org/\\\"\\n\",\n  \"manager_exists\": true\n}\n",
-  "stderr": ""
-}

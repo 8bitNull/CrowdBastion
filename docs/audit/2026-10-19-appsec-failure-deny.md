@@ -1,6 +1,6 @@
 # AppSec 故障策略切换为 deny
 
-用户明确确认后，已于 **2026-10-19 13:53 UTC** 将 `192.0.2.17:53322` 上托管 Web Bouncer 的 `APPSEC_FAILURE_ACTION` 从 `passthrough` 切换为 **`deny`**，保留 `FALLBACK_REMEDIATION=ban`。**13:53:39 UTC** 独立复核通过。脱敏数据见[验收证据](2026-10-19-appsec-failure-deny-results.json)。
+用户明确确认后，已于 **2026-10-19 13:53 UTC** 将 `192.0.2.17:53322` 上托管 Web Bouncer 的 `APPSEC_FAILURE_ACTION` 从 `passthrough` 切换为 **`deny`**，保留 `FALLBACK_REMEDIATION=ban`。**13:53:39 UTC** 独立复核通过。脱敏数据见验收证据（本地归档：`2026-10-19-appsec-failure-deny-results.json`）。
 
 AppSec 检查发生连接失败、读取超时或服务错误时，将拒绝请求；不再按原有 AppSec 故障放行策略继续回源。正常访问也可能在 AppSec 故障期间收到 403，这是本次用户已确认的安全与可用性取舍。
 

@@ -46,4 +46,4 @@ python3 /var/backups/crowdbastion/telegram-noise-update-20261029T133222Z/rollbac
 
 只停用分级并恢复原即时通知，可运行新目录下脚本的 `--telegram-smart-disable`。源码发行目录和备份保留在 VPS，便于后续管理。
 
-[机器可读验证结果](2026-10-29-telegram-noise-vps-update-results.json)。记录不包含 Token、聊天 ID、私钥或完整告警内容。
+机器可读验证结果（本地归档：`2026-10-29-telegram-noise-vps-update-results.json`）。记录不包含 Token、聊天 ID、私钥或完整告警内容。

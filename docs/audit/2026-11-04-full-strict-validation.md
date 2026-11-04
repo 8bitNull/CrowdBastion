@@ -39,13 +39,13 @@ source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh
 
 ## 证据
 
-- [逐项状态与耗时](2026-11-04-full-strict-validation/full-timings.json)
-- [完整控制台日志](2026-11-04-full-strict-validation/full.txt)
-- [结果摘要](2026-11-04-full-strict-validation/summary.json)
-- [命令、时间与退出码](2026-11-04-full-strict-validation/run.json)
-- [测试 ID 清单](2026-11-04-full-strict-validation/selected-tests.json)
-- [依赖校验](2026-11-04-full-strict-validation/dependency-verification.json)
-- [运行前文件哈希](2026-11-04-full-strict-validation/baseline-hashes.json)
-- [运行后文件核验](2026-11-04-full-strict-validation/source-verification.json)
-- [最终交叉核验](2026-11-04-full-strict-validation/verification.json)
-- [交付哈希清单](2026-11-04-full-strict-validation/delivery-manifest.json)
+- 逐项状态与耗时（本地归档：`2026-11-04-full-strict-validation/full-timings.json`）
+- 完整控制台日志（本地归档：`2026-11-04-full-strict-validation/full.txt`）
+- 结果摘要（本地归档：`2026-11-04-full-strict-validation/summary.json`）
+- 命令、时间与退出码（本地归档：`2026-11-04-full-strict-validation/run.json`）
+- 测试 ID 清单（本地归档：`2026-11-04-full-strict-validation/selected-tests.json`）
+- 依赖校验（本地归档：`2026-11-04-full-strict-validation/dependency-verification.json`）
+- 运行前文件哈希（本地归档：`2026-11-04-full-strict-validation/baseline-hashes.json`）
+- 运行后文件核验（本地归档：`2026-11-04-full-strict-validation/source-verification.json`）
+- 最终交叉核验（本地归档：`2026-11-04-full-strict-validation/verification.json`）
+- 交付哈希清单（本地归档：`2026-11-04-full-strict-validation/delivery-manifest.json`）

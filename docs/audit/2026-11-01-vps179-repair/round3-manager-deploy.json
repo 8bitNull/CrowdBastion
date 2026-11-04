@@ -1,8 +1,0 @@
-{
-  "release": "/opt/crowdbastion/releases/review-20261101-vps179-29689b60aa54",
-  "working_copy": "/root/crowdsec-1key",
-  "entrypoint": "/usr/local/bin/crowdbastion",
-  "fingerprint": "29689b60aa5410dc1baa296594fecd519be4f1b3e8d715bd5d2851804a34e573",
-  "help_exit": 0,
-  "completed_at": 1793537231.9532099
-}

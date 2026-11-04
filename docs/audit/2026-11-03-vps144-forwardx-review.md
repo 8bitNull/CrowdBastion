@@ -10,17 +10,17 @@
 
 原 `/usr/local/lib/crowdbastion-static-policy/apply.py` 逐条查询、立即追加。若后面的查询或追加失败，之前新增的规则会留在现场；原 unit 也未配置失败重试。离线使用原脚本内容与文件／命令边界替身复现：第六条查询失败时，留下前五条新增规则，没有回滚。未在生产防火墙注入故障。
 
-针对旧实现的首次回归记录有四项失败、五项因新契约或信号安全而跳过；这不是旧实现通过记录。证据：[原脚本复现](2026-11-03-vps144-forwardx-review/scripts/reproduce_legacy.py)、[失败记录](2026-11-03-vps144-forwardx-review/tests-legacy-red.txt)。
+针对旧实现的首次回归记录有四项失败、五项因新契约或信号安全而跳过；这不是旧实现通过记录。证据：原脚本复现（本地归档：`2026-11-03-vps144-forwardx-review/scripts/reproduce_legacy.py`）、失败记录（本地归档：`2026-11-03-vps144-forwardx-review/tests-legacy-red.txt`）。
 
 ## 第二轮：修复与交叉复审
 
 新脚本先完整校验固定九条清单、查询全部规则，再追加缺失规则，并在结束后复查。失败时逆序撤销本次计划追加且仍存在的规则；既有规则不列入撤销清单。追加意图先于命令记录，因此覆盖“内核已追加，但调用随后超时”的情况。回滚遇错继续清理，并明确报告不完整回滚。
 
-同时增加共用维护锁、root 所有权与路径／链接检查、命令超时及 TERM／HUP／INT 清理。复审发现最初修正版在安装忽略信号处理器的过渡期间仍可能被第二个信号打断；独立复现后，使用取消与恢复状态标记修正。[该回归失败记录](2026-11-03-vps144-forwardx-review/tests-signal-red.txt)保留。
+同时增加共用维护锁、root 所有权与路径／链接检查、命令超时及 TERM／HUP／INT 清理。复审发现最初修正版在安装忽略信号处理器的过渡期间仍可能被第二个信号打断；独立复现后，使用取消与恢复状态标记修正。该回归失败记录（本地归档：`2026-11-03-vps144-forwardx-review/tests-signal-red.txt`）保留。
 
 最终针对清单校验、晚期查询／追加／复验失败、超时后副作用、真实信号及重复信号、回滚失败继续清理、幂等性和锁安全的 **12 项检查通过**。主执行者独立运行也为 12 项通过；另一次交叉复审没有发现重要阻塞项。原有封禁／转发实验的取消清理也经离线复核。
 
-证据：[修正版](2026-11-03-vps144-forwardx-review/scripts/static_policy.py)、[测试](2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py)、[完整通过记录](2026-11-03-vps144-forwardx-review/tests-green.txt)、[独立通过记录](2026-11-03-vps144-forwardx-review/tests-parent.txt)、[实验取消检查](2026-11-03-vps144-forwardx-review/cancellation-check.json)。项目广泛测试发现流程曾启动后主动终止，未完成产品测试套件，不作全套测试通过声明。
+证据：修正版（本地归档：`2026-11-03-vps144-forwardx-review/scripts/static_policy.py`）、测试（本地归档：`2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py`）、完整通过记录（本地归档：`2026-11-03-vps144-forwardx-review/tests-green.txt`）、独立通过记录（本地归档：`2026-11-03-vps144-forwardx-review/tests-parent.txt`）、实验取消检查（本地归档：`2026-11-03-vps144-forwardx-review/cancellation-check.json`）。项目广泛测试发现流程曾启动后主动终止，未完成产品测试套件，不作全套测试通过声明。
 
 ## 第三轮：部署与现场复验
 
@@ -40,7 +40,7 @@
 
 最终源代码及维护副本一致，原防火墙迁移和网络事务仍为 committed，未重复执行迁移。未新增按连接量、超时或 EOF 自动封禁规则，未加入宽泛白名单或改 PROXY 配置。
 
-证据：[部署结果](2026-11-03-vps144-forwardx-review/deployment.json)、[封禁生命周期](2026-11-03-vps144-forwardx-review/enforcement.json)、[隔离转发实验](2026-11-03-vps144-forwardx-review/relay-lab.json)、[最终现场核验](2026-11-03-vps144-forwardx-review/final-result.json)。
+证据：部署结果（本地归档：`2026-11-03-vps144-forwardx-review/deployment.json`）、封禁生命周期（本地归档：`2026-11-03-vps144-forwardx-review/enforcement.json`）、隔离转发实验（本地归档：`2026-11-03-vps144-forwardx-review/relay-lab.json`）、最终现场核验（本地归档：`2026-11-03-vps144-forwardx-review/final-result.json`）。
 
 ## 备份、恢复与限制
 
@@ -52,4 +52,4 @@
 
 审计工具的服务查询补齐 journald，并将观察样本输出改到新目录后才运行，避免比较基线缺项及覆盖旧证据。封存工具首次因数据库后缀假设错误停止于写入前，改为实际 `.sqlite3` 文件后核验成功；这些是工具问题，不是生产故障。
 
-现场封存：[核验结果](2026-11-03-vps144-forwardx-review/seal-result.json)。本轮未修改产品源码、提交或推送仓库；所有新增本地文件位于此报告及其同名证据目录。
+现场封存：核验结果（本地归档：`2026-11-03-vps144-forwardx-review/seal-result.json`）。本轮未修改产品源码、提交或推送仓库；所有新增本地文件位于此报告及其同名证据目录。

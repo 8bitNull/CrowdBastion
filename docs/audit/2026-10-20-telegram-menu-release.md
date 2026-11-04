@@ -39,4 +39,4 @@ python3 /var/backups/crowdbastion/telegram-menu-update-20261020T022135Z/rollback
 
 恢复会先校验现有文件与备份哈希，拒绝覆盖未知外部修改；只恢复并重启机器人，保留 offset 和用户状态。本次未执行回滚。
 
-[机器可读验收结果](2026-10-20-telegram-menu-release-results.json)。凭据、聊天 ID、完整卡片与私有命令输出未进入仓库。
+机器可读验收结果（本地归档：`2026-10-20-telegram-menu-release-results.json`）。凭据、聊天 ID、完整卡片与私有命令输出未进入仓库。

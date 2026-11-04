@@ -13,21 +13,21 @@
 
 ## 验证
 
-本轮从当前代码完整重跑 **1425 项：1336 通过、89 按条件跳过、0 失败／错误**，unittest 耗时 472.202 秒，控制器耗时 472.529 秒，退出码 0。完整输出见[回归日志](2026-11-01-repository-consolidation/full-regression.txt)及[退出结果](2026-11-01-repository-consolidation/full-regression-result.json)。命令为：
+本轮从当前代码完整重跑 **1425 项：1336 通过、89 按条件跳过、0 失败／错误**，unittest 耗时 472.202 秒，控制器耗时 472.529 秒，退出码 0。完整输出见回归日志（本地归档：`2026-11-01-repository-consolidation/full-regression.txt`）及退出结果（本地归档：`2026-11-01-repository-consolidation/full-regression-result.json`）。命令为：
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tests:lib python3 -m unittest discover -s tests
 ```
 
-测试期间唯一源码变化为上述测试文件末尾空行清理；全量结束后针对该文件另跑 24 项，全部通过，见[专项结果](2026-11-01-repository-consolidation/existing-deployment-regression.txt)。最终产品与测试源码摘要见 [source-sha256.json](2026-11-01-repository-consolidation/source-sha256.json)。日志中的故障／回退输出来自隔离测试，不是本轮生产操作；条件跳过不计作通过。
+测试期间唯一源码变化为上述测试文件末尾空行清理；全量结束后针对该文件另跑 24 项，全部通过，见专项结果（本地归档：`2026-11-01-repository-consolidation/existing-deployment-regression.txt`）。最终产品与测试源码摘要见 source-sha256.json（本地归档：`2026-11-01-repository-consolidation/source-sha256.json`）。日志中的故障／回退输出来自隔离测试，不是本轮生产操作；条件跳过不计作通过。
 
 静态检查包括 150 个产品／测试 Python 文件 AST、19 个 Bash 文件语法，以及 ShellCheck warning/error 级检查，沿用 `SC2317`、`SC2329`、`SC2120`、`SC2119` 排除项。主入口 `--help` 已实际执行。
 
-本轮核对原归档的 208 条哈希，全部匹配；初始待提交文档中的 315 个本地链接目标均存在，且对应文件已纳入提交。7 份原始差异／补丁证据包含上下文空格及末尾空行，保留原始字节，不宣称全归档 `git diff --check` 无提示；产品、测试和持续维护文档的差异检查通过。具体文件见[静态记录](2026-11-01-repository-consolidation/static-checks.json)。
+本轮核对原归档的 208 条哈希，全部匹配；初始待提交文档中的 315 个本地链接目标均存在，且对应文件已纳入提交。7 份原始差异／补丁证据包含上下文空格及末尾空行，保留原始字节，不宣称全归档 `git diff --check` 无提示；产品、测试和持续维护文档的差异检查通过。具体文件见静态记录（本地归档：`2026-11-01-repository-consolidation/static-checks.json`）。
 
 新增内容及补纳入日志的私钥、Telegram Token 和 GitHub Token 常见格式扫描未发现匹配；该扫描不替代原始审计的脱敏边界说明。
 
-为保留前轮归档中支持文档的历史摘要，本轮新增索引条目前的审计索引另存为 [prior-audit-index.md](2026-11-01-repository-consolidation/prior-audit-index.md)。各轮历史源码摘要记录当时状态，不能作为当前完整源码一致的证明。
+为保留前轮归档中支持文档的历史摘要，本轮新增索引条目前的审计索引另存为 prior-audit-index.md（本地归档：`2026-11-01-repository-consolidation/prior-audit-index.md`）。各轮历史源码摘要记录当时状态，不能作为当前完整源码一致的证明。
 
 ## 分支与验证边界
 

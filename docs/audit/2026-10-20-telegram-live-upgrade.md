@@ -27,4 +27,4 @@ python3 /var/backups/crowdbastion/telegram-update-20261020T005820Z/rollback.py
 
 该命令会先校验文件和备份哈希，拒绝覆盖未知版本；恢复机器人文件并重启机器人，保留 offset 和用户操作状态。本次未执行回滚。部署后的备份脚本已通过 CAS 更新为带中断信号保护的版本；产品服务未因此重启。
 
-机器可读记录见 [验收结果](2026-10-20-telegram-live-upgrade-results.json)。凭据、聊天信息和私有卡片仅保存在受限目录。
+机器可读记录见 验收结果（本地归档：`2026-10-20-telegram-live-upgrade-results.json`）。凭据、聊天信息和私有卡片仅保存在受限目录。

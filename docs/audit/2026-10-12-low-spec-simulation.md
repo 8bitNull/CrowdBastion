@@ -38,7 +38,7 @@
 
 原始报告：
 
-- [512 MiB 核心共存短矩阵](2026-10-12-low-spec-512m.json)
-- [256 MiB 核心共存未完成结果](2026-10-12-low-spec-256m.json)
-- [256 MiB 无核心对照](2026-10-12-low-spec-256m-bouncer-only.json)
-- [512 MiB 首轮超时结果](2026-10-12-low-spec-512m-initial-timeout.json)
+- 512 MiB 核心共存短矩阵（本地归档：`2026-10-12-low-spec-512m.json`）
+- 256 MiB 核心共存未完成结果（本地归档：`2026-10-12-low-spec-256m.json`）
+- 256 MiB 无核心对照（本地归档：`2026-10-12-low-spec-256m-bouncer-only.json`）
+- 512 MiB 首轮超时结果（本地归档：`2026-10-12-low-spec-512m-initial-timeout.json`）

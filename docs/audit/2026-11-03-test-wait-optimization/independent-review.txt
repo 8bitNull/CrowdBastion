@@ -1,8 +1,0 @@
-Reviewer: /root/test_waits_review (fresh context; read-only).
-Critical: none. Important: none. Minor: one.
-
-Raw-delay escape bug at tests/reload_clock.py: awk -v interprets backslash escapes before validation, so raw \061 and \x31 each advanced the clock by one second. Current three business tests use 0.2 and were not affected. Recommendation: validate raw Bash argument before passing to awk.
-
-Other checks passed: clock injection only in intended three original tests; real deadline/child cleanup tests unaffected; serial shell substitutions share clock state; real verifier, PID parsing and log evidence still run. Reviewer independently ran six targeted cases, all passed in 9.111s. Did not run full suite or modify files.
-
-Implementer disposition: reproduced both invalid values as RED subtests; fixed with Bash raw numeric regex before awk conversion. Final six targeted tests passed in 8.644s, no deferred findings. Final full run uses corrected source and is verified separately.

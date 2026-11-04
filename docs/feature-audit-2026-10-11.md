@@ -12,8 +12,8 @@
 
 - `python3 -m unittest discover -s tests -q`：**178 项通过，33.499 秒**。系统命令替身把软件包、systemd、Docker 等操作限制在临时目录，不能证明真实安装过程。
 - `bash -n` 与 ShellCheck：主脚本、`lib/*.sh`、`tools/*.sh` 全部通过。
-- 额外 **75 次隔离流程实验**；其中 71 次预设退出码全部匹配，另外 4 次用于采集异常行为证据。匹配退出码不代表功能没有缺陷。精简记录见 [workflow-results.json](audit/2026-10-11-workflow-results.json)。
-- 另完成 **10 次隔离卸载实验**和 3 次 PTY 菜单交互（EOF、cron 查看/返回、无效选项/返回）。卸载实验发现未知检查状态被当成无残留，见下文；[卸载记录](audit/2026-10-11-uninstall-results.json)。
+- 额外 **75 次隔离流程实验**；其中 71 次预设退出码全部匹配，另外 4 次用于采集异常行为证据。匹配退出码不代表功能没有缺陷。精简记录见 workflow-results.json（本地归档：`audit/2026-10-11-workflow-results.json`）。
+- 另完成 **10 次隔离卸载实验**和 3 次 PTY 菜单交互（EOF、cron 查看/返回、无效选项/返回）。卸载实验发现未知检查状态被当成无残留，见下文；卸载记录（本地归档：`audit/2026-10-11-uninstall-results.json`）。
 - 官方 CrowdSec **1.8.1**：Hub 集合名称、配置校验、实际日志采集、LAPI 登录、独立 Machine 凭据、手动决策添加/删除、通知插件向本地测试 HTTP 接收器发送 JSON 均通过。
 - 真实 AppSec：`/.env` 返回 **403 / action=ban**，正常 `/` 返回 **200 / action=allow**，规则指标命中。
 - 官方 OpenResty **1.25.3.2** + OpenResty Bouncer **1.2.3**：生成配置通过 `nginx -t`，正常请求到达后端，原模拟 WAF 阻断仍生效，AppSec 阻断发生在后端之前，Processed 从 **0 → 2**。

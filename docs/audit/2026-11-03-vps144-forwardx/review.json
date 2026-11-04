@@ -1,6 +1,0 @@
-{
-  "independent_network_review": "seven scoped TCP defaults; preserve BBR/fq/buffers/global tcp_mem/MSS",
-  "independent_firewall_review": "initial ipset dependency and lifecycle evidence binding fixed; initial sync bounded retry and common-chain duplication resolved",
-  "final_review": "No important blocker in completed runtime/lifecycle/lab/network evidence; agent restart initiator unconfirmed; public UDP/backend authentication remain outside acceptance",
-  "product_code_modified": false
-}

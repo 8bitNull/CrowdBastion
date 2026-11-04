@@ -1,8 +1,0 @@
-{
-  "checked_at": 1793541450.1540983,
-  "cause": "Parent deployment guard already held the same lock which the CLI attempted to acquire again.",
-  "product_refused_before_update": true,
-  "root_and_entry_restored": true,
-  "bot_manager_still_previous_release": true,
-  "output": "\n[WARN] 另一个 CrowdSec 管理操作正在执行，请稍后重试。\n"
-}

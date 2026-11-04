@@ -14,11 +14,11 @@ sing Shadowsocks 的明确 `serve TCP from ... chacha20poly1305: message authent
 
 ## 真实程序测试
 
-同前轮官方发行包和源提交 `3deccaae00d168fd049f8a8659656664f25ee301`，包／二进制依赖证据见 [program-sources.json](v2bx-observation-stability-2026-10-13/program-sources.json)。本阶段使用native loopback，服务仅监听127.0.0.1；受控UniProxy、临时凭据和本地证书，无宿主路由／防火墙变化。不能把本轮表述为新的QEMU、IPv6或真实VPS路径验收。
+同前轮官方发行包和源提交 `3deccaae00d168fd049f8a8659656664f25ee301`，包／二进制依赖证据见 program-sources.json（本地归档：`v2bx-observation-stability-2026-10-13/program-sources.json`）。本阶段使用native loopback，服务仅监听127.0.0.1；受控UniProxy、临时凭据和本地证书，无宿主路由／防火墙变化。不能把本轮表述为新的QEMU、IPv6或真实VPS路径验收。
 
 13个基础内核／协议组合均运行正常、错误凭据、恢复、目标端口不可达；7个TLS／QUIC组合另验证错误server_name，1个VLESS组合验证本地目标不返回响应导致超时，共60个对照。轮转／写入进程重启、采样器重启和copytruncate另有6个正常／错误凭据对照，共66个。每个业务成功须校验随机HTTP令牌；失败控制要求有效SOCKS negotiation且探针无基础设施错误。正常、恢复、TLS错误、不可达和超时阶段不得产生eligible失败投影；不从阶段名字构造事件。
 
-结果见 [results.json](v2bx-observation-stability-2026-10-13/results.json)。循环内日志窗口在客户端终止后等待0.15秒，并由采样器保存实际投影；异步晚写不能排除，不声称逐请求精确归因。某次错误凭据对照可产生多条失败投影；游标去重针对已提交日志位置，不将相同时间/IP的投影擅自删为“同一次尝试”。
+结果见 results.json（本地归档：`v2bx-observation-stability-2026-10-13/results.json`）。循环内日志窗口在客户端终止后等待0.15秒，并由采样器保存实际投影；异步晚写不能排除，不声称逐请求精确归因。某次错误凭据对照可产生多条失败投影；游标去重针对已提交日志位置，不将相同时间/IP的投影擅自删为“同一次尝试”。
 
 ## 采集生命周期
 
@@ -42,9 +42,9 @@ continuity_risks是保守风险提示，不是实际丢失条数。每次旧fd�
 
 主采样器导出实际事件，加上独立采样器将127.0.0.0/8声明为relay CIDR后的真实日志排除样本，合计33条投影、10条eligible失败。该CIDR对照验证声明排除逻辑，**不是本轮新的物理中转测试**。按source/core/protocol每组保留一条真实失败，连同所有非eligible事件送入引擎，共29条读取、6告警、0决策；严格核对alert.events元数据组，不只数告警。
 
-已覆盖观察组：Xray VMess/VLESS，sing VMess/VLESS/Trojan/AnyTLS。正常／网络错误、SS integrity、fallback候选与声明relay排除样本无额外告警。批量去重避免trigger场景1秒blackhole，不代表生产逐行告警率，也没有删除原始采样证据。结果见 [real-replay.json](v2bx-observation-stability-2026-10-13/real-replay.json)，输入快照独立归档。
+已覆盖观察组：Xray VMess/VLESS，sing VMess/VLESS/Trojan/AnyTLS。正常／网络错误、SS integrity、fallback候选与声明relay排除样本无额外告警。批量去重避免trigger场景1秒blackhole，不代表生产逐行告警率，也没有删除原始采样证据。结果见 real-replay.json（本地归档：`v2bx-observation-stability-2026-10-13/real-replay.json`），输入快照独立归档。
 
-另有synthetic/source-backed反例验收：16条、6告警、0决策，包含无效source、不观察记录以及不支持的AnyTLS protocol_rejection；它与上述实际日志回放分开。首轮规则过宽触发额外告警，随后收紧，失败说明见 [failed-attempts.json](v2bx-observation-stability-2026-10-13/failed-attempts.json)。
+另有synthetic/source-backed反例验收：16条、6告警、0决策，包含无效source、不观察记录以及不支持的AnyTLS protocol_rejection；它与上述实际日志回放分开。首轮规则过宽触发额外告警，随后收紧，失败说明见 failed-attempts.json（本地归档：`v2bx-observation-stability-2026-10-13/failed-attempts.json`）。
 
 ## 审查与回归
 

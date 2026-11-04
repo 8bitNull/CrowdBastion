@@ -1,7 +1,0 @@
-基线首次运行未设置 PYTHONPATH=lib，出现 ModuleNotFoundError；加上正确导入路径后原 49 项通过。这是本地测试调用问题，未修改产品以掩盖导入错误。
-新路径回归 RED：53 项中两项正向间接路径失败；静态服务 RED：文件尚不存在，4 项均 FileNotFoundError；各自原始输出保留在 path-red.txt/static-red.txt，GREEN 分别为 100 项与 4 项。
-一次切换后本地断言误用 preflight.json 的 services 键，触发 KeyError: 'services'。该 JSON 实际使用 units，内容为 systemctl 属性文本。改按实际格式解析后，PID/容器/受保护文件/健康等全部断言通过；未重复生产部署。
-远端隔离网络命名空间和 systemd unit 校验均退出 0。systemd-analyze 提示原 1panel-agent.service 把 StartLimitIntervalSec 放在 Service 段，忽略该键；本轮未修改此既有 unit。完整 stderr 已保存在 isolated-static.json。
-没有发生生产切换后失败或执行生产回滚。首次远端 hash 封存被既有原源码 __pycache__ 0755 的统一权限断言拒绝，尚未写 manifest。保留 seal-first 脚本、空 JSON 与 stderr；改为校验私有备份外层、其他新文件，以及原源码内容/权限整体与写前完全相等后封存通过，不修改原源码模式，保证精确回滚。
-原只读调查中的失败探针仍留在原封存，本轮不改写其证据。
-最终资源核对发现初始包只带 manager/lib/readme，遗漏未启用 V2bX 规则的两份 YAML 和 README。工作目录原有这三个文件与仓库一致，两个新发布副本分别补齐三个文件，未启用功能或重启服务。补充事务单独备份封存，不改原远端 manifest。首次本地 manifest/verification 保留为 pre-resources 文件，最终封存另生成。

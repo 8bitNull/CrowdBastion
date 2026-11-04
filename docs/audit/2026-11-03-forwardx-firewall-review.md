@@ -11,9 +11,9 @@
 | P2：缺省／null 列表与官方语义不一致 | 家族专用链配置会被凭空加 INPUT；合法 null 列表被拒绝 | 缺省和 null 均按空列表；INPUT／FORWARD 等必需路径由对应修复／接入操作明确添加 |
 | P2：nftables 验收逐条看 DROP，忽略同链其他规则和计数器身份 | 新增前置 ACCEPT 或替换命名计数器后，计数增长仍可能被误认为原规则阻断证据 | 检查完整所选 hooked 链，未知／放行／跳转规则使该链证据无效；身份绑定链结构、rule handle 和可取得的命名计数器 handle |
 
-初始七项离线探针全部暴露问题：六个断言失败，另一个合法 null 用例被旧实现抛错。没有在宿主机或 VPS 注入防火墙故障。[失败记录](2026-11-03-forwardx-firewall-review/initial-red.log)。
+初始七项离线探针全部暴露问题：六个断言失败，另一个合法 null 用例被旧实现抛错。没有在宿主机或 VPS 注入防火墙故障。失败记录（本地归档：`2026-11-03-forwardx-firewall-review/initial-red.log`）。
 
-缺省／null 结论来自精确的官方 Bouncer **v0.0.36** 源码：`NewConfig` 未初始化 INPUT；链字段是字符串 slice；固定 `go-cs-lib v0.0.25` 合并器接受 null，`yaml.v2 v2.4.0` 将 null 解为 slice 零值。这里只说明已核对版本，不推断所有未来版本。[固定源码及 SHA 摘要](2026-11-03-forwardx-firewall-review/official-chain-semantics.json)。上一批将 null 当作无效列表的实现与测试，在本轮明确纠正；旧报告和日志保留原样。
+缺省／null 结论来自精确的官方 Bouncer **v0.0.36** 源码：`NewConfig` 未初始化 INPUT；链字段是字符串 slice；固定 `go-cs-lib v0.0.25` 合并器接受 null，`yaml.v2 v2.4.0` 将 null 解为 slice 零值。这里只说明已核对版本，不推断所有未来版本。固定源码及 SHA 摘要（本地归档：`2026-11-03-forwardx-firewall-review/official-chain-semantics.json`）。上一批将 null 当作无效列表的实现与测试，在本轮明确纠正；旧报告和日志保留原样。
 
 ## 第二轮：失败路径与修复复审
 
@@ -25,7 +25,7 @@
 
 两位独立复审者分别复核配置／回滚和验收解析器。重要发现均已修复；最终没有新的重要未解决项。独立运行的链路专项 93 项、解析器专项 47 项均通过；这些与作者检查和全量测试重叠，不相加计数。
 
-证据：[十项回归通过](2026-11-03-forwardx-firewall-review/regressions-green.log)、[旧回滚逻辑失败](2026-11-03-forwardx-firewall-review/rollback-red.log)／[修复后通过](2026-11-03-forwardx-firewall-review/rollback-green.log)、[类型漂移失败回归](2026-11-03-forwardx-firewall-review/type-red.log)、[独立复审](2026-11-03-forwardx-firewall-review/independent-review.json)。
+证据：十项回归通过（本地归档：`2026-11-03-forwardx-firewall-review/regressions-green.log`）、旧回滚逻辑失败（本地归档：`2026-11-03-forwardx-firewall-review/rollback-red.log`）／修复后通过（本地归档：`2026-11-03-forwardx-firewall-review/rollback-green.log`）、类型漂移失败回归（本地归档：`2026-11-03-forwardx-firewall-review/type-red.log`）、独立复审（本地归档：`2026-11-03-forwardx-firewall-review/independent-review.json`）。
 
 ## 第三轮：最终验证与交付
 
@@ -33,9 +33,9 @@
 
 最终全仓 **1655 项：1566 通过、89 按环境条件跳过、0 失败，515.995 秒**。专项包含在全仓内，不相加计数；跳过项没有计作通过。
 
-历史基线来自本轮开始时重新校验一致的上一批 1645 项验证版本，不把上一轮结果冒充本轮全量重跑。本轮全量结果单独保存。[专项](2026-11-03-forwardx-firewall-review/focused-tests.log)、[最终全仓](2026-11-03-forwardx-firewall-review/full-tests.log)。
+历史基线来自本轮开始时重新校验一致的上一批 1645 项验证版本，不把上一轮结果冒充本轮全量重跑。本轮全量结果单独保存。专项（本地归档：`2026-11-03-forwardx-firewall-review/focused-tests.log`）、最终全仓（本地归档：`2026-11-03-forwardx-firewall-review/full-tests.log`）。
 
-交付逐文件检查原工作区仍匹配本轮起始基线，再同步本轮代码、测试和文档，核对与最终测试版本的哈希一致。没有复制覆盖其他未提交改动。材料包含[本轮补丁](2026-11-03-forwardx-firewall-review/task.patch)、受影响文件的 before／after 快照及[交付校验](2026-11-03-forwardx-firewall-review/delivery.json)。
+交付逐文件检查原工作区仍匹配本轮起始基线，再同步本轮代码、测试和文档，核对与最终测试版本的哈希一致。没有复制覆盖其他未提交改动。材料包含本轮补丁（本地归档：`2026-11-03-forwardx-firewall-review/task.patch`）、受影响文件的 before／after 快照及交付校验（本地归档：`2026-11-03-forwardx-firewall-review/delivery.json`）。
 
 新清单将封存材料和当前交付代码的哈希分开。上一批报告、补丁、日志等封存材料保持原字节；旧清单中的 live 源码路径代表上一批历史版本，升级后不能再要求这些路径仍匹配旧值，也没有改写旧清单掩盖版本变化。
 

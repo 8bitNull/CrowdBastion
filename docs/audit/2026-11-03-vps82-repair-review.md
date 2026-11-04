@@ -1,6 +1,6 @@
 # 192.0.2.27：三轮复审与 sysctl 最小修复
 
-用户在[部署适配性检查](2026-11-03-vps82-readonly.md)后要求“循环复审加修复”。本轮修复了已确认的 sysctl 持久配置错误：**`net.core.netdev_budget_usecs` 从无效的 6000 改为该机当前已运行的 8000**。定向应用退出 0、无 stderr；81 项采样运行参数全部保持一致。完整执行范围见[计划](../superpowers/plans/2026-11-03-vps82-repair-review.md)。
+用户在[部署适配性检查](2026-11-03-vps82-readonly.md)后要求“循环复审加修复”。本轮修复了已确认的 sysctl 持久配置错误：**`net.core.netdev_budget_usecs` 从无效的 6000 改为该机当前已运行的 8000**。定向应用退出 0、无 stderr；81 项采样运行参数全部保持一致。完整执行范围见计划（本地归档：`../superpowers/plans/2026-11-03-vps82-repair-review.md`）。
 
 仅修改 `/etc/sysctl.d/99-network-optimize.conf` 中这一项，未部署 CrowdSec、升级系统、改变防火墙、调整其他网络参数、重启生产服务或重启 VPS。root 公钥认证的启用是用户在本轮之前操作的，不计作本轮修复。
 
@@ -10,7 +10,7 @@
 
 实际 `/lib/systemd/systemd-sysctl --cat-config --no-pager` 展开的七个配置来源中，只有 `/etc/sysctl.d/99-network-optimize.conf` 的一条目标赋值，没有其他匹配该键的通配、排除或覆盖项。unit 使用原始 `/lib/systemd/systemd-sysctl`，没有 drop-in。文件 root 所有、0644、无符号链接或硬链接复用。
 
-该机内核配置为 `CONFIG_HZ=250`。Linux 上游 v6.18 定义此参数下限为 `2 * USEC_PER_SEC / HZ`，计算为 **8000 微秒**，并使用带最小值约束的处理器。这与现场拒绝 6000、运行值 8000 一致。上游源代码仅作解释依据，没有声称与定制 XanMod 源码逐字节一致，也没有在生产机重复写入已知无效值。[来源记录](2026-11-03-vps82-repair-review/kernel-reference.json)。
+该机内核配置为 `CONFIG_HZ=250`。Linux 上游 v6.18 定义此参数下限为 `2 * USEC_PER_SEC / HZ`，计算为 **8000 微秒**，并使用带最小值约束的处理器。这与现场拒绝 6000、运行值 8000 一致。上游源代码仅作解释依据，没有声称与定制 XanMod 源码逐字节一致，也没有在生产机重复写入已知无效值。来源记录（本地归档：`2026-11-03-vps82-repair-review/kernel-reference.json`）。
 
 独立复审提出三项核验补充，均已落实：使用真正有效的配置栈；保护 Agent／SSH／Fail2Ban 配置而不只核对 realm；分清定向应用成功、清除历史失败与完整 unit 验收。
 
@@ -36,7 +36,7 @@ ActiveState=inactive
 
 **`Result=success` 来自 reset-failed，不是完整单元重跑成功；`ExecMainStatus=1` 保留了原执行失败的历史状态。** 本轮未执行完整 sysctl reload／restart，未冷启动，不能据 failed units=0 宣称所有开机 sysctl 已验收。
 
-证据：[修复前基线](2026-11-03-vps82-repair-review/preflight.json)、[修复结果](2026-11-03-vps82-repair-review/repair-result.json)、[历史状态确认](2026-11-03-vps82-repair-review/history-ack.json)、[实际执行脚本](2026-11-03-vps82-repair-review/scripts/executed_repair.py)。脚本是一次性、固定旧哈希的操作记录，修复后不能直接重复执行。
+证据：修复前基线（本地归档：`2026-11-03-vps82-repair-review/preflight.json`）、修复结果（本地归档：`2026-11-03-vps82-repair-review/repair-result.json`）、历史状态确认（本地归档：`2026-11-03-vps82-repair-review/history-ack.json`）、实际执行脚本（本地归档：`2026-11-03-vps82-repair-review/scripts/executed_repair.py`）。脚本是一次性、固定旧哈希的操作记录，修复后不能直接重复执行。
 
 ## 第三轮：业务连续性与结论复审
 
@@ -74,4 +74,4 @@ Debian 11 超出官方 LTS 的生命周期问题仍存在。当前内存更适�
 
 原只读报告及其 13 项封存文件哈希保持一致。本轮新增文件仅位于此报告、其同名证据目录及计划文件；未修改产品源码，未运行产品全套测试，未提交或推送。
 
-其余证据：[连续性核验](2026-11-03-vps82-repair-review/verification.json)、[外部 TCP 前](2026-11-03-vps82-repair-review/tcp-before.json)／[后](2026-11-03-vps82-repair-review/tcp-after.json)、[最终现场](2026-11-03-vps82-repair-review/final-result.json)、[独立复审](2026-11-03-vps82-repair-review/independent-review.json)、[私有备份封存](2026-11-03-vps82-repair-review/seal-result.json)。
+其余证据：连续性核验（本地归档：`2026-11-03-vps82-repair-review/verification.json`）、外部 TCP 前（本地归档：`2026-11-03-vps82-repair-review/tcp-before.json`）／后（本地归档：`2026-11-03-vps82-repair-review/tcp-after.json`）、最终现场（本地归档：`2026-11-03-vps82-repair-review/final-result.json`）、独立复审（本地归档：`2026-11-03-vps82-repair-review/independent-review.json`）、私有备份封存（本地归档：`2026-11-03-vps82-repair-review/seal-result.json`）。

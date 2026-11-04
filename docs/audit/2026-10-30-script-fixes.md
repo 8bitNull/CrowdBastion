@@ -42,7 +42,7 @@ PYTHONPATH="$PWD/lib:$PWD/.venv/lib/python3.11/site-packages" \
 - `git diff --check`：通过。
 - 完整测试结果：**1156 项，1112 通过、44 跳过、0 失败、0 错误**，耗时 542.877 秒，退出码 0。
 - 跳过原因：18 项需 Lua Nginx；16 项需官方 CrowdSec 插件 release；5 项需官方回执验证 release；1 项需 gost；4 项需 pycdlib。
-- [汇总 JSON](2026-10-30-script-fixes/results.json)、[完整日志](2026-10-30-script-fixes/full-regression.txt)、[证据与源码摘要](2026-10-30-script-fixes/SHA256SUMS)。
+- 汇总 JSON（本地归档：`2026-10-30-script-fixes/results.json`）、完整日志（本地归档：`2026-10-30-script-fixes/full-regression.txt`）、证据与源码摘要（本地归档：`2026-10-30-script-fixes/SHA256SUMS`）。
 
 ## 验证边界
 

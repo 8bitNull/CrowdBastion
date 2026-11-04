@@ -20,7 +20,7 @@
 | Nginx 实际重载补验 | 5 项全部通过，补齐全量中的另外 5 个跳过项 |
 | 去重后完整套件结果 | 1058 通过、5 可选跳过、0 失败，共 1063 项 |
 
-剩余可选跳过为 1 项官方 gost 二进制测试与 4 项依赖 pycdlib 的 ISO 媒体验证。另检查了相关 Python 语法与差异空白。结构化计数、源码与日志摘要见[验证结果](2026-10-21-telegram-restart-backoff-verification.json)。
+剩余可选跳过为 1 项官方 gost 二进制测试与 4 项依赖 pycdlib 的 ISO 媒体验证。另检查了相关 Python 语法与差异空白。结构化计数、源码与日志摘要见验证结果（本地归档：`2026-10-21-telegram-restart-backoff-verification.json`）。
 
 复现主要命令：
 

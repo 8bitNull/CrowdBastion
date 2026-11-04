@@ -4,13 +4,13 @@
 
 ## 程序、拓扑与证据
 
-官方发布包 SHA-256 经 release digest 核对。V2bX 对应提交 `3deccaae00d168fd049f8a8659656664f25ee301`，嵌入 xray 25.9.11 对应 fork、sing-box_mod 1.13.0-alpha.5、Hysteria core/v2 2.6.3。客户端 1.12.0 用于保留 Hysteria1 支持。此版依赖与前轮分析的 HEAD `71277de` 不同，不能把两版结果混为兼容性保证。完整版本和校验值见 [sources.json](v2bx-real-protocol-2026-10-13/sources.json)。
+官方发布包 SHA-256 经 release digest 核对。V2bX 对应提交 `3deccaae00d168fd049f8a8659656664f25ee301`，嵌入 xray 25.9.11 对应 fork、sing-box_mod 1.13.0-alpha.5、Hysteria core/v2 2.6.3。客户端 1.12.0 用于保留 Hysteria1 支持。此版依赖与前轮分析的 HEAD `71277de` 不同，不能把两版结果混为兼容性保证。完整版本和校验值见 sources.json（本地归档：`v2bx-real-protocol-2026-10-13/sources.json`）。
 
 独立 QEMU TCG 客机，2 vCPU／1536 MiB、Linux 6.1.0-47，无外网 NIC、无宿主共享目录、snapshot 磁盘；客机内部网络命名空间分离客户端、中转和落地。宿主不修改防火墙、路由或生产配置。客机使用实验 init，不验证 systemd 服务生命周期。
 
 同一个 V2bX 进程同时启动三内核、13 节点；直连和代理中转访问相同落地端口。真实 SOCKS 客户端通过每种隧道请求落地本机 TCP HTTP 服务，每次校验随机响应令牌。正确凭据和恢复必须得到精确响应，错误凭据必须在有效本地 SOCKS negotiation 后不能取得响应；监听或进程存活不能替代业务成功。错误阶段的“不能取得响应”与“日志明确记录认证失败”分别统计。
 
-直连成功日志须出现 `10.231.1.2`，gost 中转成功日志须出现 `10.231.3.1`；来源只取程序明确连接字段。gost 为 TCP 或 UDP 代理，QUIC 协议仍发生实际握手。源码、客机载荷 hashes（31 个打包文件逐一从磁盘读回核对）、结构化原始断言见 [归档目录](v2bx-real-protocol-2026-10-13/results.json)。不归档私钥、原始配置和原始账号日志；实验脚本中的固定账号仅为无生产用途的合成凭据。
+直连成功日志须出现 `10.231.1.2`，gost 中转成功日志须出现 `10.231.3.1`；来源只取程序明确连接字段。gost 为 TCP 或 UDP 代理，QUIC 协议仍发生实际握手。源码、客机载荷 hashes（31 个打包文件逐一从磁盘读回核对）、结构化原始断言见 归档目录（本地归档：`v2bx-real-protocol-2026-10-13/results.json`）。不归档私钥、原始配置和原始账号日志；实验脚本中的固定账号仅为无生产用途的合成凭据。
 
 ## 实际结果
 
@@ -30,11 +30,11 @@
 | sing | hysteria2 | 通过 | 通过 | 无适配事件；不可据此推断无错误日志 |
 | hysteria2 | hysteria2 | 通过 | 通过 | 无适配事件；不可据此推断无错误日志 |
 
-客机任务退出 0、QEMU 退出 0、无超时，耗时 226.13 秒；验收还检查全 26 案例和每例阶段断言，QEMU 退出码本身不构成通过证据。完整 [results.json](v2bx-real-protocol-2026-10-13/results.json) 与 [runner.json](v2bx-real-protocol-2026-10-13/runner.json) 可复核。
+客机任务退出 0、QEMU 退出 0、无超时，耗时 226.13 秒；验收还检查全 26 案例和每例阶段断言，QEMU 退出码本身不构成通过证据。完整 results.json（本地归档：`v2bx-real-protocol-2026-10-13/results.json`） 与 runner.json（本地归档：`v2bx-real-protocol-2026-10-13/runner.json`） 可复核。
 
 ## CrowdSec 观察和检测缺口
 
-真实程序日志投影共 36 条，其中 eligible 失败投影 5 条。按来源／内核／协议去重后，将每组一个实际失败事件与全部非 eligible 正常／fallback／中转事件送入官方 CrowdSec 1.8.1 的临时引擎：读取 36 条，产生 5 个观察告警、**0 个决策**。去重用于避开场景 1 秒 blackhole 对批量回放的影响，不声称逐条告警率；没有修改事件来源或编造缺失的认证日志。见 [replay-results.json](v2bx-real-protocol-2026-10-13/replay-results.json)。
+真实程序日志投影共 36 条，其中 eligible 失败投影 5 条。按来源／内核／协议去重后，将每组一个实际失败事件与全部非 eligible 正常／fallback／中转事件送入官方 CrowdSec 1.8.1 的临时引擎：读取 36 条，产生 5 个观察告警、**0 个决策**。去重用于避开场景 1 秒 blackhole 对批量回放的影响，不声称逐条告警率；没有修改事件来源或编造缺失的认证日志。见 replay-results.json（本地归档：`v2bx-real-protocol-2026-10-13/replay-results.json`）。
 
 真实日志暴露两处格式漏检：sing 节点标签包含嵌套方括号的面板地址；Xray VMess 明确认证失败前有 drain/read-timeout 包装。本轮只适配有数值端点及明确认证理由的固定格式，标签、UUID、目标与原始错误不会输出。两个先失败后通过的回归测试保护此行为；普通 timeout 不转换为认证失败。
 
@@ -46,7 +46,7 @@
 
 本机预检首轮 11/13，修正 TUIC 缺少 ALPN h3、sing Hysteria2 的 BBR／带宽 fixture 组合后 13/13。受控面板最初缺 `network_settings` 时触发发布版 Xray nil StreamSetting；提供显式空设置，没有修改上游程序。首个客机载荷遗漏 Python 传递依赖，在任何协议案例开始前退出；随后将项目 lib/*.py 打包。
 
-首个完整客机轮次保留原始断言：Xray 默认 HTTP 嗅探将 Host localhost 变为出站域名，无外网客机向 ::1:53 查询失败；临时探针改用数值 Host。部分中转首阶段在 gost 监听就绪前发起，增加实际 ss 监听就绪等待。诊断证据为真实 Xray `failed to open connection ... lookup localhost ... connection refused`，没有将基础设施失败算作攻击阻断。第二轮完整矩阵为 22/26，四种 QUIC 中转仍失败；单独诊断发现 gost 默认 UDP keepalive=false，在首次 WriteTo 返回后关闭虚拟连接。同一客户端 socket 在 debug 日志中反复出现不同上游端口，与 gost 二进制的 go-gost/x v0.16.0 对应源码的条件 Close 一致。源码 URL、SHA-256 与节选一并归档，见 [gost-source-check.json](v2bx-real-protocol-2026-10-13/gost-source-check.json)。实验 UDP 中转改为明确 keepalive=true、ttl=30s 后再重跑完整矩阵；这些参数不是生产容量或安全阈值。失败统计及各轮结果见 [failed-attempts.json](v2bx-real-protocol-2026-10-13/failed-attempts.json)。
+首个完整客机轮次保留原始断言：Xray 默认 HTTP 嗅探将 Host localhost 变为出站域名，无外网客机向 ::1:53 查询失败；临时探针改用数值 Host。部分中转首阶段在 gost 监听就绪前发起，增加实际 ss 监听就绪等待。诊断证据为真实 Xray `failed to open connection ... lookup localhost ... connection refused`，没有将基础设施失败算作攻击阻断。第二轮完整矩阵为 22/26，四种 QUIC 中转仍失败；单独诊断发现 gost 默认 UDP keepalive=false，在首次 WriteTo 返回后关闭虚拟连接。同一客户端 socket 在 debug 日志中反复出现不同上游端口，与 gost 二进制的 go-gost/x v0.16.0 对应源码的条件 Close 一致。源码 URL、SHA-256 与节选一并归档，见 gost-source-check.json（本地归档：`v2bx-real-protocol-2026-10-13/gost-source-check.json`）。实验 UDP 中转改为明确 keepalive=true、ttl=30s 后再重跑完整矩阵；这些参数不是生产容量或安全阈值。失败统计及各轮结果见 failed-attempts.json（本地归档：`v2bx-real-protocol-2026-10-13/failed-attempts.json`）。
 
 ## 验证与范围限制
 

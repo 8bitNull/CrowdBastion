@@ -31,4 +31,4 @@ VPS 只读检查确认 28 项资源清单有效，请求与日志钩子已进入
 
 本轮未重复向 Telegram 发送消息；已有真实发送/编辑证据见[首次验收](2026-10-20-telegram-evidence-copy.md)。实际用户回调和防火墙实际丢包仍未在本轮独立验证，不能由集合成员或 API 接受推断。
 
-机器可读结果见[本轮结果](2026-10-20-telegram-evidence-second-review-results.json)。
+机器可读结果见本轮结果（本地归档：`2026-10-20-telegram-evidence-second-review-results.json`）。

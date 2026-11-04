@@ -44,4 +44,4 @@
 
 真实公网阻断与各站点真实 IP 的逐请求关联仍标记为尚未验证；此次源站可用性检查不能替代这些验收。
 
-证据：[验证 JSON](2026-10-30-vps1-script-remediation/verification.json)、[升级日志](2026-10-30-vps1-script-remediation/web-upgrade.txt)、[重复运行日志](2026-10-30-vps1-script-remediation/web-repeat.txt)。
+证据：验证 JSON（本地归档：`2026-10-30-vps1-script-remediation/verification.json`）、升级日志（本地归档：`2026-10-30-vps1-script-remediation/web-upgrade.txt`）、重复运行日志（本地归档：`2026-10-30-vps1-script-remediation/web-repeat.txt`）。

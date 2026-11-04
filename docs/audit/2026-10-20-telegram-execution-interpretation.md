@@ -41,4 +41,4 @@
 
 本轮没有修改配置、重启服务、增删决策、发送测试流量或 TG 消息。未进行公网/CDN 全链路测试。专用回执也不能单独证明某个告警的原始触发请求或某条决策执行，关联范围仍为来源 IP 与时间窗。
 
-[脱敏证据](2026-10-20-telegram-execution-interpretation-results.json)。完整卡片和私有诊断输出保存在本地 root 受限审计目录，未写入仓库。
+脱敏证据（本地归档：`2026-10-20-telegram-execution-interpretation-results.json`）。完整卡片和私有诊断输出保存在本地 root 受限审计目录，未写入仓库。

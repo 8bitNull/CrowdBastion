@@ -35,4 +35,4 @@
 
 旧发行目录 `/opt/crowdbastion/releases/review-20261030-cycle-npm-final` 保留。修改前模块及源码清单位于 `/var/backups/crowdbastion/vps2-followup-20261030/`，文件 0600、目录 0700。本轮没有创建 git 提交。
 
-证据：[部署核验](2026-10-30-vps2-followup/deployment.json)、[最终运行检查](2026-10-30-vps2-followup/verification-final.json)、[修复后的摘要](2026-10-30-vps2-followup/health-after.txt)、[验证指引](2026-10-30-vps2-followup/verification-help.txt)、[回归测试](2026-10-30-vps2-followup/health-tests.txt)。`SHA256SUMS` 包含报告、证据与本轮改动源码摘要。
+证据：部署核验（本地归档：`2026-10-30-vps2-followup/deployment.json`）、最终运行检查（本地归档：`2026-10-30-vps2-followup/verification-final.json`）、修复后的摘要（本地归档：`2026-10-30-vps2-followup/health-after.txt`）、验证指引（本地归档：`2026-10-30-vps2-followup/verification-help.txt`）、回归测试（本地归档：`2026-10-30-vps2-followup/health-tests.txt`）。`SHA256SUMS` 包含报告、证据与本轮改动源码摘要。

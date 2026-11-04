@@ -27,7 +27,7 @@ LAPI 策略仅控制 `MODE=live` 的决策查询错误；`stream` 后台同步�
 - Bash 语法检查 **25 个文件**、Python AST 解析 **181 个文件**及 `git diff --check` 通过。
 - 21 项可选检查跳过：1 项 gost、16 项官方 CrowdSec 通知插件／回执、4 项 ISO 媒体校验。独立只读复审无未解决的实质问题。
 
-本轮统计、跳过原因和源码摘要见[结构化验证结果](2026-10-19-vps-script-hardening-results.json)。
+本轮统计、跳过原因和源码摘要见结构化验证结果（本地归档：`2026-10-19-vps-script-hardening-results.json`）。
 
 真实 Nginx/Lua 请求对照覆盖 AppSec、LAPI 的连接拒绝、超时和 HTTP 错误，新装默认拒绝均检查 HTTP 403 与业务后端零请求，并保留健康请求 HTTP 200 对照。另将原始旧模块、已有执行记录的旧模块分别升级后发出真实故障请求，验证两项策略生效。
 

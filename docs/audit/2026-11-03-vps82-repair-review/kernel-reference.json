@@ -1,9 +1,0 @@
-{
-  "at": "2026-11-03T12:07:26.443902+00:00",
-  "upstream_source": "https://raw.githubusercontent.com/torvalds/linux/v6.18/net/core/sysctl_net_core.c",
-  "source_sha256": "a57619f36a0b737f49b3ebb9535b51b2517a72a558cd582ec116156b7591d8c6",
-  "definition": "static int netdev_budget_usecs_min = 2 * USEC_PER_SEC / HZ;",
-  "host_config_hz": 250,
-  "upstream_minimum_for_host_hz": 8000,
-  "boundary": "Upstream v6.18 reference, not a byte-for-byte verification of the custom XanMod source; consistent with host rejection and live8000."
-}

@@ -50,4 +50,4 @@ PYTHONPATH=tests:lib .venv/bin/python -m unittest -v \
 
 本轮以 root 使用 Debian 12 amd64、本机真实 Nginx/Lua 与官方程序。Telegram HTTP/API 回包由本地测试服务模拟，没有向真实用户发送通知；gost 为本机 UDP 转发，并非公网或内核封禁验收。ISO 测试读取生成介质和内容，未启动虚拟机。结果不替代真实 VPS 冷启动、公网 TCP/UDP 或攻击负载测试。
 
-证据：[本轮目录](2026-11-04-specialist-dependency-validation/)。原 45 项补跑见 [上一轮](2026-11-03-official-web-archive-validation.md)。交付核验完成：17 个文档/证据/依赖清单文件（另计 manifest 本身），1751 个其余原文件保持基线哈希，205 个既有源码/测试/规则文件保持原样，新清单使核对文件总数为 206。未提交、推送或部署。
+证据：本轮目录（本地归档：`2026-11-04-specialist-dependency-validation/`）。原 45 项补跑见 [上一轮](2026-11-03-official-web-archive-validation.md)。交付核验完成：17 个文档/证据/依赖清单文件（另计 manifest 本身），1751 个其余原文件保持基线哈希，205 个既有源码/测试/规则文件保持原样，新清单使核对文件总数为 206。未提交、推送或部署。

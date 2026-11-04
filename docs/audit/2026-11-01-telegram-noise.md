@@ -1,6 +1,6 @@
 # 2026-11-01 Telegram 通知降频及 VPS 验收
 
-用户批准“需要关注首条及时提醒、后续每小时合并；普通每六小时汇总”。本轮已实施并更新 VPS；未提交、未推送。设计见[降频设计](../superpowers/specs/2026-11-01-telegram-noise-design.md)，步骤见[执行计划](../superpowers/plans/2026-11-01-telegram-noise.md)。
+用户批准“需要关注首条及时提醒、后续每小时合并；普通每六小时汇总”。本轮已实施并更新 VPS；未提交、未推送。设计见降频设计（本地归档：`../superpowers/specs/2026-11-01-telegram-noise-design.md`），步骤见执行计划（本地归档：`../superpowers/plans/2026-11-01-telegram-noise.md`）。
 
 ## 结果
 
@@ -31,7 +31,7 @@
 
 全仓 `PYTHONPATH=tests:lib PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests`：**1415项，1326通过、89条件跳过、0失败，479.018秒，exit 0**。控制器计时479.306秒；168个Python/Bash源码哈希前后稳定，另行核对Lua未变，完整169文件源码清单见静态检查。150个Python AST、18个Bash语法及diff检查通过。
 
-本轮采用作者顺序自查，没有独立reviewer。保留最初导入fixture类导致重复收集的31项RED记录，修正harness后重跑9项、仍7个预期失败。首次VPS探针对入口shebang假设错误，暂存又把目录传给普通文件校验器，两次均在生产切换前拒绝；修正编排后通过，空JSON及失败脚本保留。详见[自查说明](2026-11-01-telegram-noise/review-notes.txt)。
+本轮采用作者顺序自查，没有独立reviewer。保留最初导入fixture类导致重复收集的31项RED记录，修正harness后重跑9项、仍7个预期失败。首次VPS探针对入口shebang假设错误，暂存又把目录传给普通文件校验器，两次均在生产切换前拒绝；修正编排后通过，空JSON及失败脚本保留。详见自查说明（本地归档：`2026-11-01-telegram-noise/review-notes.txt`）。
 
 ## VPS 发布
 
@@ -57,4 +57,4 @@
 
 **不恢复活SQLite、已发送标记、offset或审计；备份内consistent数据库只供审计和另行评估灾难恢复。** 正常回退不动防火墙、路由和其他服务。前置失败留下的旧暂存目录未被任何入口选用，可在确认不再需要证据后另行清理。
 
-本轮日志、阶段输出、脚本和哈希清单在[证据目录](2026-11-01-telegram-noise/)。历史报告和封存保留，不以本轮结果改写历史验收范围。
+本轮日志、阶段输出、脚本和哈希清单在证据目录（本地归档：`2026-11-01-telegram-noise/`）。历史报告和封存保留，不以本轮结果改写历史验收范围。

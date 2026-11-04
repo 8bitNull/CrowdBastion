@@ -1,1 +1,0 @@
-{"rollback_check": {"exit": 0, "data": {"check_only": true, "restores": ["original source directory", "original disabled Hub cron", "daily entry absence", "current pointer absence"], "preserves": ["configuration", "live databases", "firewall", "services", "immutable release and staged maintenance artifacts"]}}, "rollback_ast": true}

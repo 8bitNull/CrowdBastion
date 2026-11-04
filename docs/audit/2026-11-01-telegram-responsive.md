@@ -19,7 +19,7 @@
 - 第三轮首次全仓出现旧启动测试失败：旧断言禁止所有线程，和新增健康线程冲突。单项 RED 确认后，将断言改为只允许 `health-views` 线程，继续确认不启动自动告警线程、不主动发送上线消息。相关 45 项通过。保留首次中断日志和原因，没有把中断算成完整验收。
 - 最终完整验收：**1406 项，1317 通过、89 条件跳过、0 失败**，unittest 用时 452.675 秒，控制器用时 452.974 秒，exit 0。验证前后 168 个源码文件哈希相同；149 个 Python 文件语法、18 个 Bash 文件语法和 `git diff --check` 通过。
 
-产品代码相对上一轮部署仅修改 `lib/crowdsec_bot.py`；另新增 11 项响应回归，并精确更新旧启动测试。用户说明、设计和执行计划同步更新。逐段差异见 [reviewed-diff.txt](2026-11-01-telegram-responsive/reviewed-diff.txt)，源码验收集合见 [source-validated.json](2026-11-01-telegram-responsive/source-validated.json)。测试中的故障、1970 时间和网络错误来自隔离场景，不是 VPS 当前告警。
+产品代码相对上一轮部署仅修改 `lib/crowdsec_bot.py`；另新增 11 项响应回归，并精确更新旧启动测试。用户说明、设计和执行计划同步更新。逐段差异见 reviewed-diff.txt（本地归档：`2026-11-01-telegram-responsive/reviewed-diff.txt`），源码验收集合见 source-validated.json（本地归档：`2026-11-01-telegram-responsive/source-validated.json`）。测试中的故障、1970 时间和网络错误来自隔离场景，不是 VPS 当前告警。
 
 ## VPS 更新与失败记录
 
@@ -70,4 +70,4 @@
 
 首次锁拒绝已实际验证日常入口恢复。正常更新中的文件／服务恢复由既有产品路径负责；人工回滚指引不等于生产回退演练，也不承诺 SIGKILL、断电或主机故障下完整事务恢复。
 
-设计和执行记录见 [设计](../superpowers/specs/2026-11-01-telegram-responsive-design.md)、[计划](../superpowers/plans/2026-11-01-telegram-responsive.md)。完整证据以同名私有目录内的 `manifest.json` 为本地最终索引。远端归档中的 `bundle-manifest.json` 对应打包时的证据快照；本地最终清单还覆盖之后生成的 `remote-seal.json` 收据。收据不会包含在它自身引用的归档里。此前现场记录和验收边界见 [上一轮现场修复](2026-11-01-vps179-repair.md)。
+设计和执行记录见 设计（本地归档：`../superpowers/specs/2026-11-01-telegram-responsive-design.md`）、计划（本地归档：`../superpowers/plans/2026-11-01-telegram-responsive.md`）。完整证据以同名私有目录内的 `manifest.json` 为本地最终索引。远端归档中的 `bundle-manifest.json` 对应打包时的证据快照；本地最终清单还覆盖之后生成的 `remote-seal.json` 收据。收据不会包含在它自身引用的归档里。此前现场记录和验收边界见 [上一轮现场修复](2026-11-01-vps179-repair.md)。

@@ -23,7 +23,7 @@
 | 语法 | 26 个 Bash、194 个 Python 文件通过 |
 | ShellCheck 0.11.0 | 无警告或错误；3 条跨独立子 shell 局部变量的既有提示，经审查确认误报 |
 
-其余未运行的可选检查为 1 项官方 gost 二进制及 4 项 ISO 媒体验证。文档相对链接、差异空白及凭据模式检查通过。测试日志摘要、代码与测试 SHA256 见[结构化结果](2026-10-20-repository-consolidation-results.json)。
+其余未运行的可选检查为 1 项官方 gost 二进制及 4 项 ISO 媒体验证。文档相对链接、差异空白及凭据模式检查通过。测试日志摘要、代码与测试 SHA256 见结构化结果（本地归档：`2026-10-20-repository-consolidation-results.json`）。
 
 复现主回归：
 

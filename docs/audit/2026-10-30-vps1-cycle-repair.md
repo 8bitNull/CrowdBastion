@@ -46,4 +46,4 @@
 
 防火墙人工回退入口为 `python3 /var/backups/crowdbastion/vps1-cycle-20261030/migrate.py manual-rollback`，带配置漂移检查及切换保护。该入口经过语法检查，但提交后人工回退未执行；回退会返回已知存在续封缺陷的旧后端，不能作为常规维护步骤。原完整备份仍位于 `/var/backups/crowdsec-1key/remediation-20261030-ab0af70/`。
 
-可审阅证据： [最终验证](2026-10-30-vps1-cycle-repair/verification-final.json)、[故障复现](2026-10-30-vps1-cycle-repair/flow-before.json)、[修复后流量测试](2026-10-30-vps1-cycle-repair/flow-after.json)、[隔离重载测试](2026-10-30-vps1-cycle-repair/isolated-reload.json)、[真实 IP 核验](2026-10-30-vps1-cycle-repair/real-ip-live-verification-final.txt)、[回归测试](2026-10-30-vps1-cycle-repair/reload-regressions-final.txt)。目录 `SHA256SUMS` 包含证据、报告和本轮源码摘要。
+可审阅证据： 最终验证（本地归档：`2026-10-30-vps1-cycle-repair/verification-final.json`）、故障复现（本地归档：`2026-10-30-vps1-cycle-repair/flow-before.json`）、修复后流量测试（本地归档：`2026-10-30-vps1-cycle-repair/flow-after.json`）、隔离重载测试（本地归档：`2026-10-30-vps1-cycle-repair/isolated-reload.json`）、真实 IP 核验（本地归档：`2026-10-30-vps1-cycle-repair/real-ip-live-verification-final.txt`）、回归测试（本地归档：`2026-10-30-vps1-cycle-repair/reload-regressions-final.txt`）。目录 `SHA256SUMS` 包含证据、报告和本轮源码摘要。

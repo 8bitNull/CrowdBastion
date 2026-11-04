@@ -2,7 +2,7 @@
 
 用户要求验证实际拦截并排查疑似漏防。本轮在已授权 VPS 上运行真实 Bouncer、短时 LAPI 决策和连接对照，确认本机 INPUT 路径的 IP 封禁在所测案例中生效。公网线路、CDN 后的网站请求、攻击检测覆盖仍有独立验证项。
 
-实测时间：2026-10-19 11:12:49–11:13:20 UTC。原始分项结果、决策 ID、计数与配置投影见 [JSON 证据](2026-10-19-bouncer-enforcement-evidence.json)。此前的运行状态验收见 [只读报告](2026-10-19-vps-readonly-acceptance.md)。
+实测时间：2026-10-19 11:12:49–11:13:20 UTC。原始分项结果、决策 ID、计数与配置投影见 JSON 证据（本地归档：`2026-10-19-bouncer-enforcement-evidence.json`）。此前的运行状态验收见 [只读报告](2026-10-19-vps-readonly-acceptance.md)。
 
 后续 [第二轮复审](2026-10-19-bouncer-rereview.md) 补查错误日志，发现实际 AppSec 失败及关联的回源响应。下文记录本轮当时的结果；网站防护判断应同时参考复审。
 

@@ -52,7 +52,7 @@ Shadowsocks 使用 chacha20-ietf-poly1305；它的原生 UDP 需要单独的 gos
 
 新增探针合同测试 5/5、现有日志适配测试 24/24 通过；严格验收断言 8/8、实际官方引擎回放通过，独立审查核对探针、同步、监听地址族归因与证据。这轮只新增实验脚本与文档，未重复整仓测试，上一阶段整仓结果不冒充本轮重新运行。
 
-证据在 [归档目录](v2bx-mixed-ingress-2026-10-13/manifest.json)。保留脚本、实际固定投影、原始与组合结果、构建来源、测试输出、失败摘要及哈希；不含原始业务日志、运行配置、SQLite、私钥、二进制或磁盘镜像。fixture 中只有公开的合成实验账号。
+证据在 归档目录（本地归档：`v2bx-mixed-ingress-2026-10-13/manifest.json`）。保留脚本、实际固定投影、原始与组合结果、构建来源、测试输出、失败摘要及哈希；不含原始业务日志、运行配置、SQLite、私钥、二进制或磁盘镜像。fixture 中只有公开的合成实验账号。
 
 复现需要前几轮准备的 QEMU 内核／镜像与工具、相同实验构建和官方客户端。先执行归档 `package.py` 与 `runner.py`，另执行 `hy2-ipv4-package.py` 生成独立对照，运行该目录生成的 runner；随后 `combine.py`、`analyze.py` 和仓库 `tests/verify_v2bx_real_observation.py`。宿主分析与回放需设置包含 PyYAML 的 `PYTHONPATH`；这些脚本引用实验目录，不是生产安装器。
 

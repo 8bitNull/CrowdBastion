@@ -8,8 +8,8 @@
 
 发现并修复两项轻微问题：
 
-1. 完整 64 项 manifest、最终配置、现场 unshare 默认值输出只保存在远端，离线独立重算依据不足。现已补齐 [manifest.json](2026-11-03-vps216-tcp-review/manifest.json)、[final-sysctl.conf](2026-11-03-vps216-tcp-review/final-sysctl.conf)、[local-kernel-defaults.txt](2026-11-03-vps216-tcp-review/local-kernel-defaults.txt) 和 [状态摘要](2026-11-03-vps216-tcp-review/inventory-summary.json)。manifest 中 staged 是不可变的制备状态，状态摘要另证实事务已有 committed 标记。
-2. 归档回退测试硬编码读取 `/tmp/crowdbastion216-retune/rollback.py`，临时目录清空后不能复现，也可能读取与归档不同的版本。已改为读取同目录 rollback.py，加入生产 base/proc 路径唯一匹配及完整重定向检查。修复位置：[check-rollback.py](2026-11-03-vps216-tcp-retune/scripts/check-rollback.py)。
+1. 完整 64 项 manifest、最终配置、现场 unshare 默认值输出只保存在远端，离线独立重算依据不足。现已补齐 manifest.json（本地归档：`2026-11-03-vps216-tcp-review/manifest.json`）、final-sysctl.conf（本地归档：`2026-11-03-vps216-tcp-review/final-sysctl.conf`）、local-kernel-defaults.txt（本地归档：`2026-11-03-vps216-tcp-review/local-kernel-defaults.txt`） 和 状态摘要（本地归档：`2026-11-03-vps216-tcp-review/inventory-summary.json`）。manifest 中 staged 是不可变的制备状态，状态摘要另证实事务已有 committed 标记。
+2. 归档回退测试硬编码读取 `/tmp/crowdbastion216-retune/rollback.py`，临时目录清空后不能复现，也可能读取与归档不同的版本。已改为读取同目录 rollback.py，加入生产 base/proc 路径唯一匹配及完整重定向检查。修复位置：check-rollback.py（本地归档：`2026-11-03-vps216-tcp-retune/scripts/check-rollback.py`）。
 
 修复后在原目录运行四项故障检查通过；仅复制 check-rollback.py 和 rollback.py 到一个全新目录、从 `/` 工作目录执行，也全部通过。覆盖单项缺失时继续恢复其他参数、原配置恢复/新增文件移除、重试完成部分回退、保留外部漂移值。测试只操作本地临时夹具。
 
@@ -19,11 +19,11 @@
 
 还核实了仅解析配置文本不能覆盖的 forwarding 副作用：Linux v6.18 [devinet.c](https://github.com/torvalds/linux/blob/v6.18/net/ipv4/devinet.c#L2423) 开启转发会改变 all.accept_redirects、default.forwarding 和已有接口 forwarding，但这些变化与当前目标相容；ip_forward 和 conf.all.forwarding 指向同一字段。
 
-在新子 netns 中显式先设 IPv4 ip_forward=0，再按实际字典顺序重放 16 项 per-net IPv4/IPv6 接口与转发设置，结果全部匹配目标，mismatches 为空。没有写 tcp_mem 或其他全局参数。此为隔离的顺序/副作用测试，不冒称宿主机冷启动或完整网络初始化演练。[结果](2026-11-03-vps216-tcp-review/isolated-forwarding-replay.json)、[检查脚本](2026-11-03-vps216-tcp-review/inspect-review.py)。
+在新子 netns 中显式先设 IPv4 ip_forward=0，再按实际字典顺序重放 16 项 per-net IPv4/IPv6 接口与转发设置，结果全部匹配目标，mismatches 为空。没有写 tcp_mem 或其他全局参数。此为隔离的顺序/副作用测试，不冒称宿主机冷启动或完整网络初始化演练。结果（本地归档：`2026-11-03-vps216-tcp-review/isolated-forwarding-replay.json`）、检查脚本（本地归档：`2026-11-03-vps216-tcp-review/inspect-review.py`）。
 
 ## 新的现场复验
 
-[verification.json](2026-11-03-vps216-tcp-review/verification.json) 和 [external.json](2026-11-03-vps216-tcp-review/external.json) 为本轮实际新查询：
+verification.json（本地归档：`2026-11-03-vps216-tcp-review/verification.json`） 和 external.json（本地归档：`2026-11-03-vps216-tcp-review/external.json`） 为本轮实际新查询：
 
 - 64 项运行值、持久文件摘要、开机配置解析、唯一赋值均通过。三个维护回退定时器均 inactive。
 - API 连续三次为 0.536、0.462、0.462 秒；适用封禁网络 15,350，内核网络 15,350，遗漏 0。

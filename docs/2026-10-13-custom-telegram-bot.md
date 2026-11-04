@@ -126,4 +126,4 @@ PATH="$PWD/.venv/bin:$PATH" python3 tests/verify_custom_bot.py /path/to/crowdsec
 
 机器人专项 **26/26 通过，无跳过**；独立复审发现的卸载清理、白名单错误反馈、只读命令错误反馈、同名 vendor/transient 服务接管问题均已补齐回归并关闭。Bash/Python 语法、ShellCheck 和 diff-check 通过。
 
-最终完整回归 **607 项：603 通过、4 项可选跳过，无失败**。含官方插件的既有 TG 测试及全仓其他测试；不把跳过项当作已经验证。运行输出及原脚本失败复现见 [验收记录](audit/2026-10-13-custom-telegram-bot-results.json)。
+最终完整回归 **607 项：603 通过、4 项可选跳过，无失败**。含官方插件的既有 TG 测试及全仓其他测试；不把跳过项当作已经验证。运行输出及原脚本失败复现见 验收记录（本地归档：`audit/2026-10-13-custom-telegram-bot-results.json`）。

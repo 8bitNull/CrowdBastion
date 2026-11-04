@@ -2,7 +2,7 @@
 
 已在线停用三条重复更新 cron，并发布 AppSec 故障拒绝分支的 HTTP 状态修正。当前 AppSec 故障策略仍为 `passthrough`；生产突发超时的原因及网站/CDN 的独立来源验收仍待补齐。
 
-本轮操作基于用户对[后续顺序](2026-10-19-appsec-followup.md)的确认。最后线上复查时间为 **12:06:53 UTC**。完整脱敏数据见[整改证据](2026-10-19-remediation-evidence.json)。
+本轮操作基于用户对[后续顺序](2026-10-19-appsec-followup.md)的确认。最后线上复查时间为 **12:06:53 UTC**。完整脱敏数据见整改证据（本地归档：`2026-10-19-remediation-evidence.json`）。
 
 ## 线上改动
 

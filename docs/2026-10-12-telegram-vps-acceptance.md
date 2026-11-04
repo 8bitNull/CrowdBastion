@@ -50,6 +50,6 @@ python3 tests/verify_web.py /path/to/crowdsec-v1.8.1 \
   /path/to/crowdsec-openresty-bouncer-v1.2.3.tgz /path/to/lua-resty-http-v0.17.1.tgz
 ```
 
-以上独立命令覆盖通知与 Web 拦截；同请求关联还需本轮临时驱动的 TG 接收器配置。完整运行输出、卡片及验收摘要见 [原始记录](audit/2026-10-12-telegram-vps-results.json)。
+以上独立命令覆盖通知与 Web 拦截；同请求关联还需本轮临时驱动的 TG 接收器配置。完整运行输出、卡片及验收摘要见 原始记录（本地归档：`audit/2026-10-12-telegram-vps-results.json`）。
 
 本轮不证明真实 Telegram 公网/代理连通、目标 VPS 包管理与 systemd 安装、未知按钮机器人运行情况、生产 Firewall/Docker/IPv6 链路或 24–48 小时运行稳定性。后续到目标 VPS 加载模板，再用真实回执和另一台设备的请求完成生产验收。

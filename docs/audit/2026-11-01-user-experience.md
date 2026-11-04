@@ -31,13 +31,13 @@
 
 新增 UX 专项 21 项；最终交互及接线组合 170 项通过，覆盖生成后复用配置路径、私有导出、服务启动后只复查一次、取消不重跑、精确保留 cron、历史验收写入及写入失败保留本次结论。
 
-全仓 `unittest discover` 共 1355 项，零失败，89 项按条件跳过，用时 424.054 秒。最后追加的长行脱敏用例及修复另外由最终 170 项交互及接线组合覆盖，全部通过。完整输出见[全仓回归](2026-11-01-user-experience/full.log)。
+全仓 `unittest discover` 共 1355 项，零失败，89 项按条件跳过，用时 424.054 秒。最后追加的长行脱敏用例及修复另外由最终 170 项交互及接线组合覆盖，全部通过。完整输出见全仓回归（本地归档：`2026-11-01-user-experience/full.log`）。
 
 Bash 语法检查 18 个文件、Python 无缓存编译检查 146 个文件通过；本轮相关 8 个 Bash 文件的 ShellCheck warning 级检查通过，`git diff --check` 通过。扩展到全部 `lib/*.sh` 时，未改动的 `lib/notify.sh:187` 有既存 SC2120 参数传递警告，本轮未改该模块。完整 `--help` 实际运行并核对新增参数；相关文档的本地链接目标检查通过。
 
 ## 证据
 
-[交互及接线回归](2026-11-01-user-experience/interaction.log)、[静态检查与帮助](2026-11-01-user-experience/checks.log)、[基线](2026-11-01-user-experience/baseline.log)。保留[首轮交互失败](2026-11-01-user-experience/first-interaction.log)、[链接／IPv6 失败](2026-11-01-user-experience/edge-red.log)、[规则恢复复查失败](2026-11-01-user-experience/rule-red.log)、[快捷菜单漏锁失败](2026-11-01-user-experience/lock-red.log)和[长行脱敏超时](2026-11-01-user-experience/long-line-red.log)，用于对照修复后的结果。
+交互及接线回归（本地归档：`2026-11-01-user-experience/interaction.log`）、静态检查与帮助（本地归档：`2026-11-01-user-experience/checks.log`）、基线（本地归档：`2026-11-01-user-experience/baseline.log`）。保留首轮交互失败（本地归档：`2026-11-01-user-experience/first-interaction.log`）、链接／IPv6 失败（本地归档：`2026-11-01-user-experience/edge-red.log`）、规则恢复复查失败（本地归档：`2026-11-01-user-experience/rule-red.log`）、快捷菜单漏锁失败（本地归档：`2026-11-01-user-experience/lock-red.log`）和长行脱敏超时（本地归档：`2026-11-01-user-experience/long-line-red.log`），用于对照修复后的结果。
 
 ## 复查与范围
 

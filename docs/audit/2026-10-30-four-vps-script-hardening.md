@@ -44,4 +44,4 @@ PYTHONPATH="$PWD/lib:$PWD/tests:$PWD/.venv/lib/python3.11/site-packages" \
 
 本机流量验收不会自动写入公网攻击阻断通过记录；公网 CDN、Docker 实际业务端口和 V2bX 协议仍需按真实路径验收。旧开机任务只做定位，具体停用与规则归属仍需人工核对。
 
-证据：[结果](2026-10-30-four-vps-script-hardening/results.json)、[完整回归](2026-10-30-four-vps-script-hardening/full-regression.txt)、[最终针对性回归](2026-10-30-four-vps-script-hardening/focused-regression.txt)、[摘要清单](2026-10-30-four-vps-script-hardening/SHA256SUMS)。
+证据：结果（本地归档：`2026-10-30-four-vps-script-hardening/results.json`）、完整回归（本地归档：`2026-10-30-four-vps-script-hardening/full-regression.txt`）、最终针对性回归（本地归档：`2026-10-30-four-vps-script-hardening/focused-regression.txt`）、摘要清单（本地归档：`2026-10-30-four-vps-script-hardening/SHA256SUMS`）。

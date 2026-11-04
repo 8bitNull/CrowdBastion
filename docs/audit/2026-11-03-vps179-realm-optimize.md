@@ -80,10 +80,10 @@ python3 /var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z/rollback.py 
 
 ## 本地证据
 
-- [最终现场核验](2026-11-03-vps179-realm-optimize/final-result.json)
-- [第二轮实际封禁验收](2026-11-03-vps179-realm-optimize/enforcement-final.json)
-- [解析验证](2026-11-03-vps179-realm-optimize/parser-verification.json)
-- [失败路径检查](2026-11-03-vps179-realm-optimize/failure-path-tests.txt)
-- [执行清单](../superpowers/plans/2026-11-03-vps179-realm-optimize.md)
+- 最终现场核验（本地归档：`2026-11-03-vps179-realm-optimize/final-result.json`）
+- 第二轮实际封禁验收（本地归档：`2026-11-03-vps179-realm-optimize/enforcement-final.json`）
+- 解析验证（本地归档：`2026-11-03-vps179-realm-optimize/parser-verification.json`）
+- 失败路径检查（本地归档：`2026-11-03-vps179-realm-optimize/failure-path-tests.txt`）
+- 执行清单（本地归档：`../superpowers/plans/2026-11-03-vps179-realm-optimize.md`）
 
 现场新日志出现后，可用 `cscli metrics show` 查看 `realm-forwardx` journal 源及 `local/realm-forwardx-observation` parser 的读取／解析计数；这类观察事件不会自动生成封禁。基础封禁同步继续使用 `crowdbastion --firewall-check` 检查。

@@ -31,4 +31,4 @@
 
 集合成员状态不能证明实际丢包；本轮没有独立验证生产防火墙丢包，也未将“未找到 Web 回执”解释为漏防。真实 Nginx/Lua 集成测试运行于本地隔离环境，不替代生产防火墙验证。
 
-机器可读结果见[本轮结果](2026-10-20-telegram-evidence-third-review-results.json)。
+机器可读结果见本轮结果（本地归档：`2026-10-20-telegram-evidence-third-review-results.json`）。

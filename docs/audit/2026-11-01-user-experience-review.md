@@ -22,10 +22,10 @@
 
 七个新增测试方法先在旧实现上失败，再在修复后通过。子场景使用合成凭据，避免因测试值本身含有 `secret` 等敏感关键词而产生假通过。目录读取错误通过向 `os.scandir` 注入 `PermissionError` 复现，因为以 root 运行时 chmod 不能可靠模拟读取失败；该检查验证真实遍历器的错误处理行为。
 
-- 第一轮：[失败](2026-11-01-user-experience-review/round1-red.txt)、[通过](2026-11-01-user-experience-review/round1-green.txt)。
-- 第二轮：[失败](2026-11-01-user-experience-review/round2-red.txt)、[通过](2026-11-01-user-experience-review/round2-green.txt)。
-- 第三轮：[失败](2026-11-01-user-experience-review/round3-red.txt)、[通过](2026-11-01-user-experience-review/round3-green.txt)。
-- 第四轮：[失败](2026-11-01-user-experience-review/round4-red.txt)、[通过](2026-11-01-user-experience-review/round4-green.txt)。
+- 第一轮：失败（本地归档：`2026-11-01-user-experience-review/round1-red.txt`）、通过（本地归档：`2026-11-01-user-experience-review/round1-green.txt`）。
+- 第二轮：失败（本地归档：`2026-11-01-user-experience-review/round2-red.txt`）、通过（本地归档：`2026-11-01-user-experience-review/round2-green.txt`）。
+- 第三轮：失败（本地归档：`2026-11-01-user-experience-review/round3-red.txt`）、通过（本地归档：`2026-11-01-user-experience-review/round3-green.txt`）。
+- 第四轮：失败（本地归档：`2026-11-01-user-experience-review/round4-red.txt`）、通过（本地归档：`2026-11-01-user-experience-review/round4-green.txt`）。
 
 证据使用 `.txt` 保存，避免仓库全局 `*.log` 忽略规则遗漏新增验收文件。
 
@@ -33,12 +33,12 @@
 
 | 检查 | 结果 | 证据 |
 | --- | --- | --- |
-| 最终全仓回归 | 1363 项：1274 通过、89 条件跳过、零失败；431.007 秒 | [完整输出](2026-11-01-user-experience-review/full.txt) |
-| 最终交互与接线组合 | 230 项全部通过；70.910 秒 | [完整输出](2026-11-01-user-experience-review/interaction.txt) |
-| 最终 UX 专项 | 28 项全部通过；2.761 秒，包含本轮新增的七个测试方法 | [完整输出](2026-11-01-user-experience-review/ux.txt) |
-| 隔离命令入口冒烟 | `main --sync-runtime` 修复、拒绝无关任务、取消三条路径通过；均保留 cron 原文 | [记录](2026-11-01-user-experience-review/cli-smoke.txt) |
-| 语法、编译和 ShellCheck | 18 个 Bash 语法、146 个 Python 无缓存编译、相关 8 个 Bash 的 warning 级 ShellCheck 通过 | [检查摘要](2026-11-01-user-experience-review/checks.txt) |
-| 帮助、文档和改动检查 | 完整帮助含四个 UX 参数；相关文档本地目标和最终 `git diff --check` 通过 | [帮助](2026-11-01-user-experience-review/help.txt)、[检查摘要](2026-11-01-user-experience-review/checks.txt) |
+| 最终全仓回归 | 1363 项：1274 通过、89 条件跳过、零失败；431.007 秒 | 完整输出（本地归档：`2026-11-01-user-experience-review/full.txt`） |
+| 最终交互与接线组合 | 230 项全部通过；70.910 秒 | 完整输出（本地归档：`2026-11-01-user-experience-review/interaction.txt`） |
+| 最终 UX 专项 | 28 项全部通过；2.761 秒，包含本轮新增的七个测试方法 | 完整输出（本地归档：`2026-11-01-user-experience-review/ux.txt`） |
+| 隔离命令入口冒烟 | `main --sync-runtime` 修复、拒绝无关任务、取消三条路径通过；均保留 cron 原文 | 记录（本地归档：`2026-11-01-user-experience-review/cli-smoke.txt`） |
+| 语法、编译和 ShellCheck | 18 个 Bash 语法、146 个 Python 无缓存编译、相关 8 个 Bash 的 warning 级 ShellCheck 通过 | 检查摘要（本地归档：`2026-11-01-user-experience-review/checks.txt`） |
+| 帮助、文档和改动检查 | 完整帮助含四个 UX 参数；相关文档本地目标和最终 `git diff --check` 通过 | 帮助（本地归档：`2026-11-01-user-experience-review/help.txt`）、检查摘要（本地归档：`2026-11-01-user-experience-review/checks.txt`） |
 
 跳过项取决于官方程序、真实 Nginx/Lua 和客机介质等可选条件。日志中的 Telegram 429/5xx、队列失败、迁移回退和异常状态是预期失败场景的输出，不代表操作了生产服务或发送了真实消息。所有测试结果以对应日志的 unittest 汇总为准。
 

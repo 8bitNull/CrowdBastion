@@ -134,7 +134,7 @@ sudo python3 tests/verify_relay_network.py \
 
 返回 `0` 表示请求的检查通过、`1` 表示验收失败、`2` 表示依赖/隔离不支持。受限环境可明确使用 `--forward-only`：仅在 loopback 运行 gost/realm 转发，不初始化防火墙，结果不代表封禁通过。验收进程回收自己启动的进程；完整模式退出后私有命名空间与规则随之释放。
 
-2026-10-12 的隔离客体验收中，以上完整矩阵 **12/12 通过**；[原始报告](audit/2026-10-12-relay-network-results.json)和[验证环境与边界](verification.md#中转路径与隔离网络验收)已保存。它验证 nftables Bouncer 的 INPUT/FORWARD 执行，不替代目标节点部署验收或低配硬件性能测量。
+2026-10-12 的隔离客体验收中，以上完整矩阵 **12/12 通过**；原始报告（本地归档：`audit/2026-10-12-relay-network-results.json`）和[验证环境与边界](verification.md#中转路径与隔离网络验收)已保存。它验证 nftables Bouncer 的 INPUT/FORWARD 执行，不替代目标节点部署验收或低配硬件性能测量。
 
 ## 性能测量
 

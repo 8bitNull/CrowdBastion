@@ -1,9 +1,0 @@
-Bash syntax: 18 files passed
-Python compile without writing cache: 146 files passed
-ShellCheck warning level: 8 related files passed
-CLI help: all four new options present
-Local Markdown link targets: 94 passed
-git diff --check: passed
-Final UX helper/test syntax: passed
-Final local Markdown link targets: 103 passed
-Final git diff --check: passed

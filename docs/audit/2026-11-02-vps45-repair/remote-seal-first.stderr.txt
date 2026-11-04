@@ -1,3 +1,0 @@
-Traceback (most recent call last):
-  File "<stdin>", line 8, in <module>
-AssertionError: ('/var/backups/crowdbastion/vps45-repair-20261102T024205Z/source-directory.before/lib/__pycache__', '0o40755')

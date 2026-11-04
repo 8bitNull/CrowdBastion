@@ -70,11 +70,11 @@
 
 旧报告和本地证据保持原样；服务器旧 manifest 保留为历史快照，其中仅 `rollback.py` 因本轮有意更新而与旧哈希不同。新增 `review-20261103/review-manifest.json` 记录新工具、旧工具副本、部署和最终核验的哈希，不覆盖原清单。
 
-- [工具部署记录](2026-11-03-vps179-realm-optimize-review/helper-deployment.json)
-- [真实 journal 机制验证](2026-11-03-vps179-realm-optimize-review/journal-proof.json)
-- [实际 Bouncer 复验及清理](2026-11-03-vps179-realm-optimize-review/enforcement.json)
-- [最终现场核验](2026-11-03-vps179-realm-optimize-review/final-result.json)
-- [回退工具及测试](2026-11-03-vps179-realm-optimize-review/scripts/rollback.py)
-- [独立复审记录](2026-11-03-vps179-realm-optimize-review/independent-review.json)
+- 工具部署记录（本地归档：`2026-11-03-vps179-realm-optimize-review/helper-deployment.json`）
+- 真实 journal 机制验证（本地归档：`2026-11-03-vps179-realm-optimize-review/journal-proof.json`）
+- 实际 Bouncer 复验及清理（本地归档：`2026-11-03-vps179-realm-optimize-review/enforcement.json`）
+- 最终现场核验（本地归档：`2026-11-03-vps179-realm-optimize-review/final-result.json`）
+- 回退工具及测试（本地归档：`2026-11-03-vps179-realm-optimize-review/scripts/rollback.py`）
+- 独立复审记录（本地归档：`2026-11-03-vps179-realm-optimize-review/independent-review.json`）
 
 本轮未提交或推送已有工作树，也未修改其他 VPS 或项目产品代码。

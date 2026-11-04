@@ -1,5 +1,0 @@
-首次部署失败记录（根据工具返回整理，非原始会话逐字日志）：
-
-执行 /tmp/crowdbastion-responsive-deploy.py，SSH exit 1，stdout 0 字节，stderr 为 AssertionError: product updater returned failure。
-
-当时部署脚本保存在 deployment-first-rejected-script.txt。空 stdout 原样留在 vps-deployment-rejected-empty.json，不能当作有效 JSON 或验收结果。后续 vps-deployment-rejected-probe.json 核对产品因重复取共享锁而拒绝、root/日常包装器恢复且 bot 仍为前一版本。最终成功结果单独保存在 vps-deployment.json。

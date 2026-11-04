@@ -34,13 +34,13 @@
 
 恢复客机读取实际原生 unit，确认 `ExecStartPre=/usr/bin/crowdsec -c /etc/crowdsec/config.yaml -t -error`，`TimeoutStartUSec=1min 30s`。本次原默认启动又在约 90 秒后终止启动前检查。随后停止核心与 Bouncer，单独执行同一检查，43.73 秒完成、退出码 0。
 
-只在诊断客机副本写入 `TimeoutStartSec=300` 的 unit drop-in 后，核心启动 94.79 秒完成；Bouncer 启动、真实 LAPI 决策添加/删除及 nftables 同步全部通过，最终两个服务均 active、Result=success。五项对照案例及完成标记齐全，QEMU 正常退出 0，527.71 秒，无超时。详见 [对照结果](2026-10-12-arm64-recovery-results.json)。
+只在诊断客机副本写入 `TimeoutStartSec=300` 的 unit drop-in 后，核心启动 94.79 秒完成；Bouncer 启动、真实 LAPI 决策添加/删除及 nftables 同步全部通过，最终两个服务均 active、Result=success。五项对照案例及完成标记齐全，QEMU 正常退出 0，527.71 秒，无超时。详见 对照结果（本地归档：`2026-10-12-arm64-recovery-results.json`）。
 
 这确认原生程序可在该 ARM64 客机中完成检查和实际防火墙同步，并记录了本 TCG 环境一次完整服务启动超过原 90 秒预算。对照时启动条件、服务竞争及缓存已经改变，不能把改善唯一归因于 CPU 竞争，也不能推广成真实 ARM64 VPS 的性能结论。没有据此修改生产安装脚本或全局启动超时；对照之后没有再次重启，不计原默认设置的重启验收通过，也不补算尚未执行的本地核心集成。
 
 ## 证据与复现
 
-[结构化结果](2026-10-12-arm64-followup-results.json)保留原始案例、必需断言、健康快照、缺失案例、实际退出及停止原因。归档 [目录](arm64-followup-evidence/)包含已筛选脱敏的串口事件、seed 制作程序、三个客机阶段程序、运行器、严格归档器、故障注入检查及校验清单。原始完整串口仅保留 SHA256 与实验目录副本；仓库不归档客机凭据或完整配置。
+结构化结果（本地归档：`2026-10-12-arm64-followup-results.json`）保留原始案例、必需断言、健康快照、缺失案例、实际退出及停止原因。归档 目录（本地归档：`arm64-followup-evidence/`）包含已筛选脱敏的串口事件、seed 制作程序、三个客机阶段程序、运行器、严格归档器、故障注入检查及校验清单。原始完整串口仅保留 SHA256 与实验目录副本；仓库不归档客机凭据或完整配置。
 
 `build.py` 与 `run.py` 保留本轮实验使用的绝对目录，复现时需按新目录调整；依赖已校验的官方镜像、独立 overlay、可用的 QEMU 和 PyCdlib。不要覆盖历史实验文件。阶段程序中继承的“fresh native”注释并不表示首次核心安装；本报告及 JSON 的真实范围是已有核心集成尝试。
 

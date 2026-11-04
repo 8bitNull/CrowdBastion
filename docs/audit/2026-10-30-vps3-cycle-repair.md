@@ -48,4 +48,4 @@
 
 Web Bouncer 事务备份为 `/var/backups/crowdsec-1key/change.SprXibLC`；真实 IP 临时诊断备份为 `change.wTnNXc7w`。新增 systemd drop-in 的原状态为不存在，记录在 `docker-order.json`。这些恢复资料已保留，未在生产执行回退演练。
 
-证据：[最终核验](2026-10-30-vps3-cycle-repair/verification-final.json)、[防火墙流量实测](2026-10-30-vps3-cycle-repair/flow-after.json)、[Web 升级](2026-10-30-vps3-cycle-repair/web-upgrade.txt)、[真实 IP 核验](2026-10-30-vps3-cycle-repair/real-ip-verification.txt)、[健康结论](2026-10-30-vps3-cycle-repair/health-final.txt)。证据目录的 `SHA256SUMS` 包含报告、证据和部署源码清单摘要。
+证据：最终核验（本地归档：`2026-10-30-vps3-cycle-repair/verification-final.json`）、防火墙流量实测（本地归档：`2026-10-30-vps3-cycle-repair/flow-after.json`）、Web 升级（本地归档：`2026-10-30-vps3-cycle-repair/web-upgrade.txt`）、真实 IP 核验（本地归档：`2026-10-30-vps3-cycle-repair/real-ip-verification.txt`）、健康结论（本地归档：`2026-10-30-vps3-cycle-repair/health-final.txt`）。证据目录的 `SHA256SUMS` 包含报告、证据和部署源码清单摘要。

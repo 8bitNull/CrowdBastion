@@ -30,7 +30,7 @@
 
 独立复审确认参数和结果透传、覆盖优先级、真实事务路径和集成覆盖均保留；无 Critical、Important、Minor 发现。新增夹具契约验证实际 metrics 配置启用及服务加载，同时检查诊断边界，未仅断言 mock 自身。修改 Python 语法、仅本轮新增行的空白检查通过。
 
-用法见 [测试说明](../../tests/README.md)，证据见 [本轮目录](2026-11-03-optimizer-test-isolation/)。此前的 [测试分层](2026-11-03-test-consolidation.md) 和 [虚拟等待](2026-11-03-test-wait-optimization.md) 记录保持原样。
+用法见 [测试说明](../../tests/README.md)，证据见 本轮目录（本地归档：`2026-11-03-optimizer-test-isolation/`）。此前的 [测试分层](2026-11-03-test-consolidation.md) 和 [虚拟等待](2026-11-03-test-wait-optimization.md) 记录保持原样。
 
 隔离工作区验证后，已按主目录 1720 个原文件基线哈希保护交付。27 个本轮文件（另计清单本身）已核对；1716 个其余原文件哈希保留，205 个源码/测试/规则文件与被测版本一致。主目录复跑新增契约和四项真实集成共 6 项，全部通过（8.619 秒）；再次发现完整 1669 项、quick311。
 

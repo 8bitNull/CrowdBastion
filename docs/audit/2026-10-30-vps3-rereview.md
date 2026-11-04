@@ -56,4 +56,4 @@ root crontab 存在以下两条无启动顺序约束的任务：
 
 上一轮已记录的三份 `vpatch-CVE-2026-96652/96655/96656` 不在本地 Hub 索引中的提示继续保留，未擅自删除规则，也未将其声明为已验证的官方规则。此前防火墙续封/到期流量结果仍属上一轮证据，本轮没有重新执行该组流量实验。
 
-证据：[测试汇总](2026-10-30-vps3-rereview/regression-summary.json)、[首次完整回归](2026-10-30-vps3-rereview/full-regression-initial.txt)、[环境补齐后的复测](2026-10-30-vps3-rereview/environment-rerun.txt)、[隔离复现](2026-10-30-vps3-rereview/reproduction.json)、[修复结果](2026-10-30-vps3-rereview/startup-fix.json)、[部署核验](2026-10-30-vps3-rereview/verification-final.json)、[第二轮复查](2026-10-30-vps3-rereview/second-review.json)。同目录 `SHA256SUMS` 记录报告及证据摘要。
+证据：测试汇总（本地归档：`2026-10-30-vps3-rereview/regression-summary.json`）、首次完整回归（本地归档：`2026-10-30-vps3-rereview/full-regression-initial.txt`）、环境补齐后的复测（本地归档：`2026-10-30-vps3-rereview/environment-rerun.txt`）、隔离复现（本地归档：`2026-10-30-vps3-rereview/reproduction.json`）、修复结果（本地归档：`2026-10-30-vps3-rereview/startup-fix.json`）、部署核验（本地归档：`2026-10-30-vps3-rereview/verification-final.json`）、第二轮复查（本地归档：`2026-10-30-vps3-rereview/second-review.json`）。同目录 `SHA256SUMS` 记录报告及证据摘要。

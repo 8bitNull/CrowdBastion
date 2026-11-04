@@ -21,7 +21,7 @@
 
 ## 重放行为对照
 
-归档基线：[behavior-baseline.json](2026-11-03-incremental-refactor/behavior-baseline.json)。在完整仓库和测试依赖就绪时运行：
+归档基线：behavior-baseline.json（本地归档：`2026-11-03-incremental-refactor/behavior-baseline.json`）。在完整仓库和测试依赖就绪时运行：
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=lib:tests python3 tests/behavior_snapshot.py check docs/audit/2026-11-03-incremental-refactor/behavior-baseline.json

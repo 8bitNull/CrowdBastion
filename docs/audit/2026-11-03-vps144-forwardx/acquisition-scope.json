@@ -1,1 +1,0 @@
-{"disabled_generic_source": "/etc/crowdsec/acquis.d/setup.linux.yaml.disabled", "original_sha256": "d1260ca1a08d9840f9d9d0f79974cb6761785c80642480eee624e60ca83afffc", "ssh_source_retained": "/etc/crowdsec/acquis.d/setup.sshd.yaml", "realm_source_retained": true}

@@ -1,5 +1,0 @@
-{
-  "controller": 820736,
-  "interrupted_at": 1793540899.9658875,
-  "reason": "Existing startup test prohibited all threads; new health-only worker is intentional. Isolated failure captured in round3-red.txt."
-}

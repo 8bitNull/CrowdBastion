@@ -16,7 +16,7 @@
 
 - 新增问题均先观察失败复现再修复；Bouncer URL 回归同时核对 `.local` 新地址和 base 配置保留。
 - 最后一轮独立复审的 15 项定向测试全部通过，覆盖凭据边界、原 WebUI 生命周期和实际 TCP/UDP 回显。
-- 完整回归：**856 项，805 通过、51 跳过、0 失败**，耗时 199.287 秒。原始输出见 [unittest 日志](2026-10-19-script-review-unittest.txt)。
+- 完整回归：**856 项，805 通过、51 跳过、0 失败**，耗时 199.287 秒。原始输出见 unittest 日志（本地归档：`2026-10-19-script-review-unittest.txt`）。
 - Bash 语法检查覆盖 15 个文件；Python AST 解析覆盖 103 个文件；`git diff --check` 通过。
 
 完整回归命令：

@@ -43,6 +43,6 @@ realm 日志中的超时、EOF、连接量不应直接生成来源 ban；共享�
 
 本次未做公网转发认证、UDP 后端回包、实际封禁／续封、模块加载、冷启动、长期资源或峰值吞吐测试；这些属于后续部署验收。一次诊断封装因 stdin 编码失败，改用 ASCII 压缩封装后执行成功，没有据失败结果判断服务器兼容性。未运行产品测试套件，未修改产品源码、提交或推送。
 
-证据：[初始清单](2026-11-03-vps82-readonly/inventory.json)、[开机与容量复查](2026-11-03-vps82-readonly/followup.json)、[短时环境／Python 检查](2026-11-03-vps82-readonly/environment.json)、[最终检查](2026-11-03-vps82-readonly/final-check.json)、[连续性核验](2026-11-03-vps82-readonly/continuity.json)、[官方资料摘要](2026-11-03-vps82-readonly/upstream-reference.json)。
+证据：初始清单（本地归档：`2026-11-03-vps82-readonly/inventory.json`）、开机与容量复查（本地归档：`2026-11-03-vps82-readonly/followup.json`）、短时环境／Python 检查（本地归档：`2026-11-03-vps82-readonly/environment.json`）、最终检查（本地归档：`2026-11-03-vps82-readonly/final-check.json`）、连续性核验（本地归档：`2026-11-03-vps82-readonly/continuity.json`）、官方资料摘要（本地归档：`2026-11-03-vps82-readonly/upstream-reference.json`）。
 
 官方生命周期：[Debian bullseye 发布信息](https://www.debian.org/releases/bullseye/)。

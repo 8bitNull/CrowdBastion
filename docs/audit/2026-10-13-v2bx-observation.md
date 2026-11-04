@@ -15,7 +15,7 @@
 | apernet/hysteria/core/v2 | `v2.6.4` |
 | 官方 CrowdSec Linux amd64 引擎 | `v1.8.1-909b5157` |
 
-所读取源码与官方发行压缩包 SHA-256 见 [sources.json](2026-10-13-v2bx-observation-sources.json)。本地临时下载目录不是部署路径。
+所读取源码与官方发行压缩包 SHA-256 见 sources.json（本地归档：`2026-10-13-v2bx-observation-sources.json`）。本地临时下载目录不是部署路径。
 
 Xray `common/log/access.go` 和 `logger.go` 确定 access 消息与日期/微秒格式；VLESS 编码/入站与 VMess 编码/入站确定失败原因及 AccessRejected 的记录条件。Trojan `server.go` 185–215 行在 fallback 判断前记录两类拒绝消息，故这两类只归为 `fallback_candidate`，不作为失败导出。
 
@@ -31,7 +31,7 @@ V2bX `core/hy2/hy2.go` 使用 console 日志，`logger.go` 定义兼容 JSON epo
 
 真实 `crowdsec -t` 通过；13 条规范化事件全部被读取，5 条产生观察告警：Xray VLESS/VMess，sing VLESS/VMess/Trojan。两类 Xray Trojan fallback 候选、成功连接、普通 TLS 错误、Hysteria2 连接、已声明中转地址、observation_only=false、非法来源均未产生失败告警。
 
-实际加载的场景明确设置 `remediation: false`。`cscli alerts list -o json` 不提供瞬时的 Remediation 字段，因此验收检查 YAML 标签、每条告警 decisions 为空、全局 decisions 为空，不把缺失字段当成 false。结果见 [results.json](2026-10-13-v2bx-observation-results.json)：5 条告警、0 个决策。
+实际加载的场景明确设置 `remediation: false`。`cscli alerts list -o json` 不提供瞬时的 Remediation 字段，因此验收检查 YAML 标签、每条告警 decisions 为空、全局 decisions 为空，不把缺失字段当成 false。结果见 results.json（本地归档：`2026-10-13-v2bx-observation-results.json`）：5 条告警、0 个决策。
 
 这里只证明默认 profiles 下的离线行为；忽略 Remediation 的自定义 profiles 可能产生决策。`rules/v2bx/` 仍为未安装的离线样板，无生产采集/规则安装入口，也没有攻击频率阈值。
 

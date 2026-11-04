@@ -1,4 +1,0 @@
-{
-  "enforce": "deferred SIGTERM retains child ownership and cleanup terminates child",
-  "relay_lab": "deferred SIGTERM retains child ownership and cleanup terminates child"
-}

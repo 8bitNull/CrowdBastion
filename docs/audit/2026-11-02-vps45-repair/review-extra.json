@@ -1,1 +1,0 @@
-{"declared_user_chain_cycle": "rejected", "2000_hop_unconditional_path": "ok", "conditional_transit": "rejected", "bouncer_accept_before_drop": "rejected", "foreign_static_chain": "rejected without mutation", "checks": 5}

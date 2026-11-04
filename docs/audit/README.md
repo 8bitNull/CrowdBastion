@@ -1,6 +1,8 @@
 # 验收与证据索引
 
-报告与同轮证据保持原路径。历史通过只说明指定程序、配置和环境；失败轮次与后续对照一起保留。归档脚本可能引用临时实验环境，复现条件以报告为准。
+远程仓库保留脱敏后的报告与结论；原始输出、一次性脚本、旧源码快照和校验清单在原路径仅保留于本地。报告中的“本地归档”路径不随新克隆分发，发布范围与测试依赖例外见 [仓库发布范围](../repository-layout.md)。
+
+历史通过只说明指定程序、配置和环境；失败轮次与后续对照一起在本地保留。归档脚本可能引用临时实验环境，复现条件以报告为准。
 
 ## 2026-11-02 VPS 216 只读复查
 
@@ -99,13 +101,13 @@
 
 | 阶段 | 报告 | 证据与解释 |
 | --- | --- | --- |
-| 离线日志投影 | [离线观察](2026-10-13-v2bx-observation.md) | [结果](2026-10-13-v2bx-observation-results.json)、[源码来源](2026-10-13-v2bx-observation-sources.json)；早期 synthetic 样本 |
-| 网络执行层模拟 | [VPS 模拟](2026-10-13-v2bx-vps-simulation.md) | [归档](v2bx-vps-sim-2026-10-13/)；网络回显、LAPI/Bouncer，不是三内核协议验收 |
-| 官方程序基础协议 | [真实协议模拟](2026-10-13-v2bx-real-protocol-simulation.md) | [归档](v2bx-real-protocol-2026-10-13/)；官方 v0.4.0、IPv4、TCP 应用载荷 |
-| 持久观察与日志覆盖 | [稳定性验收](2026-10-13-v2bx-observation-stability.md) | [归档](v2bx-observation-stability-2026-10-13/)；恢复、轮转风险、AnyTLS、Shadowsocks 中性分类 |
-| hysteria2 core 实验事件 | [认证拒绝实验](2026-10-13-v2bx-hy2-structured-events.md) | [归档](v2bx-hy2-structured-2026-10-13/)；固定版本实验补丁 |
-| sing QUIC 实验事件 | [TUIC/Hysteria1/2 实验](2026-10-13-v2bx-sing-quic-events.md) | [归档](v2bx-sing-quic-2026-10-13/)；配套安全 logger、明确拒绝、真实边界对照 |
-| 双账号、IPv6、UDP 应用 | [混合入口验收](2026-10-13-v2bx-mixed-ingress.md) | [归档清单](v2bx-mixed-ingress-2026-10-13/manifest.json)；原 25/26 主矩阵及独立 IPv4 监听对照，合并覆盖 26 组、20 告警／0 决策 |
+| 离线日志投影 | [离线观察](2026-10-13-v2bx-observation.md) | 结果（本地归档：`2026-10-13-v2bx-observation-results.json`）、源码来源（本地归档：`2026-10-13-v2bx-observation-sources.json`）；早期 synthetic 样本 |
+| 网络执行层模拟 | [VPS 模拟](2026-10-13-v2bx-vps-simulation.md) | 归档（本地归档：`v2bx-vps-sim-2026-10-13/`）；网络回显、LAPI/Bouncer，不是三内核协议验收 |
+| 官方程序基础协议 | [真实协议模拟](2026-10-13-v2bx-real-protocol-simulation.md) | 归档（本地归档：`v2bx-real-protocol-2026-10-13/`）；官方 v0.4.0、IPv4、TCP 应用载荷 |
+| 持久观察与日志覆盖 | [稳定性验收](2026-10-13-v2bx-observation-stability.md) | 归档（本地归档：`v2bx-observation-stability-2026-10-13/`）；恢复、轮转风险、AnyTLS、Shadowsocks 中性分类 |
+| hysteria2 core 实验事件 | [认证拒绝实验](2026-10-13-v2bx-hy2-structured-events.md) | 归档（本地归档：`v2bx-hy2-structured-2026-10-13/`）；固定版本实验补丁 |
+| sing QUIC 实验事件 | [TUIC/Hysteria1/2 实验](2026-10-13-v2bx-sing-quic-events.md) | 归档（本地归档：`v2bx-sing-quic-2026-10-13/`）；配套安全 logger、明确拒绝、真实边界对照 |
+| 双账号、IPv6、UDP 应用 | [混合入口验收](2026-10-13-v2bx-mixed-ingress.md) | 归档清单（本地归档：`v2bx-mixed-ingress-2026-10-13/manifest.json`）；原 25/26 主矩阵及独立 IPv4 监听对照，合并覆盖 26 组、20 告警／0 决策 |
 
 最新[常驻仅观察告警闭环](2026-10-13-v2bx-observation-alerts.md)全仓 730 项（710 通过、20 跳过、0 失败），新增专项 23 项；官方私有引擎形成 10 组观察告警／0 观察决策，独立对照 1 决策。此前[落地采集服务](2026-10-13-v2bx-landing-observer.md)和[本地整合](2026-10-13-local-integration.md)记录分别保留，各轮数量与覆盖范围不能相加后当作一轮验收。
 
