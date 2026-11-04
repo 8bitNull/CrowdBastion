@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-03T12:09:30.797110+00:00",
+  "service_count": 18,
+  "service_pid_start_restart_state_unchanged": true,
+  "protected_unique_files": 177,
+  "protected_hashes_unchanged": true,
+  "runtime_sysctl_count": 81,
+  "all_runtime_sysctls_unchanged": true,
+  "only_target_assignment_changed": true,
+  "iptables_and_ip6tables_unchanged": true,
+  "nft_rule_graph_unchanged": true,
+  "startup_restore_task_and_snapshot_unchanged": true,
+  "business_listeners_unchanged": true,
+  "failed_units": 0,
+  "sysctl_unit": {
+    "exit": 0,
+    "stdout": "Result=success\nExecMainStatus=1\nActiveState=inactive\n",
+    "stderr": ""
+  },
+  "status": "verified"
+}

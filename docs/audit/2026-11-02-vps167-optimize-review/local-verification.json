@@ -1,0 +1,20 @@
+{
+  "verified_at": "2026-11-02T04:54:25.813564+00:00",
+  "full_suite_tests": 1458,
+  "passed": 1369,
+  "skipped": 89,
+  "failed": 0,
+  "source_files": 175,
+  "source_asts": 154,
+  "bash_syntax": 20,
+  "audit_script_asts": 10,
+  "local_links": 75,
+  "old_optimize_evidence_unchanged": 65,
+  "old_supporting_index_preserved_in": "prior-audit-index.md",
+  "historical_manifest_hashes_unchanged": true,
+  "main_worktree_copies_match": true,
+  "remote_original_stable_items_unchanged": 312,
+  "credential_scan_artifacts": 37,
+  "traffic": "pending",
+  "committed_or_pushed": false
+}

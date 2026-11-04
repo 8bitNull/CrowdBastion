@@ -1,0 +1,18 @@
+{
+  "before_count": 1664,
+  "after_count": 1667,
+  "missing_ids": [],
+  "duplicate_ids": [],
+  "changed_original_methods": [
+    "test_nginx_reload.ReloadProcessEvidence.test_worker_that_dies_before_second_sample_is_not_accepted",
+    "test_real_ip_reload_review.RealIPReloadReview.test_silent_reload_rejection_restores_real_ip_configuration_and_registry",
+    "test_script_review_fixes.AdditionalTransactionReview.test_silent_host_rollback_rejection_keeps_package_account"
+  ],
+  "added_ids": [
+    "test_nginx_reload.VirtualReloadClock.test_clock_advances_only_on_sleep_across_shell_substitutions",
+    "test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock",
+    "test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log"
+  ],
+  "real_deadline_test_methods_unchanged": true,
+  "all_original_assertion_asts_unchanged": true
+}

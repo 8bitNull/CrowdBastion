@@ -28,6 +28,12 @@ sudo bash crowdbastion.sh --firewall-maintenance
 
 ## 迁移原生 nftables 后端
 
+链配置修复、迁移及 Bouncer 接入现在按官方实现的“通用列表＋地址族列表”合并语义生成覆盖：`iptables_chains: []`，IPv4／IPv6 分别保存去重后的实际链。通用和分地址族中的自定义链会保留；本地凭据配置的 IPv4 Docker 链不会因此复制到 IPv6。基础软件包 YAML 和凭据不会被清空。原有配置只有在明确运行对应配置／修复操作时更新，单纯状态查询不改写。
+
+缺省和显式 `null` 链列表按官方实现视为空列表，不凭空补入 INPUT；启动修复及远端接入需要的 INPUT／FORWARD 由对应操作明确补齐。远端重新接入会基于当前有效的托管覆盖保留自定义链与其他字段，基础包配置更新不等于允许清除仍生效的覆盖。
+
+对已托管远端配置，启动修复先校验所有权，只在写入结果与计划一致时更新 `.remote.json` 指纹；已有外部漂移会被拒绝；写入期间配置值或类型偏离计划时，也不会更新托管指纹。启动事务同时备份覆盖文件、drop-in 和已存在的托管记录，失败时一起恢复。此流程使用原维护锁，不保证断电、SIGKILL 或不遵守锁的特权并发修改下的原子性。
+
 当前自动迁移范围为：本机 loopback HTTP LAPI、正在以 root 运行的官方 Bouncer、显式 `-c /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml` 启动参数、默认 DROP 策略、可识别的双栈原生 input／forward 集合引用、默认集合及链布局、双栈 Docker DOCKER-USER 链均存在。自定义链／集合、远端 LAPI、非 SSH 会话或规则恢复任务冲突时停止。`iptables`、`ip6tables`、`ipset`、`nft`、`ip`、`cscli` 和 systemd 工具需要已安装；脚本不自动换包、升级 Bouncer 或修改 API 账号。
 
 1. 在当前 SSH 会话运行维护入口，选择 `3`。使用 sudo 时通过 `sudo --preserve-env=SSH_CONNECTION bash crowdbastion.sh --firewall-maintenance` 保留连接信息；无法读取连接信息时拒绝迁移。脚本创建私有事务目录，备份原配置和业务规则，保存独立回退代码，先启用 **8 分钟回退定时器**，再建立当前有效封禁快照和当前 SSH 来源／实际端口保护，切换后端。

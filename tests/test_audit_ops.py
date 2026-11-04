@@ -2,18 +2,18 @@
 import subprocess
 import yaml
 import unittest
-import test_workflows
+import workflow_fixture as test_workflows
 ROOT = test_workflows.ROOT
 
 
 class AuditOps(unittest.TestCase):
     # Reuse only fixture helpers; keep the baseline suite independent.
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
-    web_log = test_workflows.Workflows.web_log
-    make_webui = test_workflows.Workflows.make_webui
-    webui_docker = test_workflows.Workflows.webui_docker
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
+    web_log = test_workflows.WorkflowFixtureMixin.web_log
+    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
+    webui_docker = test_workflows.WorkflowFixtureMixin.webui_docker
     def helper(self, *args):
         return subprocess.run(['python3', str(ROOT/'lib/crowdsec_config.py'), *map(str, args)], text=True, capture_output=True)
 

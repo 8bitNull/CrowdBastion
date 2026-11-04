@@ -1,0 +1,103 @@
+test_clock_advances_only_on_sleep_across_shell_substitutions (test_nginx_reload.VirtualReloadClock.test_clock_advances_only_on_sleep_across_shell_substitutions) ... FAIL
+test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) ... 
+  test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='bad') ... FAIL
+  test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='-1') ... FAIL
+  test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='NaN') ... FAIL
+  test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='1e3') ... FAIL
+  test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='61') ... FAIL
+test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) ... 
+  test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) (witness='fresh') ... FAIL
+  test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) (witness='stale') ... FAIL
+
+======================================================================
+FAIL: test_clock_advances_only_on_sleep_across_shell_substitutions (test_nginx_reload.VirtualReloadClock.test_clock_advances_only_on_sleep_across_shell_substitutions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 391, in test_clock_advances_only_on_sleep_across_shell_substitutions
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='bad')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 404, in test_invalid_sleep_is_rejected_without_advancing_clock
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='-1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 404, in test_invalid_sleep_is_rejected_without_advancing_clock
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='NaN')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 404, in test_invalid_sleep_is_rejected_without_advancing_clock
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='1e3')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 404, in test_invalid_sleep_is_rejected_without_advancing_clock
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) (delay='61')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 404, in test_invalid_sleep_is_rejected_without_advancing_clock
+    ''', overrides=self.clock(), timeout=3)
+                   ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) (witness='fresh')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 414, in test_real_verifier_still_requires_fresh_workers_and_master_log
+    overrides = self.clock()+'''
+                ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+======================================================================
+FAIL: test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) (witness='stale')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 414, in test_real_verifier_still_requires_fresh_workers_and_master_log
+    overrides = self.clock()+'''
+                ^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_nginx_reload.py", line 379, in clock
+    self.assertIsNotNone(spec, 'explicit reload clock helper must exist')
+AssertionError: unexpectedly None : explicit reload clock helper must exist
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.044s
+
+FAILED (failures=8)

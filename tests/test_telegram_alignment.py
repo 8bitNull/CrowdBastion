@@ -199,9 +199,9 @@ class SharedHealth(unittest.TestCase):
 
 
 class CanonicalHealthCLI(unittest.TestCase):
-    from test_workflows import Workflows
-    setUp = Workflows.setUp
-    run_shell = Workflows.run_shell
+    from workflow_fixture import WorkflowFixtureMixin
+    setUp = WorkflowFixtureMixin.setUp
+    run_shell = WorkflowFixtureMixin.run_shell
 
     def test_json_cli_uses_same_readonly_collection_without_leaking_details(self):
         fixture = '''check_health_status_raw() {
@@ -232,11 +232,11 @@ class CanonicalHealthCLI(unittest.TestCase):
 
 
 class BotDeployment(unittest.TestCase):
-    from test_workflows import Workflows
+    from workflow_fixture import WorkflowFixtureMixin
     from test_custom_bot import BotService
-    setUp = Workflows.setUp
-    run_shell = Workflows.run_shell
-    commands = Workflows.commands
+    setUp = WorkflowFixtureMixin.setUp
+    run_shell = WorkflowFixtureMixin.run_shell
+    commands = WorkflowFixtureMixin.commands
     setup_bot = BotService.setup_bot
 
     @property

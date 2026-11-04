@@ -1,0 +1,13 @@
+{
+  "backup": "/var/backups/crowdbastion/vps144-20261103T103358Z",
+  "files": 52,
+  "live_hashes": {
+    "/etc/sysctl.d/99-zz-crowdbastion-network.conf": "9dc7e8283b162109e1ab81383f86fef0a390dcc285d4ff47d71b2f6d20faa01d",
+    "/var/lib/crowdbastion/network.json": "b92f6dae158137022e989a6649bd6e5a369044d2de07cfd7b90a94aaf60732df",
+    "/var/lib/crowdbastion/node-roles.json": "dcc3c46cbf1d7d74f1544e7d9062ef3919e1ab0e04ac8b44035b9ba20cb54b26",
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": "b4ea512aede61caaf0faf93376c12e7f006dcc97275ffa5a93ac289bb235ca32",
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": "0ac251351a2e2a169e4d2da25d68b362bdf7c3f13e856de3ecaebe3a9dd1e084",
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+    "/etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf": "75dcf73b6de9d38736461139c0e5487f0560391287b7f34fdf39e0dc44c411fa"
+  }
+}

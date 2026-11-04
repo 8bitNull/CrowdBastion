@@ -11,7 +11,7 @@ import tempfile
 import unittest
 
 import yaml
-import test_workflows
+import workflow_fixture as test_workflows
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'lib'))
 maintenance = importlib.import_module('crowdsec_maintenance')
@@ -19,11 +19,11 @@ config = importlib.import_module('crowdsec_config')
 
 
 class Maintenance(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
-    make_webui = test_workflows.Workflows.make_webui
-    webui_docker = test_workflows.Workflows.webui_docker
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
+    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
+    webui_docker = test_workflows.WorkflowFixtureMixin.webui_docker
 
     def rules(self):
         directory = self.base/'owned-hub/parsers/s01-parse'

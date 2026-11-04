@@ -7,6 +7,7 @@
 ## 目录
 
 - [选择部署方式](#选择部署方式)
+- [代理协议使用导航](#代理协议使用导航)
 - [准备环境与下载](#准备环境与下载)
 - [网站服务器](#网站服务器)
 - [本地中转精简节点](#本地中转精简节点)
@@ -87,9 +88,22 @@ CLI `--status` 只打印短总结，不显示选择菜单。`--status-details` �
 
 组合用途覆盖相关检查。若发现本工具已部署的网站／AppSec 配置，即使没有选择网站，仍提示并核查这些组件，避免掩盖故障。系统日志读取和解析成功只证明采集链路；攻击检测及实际业务阻断仍需分别验证。检查结果有异常时退出码 `1` 优先于尚未验证的 `2`。
 
+## 代理协议使用导航
+
+不确定新增协议从哪里使用时，从首页 **`5 → 9`** 进入。也可从检查与修复 `4 → 4 → 10` 或安装/调整页 `8` 进入；V2bX 专项菜单第 `5` 项直接打开协议选择。原有菜单编号和命令不变。
+
+1. 选择程序：V2bX、V2Node，或其他/不确定。V2Node 是程序名，其实际仓库与版本仍待核验。
+2. 选择协议：AnyTLS、VMess、VLESS、Shadowsocks/2022、Trojan、Hysteria 1/2 或 TUIC。
+3. 按实际配置选择外层传输和直连/共享中转拓扑。不确定时选择“不确定”；仅确认 TLS 不能确定 VMess/VLESS 使用 TCP。
+4. 查看本次只读指导，再按需检查短时环境、TCP 配置归属或选定入口端口。TCP 与端口管理中的应用仍单独确认、持锁并保留回退流程。
+
+选择只用于本次查询，不保存用途/业务配置，也不替换已设置的 `NODE_*` 环境变量。任一步 `0` 或 Ctrl+D 返回，不触发安装、调参或封禁。独立代理程序无需选择“V2bX 落地”用途；首次用途提示可选 `0`，随后进入首页 `5 → 9`。现有 roles v1 及 V2bX 健康检查语义保留。
+
+导航的“适用指导”不等于专项日志检测、实际运行验证或吞吐验收。QUIC 拥塞控制属于程序实现；内核 TCP BBR 不设置 QUIC 控制器。完整能力边界与官方来源见[协议资料](protocol-capabilities.md)。自动化查询仍用原 `--protocol-status` 和 `NODE_PROGRAM/NODE_PROTOCOL/NODE_TRANSPORT`；该命令不新增交互，声明画像仍返回 `2` 表示运行未验证。
+
 ## 准备环境与下载
 
-需要 systemd Linux、root 权限、Bash、可访问的官方软件源。核心安装覆盖 Debian/Ubuntu 和 CentOS/RHEL/AlmaLinux/Rocky/Fedora 分支；实际支持范围以矩阵中的系统版本和测试模式为准。受限容器、LXC/OpenVZ 的防火墙权限需另行检查。
+需要 systemd Linux、root 权限、Bash、预先安装的 Python 3、可访问的官方软件源。Python 3 用于安全管理锁；缺少时所有需锁的修改入口在创建锁及业务修改前停止，即使是首次安装也不绕过。核心安装覆盖 Debian/Ubuntu 和 CentOS/RHEL/AlmaLinux/Rocky/Fedora 分支；实际支持范围以矩阵中的系统版本和测试模式为准。受限容器、LXC/OpenVZ 的防火墙权限需另行检查。
 
 安装前保存现有 CrowdSec/防火墙配置，确认管理员公网来源 IP，准备 VPS 控制台或其他可用恢复入口。已有 gost、realm、NAT 规则继续由其原工具管理。
 
@@ -104,21 +118,29 @@ sudo bash crowdbastion.sh
 
 已有 `crowdsec-1key` 检出可直接更新远程地址并升级，无需重装或改动安装路径；具体步骤见 [更名与升级](project-rename.md)。旧脚本入口仍可使用，需同时保留它指向的 `crowdbastion.sh`。
 
-配置编辑需要 Python 3/PyYAML，安装入口会准备对应包。已有核心若缺少依赖，可按系统选择：
+Python 3 必须在首次修改操作之前手动准备；PyYAML 是配置编辑依赖，安装入口可补齐。按系统选择一组准备命令：
 
 ```bash
 # Debian / Ubuntu
 sudo apt-get update
-sudo apt-get install -y python3-yaml
+sudo apt-get install -y python3 python3-yaml
 
 # RHEL 系列：另选这一组，不需执行上面的 apt 命令
-sudo dnf install -y python3-pyyaml
+sudo dnf install -y python3 python3-pyyaml
 
 # 检查 root 实际使用的 Python
 sudo python3 -c 'import yaml; print(yaml.__version__)'
 ```
 
 WebUI 另需 Docker/Compose；定时更新另需运行中的 cron/crond。容器镜像、规则和核心软件包仍需下载。
+
+## 可选环境、端口与 TCP 检查
+
+菜单 `4 → 4` 保留原有 1–5 项，新增 `6` 短时环境压力、`7` TCP 配置归属与可选恢复、`8` 选定入口端口策略、`9` 程序／协议／传输声明。TCP／端口子菜单均为 `1` 状态、`2` 只读计划、`3` 确认后暂存、`4` 核验、`5` 重新核验并提交、`6` 回退。准备私有 JSON 后才可计划应用；默认安装不自动执行这两类策略。
+
+`sudo bash crowdbastion.sh --environment-status` 输出完整采样 JSON：默认三个快照、两个 0.25 秒窗口，连续窗口压力才拒绝，单次尖峰另记；PSI 缺失不是自动失败。稳定／持续压力／未知分别返回 `0/1/2`，锁内变更门禁对压力或未知返回 `75`。菜单和修改门禁用同一次采样的短结论，不把历史 PSI 平均当作当前压力，也不保证后续耗时或终止内核 D 状态。
+
+[端口策略](port-policy.md)列明 JSON 格式、管理 TCP 端口保护、源端口不限和 host/Docker 边界；[网络配置](network-configuration.md)列明 loader/别名和支持的 TCP 项；[协议能力](protocol-capabilities.md)提供声明示例、官方资料和未知版本边界。先从独立客户端验收暂存结果，再在 15 分钟内提交；本地核验不能代替实际阻断与吞吐测量。
 
 ## 网站服务器
 

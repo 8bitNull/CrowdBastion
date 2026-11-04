@@ -1,0 +1,23 @@
+test_default_reject_verdict_is_recognized_with_explicit_reject_type (test_relay_iptables_acceptance.IptablesAcceptance.test_default_reject_verdict_is_recognized_with_explicit_reject_type) ... FAIL
+test_missing_filter_commit_does_not_become_valid_at_next_table (test_relay_iptables_acceptance.IptablesAcceptance.test_missing_filter_commit_does_not_become_valid_at_next_table) ... FAIL
+
+======================================================================
+FAIL: test_default_reject_verdict_is_recognized_with_explicit_reject_type (test_relay_iptables_acceptance.IptablesAcceptance.test_default_reject_verdict_is_recognized_with_explicit_reject_type)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_relay_iptables_acceptance.py", line 97, in test_default_reject_verdict_is_recognized_with_explicit_reject_type
+    self.assertTrue(item['matched'])
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_missing_filter_commit_does_not_become_valid_at_next_table (test_relay_iptables_acceptance.IptablesAcceptance.test_missing_filter_commit_does_not_become_valid_at_next_table)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_relay_iptables_acceptance.py", line 103, in test_missing_filter_commit_does_not_become_valid_at_next_table
+    with self.assertRaises(self.tool.Incomplete):
+AssertionError: Incomplete not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.008s
+
+FAILED (failures=2)

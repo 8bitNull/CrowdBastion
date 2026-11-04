@@ -10,7 +10,13 @@ import re
 import shlex
 import sys
 
-import test_workflows
+import unittest
+from workflow_fixture import WorkflowFixtureMixin
+
+
+class Fixture(WorkflowFixtureMixin, unittest.TestCase):
+    """Standalone fixture with TestCase cleanup support and no test methods."""
+
 
 ROOT=Path(__file__).resolve().parents[1]
 OS_IDS=('debian','ubuntu','centos','rhel','almalinux','rocky','fedora')
@@ -65,7 +71,7 @@ def managed_overlay(base):
 
 
 def run_case(case):
-    fixture=test_workflows.Workflows(methodName='runTest')
+    fixture=Fixture(methodName='runTest')
     fixture.setUp()
     try:
         (fixture.base/'etc/os-release').write_text('ID='+case['os_id']+'\n')

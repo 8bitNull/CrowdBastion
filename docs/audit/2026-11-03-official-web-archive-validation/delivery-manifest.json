@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "files": {
+    "tests/README.md": "24b89a6ed71bd1630e5fbf9a34f6f680a7c209b619bc0b152e37dadbe113bef2",
+    "docs/audit/2026-11-03-official-web-archive-validation.md": "53264fb8327c79d8c33e44ae129420755273e364ed3db565b32d13003e8fc140",
+    "docs/audit/2026-11-03-official-web-archive-validation/remaining-skips.json": "59ca9a8079049f89b5b2b09cb107529959643fb1396a9bc8a68fb03c80eb3bbf",
+    "docs/audit/2026-11-03-official-web-archive-validation/resources.json": "e1e2534777a19915d83e3b213625cf8201c3d432ac1005665c9c619cb21a0677",
+    "docs/audit/2026-11-03-official-web-archive-validation/selected-results.json": "9cfd3c7961b2119b128eec25f3d3666d2ac6ee38c3beb573e3e597433ae11ed0",
+    "docs/audit/2026-11-03-official-web-archive-validation/selected-tests.json": "e7cac3874b3f165ccb6ef3ccdfaeb3329d558baffe787e81743c8530c02b8267",
+    "docs/audit/2026-11-03-official-web-archive-validation/selected-tests.txt": "5fe1d77b628e1cb8e9089608ad67eff3fc2f24e5214fb4e92e84b33be5c9338f",
+    "docs/audit/2026-11-03-official-web-archive-validation/verification.json": "5ff7e5198db2b148273e9da67fe3f08a0219d877a2352f02d1405a05bbcd91c3"
+  },
+  "verification": {
+    "delivered_files": 8,
+    "unchanged_baseline_files": 1743,
+    "source_files_unchanged": 205,
+    "target_tests_passed": 45,
+    "full_suite_rerun": false
+  }
+}

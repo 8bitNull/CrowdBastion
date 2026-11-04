@@ -1,0 +1,637 @@
+{
+  "at": "2026-11-03T11:54:59.233686+00:00",
+  "uid": 0,
+  "os": {
+    "PRETTY_NAME": "Debian GNU/Linux 11 (bullseye)",
+    "VERSION_ID": "11",
+    "ID": "debian"
+  },
+  "commands": {
+    "kernel": {
+      "exit": 0,
+      "stdout": "Linux 6.18.6-x64v3-xanmod1 x86_64 GNU/Linux\n",
+      "stderr": ""
+    },
+    "python": {
+      "exit": 0,
+      "stdout": "Python 3.9.2\n",
+      "stderr": ""
+    },
+    "bash": {
+      "exit": 0,
+      "stdout": "GNU bash, version 5.1.4(1)-release (x86_64-pc-linux-gnu)\nCopyright (C) 2020 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\nThis is free software; you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n",
+      "stderr": ""
+    },
+    "virtualization": {
+      "exit": 0,
+      "stdout": "kvm\n",
+      "stderr": ""
+    },
+    "cpu": {
+      "exit": 0,
+      "stdout": "Architecture:                            x86_64\nCPU op-mode(s):                          32-bit, 64-bit\nByte Order:                              Little Endian\nAddress sizes:                           48 bits physical, 48 bits virtual\nCPU(s):                                  1\nOn-line CPU(s) list:                     0\nThread(s) per core:                      1\nCore(s) per socket:                      1\nSocket(s):                               1\nNUMA node(s):                            1\nVendor ID:                               AuthenticAMD\nCPU family:                              23\nModel:                                   49\nModel name:                              AMD EPYC-Rome Processor\nStepping:                                0\nCPU MHz:                                 2249.998\nBogoMIPS:                                4499.99\nHypervisor vendor:                       KVM\nVirtualization type:                     full\nL1d cache:                               32 KiB\nL1i cache:                               32 KiB\nL2 cache:                                512 KiB\nL3 cache:                                16 MiB\nNUMA node0 CPU(s):                       0\nVulnerability Gather data sampling:      Not affected\nVulnerability Ghostwrite:                Not affected\nVulnerability Indirect target selection: Not affected\nVulnerability Itlb multihit:             Not affected\nVulnerability L1tf:                      Not affected\nVulnerability Mds:                       Not affected\nVulnerability Meltdown:                  Not affected\nVulnerability Mmio stale data:           Not affected\nVulnerability Old microcode:             Not affected\nVulnerability Reg file data sampling:    Not affected\nVulnerability Retbleed:                  Mitigation; untrained return thunk; SMT disabled\nVulnerability Spec rstack overflow:      Mitigation; SMT disabled\nVulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:                Mitigation; Retpolines; IBPB conditional; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected\nVulnerability Srbds:                     Not affected\nVulnerability Tsa:                       Not affected\nVulnerability Tsx async abort:           Not affected\nVulnerability Vmscape:                   Not affected\nFlags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm rep_good nopl xtopology cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 fma cx16 sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm cmp_legacy cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw topoext perfctr_core ssbd ibrs ibpb stibp vmmcall fsgsbase tsc_adjust bmi1 avx2 smep bmi2 rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 clzero xsaveerptr wbnoinvd arat umip rdpid arch_capabilities\n",
+      "stderr": ""
+    },
+    "disk": {
+      "exit": 0,
+      "stdout": "Filesystem     Type  Size  Used Avail Use% Mounted on\n/dev/vda1      ext4  9.7G  2.8G  6.6G  30% /\n/dev/vda1      ext4  9.7G  2.8G  6.6G  30% /\n/dev/vda1      ext4  9.7G  2.8G  6.6G  30% /\n",
+      "stderr": ""
+    },
+    "inodes": {
+      "exit": 0,
+      "stdout": "Filesystem     Inodes IUsed  IFree IUse% Mounted on\n/dev/vda1      647168 43501 603667    7% /\n",
+      "stderr": ""
+    },
+    "mounts": {
+      "exit": 0,
+      "stdout": "/      ext4   rw,relatime,discard,errors=remount-ro\n",
+      "stderr": ""
+    },
+    "failed_units": {
+      "exit": 0,
+      "stdout": "* systemd-sysctl.service loaded failed failed Apply Kernel Variables\n",
+      "stderr": ""
+    },
+    "listeners": {
+      "exit": 0,
+      "stdout": "udp UNCONN 0      0      127.0.0.1:323   0.0.0.0:* users:((\"chronyd\",pid=404,fd=5))\nudp UNCONN 0      0              *:53537       *:* users:((\"realm\",pid=376,fd=6))  \nudp UNCONN 0      0              *:53541       *:* users:((\"realm\",pid=377,fd=6))  \nudp UNCONN 0      0              *:53543       *:* users:((\"realm\",pid=378,fd=6))  \nudp UNCONN 0      0              *:53544       *:* users:((\"realm\",pid=379,fd=6))  \nudp UNCONN 0      0              *:53545       *:* users:((\"realm\",pid=381,fd=6))  \nudp UNCONN 0      0              *:53546       *:* users:((\"realm\",pid=383,fd=6))  \nudp UNCONN 0      0              *:53547       *:* users:((\"realm\",pid=391,fd=6))  \nudp UNCONN 0      0              *:53548       *:* users:((\"realm\",pid=392,fd=6))  \nudp UNCONN 0      0              *:53549       *:* users:((\"realm\",pid=394,fd=6))  \nudp UNCONN 0      0              *:53551       *:* users:((\"realm\",pid=396,fd=6))  \nudp UNCONN 0      0              *:53552       *:* users:((\"realm\",pid=398,fd=6))  \nudp UNCONN 0      0              *:53553       *:* users:((\"realm\",pid=401,fd=6))  \nudp UNCONN 0      0              *:53554       *:* users:((\"realm\",pid=403,fd=6))  \nudp UNCONN 0      0          [::1]:323      [::]:* users:((\"chronyd\",pid=404,fd=6))\ntcp LISTEN 0      128      0.0.0.0:53322 0.0.0.0:* users:((\"sshd\",pid=426,fd=3))   \ntcp LISTEN 0      1024           *:53554       *:* users:((\"realm\",pid=403,fd=7))  \ntcp LISTEN 0      1024           *:53552       *:* users:((\"realm\",pid=398,fd=7))  \ntcp LISTEN 0      1024           *:53553       *:* users:((\"realm\",pid=401,fd=7))  \ntcp LISTEN 0      1024           *:53551       *:* users:((\"realm\",pid=396,fd=7))  \ntcp LISTEN 0      1024           *:53548       *:* users:((\"realm\",pid=392,fd=7))  \ntcp LISTEN 0      1024           *:53549       *:* users:((\"realm\",pid=394,fd=7))  \ntcp LISTEN 0      1024           *:53546       *:* users:((\"realm\",pid=383,fd=7))  \ntcp LISTEN 0      1024           *:53547       *:* users:((\"realm\",pid=391,fd=7))  \ntcp LISTEN 0      1024           *:53544       *:* users:((\"realm\",pid=379,fd=7))  \ntcp LISTEN 0      1024           *:53545       *:* users:((\"realm\",pid=381,fd=7))  \ntcp LISTEN 0      1024           *:53543       *:* users:((\"realm\",pid=378,fd=7))  \ntcp LISTEN 0      1024           *:53541       *:* users:((\"realm\",pid=377,fd=7))  \ntcp LISTEN 0      1024           *:53537       *:* users:((\"realm\",pid=376,fd=7))  \ntcp LISTEN 0      128         [::]:53322    [::]:* users:((\"sshd\",pid=426,fd=4))   \n",
+      "stderr": ""
+    },
+    "addresses": {
+      "exit": 0,
+      "stdout": "[{\"ifindex\":1,\"ifname\":\"lo\",\"flags\":[\"LOOPBACK\",\"UP\",\"LOWER_UP\"],\"mtu\":65536,\"qdisc\":\"noqueue\",\"operstate\":\"UNKNOWN\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"loopback\",\"address\":\"00:00:00:00:00:00\",\"broadcast\":\"00:00:00:00:00:00\",\"addr_info\":[{\"family\":\"inet\",\"local\":\"127.0.0.1\",\"prefixlen\":8,\"scope\":\"host\",\"label\":\"lo\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"::1\",\"prefixlen\":128,\"scope\":\"host\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]},{\"ifindex\":2,\"ifname\":\"eth0\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"fq\",\"operstate\":\"UP\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"ether\",\"address\":\"02:00:00:00:00:2b\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"altnames\":[\"enp0s17\"],\"addr_info\":[{\"family\":\"inet\",\"local\":\"192.0.2.27\",\"prefixlen\":24,\"broadcast\":\"192.0.2.26\",\"scope\":\"global\",\"label\":\"eth0\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295},{\"family\":\"inet6\",\"local\":\"fe80::a62f:ccff:fe00:349\",\"prefixlen\":64,\"scope\":\"link\",\"valid_life_time\":4294967295,\"preferred_life_time\":4294967295}]}]\n",
+      "stderr": ""
+    },
+    "routes": {
+      "exit": 0,
+      "stdout": "[{\"dst\":\"default\",\"gateway\":\"192.0.2.25\",\"dev\":\"eth0\",\"flags\":[\"onlink\"]},{\"dst\":\"192.0.2.24/24\",\"dev\":\"eth0\",\"protocol\":\"kernel\",\"scope\":\"link\",\"prefsrc\":\"192.0.2.27\",\"flags\":[]}]\n",
+      "stderr": ""
+    },
+    "qdisc": {
+      "exit": 0,
+      "stdout": "qdisc noqueue 0: dev lo root refcnt 2 \n Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\nqdisc fq 0: dev eth0 root refcnt 2 limit 10000p flow_limit 100p buckets 1024 orphan_mask 1023 quantum 3028b initial_quantum 15140b low_rate_threshold 550Kbit refill_delay 40ms timer_slack 10us \n Sent 14781054384 bytes 16387098 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\n  flows 807 (inactive 807 throttled 0)\n  gc 2098 highprio 0 throttled 1553798 latency 17.3us\n",
+      "stderr": ""
+    },
+    "packages": {
+      "exit": 1,
+      "stdout": "curl install ok installed 7.74.0-1.3+deb11u16\niptables install ok installed 1.8.7-1\nnftables install ok installed 0.9.8-3.1+deb11u2\npython3 install ok installed 3.9.2-3\npython3-yaml install ok installed 5.3.1-5\nrsyslog install ok installed 8.2102.0-2+deb11u1\n",
+      "stderr": "dpkg-query: no packages found matching crowdsec\ndpkg-query: no packages found matching crowdsec-firewall-bouncer-iptables\ndpkg-query: no packages found matching crowdsec-firewall-bouncer-nftables\ndpkg-query: no packages found matching ipset\ndpkg-query: no packages found matching git\n"
+    },
+    "package_candidates": {
+      "exit": 0,
+      "stdout": "crowdsec:\n  Installed: (none)\n  Candidate: 1.0.9-2+b4\n  Version table:\n     1.0.9-2+b4 500\n        500 http://deb.debian.org/debian bullseye/main amd64 Packages\npython3-yaml:\n  Installed: 5.3.1-5\n  Candidate: 5.3.1-5\n  Version table:\n *** 5.3.1-5 500\n        500 http://deb.debian.org/debian bullseye/main amd64 Packages\n        100 /var/lib/dpkg/status\n",
+      "stderr": ""
+    },
+    "dpkg_audit": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "iptables_version": {
+      "exit": 0,
+      "stdout": "iptables v1.8.7 (nf_tables)\n",
+      "stderr": ""
+    },
+    "ip6tables_version": {
+      "exit": 0,
+      "stdout": "ip6tables v1.8.7 (nf_tables)\n",
+      "stderr": ""
+    },
+    "ipset_version": {
+      "error": "FileNotFoundError"
+    },
+    "journal_space": {
+      "exit": 0,
+      "stdout": "Archived and active journals take up 32.0M in the file system.\n",
+      "stderr": ""
+    },
+    "kernel_counters": {
+      "exit": 0,
+      "stdout": "#kernel\nIpInReceives                    8489185            0.0\nIpInHdrErrors                   0                  0.0\nIpInAddrErrors                  0                  0.0\nIpForwDatagrams                 0                  0.0\nIpInUnknownProtos               23                 0.0\nIpInDiscards                    0                  0.0\nIpInDelivers                    8484847            0.0\nIpOutRequests                   8668631            0.0\nIpOutDiscards                   0                  0.0\nIpOutNoRoutes                   0                  0.0\nIpReasmTimeout                  0                  0.0\nIpReasmReqds                    0                  0.0\nIpReasmOKs                      0                  0.0\nIpReasmFails                    0                  0.0\nIpFragOKs                       0                  0.0\nIpFragFails                     0                  0.0\nIpFragCreates                   0                  0.0\nIpOutTransmits                  8668631            0.0\nIcmpInMsgs                      25907              0.0\nIcmpInErrors                    1                  0.0\nIcmpInCsumErrors                0                  0.0\nIcmpInDestUnreachs              0                  0.0\nIcmpInTimeExcds                 1                  0.0\nIcmpInParmProbs                 0                  0.0\nIcmpInSrcQuenchs                0                  0.0\nIcmpInRedirects                 0                  0.0\nIcmpInEchos                     25906              0.0\nIcmpInEchoReps                  0                  0.0\nIcmpInTimestamps                0                  0.0\nIcmpInTimestampReps             0                  0.0\nIcmpInAddrMasks                 0                  0.0\nIcmpInAddrMaskReps              0                  0.0\nIcmpOutMsgs                     27271              0.0\nIcmpOutErrors                   0                  0.0\nIcmpOutRateLimitGlobal          0                  0.0\nIcmpOutRateLimitHost            977                0.0\nIcmpOutDestUnreachs             1365               0.0\nIcmpOutTimeExcds                0                  0.0\nIcmpOutParmProbs                0                  0.0\nIcmpOutSrcQuenchs               0                  0.0\nIcmpOutRedirects                0                  0.0\nIcmpOutEchos                    0                  0.0\nIcmpOutEchoReps                 25906              0.0\nIcmpOutTimestamps               0                  0.0\nIcmpOutTimestampReps            0                  0.0\nIcmpOutAddrMasks                0                  0.0\nIcmpOutAddrMaskReps             0                  0.0\nIcmpMsgInType8                  25906              0.0\nIcmpMsgInType11                 1                  0.0\nIcmpMsgOutType0                 25906              0.0\nIcmpMsgOutType3                 1365               0.0\nTcpActiveOpens                  385806             0.0\nTcpPassiveOpens                 29185              0.0\nTcpAttemptFails                 30                 0.0\nTcpEstabResets                  1283               0.0\nTcpInSegs                       8204324            0.0\nTcpOutSegs                      15736198           0.0\nTcpRetransSegs                  370441             0.0\nTcpInErrs                       23                 0.0\nTcpOutRsts                      172843             0.0\nTcpInCsumErrors                 12                 0.0\nUdpInDatagrams                  252297             0.0\nUdpNoPorts                      2319               0.0\nUdpInErrors                     0                  0.0\nUdpOutDatagrams                 253175             0.0\nUdpRcvbufErrors                 0                  0.0\nUdpSndbufErrors                 0                  0.0\nUdpInCsumErrors                 0                  0.0\nUdpIgnoredMulti                 0                  0.0\nUdpMemErrors                    0                  0.0\nUdpLiteInDatagrams              0                  0.0\nUdpLiteNoPorts                  0                  0.0\nUdpLiteInErrors                 0                  0.0\nUdpLiteOutDatagrams             0                  0.0\nUdpLiteRcvbufErrors             0                  0.0\nUdpLiteSndbufErrors             0                  0.0\nUdpLiteInCsumErrors             0                  0.0\nUdpLiteIgnoredMulti             0                  0.0\nUdpLiteMemErrors                0                  0.0\nIp6InReceives                   58296              0.0\nIp6InHdrErrors                  0                  0.0\nIp6InTooBigErrors               0                  0.0\nIp6InNoRoutes                   2                  0.0\nIp6InAddrErrors                 0                  0.0\nIp6InUnknownProtos              0                  0.0\nIp6InTruncatedPkts              0                  0.0\nIp6InDiscards                   0                  0.0\nIp6InDelivers                   36987              0.0\nIp6OutForwDatagrams             0                  0.0\nIp6OutRequests                  12                 0.0\nIp6OutDiscards                  0                  0.0\nIp6OutNoRoutes                  3816               0.0\nIp6ReasmTimeout                 0                  0.0\nIp6ReasmReqds                   0                  0.0\nIp6ReasmOKs                     0                  0.0\nIp6ReasmFails                   0                  0.0\nIp6FragOKs                      0                  0.0\nIp6FragFails                    0                  0.0\nIp6FragCreates                  0                  0.0\nIp6InMcastPkts                  58292              0.0\nIp6OutMcastPkts                 8                  0.0\nIp6InOctets                     10858128           0.0\nIp6OutOctets                    1176               0.0\nIp6InMcastOctets                10857726           0.0\nIp6OutMcastOctets               800                0.0\nIp6InBcastOctets                0                  0.0\nIp6OutBcastOctets               0                  0.0\nIp6InNoECTPkts                  58296              0.0\nIp6InECT1Pkts                   0                  0.0\nIp6InECT0Pkts                   0                  0.0\nIp6InCEPkts                     0                  0.0\nIp6OutTransmits                 12                 0.0\nIcmp6InMsgs                     19005              0.0\nIcmp6InErrors                   0                  0.0\nIcmp6OutMsgs                    12                 0.0\nIcmp6OutErrors                  0                  0.0\nIcmp6InCsumErrors               0                  0.0\nIcmp6OutRateLimitHost           0                  0.0\nIcmp6InDestUnreachs             0                  0.0\nIcmp6InPktTooBigs               0                  0.0\nIcmp6InTimeExcds                0                  0.0\nIcmp6InParmProblems             0                  0.0\nIcmp6InEchos                    3                  0.0\nIcmp6InEchoReplies              0                  0.0\nIcmp6InGroupMembQueries         0                  0.0\nIcmp6InGroupMembResponses       0                  0.0\nIcmp6InGroupMembReductions      0                  0.0\nIcmp6InRouterSolicits           19000              0.0\nIcmp6InRouterAdvertisements     0                  0.0\nIcmp6InNeighborSolicits         1                  0.0\nIcmp6InNeighborAdvertisements   1                  0.0\nIcmp6InRedirects                0                  0.0\nIcmp6InMLDv2Reports             0                  0.0\nIcmp6OutDestUnreachs            0                  0.0\nIcmp6OutPktTooBigs              0                  0.0\nIcmp6OutTimeExcds               0                  0.0\nIcmp6OutParmProblems            0                  0.0\nIcmp6OutEchos                   0                  0.0\nIcmp6OutEchoReplies             3                  0.0\nIcmp6OutGroupMembQueries        0                  0.0\nIcmp6OutGroupMembResponses      0                  0.0\nIcmp6OutGroupMembReductions     0                  0.0\nIcmp6OutRouterSolicits          0                  0.0\nIcmp6OutRouterAdvertisements    0                  0.0\nIcmp6OutNeighborSolicits        2                  0.0\nIcmp6OutNeighborAdvertisements  1                  0.0\nIcmp6OutRedirects               0                  0.0\nIcmp6OutMLDv2Reports            6                  0.0\nIcmp6InType128                  3                  0.0\nIcmp6InType133                  19000              0.0\nIcmp6InType135                  1                  0.0\nIcmp6InType136                  1                  0.0\nIcmp6OutType129                 3                  0.0\nIcmp6OutType135                 2                  0.0\nIcmp6OutType136                 1                  0.0\nIcmp6OutType143                 6                  0.0\nUdp6InDatagrams                 0                  0.0\nUdp6NoPorts                     0                  0.0\nUdp6InErrors                    0                  0.0\nUdp6OutDatagrams                0                  0.0\nUdp6RcvbufErrors                0                  0.0\nUdp6SndbufErrors                0                  0.0\nUdp6InCsumErrors                0                  0.0\nUdp6IgnoredMulti                17982              0.0\nUdp6MemErrors                   0                  0.0\nUdpLite6InDatagrams             0                  0.0\nUdpLite6NoPorts                 0                  0.0\nUdpLite6InErrors                0                  0.0\nUdpLite6OutDatagrams            0                  0.0\nUdpLite6RcvbufErrors            0                  0.0\nUdpLite6SndbufErrors            0                  0.0\nUdpLite6InCsumErrors            0                  0.0\nUdpLite6MemErrors               0                  0.0\nTcpExtSyncookiesSent            0                  0.0\nTcpExtSyncookiesRecv            0                  0.0\nTcpExtSyncookiesFailed          0                  0.0\nTcpExtEmbryonicRsts             30                 0.0\nTcpExtPruneCalled               2744               0.0\nTcpExtRcvPruned                 685                0.0\nTcpExtOfoPruned                 9                  0.0\nTcpExtOutOfWindowIcmps          0                  0.0\nTcpExtLockDroppedIcmps          0                  0.0\nTcpExtArpFilter                 0                  0.0\nTcpExtTW                        25073              0.0\nTcpExtTWRecycled                0                  0.0\nTcpExtTWKilled                  0                  0.0\nTcpExtPAWSActive                0                  0.0\nTcpExtPAWSEstab                 8704               0.0\nTcpExtBeyondWindow              912                0.0\nTcpExtTSEcrRejected             0                  0.0\nTcpExtPAWSOldAck                1551               0.0\nTcpExtPAWSTimewait              0                  0.0\nTcpExtDelayedACKs               32441              0.0\nTcpExtDelayedACKLocked          1                  0.0\nTcpExtDelayedACKLost            68818              0.0\nTcpExtListenOverflows           0                  0.0\nTcpExtListenDrops               0                  0.0\nTcpExtTCPHPHits                 479276             0.0\nTcpExtTCPPureAcks               2548802            0.0\nTcpExtTCPHPAcks                 1421657            0.0\nTcpExtTCPRenoRecovery           0                  0.0\nTcpExtTCPSackRecovery           30094              0.0\nTcpExtTCPSACKReneging           0                  0.0\nTcpExtTCPSACKReorder            208590             0.0\nTcpExtTCPRenoReorder            0                  0.0\nTcpExtTCPTSReorder              9                  0.0\nTcpExtTCPFullUndo               11                 0.0\nTcpExtTCPPartialUndo            9                  0.0\nTcpExtTCPDSACKUndo              139                0.0\nTcpExtTCPLossUndo               171                0.0\nTcpExtTCPLostRetransmit         39649              0.0\nTcpExtTCPRenoFailures           0                  0.0\nTcpExtTCPSackFailures           46                 0.0\nTcpExtTCPLossFailures           29                 0.0\nTcpExtTCPFastRetrans            292020             0.0\nTcpExtTCPSlowStartRetrans       21453              0.0\nTcpExtTCPTimeouts               51742              0.0\nTcpExtTCPLossProbes             5995               0.0\nTcpExtTCPLossProbeRecovery      1797               0.0\nTcpExtTCPRenoRecoveryFail       0                  0.0\nTcpExtTCPSackRecoveryFail       518                0.0\nTcpExtTCPRcvCollapsed           25279              0.0\nTcpExtTCPBacklogCoalesce        2121               0.0\nTcpExtTCPDSACKOldSent           68902              0.0\nTcpExtTCPDSACKOfoSent           32                 0.0\nTcpExtTCPDSACKRecv              2437               0.0\nTcpExtTCPDSACKOfoRecv           232                0.0\nTcpExtTCPAbortOnData            27599              0.0\nTcpExtTCPAbortOnClose           110                0.0\nTcpExtTCPAbortOnMemory          0                  0.0\nTcpExtTCPAbortOnTimeout         600                0.0\nTcpExtTCPAbortOnLinger          0                  0.0\nTcpExtTCPAbortFailed            0                  0.0\nTcpExtTCPMemoryPressures        0                  0.0\nTcpExtTCPMemoryPressuresChrono  0                  0.0\nTcpExtTCPSACKDiscard            102                0.0\nTcpExtTCPDSACKIgnoredOld        47                 0.0\nTcpExtTCPDSACKIgnoredNoUndo     626                0.0\nTcpExtTCPSpuriousRTOs           62                 0.0\nTcpExtTCPMD5NotFound            0                  0.0\nTcpExtTCPMD5Unexpected          0                  0.0\nTcpExtTCPMD5Failure             0                  0.0\nTcpExtTCPSackShifted            95716              0.0\nTcpExtTCPSackMerged             318450             0.0\nTcpExtTCPSackShiftFallback      589021             0.0\nTcpExtTCPBacklogDrop            0                  0.0\nTcpExtPFMemallocDrop            0                  0.0\nTcpExtTCPMinTTLDrop             0                  0.0\nTcpExtTCPDeferAcceptDrop        0                  0.0\nTcpExtIPReversePathFilter       14                 0.0\nTcpExtTCPTimeWaitOverflow       0                  0.0\nTcpExtTCPReqQFullDoCookies      0                  0.0\nTcpExtTCPReqQFullDrop           0                  0.0\nTcpExtTCPRetransFail            0                  0.0\nTcpExtTCPRcvCoalesce            1260936            0.0\nTcpExtTCPOFOQueue               42973              0.0\nTcpExtTCPOFODrop                1                  0.0\nTcpExtTCPOFOMerge               29                 0.0\nTcpExtTCPChallengeACK           51                 0.0\nTcpExtTCPSYNChallenge           46                 0.0\nTcpExtTCPFastOpenActive         0                  0.0\nTcpExtTCPFastOpenActiveFail     0                  0.0\nTcpExtTCPFastOpenPassive        0                  0.0\nTcpExtTCPFastOpenPassiveFail    0                  0.0\nTcpExtTCPFastOpenListenOverflow 0                  0.0\nTcpExtTCPFastOpenCookieReqd     0                  0.0\nTcpExtTCPFastOpenBlackhole      0                  0.0\nTcpExtTCPSpuriousRtxHostQueues  0                  0.0\nTcpExtBusyPollRxPackets         0                  0.0\nTcpExtTCPAutoCorking            0                  0.0\nTcpExtTCPFromZeroWindowAdv      5607               0.0\nTcpExtTCPToZeroWindowAdv        4923               0.0\nTcpExtTCPWantZeroWindowAdv      78462              0.0\nTcpExtTCPSynRetrans             47678              0.0\nTcpExtTCPOrigDataSent           11088715           0.0\nTcpExtTCPHystartTrainDetect     0                  0.0\nTcpExtTCPHystartTrainCwnd       0                  0.0\nTcpExtTCPHystartDelayDetect     0                  0.0\nTcpExtTCPHystartDelayCwnd       0                  0.0\nTcpExtTCPACKSkippedSynRecv      22                 0.0\nTcpExtTCPACKSkippedPAWS         6381               0.0\nTcpExtTCPACKSkippedSeq          1389               0.0\nTcpExtTCPACKSkippedFinWait2     0                  0.0\nTcpExtTCPACKSkippedTimeWait     0                  0.0\nTcpExtTCPACKSkippedChallenge    0                  0.0\nTcpExtTCPWinProbe               0                  0.0\nTcpExtTCPKeepAlive              760776             0.0\nTcpExtTCPMTUPFail               1                  0.0\nTcpExtTCPMTUPSuccess            83                 0.0\nTcpExtTCPDelivered              11115397           0.0\nTcpExtTCPDeliveredCE            0                  0.0\nTcpExtTCPAckCompressed          1408               0.0\nTcpExtTCPZeroWindowDrop         0                  0.0\nTcpExtTCPRcvQDrop               684                0.0\nTcpExtTCPWqueueTooBig           0                  0.0\nTcpExtTCPFastOpenPassiveAltKey  0                  0.0\nTcpExtTcpTimeoutRehash          51389              0.0\nTcpExtTcpDuplicateDataRehash    0                  0.0\nTcpExtTCPDSACKRecvSegs          2458               0.0\nTcpExtTCPDSACKIgnoredDubious    268                0.0\nTcpExtTCPMigrateReqSuccess      0                  0.0\nTcpExtTCPMigrateReqFailure      0                  0.0\nTcpExtTCPPLBRehash              0                  0.0\nTcpExtTCPAORequired             0                  0.0\nTcpExtTCPAOBad                  0                  0.0\nTcpExtTCPAOKeyNotFound          0                  0.0\nTcpExtTCPAOGood                 0                  0.0\nTcpExtTCPAODroppedIcmps         0                  0.0\nIpExtInNoRoutes                 0                  0.0\nIpExtInTruncatedPkts            0                  0.0\nIpExtInMcastPkts                0                  0.0\nIpExtOutMcastPkts               0                  0.0\nIpExtInBcastPkts                0                  0.0\nIpExtOutBcastPkts               0                  0.0\nIpExtInOctets                   13742064768        0.0\nIpExtOutOctets                  14164182352        0.0\nIpExtInMcastOctets              0                  0.0\nIpExtOutMcastOctets             0                  0.0\nIpExtInBcastOctets              0                  0.0\nIpExtOutBcastOctets             0                  0.0\nIpExtInCsumErrors               0                  0.0\nIpExtInNoECTPkts                5663365            0.0\nIpExtInECT1Pkts                 0                  0.0\nIpExtInECT0Pkts                 2884511            0.0\nIpExtInCEPkts                   10                 0.0\nIpExtReasmOverlaps              0                  0.0\nMPTcpExtMPCapableSYNRX          0                  0.0\nMPTcpExtMPCapableSYNTX          0                  0.0\nMPTcpExtMPCapableSYNACKRX       0                  0.0\nMPTcpExtMPCapableACKRX          0                  0.0\nMPTcpExtMPCapableFallbackACK    0                  0.0\nMPTcpExtMPCapableFallbackSYNACK 0                  0.0\nMPTcpExtMPCapableSYNTXDrop      0                  0.0\nMPTcpExtMPCapableSYNTXDisabled  0                  0.0\nMPTcpExtMPCapableEndpAttempt    0                  0.0\nMPTcpExtMPFallbackTokenInit     0                  0.0\nMPTcpExtMPTCPRetrans            0                  0.0\nMPTcpExtMPJoinNoTokenFound      0                  0.0\nMPTcpExtMPJoinSynRx             0                  0.0\nMPTcpExtMPJoinSynBackupRx       0                  0.0\nMPTcpExtMPJoinSynAckRx          0                  0.0\nMPTcpExtMPJoinSynAckBackupRx    0                  0.0\nMPTcpExtMPJoinSynAckHMacFailure 0                  0.0\nMPTcpExtMPJoinAckRx             0                  0.0\nMPTcpExtMPJoinAckHMacFailure    0                  0.0\nMPTcpExtMPJoinRejected          0                  0.0\nMPTcpExtMPJoinSynTx             0                  0.0\nMPTcpExtMPJoinSynTxCreatSkErr   0                  0.0\nMPTcpExtMPJoinSynTxBindErr      0                  0.0\nMPTcpExtMPJoinSynTxConnectErr   0                  0.0\nMPTcpExtDSSNotMatching          0                  0.0\nMPTcpExtDSSCorruptionFallback   0                  0.0\nMPTcpExtDSSCorruptionReset      0                  0.0\nMPTcpExtInfiniteMapTx           0                  0.0\nMPTcpExtInfiniteMapRx           0                  0.0\nMPTcpExtDSSNoMatchTCP           0                  0.0\nMPTcpExtDataCsumErr             0                  0.0\nMPTcpExtOFOQueueTail            0                  0.0\nMPTcpExtOFOQueue                0                  0.0\nMPTcpExtOFOMerge                0                  0.0\nMPTcpExtNoDSSInWindow           0                  0.0\nMPTcpExtDuplicateData           0                  0.0\nMPTcpExtAddAddr                 0                  0.0\nMPTcpExtAddAddrTx               0                  0.0\nMPTcpExtAddAddrTxDrop           0                  0.0\nMPTcpExtEchoAdd                 0                  0.0\nMPTcpExtEchoAddTx               0                  0.0\nMPTcpExtEchoAddTxDrop           0                  0.0\nMPTcpExtPortAdd                 0                  0.0\nMPTcpExtAddAddrDrop             0                  0.0\nMPTcpExtMPJoinPortSynRx         0                  0.0\nMPTcpExtMPJoinPortSynAckRx      0                  0.0\nMPTcpExtMPJoinPortAckRx         0                  0.0\nMPTcpExtMismatchPortSynRx       0                  0.0\nMPTcpExtMismatchPortAckRx       0                  0.0\nMPTcpExtRmAddr                  0                  0.0\nMPTcpExtRmAddrDrop              0                  0.0\nMPTcpExtRmAddrTx                0                  0.0\nMPTcpExtRmAddrTxDrop            0                  0.0\nMPTcpExtRmSubflow               0                  0.0\nMPTcpExtMPPrioTx                0                  0.0\nMPTcpExtMPPrioRx                0                  0.0\nMPTcpExtMPFailTx                0                  0.0\nMPTcpExtMPFailRx                0                  0.0\nMPTcpExtMPFastcloseTx           0                  0.0\nMPTcpExtMPFastcloseRx           0                  0.0\nMPTcpExtMPRstTx                 0                  0.0\nMPTcpExtMPRstRx                 0                  0.0\nMPTcpExtRcvPruned               0                  0.0\nMPTcpExtSubflowStale            0                  0.0\nMPTcpExtSubflowRecover          0                  0.0\nMPTcpExtSndWndShared            0                  0.0\nMPTcpExtRcvWndShared            0                  0.0\nMPTcpExtRcvWndConflictUpdate    0                  0.0\nMPTcpExtRcvWndConflict          0                  0.0\nMPTcpExtMPCurrEstab             0                  0.0\nMPTcpExtBlackhole               0                  0.0\nMPTcpExtMPCapableDataFallback   0                  0.0\nMPTcpExtMD5SigFallback          0                  0.0\nMPTcpExtDssFallback             0                  0.0\nMPTcpExtSimultConnectFallback   0                  0.0\nMPTcpExtFallbackFailed          0                  0.0\nMPTcpExtWinProbe                0                  0.0\n",
+      "stderr": ""
+    },
+    "network_values": {
+      "exit": 0,
+      "stdout": "net.ipv4.tcp_congestion_control = bbr\nnet.ipv4.tcp_available_congestion_control = reno bbr cubic\nnet.core.default_qdisc = fq\nnet.core.rmem_max = 16777216\nnet.core.wmem_max = 16777216\nnet.ipv4.udp_rmem_min = 8192\nnet.ipv4.udp_wmem_min = 8192\nnet.ipv4.tcp_mem = 58240\t116480\t232960\nnet.ipv4.tcp_syncookies = 1\nnet.ipv4.tcp_syn_retries = 3\nnet.ipv4.tcp_synack_retries = 2\nnet.ipv4.tcp_fin_timeout = 15\nnet.ipv4.ip_forward = 1\nnet.ipv6.conf.all.disable_ipv6 = 0\nnet.netfilter.nf_conntrack_max = 262144\n",
+      "stderr": ""
+    }
+  },
+  "services_before": {
+    "ssh.service": {
+      "MainPID": "426",
+      "NRestarts": "0",
+      "Id": "ssh.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "crowdsec.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "crowdsec-firewall-bouncer.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "docker.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "docker.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "nftables.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "nftables.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    "netfilter-persistent.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "netfilter-persistent.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "ufw.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "ufw.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "firewalld.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "firewalld.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "rsyslog.service": {
+      "MainPID": "409",
+      "NRestarts": "0",
+      "Id": "rsyslog.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "systemd-journald.service": {
+      "MainPID": "182",
+      "NRestarts": "0",
+      "Id": "systemd-journald.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "static"
+    },
+    "forwardx-agent.service": {
+      "MainPID": "24454",
+      "NRestarts": "0",
+      "Id": "forwardx-agent.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    }
+  },
+  "business_units": [
+    "fail2ban.service                     loaded    active   running Fail2Ban Service",
+    "forwardx-agent.service               loaded    active   running ForwardX Agent",
+    "* forwardx-nginx.service               not-found inactive dead    forwardx-nginx.service",
+    "forwardx-realm-both-53537.service    loaded    active   running ForwardX realm forwarder 53537->192.0.2.19:8443",
+    "forwardx-realm-both-53541.service    loaded    active   running ForwardX realm forwarder 53541->192.0.2.28:8443",
+    "forwardx-realm-both-53543.service    loaded    active   running ForwardX realm forwarder 53543->192.0.2.18:8443",
+    "forwardx-realm-both-53544.service    loaded    active   running ForwardX realm forwarder 53544->192.0.2.18:8443",
+    "forwardx-realm-both-53545.service    loaded    active   running ForwardX realm forwarder 53545->192.0.2.11:8443",
+    "forwardx-realm-both-53546.service    loaded    active   running ForwardX realm forwarder 53546->192.0.2.11:8443",
+    "forwardx-realm-both-53547.service    loaded    active   running ForwardX realm forwarder 53547->192.0.2.13:2096",
+    "forwardx-realm-both-53548.service    loaded    active   running ForwardX realm forwarder 53548->192.0.2.13:2087",
+    "forwardx-realm-both-53549.service    loaded    active   running ForwardX realm forwarder 53549->192.0.2.28:8443",
+    "forwardx-realm-both-53551.service    loaded    active   running ForwardX realm forwarder 53551->192.0.2.21:8443",
+    "forwardx-realm-both-53552.service    loaded    active   running ForwardX realm forwarder 53552->192.0.2.21:8443",
+    "forwardx-realm-both-53553.service    loaded    active   running ForwardX realm forwarder 53553->192.0.2.13:2087",
+    "forwardx-realm-both-53554.service    loaded    active   running ForwardX realm forwarder 53554->192.0.2.13:2053",
+    "* forwardx-runtime.service             not-found inactive dead    forwardx-runtime.service",
+    "* forwardx-tunnel-runtime.service      not-found inactive dead    forwardx-tunnel-runtime.service"
+  ],
+  "ssh_journal": {
+    "exit": 0,
+    "sample_lines": 31,
+    "sample_cap": 100,
+    "has_journal": true
+  },
+  "memory": {
+    "MemTotal": 466344,
+    "MemAvailable": 267620,
+    "SwapTotal": 1048572,
+    "SwapFree": 1048524
+  },
+  "loadavg": "0.00 0.00 0.00 1/128 35020\n",
+  "uptime_seconds": "179848.38",
+  "pressure": {
+    "cpu": null,
+    "memory": null,
+    "io": null
+  },
+  "yaml_available": true,
+  "commands_available": {
+    "git": null,
+    "curl": "/usr/bin/curl",
+    "python3": "/usr/bin/python3",
+    "bash": "/usr/bin/bash",
+    "systemctl": "/usr/bin/systemctl",
+    "iptables": "/usr/sbin/iptables",
+    "ip6tables": "/usr/sbin/ip6tables",
+    "ipset": null,
+    "nft": "/usr/sbin/nft",
+    "cscli": null,
+    "crowdsec": null,
+    "realm": "/usr/local/bin/realm",
+    "docker": null
+  },
+  "files": {
+    "/var/log/auth.log": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o640",
+      "size": 22290,
+      "sha256": "e2fc201bf21aed35146756491a3e602e94d7429104a33a29ce49d3e2e8953f20"
+    },
+    "/var/log/syslog": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o640",
+      "size": 111928,
+      "sha256": "a2a0d77a3426c45dcf5bb7e0f8efdd63acf79daa4452e4d89c415bebb13d2b13"
+    },
+    "/etc/crowdsec/config.yaml": {
+      "exists": false
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": {
+      "exists": false
+    },
+    "/etc/iptables/rules.v4": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 539,
+      "sha256": "ae55ae05c134088739dd2dedae3858554665c6cc8676ec2bc24c5d8bf9d59532"
+    },
+    "/etc/iptables/rules.v6": {
+      "exists": false
+    },
+    "/etc/nftables.conf": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o755",
+      "size": 228,
+      "sha256": "96fdddd091ae70342a8d32b864ff444c6e7c82c346f7ea8899cb2710d9adb105"
+    },
+    "/usr/local/bin/realm": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o755",
+      "size": 6755064,
+      "sha256": "5afb1ac60b8f5e8d10500123938f5bcf0a6cff20d0e23bd4ee726033b13b1a22"
+    },
+    "/usr/bin/realm": {
+      "exists": false
+    },
+    "/usr/local/bin/forwardx-agent": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o755",
+      "size": 11686072
+    },
+    "/run/lock": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o1777",
+      "size": 60
+    },
+    "/run/lock/crowdsec-1key.lock": {
+      "exists": false
+    }
+  },
+  "iptables": {
+    "exit": 0,
+    "rules": [],
+    "stderr": ""
+  },
+  "ip6tables": {
+    "exit": 0,
+    "rules": [],
+    "stderr": ""
+  },
+  "nft": {
+    "exit": 0,
+    "tables": [
+      {
+        "family": "inet",
+        "name": "forwardx_traffic",
+        "handle": 1
+      }
+    ],
+    "chains": [
+      {
+        "family": "inet",
+        "table": "forwardx_traffic",
+        "name": "input",
+        "handle": 1,
+        "type": "filter",
+        "hook": "input",
+        "prio": -150,
+        "policy": "accept"
+      },
+      {
+        "family": "inet",
+        "table": "forwardx_traffic",
+        "name": "output",
+        "handle": 2,
+        "type": "filter",
+        "hook": "output",
+        "prio": -150,
+        "policy": "accept"
+      }
+    ],
+    "rule_count": 78
+  },
+  "kernel_features": {
+    "CONFIG_NETFILTER": "y",
+    "CONFIG_NF_TABLES": "m",
+    "CONFIG_NETFILTER_XTABLES": "m",
+    "CONFIG_IP_SET": "m",
+    "CONFIG_IP_SET_HASH_IP": "m",
+    "CONFIG_IP_SET_HASH_NET": "m",
+    "CONFIG_NETFILTER_XT_SET": "m",
+    "CONFIG_NF_CONNTRACK": "m",
+    "CONFIG_NET_SCH_FQ": "m",
+    "CONFIG_TCP_CONG_BBR": "y"
+  },
+  "loaded_modules": [
+    "nf_tables",
+    "sch_fq",
+    "nf_conntrack",
+    "ip_tables"
+  ],
+  "startup_restore_tasks": [
+    {
+      "file": "/var/spool/cron/crontabs/root",
+      "disabled": false,
+      "reboot": true,
+      "line_sha256": "4d717a1b375d1f96c8d700812dbb7d053b5b74b0e054139afdd6d9735166753a"
+    }
+  ],
+  "forwardx_configs": {
+    "/etc/forwardx/realm/forwardx-realm-both-53537.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 257,
+      "sha256": "15cbb40c24def352b199ad5321c3d7eab366ae9dc62d13aabea639c875ba95e4"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53553.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 255,
+      "sha256": "24873fb1d99661ce8b94b9b9f8cd1356e0ea29b12f11585d57a1e840c01ea647"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53551.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 257,
+      "sha256": "407c439b3f311a8c6e0a82226cd673e96570ac4da00334fc97cc398cca94dbd1"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53543.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 254,
+      "sha256": "cbcdeee4395f8583330e9cb3dbde15415295fafd170b360d0d793569a4486e38"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53547.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 255,
+      "sha256": "0e8ef9ce0d06b03bf19f90cd09551cddd4cddb149f3ed6aad62f5326b8ab50a1"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53544.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 254,
+      "sha256": "82fef300e0bb0c45390f392575070a46a5fd1d97d4ce67480b8672cda9da9747"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53541.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 256,
+      "sha256": "e38be684aaf0cf26a9b077582b9abfb644b7cfbe157f464f6564f6f8756b489d"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53546.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 256,
+      "sha256": "ceda9ddb41479ed795d6e9fa18d292836c3f159dc9cbdcc4fb07a30aee6f73ec"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53554.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 255,
+      "sha256": "5a0653e5fb832e53665a0ea6fdda4baef327efa782e765ba7b4aed51f197fe22"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53549.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 256,
+      "sha256": "e4f28fbcb16ca391844d1e346023fec065f01a29a073711fe1e7ae13d9f4649e"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53548.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 255,
+      "sha256": "43418488050468207e91bd7726750496664f193875f6c3ac0b0dd17c547f44f6"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53545.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 256,
+      "sha256": "19098c64c0fd2031b30b73a8fa0e78f7f46dec665c2eafda08dd1eb3a250119d"
+    },
+    "/etc/forwardx/realm/forwardx-realm-both-53552.toml": {
+      "exists": true,
+      "uid": 0,
+      "mode": "0o644",
+      "size": 257,
+      "sha256": "9e5fa4468481a78db657c2bc063b105dc6cab3b6474dccacce533b6ab1b58812"
+    }
+  },
+  "https_endpoints": {
+    "https://install.crowdsec.net": {
+      "http_status": 200,
+      "tls_http_reached": true
+    },
+    "https://packagecloud.io/crowdsec/crowdsec": {
+      "http_status": 200,
+      "tls_http_reached": true
+    },
+    "https://hub-data.crowdsec.net/": {
+      "http_status": 403,
+      "tls_http_reached": true
+    },
+    "https://site-02.example.com/": {
+      "http_status": 403,
+      "tls_http_reached": true
+    },
+    "https://github.com/": {
+      "http_status": 200,
+      "tls_http_reached": true
+    }
+  },
+  "services_after": {
+    "ssh.service": {
+      "MainPID": "426",
+      "NRestarts": "0",
+      "Id": "ssh.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "crowdsec.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "crowdsec-firewall-bouncer.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "docker.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "docker.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "nftables.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "nftables.service",
+      "LoadState": "loaded",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": "disabled"
+    },
+    "netfilter-persistent.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "netfilter-persistent.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "ufw.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "ufw.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "firewalld.service": {
+      "MainPID": "0",
+      "NRestarts": "0",
+      "Id": "firewalld.service",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "UnitFileState": ""
+    },
+    "rsyslog.service": {
+      "MainPID": "409",
+      "NRestarts": "0",
+      "Id": "rsyslog.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    },
+    "systemd-journald.service": {
+      "MainPID": "182",
+      "NRestarts": "0",
+      "Id": "systemd-journald.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "static"
+    },
+    "forwardx-agent.service": {
+      "MainPID": "24454",
+      "NRestarts": "0",
+      "Id": "forwardx-agent.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "UnitFileState": "enabled"
+    }
+  },
+  "service_pid_continuity": {
+    "ssh.service": true,
+    "crowdsec.service": true,
+    "crowdsec-firewall-bouncer.service": true,
+    "docker.service": true,
+    "nftables.service": true,
+    "netfilter-persistent.service": true,
+    "ufw.service": true,
+    "firewalld.service": true,
+    "rsyslog.service": true,
+    "systemd-journald.service": true,
+    "forwardx-agent.service": true
+  }
+}

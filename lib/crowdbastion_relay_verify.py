@@ -6,8 +6,11 @@ import ipaddress
 import json
 import os
 from pathlib import Path
+import re
+import shlex
 import subprocess
 import sys
+import time
 import uuid
 
 sys.dont_write_bytecode = True
@@ -43,7 +46,7 @@ def nft_evidence(ruleset, family, table, names, hook, source):
         raise Incomplete('防火墙返回的规则格式无法识别。')
     address = ipaddress.ip_address(source)
     namespace = {family, 'inet'}
-    sets, chains, named = {}, {}, {}
+    sets, chains, named, named_handles = {}, {}, {}, {}
     for item in records:
         block = item.get('set', {})
         name = block.get('name')
@@ -55,16 +58,53 @@ def nft_evidence(ruleset, family, table, names, hook, source):
                 sets[(block['family'], '@'+name)] = any(contains(elem, address) for elem in elements)
         block = item.get('chain', {})
         if block.get('family') in namespace and block.get('table') == table:
-            chains[(block.get('family'), block.get('name'))] = block.get('hook')
+            chains[(block.get('family'), block.get('name'))] = block
         block = item.get('counter', {})
         packets = block.get('packets')
         if block.get('table') == table and type(packets) is int and packets >= 0:
             named[(block.get('family'), block.get('name'))] = packets
+            named_handles[(block.get('family'), block.get('name'))] = block.get('handle')
+    grouped, unsafe = {}, set()
+    for item in records:
+        rule = item.get('rule', {})
+        group = (rule.get('family'), rule.get('chain'))
+        if (rule.get('family') not in namespace or rule.get('table') != table
+                or chains.get(group, {}).get('hook') != hook):
+            continue
+        expressions = rule.get('expr', [])
+        if not isinstance(expressions, list) or any(not isinstance(expr, dict) for expr in expressions):
+            raise Incomplete('封禁规则表达式无法读取。')
+        # Every rule in the selected hooked chain must be safe, including
+        # rules before the DROP from which we intend to use counters.
+        match = expressions[0].get('match', {}) if expressions else {}
+        right = match.get('right')
+        safe = (len(expressions) >= 2 and set(expressions[0]) == {'match'}
+                and set(expressions[-1]) in ({'drop'}, {'reject'})
+                and all(set(expr) == {'counter'} for expr in expressions[1:-1])
+                and match.get('op') in ('==', 'in')
+                and match.get('left') == {'payload': {'protocol': family, 'field': 'saddr'}}
+                and isinstance(right, str) and (group[0], right) in sets)
+        if not safe:
+            unsafe.add(group)
+        grouped.setdefault(group, []).append(rule)
+    identities = {}
+    for group, rules in grouped.items():
+        structure, counter_ids = [], []
+        for rule in rules:
+            stable = [{key: {} if key == 'counter' and isinstance(value, dict) else value
+                       for key, value in expr.items()} for expr in rule.get('expr', [])]
+            structure.append({'handle': rule.get('handle'), 'expr': stable})
+            counter_ids.extend((expr['counter'], named_handles.get((group[0], expr['counter'])))
+                               for expr in rule.get('expr', []) if isinstance(expr.get('counter'), str))
+        identities[group] = hashlib.sha256(json.dumps(
+            [chains[group], structure, counter_ids], sort_keys=True).encode()).hexdigest()
     result = {'matched': False, 'present': False, 'rule_counters': {}, 'source_counters': {}}
     for item in records:
         rule = item.get('rule', {})
         version = rule.get('family')
-        if version not in namespace or rule.get('table') != table or chains.get((version, rule.get('chain'))) != hook:
+        group = (version, rule.get('chain'))
+        if (version not in namespace or rule.get('table') != table or group in unsafe
+                or chains.get(group, {}).get('hook') != hook):
             continue
         expressions = rule.get('expr', [])
         if not isinstance(expressions, list) or any(not isinstance(expr, dict) for expr in expressions):
@@ -89,9 +129,7 @@ def nft_evidence(ruleset, family, table, names, hook, source):
         present = any(sets[(version, name)] for name in references)
         result['present'] |= present
         # Counters reset or replacement rules must not appear as an increase.
-        stable = [{key: {} if key == 'counter' and isinstance(value, dict) else value
-                   for key, value in expr.items()} for expr in expressions]
-        fingerprint = hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest()
+        fingerprint = identities[group]
         for index, expr in enumerate(expressions):
             counter = expr.get('counter')
             packets = named.get((version, counter)) if isinstance(counter, str) else counter.get('packets') if isinstance(counter, dict) else None
@@ -104,6 +142,145 @@ def nft_evidence(ruleset, family, table, names, hook, source):
     return result
 
 
+def _iptables_paths(payload, hook, chain, names):
+    """Recognize only a direct first jump and unconditional source-set verdicts."""
+    if hook not in ('input', 'forward') or not re.fullmatch(r'[A-Za-z0-9_.-]+', chain):
+        raise Incomplete('无法识别所选 iptables 链。')
+    if not names or any(not isinstance(n, str) or not re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]{0,30}', n) for n in names):
+        raise Incomplete('无法识别配置的 ipset 名称。')
+    table, seen, declared, rows = None, False, {}, []
+    for line in payload.splitlines():
+        if not line or line.startswith('#'):
+            continue
+        if line.startswith('*'):
+            if table is not None:
+                raise Incomplete('iptables 表缺少 COMMIT，无法确认完整规则。')
+            table = line[1:]
+            if table == 'filter':
+                if seen:
+                    raise Incomplete('iptables filter 表重复，无法确认规则。')
+                seen = True
+            continue
+        if line == 'COMMIT':
+            table = None
+            continue
+        if table != 'filter':
+            continue
+        if line.startswith(':'):
+            words = line.split()
+            if len(words) != 3 or words[0][1:] in declared:
+                raise Incomplete('iptables 链声明无法识别。')
+            declared[words[0][1:]] = words[1]
+            continue
+        match = re.fullmatch(r'\[(\d+):(\d+)\]\s+(.+)', line)
+        tokens = shlex.split(match[3] if match else line)
+        # Only remove the exact optional comment module; never remove predicates.
+        clean, index = [], 0
+        while index < len(tokens):
+            if tokens[index:index+3] == ['-m', 'comment', '--comment'] and index+3 < len(tokens):
+                index += 4
+            else:
+                clean.append(tokens[index]); index += 1
+        if clean[:1] != ['-A'] or len(clean) < 3:
+            raise Incomplete('iptables 规则无法识别。')
+        rows.append((clean, int(match[1]) if match else None))
+    if table == 'filter':
+        raise Incomplete('iptables filter 表读取不完整。')
+    ingress = [tokens for tokens, _ in rows if tokens[:2] == ['-A', hook.upper()]]
+    if (hook.upper() not in declared or declared.get(chain) != '-' or not ingress
+            or ingress[0] != ['-A', hook.upper(), '-j', chain]):
+        return []
+    result = []
+    for tokens, packets in rows:
+        if tokens[:2] != ['-A', chain]:
+            continue
+        verdict = tokens[8:]
+        if (len(tokens) < 9 or tokens[2:5] != ['-m', 'set', '--match-set']
+                or tokens[6:8] != ['src', '-j']
+                or verdict not in (['DROP'], ['REJECT'], ['REJECT','--reject-with','icmp-port-unreachable'],
+                                   ['REJECT','--reject-with','icmp6-port-unreachable'])
+                or not any(re.fullmatch(re.escape(base)+r'(?:-[0-9]+)?', tokens[5]) for base in names)):
+            return []
+        result.append((tokens, packets))
+    return result
+
+
+def iptables_evidence(payload, set_payload, family, hook, source, chain, names):
+    result = {'matched': False, 'present': False, 'rule_counters': {}, 'source_counters': {}}
+    rules = _iptables_paths(payload, hook, chain, names)
+    if not rules:
+        return result
+    address = ipaddress.ip_address(source)
+    version = 4 if family == 'ip' else 6 if family == 'ip6' else 0
+    if address.version != version:
+        raise Incomplete('测试来源与所选地址族不一致。')
+    wanted = {tokens[5] for tokens, _ in rules}
+    created, members = {}, {name: [] for name in wanted}
+    for line in set_payload.splitlines():
+        words = shlex.split(line)
+        if len(words) < 2 or words[1] not in wanted:
+            continue
+        if words[0] == 'create':
+            if (len(words) < 5 or words[1] in created or words[2] not in ('hash:net', 'hash:ip')
+                    or words.count('family') != 1 or 'netmask' in words or 'bitmask' in words):
+                raise Incomplete('实际引用的 ipset 类型或选项暂不支持验收。')
+            index = words.index('family')
+            if index+1 >= len(words) or words[index+1] != ('inet' if version == 4 else 'inet6'):
+                raise Incomplete('实际引用的 ipset 地址族不匹配。')
+            created[words[1]] = words[2]
+        elif words[0] == 'add':
+            if len(words) < 3 or 'nomatch' in words[3:]:
+                raise Incomplete('引用集合存在排除项或无法识别的成员。')
+            network = ipaddress.ip_network(words[2], strict=False)
+            if network.version != version:
+                raise Incomplete('ipset 成员地址族不匹配。')
+            members[words[1]].append(network)
+        else:
+            raise Incomplete('引用集合的保存格式无法识别。')
+    if wanted != set(created):
+        raise Incomplete('实际引用的 ipset 集合不存在或未完整读取。')
+    result['matched'] = True
+    for index, (tokens, packets) in enumerate(rules):
+        present = any(address in network for network in members[tokens[5]])
+        result['present'] |= present
+        if packets is not None:
+            fingerprint = hashlib.sha256(json.dumps(tokens).encode()).hexdigest()
+            key = (family, 'filter', hook, chain, index, fingerprint)
+            result['rule_counters'][key] = packets
+            if present:
+                result['source_counters'][key] = packets
+    return result
+
+
+def _iptables_snapshot(data, scope, names):
+    deadline = time.monotonic()+15
+    budget = 16*1024*1024
+
+    def read(args):
+        nonlocal budget
+        left = deadline-time.monotonic()
+        if left <= 0:
+            raise Incomplete('iptables/ipset 证据读取超时。')
+        try:
+            process = subprocess.run(args, capture_output=True, text=True, timeout=left)
+            if process.returncode or len(process.stdout) > budget:
+                raise Incomplete('无法完整读取 iptables/ipset 防火墙证据。')
+            budget -= len(process.stdout)
+            return process.stdout
+        except (OSError, subprocess.TimeoutExpired):
+            raise Incomplete('无法读取 iptables/ipset 防火墙证据。') from None
+
+    chain = data.get('iptables_chain', 'CROWDSEC_CHAIN')
+    binary = 'iptables-save' if scope['family'] == 'ip' else 'ip6tables-save'
+    payload = read([binary, '-c', '-t', 'filter'])
+    rules = _iptables_paths(payload, scope['hook'], chain, names)
+    wanted = sorted({tokens[5] for tokens, _ in rules})
+    if len(wanted) > 32:
+        raise Incomplete('引用的 ipset 集合数量超过本次验收容量。')
+    outputs = [read(['ipset', 'save', name]) for name in wanted]
+    return iptables_evidence(payload, '\n'.join(outputs), scope['family'], scope['hook'], scope['source'], chain, names)
+
+
 def read_snapshot(root, scope):
     # Import existing YAML helpers only for the configuration read.
     from crowdsec_config import merged_config
@@ -113,9 +290,13 @@ def read_snapshot(root, scope):
     except Exception:
         # YAML scanner errors can contain the credential line being parsed.
         raise Incomplete('无法读取 Bouncer 配置，请查看 --relay-status-details。') from None
-    if data.get('mode') != 'nftables':
-        raise Incomplete('本轮向导只支持 nftables；其他后端请按中转部署文档进行人工验收。')
     family = 'ipv4' if scope['family'] == 'ip' else 'ipv6'
+    if data.get('disable_'+family) is True:
+        raise Incomplete('所选地址族未启用防火墙防护。')
+    if data.get('mode') in ('iptables', 'ipset'):
+        return _iptables_snapshot(data, scope, set_names(data, family))
+    if data.get('mode') != 'nftables':
+        raise Incomplete('当前 Bouncer 后端尚未支持此入口验收。')
     options = data.get('nftables', {}).get(family, {})
     if options.get('enabled', True) is not True or family == 'ipv6' and data.get('disable_ipv6') is True:
         raise Incomplete('所选地址族未启用防火墙防护。')
@@ -149,15 +330,17 @@ def single_ip(value, public=False):
         raise Incomplete('请输入单个可用 IP；测试与对照来源需使用实际公网 IP，不使用网段或示例地址。') from None
 
 
-def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=None):
+def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=None, lifecycle=False, clock=None):
     ask = ask or input
     snapshot = snapshot or (lambda scope: read_snapshot(root, scope))
     env = os.environ if env is None else env
+    clock = clock or time.monotonic
     scope = None
     failures, pending = [], []
     ban_shown, recovered, interrupted = False, False, False
     reason = 'crowdbastion-verify-'+uuid.uuid4().hex
     config_fingerprint = None
+    active_reason, duration_hint = reason, '2 分钟'
     if record_path:
         from crowdbastion_ux import tree_fingerprint
         try:
@@ -184,6 +367,33 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
         elif value == '2':
             failures.append(fault)
         return value == '1' if value != '0' else None
+
+    def blocked_check(before):
+        value = answer('测试来源的新连接 [1 仍成功 / 2 已失败 / 0 不确定]: ')
+        if value not in ('0', '1', '2'):
+            raise Incomplete('测试结果只能选择 1、2 或 0。')
+        if value == '1':
+            failures.append('测试来源仍能建立新连接，请核对看到的来源、转发路径和决策执行。')
+        elif value == '0':
+            pending.append('封禁期间的测试连接结果尚未确认。')
+        result('正常对照来源仍可访问', '正常对照来源也无法连接，请排查共享来源、业务服务与转发路径。')
+        after = snapshot(scope)
+        if not after['present']:
+            pending.append('测试期间来源已不在封禁集合，可能决策到期或来源发生变化。')
+        if not counter_increased(before, after):
+            pending.append('所选链对应封禁规则的计数未确认增加，或规则／计数发生重置。')
+
+    def require_ban(item):
+        if not item['present'] or not item['source_counters']:
+            raise Incomplete('测试来源尚未同步到所选链的封禁集合，或对应计数无法读取。')
+
+    def confirm_elapsed(deadline, prompt):
+        left = max(0, int(deadline-clock()+0.999))
+        print('按本机单调时钟，至少还需等待 '+str(left)+' 秒；使用同一入口和来源复验。')
+        if answer(prompt).lower() != 'y':
+            raise Cancelled
+        if clock() < deadline:
+            raise Incomplete('尚未达到本机计时期限，不能确认续封或自然到期。')
 
     print('中转入口验证向导 — 输入 q 取消。')
     print('准备独立测试设备和另一公网来源的正常对照设备，用同一个入口、同一种协议测试新连接。')
@@ -221,7 +431,8 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
         if answer('确认来源已核对，测试 IP 不承载共享中转且设备／入口由你管理？[y/N]: ').lower() != 'y':
             raise Cancelled
         scope = {'target': target, 'port': int(port), 'protocol': protocol, 'hook': hook,
-                 'family': 'ip' if family == 4 else 'ip6', 'source': source, 'control': control}
+                 'family': 'ip' if family == 4 else 'ip6', 'source': source, 'control': control,
+                 'verification': 'lifecycle' if lifecycle else 'basic'}
         initial = snapshot(scope)
         if initial['present']:
             raise Incomplete('测试来源已经在封禁集合中，请换用未被封禁的独立来源。')
@@ -238,34 +449,44 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
             raise Incomplete('封禁前的连接对照没有完成，未生成测试封禁命令。')
         print('\n步骤 2/4：短时封禁独立测试来源。')
         print('以下命令'+('仅在远端检测中心执行' if remote else '在本地 CrowdSec 核心执行')+'：')
+        initial_earliest_expiry = clock()+120
         print('sudo cscli decisions add --ip '+source+' --duration 2m --reason '+reason+' --type ban')
         ban_shown = True
         print('该测试决策 2 分钟后到期；保持当前管理连接。等待 Bouncer 同步后继续。')
         if answer('已提交上述测试决策并等待同步？[y/N]: ').lower() != 'y':
             raise Cancelled
+        initial_deadline = clock()+120
         before = snapshot(scope)
-        if not before['present'] or not before['source_counters']:
-            raise Incomplete('测试来源尚未同步到所选链的封禁集合，或对应计数无法读取。')
+        require_ban(before)
         print('\n步骤 3/4：对比封禁期间的新连接。')
-        value = answer('测试来源的新连接 [1 仍成功 / 2 已失败 / 0 不确定]: ')
-        if value not in ('0', '1', '2'):
-            raise Incomplete('测试结果只能选择 1、2 或 0。')
-        if value == '1':
-            failures.append('测试来源仍能建立新连接，请核对看到的来源、转发路径和决策执行。')
-        elif value == '0':
-            pending.append('封禁期间的测试连接结果尚未确认。')
-        result('正常对照来源仍可访问', '正常对照来源也无法连接，请排查共享来源、业务服务与转发路径。')
-        after = snapshot(scope)
-        if not after['present']:
-            pending.append('测试期间来源已不在封禁集合，可能决策到期或来源发生变化。')
-        if not counter_increased(before, after):
-            pending.append('所选链对应封禁规则的计数未确认增加，或规则／计数发生重置。')
-        print('\n步骤 4/4：等待测试决策到期并确认恢复。')
-        print('等待这条 2 分钟决策到期；如需提前撤销，只删除本次原因对应的决策 ID。')
-        print('本次原因：'+reason)
-        if answer('测试决策已到期或已按本次 ID 撤销？[y/N]: ').lower() != 'y':
-            raise Cancelled
+        blocked_check(before)
+        if lifecycle:
+            print('\n生命周期：将同一原因续封为 4 分钟。以下命令由操作者执行：')
+            renewed_earliest_expiry = clock()+240
+            print('sudo cscli decisions add --ip '+source+' --duration 4m --reason '+reason+' --type ban')
+            duration_hint = '4 分钟'
+            if answer('确认在原决策未到期前完成同一来源和原因的续封，并等待同步？[y/N]: ').lower() != 'y':
+                raise Cancelled
+            if clock() >= initial_earliest_expiry:
+                raise Incomplete('原决策的本机计时期限已过，尚未确认在有效期内续封。')
+            require_ban(snapshot(scope))
+            confirm_elapsed(initial_deadline, '已等待越过原期限，继续复验？[y/N]: ')
+            renewed = snapshot(scope)
+            require_ban(renewed)
+            blocked_check(renewed)
+            print('\n生命周期：精确删除本次来源和唯一原因的决策，再确认恢复。')
+            print('sudo cscli decisions delete --scenario '+reason+' --ip '+source)
+            if answer('已执行上述精确删除并等待同步？[y/N]: ').lower() != 'y':
+                raise Cancelled
+        else:
+            print('\n步骤 4/4：等待测试决策到期并确认恢复。')
+            print('等待这条 2 分钟决策到期；如需提前撤销，只删除本次原因对应的决策 ID。')
+            print('本次原因：'+reason)
+            if answer('测试决策已到期或已按本次 ID 撤销？[y/N]: ').lower() != 'y':
+                raise Cancelled
         final = snapshot(scope)
+        if lifecycle and clock() >= renewed_earliest_expiry:
+            raise Incomplete('已超过续封的保守有效期，不能将自然到期算作精确删除成功。')
         if final['present']:
             raise Incomplete('测试来源仍在封禁集合中，先等待同步并核查是否还有其他决策。')
         if not final['matched'] or not final['rule_counters']:
@@ -273,6 +494,25 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
         recovered = True
         result('测试来源恢复访问同一入口', '测试来源未恢复连接，请查看业务状态、剩余决策与转发路径。')
         result('正常对照来源仍可访问同一入口', '正常对照来源未恢复连接，请查看业务状态与转发路径。')
+        if lifecycle:
+            print('\n生命周期：新建 1 分钟短期决策，等待自然到期，不手动删除。')
+            active_reason = reason+'-expiry'
+            duration_hint = '1 分钟'
+            recovered = False
+            print('sudo cscli decisions add --ip '+source+' --duration 1m --reason '+active_reason+' --type ban')
+            if answer('已创建新短期决策并等待同步？[y/N]: ').lower() != 'y':
+                raise Cancelled
+            expiry_deadline = clock()+60
+            short = snapshot(scope)
+            require_ban(short)
+            blocked_check(short)
+            confirm_elapsed(expiry_deadline, '确认未手动删除，已等待自然到期？[y/N]: ')
+            expired = snapshot(scope)
+            if expired['present'] or not expired['matched'] or not expired['rule_counters']:
+                raise Incomplete('自然到期后尚未确认来源退出和防护规则保留。')
+            recovered = True
+            result('测试来源恢复访问同一入口', '自然到期后测试来源未恢复连接。')
+            result('正常对照来源仍可访问同一入口', '自然到期后正常对照来源无法连接。')
     except Cancelled:
         pending.append('本次验证已取消或输入结束，尚未完成全部对照。')
     except KeyboardInterrupt:
@@ -284,8 +524,8 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
         # Configuration parser errors may contain secrets. Never echo them.
         pending.append('无法读取完整的配置或防火墙证据，请查看 --relay-status-details。')
     if ban_shown and not recovered:
-        print('\n恢复提示：如已执行测试命令，让本次 2 分钟决策到期，再核对集合退出与业务恢复。')
-        print('本次原因：'+reason+'；不要按 IP 删除其他封禁决策。')
+        print('\n恢复提示：如已执行测试命令，让本次 '+duration_hint+' 决策到期，再核对集合退出与业务恢复。')
+        print('本次原因：'+active_reason+'；不要按 IP 删除其他封禁决策。')
     code = 1 if failures else 2 if pending else 0
     print('\n验收结论：'+{0: '本次入口验证通过（人工确认）', 1: '本次入口验证未通过', 2: '验证未完成'}[code])
     if scope:
@@ -298,6 +538,8 @@ def verify(root, remote=False, ask=None, snapshot=None, env=None, record_path=No
         print('下一步：先处理上述原因，再运行 --verify-relay；技术排查用 --relay-status-details 或 --relay-path。')
     else:
         print('已确认：外部连接对照、来源入集与退出、对应封禁规则计数增加。')
+        if lifecycle:
+            print('完整生命周期：续封跨原期限、精确删除恢复、自然到期恢复均已确认。')
         print('证据说明：外部连接结果由操作者确认；集合计数也可能包含其他流量。')
         print('下一步：如还有其他入口、协议或地址族，分别验证；静态健康检查仍保留实际拦截待验证。')
     if record_path and scope:
@@ -315,8 +557,9 @@ def main():
     parser.add_argument('--root', default='/etc/crowdsec')
     parser.add_argument('--remote', action='store_true')
     parser.add_argument('--record', help='private local acceptance record')
+    parser.add_argument('--lifecycle', action='store_true', help='also guide renewal, exact deletion and natural expiry')
     options = parser.parse_args()
-    return verify(options.root, remote=options.remote, record_path=options.record)
+    return verify(options.root, remote=options.remote, record_path=options.record, lifecycle=options.lifecycle)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,28 @@
+{
+  "backup": "/var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z",
+  "fixtures": {
+    "error": {
+      "exit": 0,
+      "observation_marker_present": true,
+      "bytes": 2495
+    },
+    "warn": {
+      "exit": 0,
+      "observation_marker_present": true,
+      "bytes": 2557
+    },
+    "malformed": {
+      "exit": 0,
+      "observation_marker_present": false,
+      "bytes": 1534
+    }
+  },
+  "ssh_control": {
+    "exit": 0,
+    "sshd_parser_present": true,
+    "realm_marker_present": false
+  },
+  "config_validation": {
+    "exit": 0
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "files": {
+    "tests/requirements-integration.txt": "51eee0931d544def4e0257d5cea6a91129b8b0f3393a932d3d4a356663bbd705",
+    "tests/README.md": "9c468f9db2c1f2988004047a0dee3fd1146f2e280f8732771478f82026b647a6",
+    "docs/audit/2026-11-04-specialist-dependency-validation.md": "ef2d0f6ad2807e7578486af7fd31b17fa17161fed92fa32ee8e620eaaba4d927",
+    "docs/audit/2026-11-04-specialist-dependency-validation/environment.json": "a8548669a73dea6d57868b3c9bd4a4bbb43eaefcb7df5b603c1268ab6de8843f",
+    "docs/audit/2026-11-04-specialist-dependency-validation/environment.sh": "0e66502f472cb6b49d99899443807bd7a58dc7605885ae5eb94c6dd32e232afb",
+    "docs/audit/2026-11-04-specialist-dependency-validation/lua-results.json": "681966bcaab667bd5696fde5e33261261ef57ab6088ff421be8160401ba244e8",
+    "docs/audit/2026-11-04-specialist-dependency-validation/lua.txt": "4a94af501e814309e4c9d59588e0093654c55f5519e4987db26c701c44c4207a",
+    "docs/audit/2026-11-04-specialist-dependency-validation/notifications-results.json": "9a12e826b2d7ca3ff33f26259a0ffce3f4f2d887603a6a17a93c9d3afde34a3c",
+    "docs/audit/2026-11-04-specialist-dependency-validation/notifications.txt": "6db6a28e73122c73ac87e8e0d4d685d0f4440c9afc9e6e941fd0dfd664fb98fa",
+    "docs/audit/2026-11-04-specialist-dependency-validation/resources.json": "97d495c46ec2670c44f72a5173711e6e49112b82a01eb621e3aa530633724947",
+    "docs/audit/2026-11-04-specialist-dependency-validation/runtime-identities.json": "0bd876f85f869505efe524ff66d4ee710a5d6c12eff9d2915adc1d1913843457",
+    "docs/audit/2026-11-04-specialist-dependency-validation/seed-gost-results.json": "a97ae62429c90dc56a86ef37a7cef5b83ddc34f4a46ad7d85b09d6dc2573e87b",
+    "docs/audit/2026-11-04-specialist-dependency-validation/seed-gost.txt": "e9f82a347d7bbc8dfa2be4c69681b85cb0d1fbc39723320ed1b0b7a028084f10",
+    "docs/audit/2026-11-04-specialist-dependency-validation/selected-tests.json": "7defd3d5bbc961252f35a59743afb66800bd41739f79aad198e99707a223cba6",
+    "docs/audit/2026-11-04-specialist-dependency-validation/source-verification.json": "bd1f875005e83bf78cc552a09bf85a5a86a2a61ad9428817ef59291c001a1dcf",
+    "docs/audit/2026-11-04-specialist-dependency-validation/summary.json": "129cde2b06bb20f8b46456ebbde05c9576e3a39770c08b7539399f65a39a681b",
+    "docs/audit/2026-11-04-specialist-dependency-validation/target-verification.json": "9d7964728596d71b15dbfba8b81926ad55c64818b668c9c5696038f1742a4c28"
+  },
+  "verification": {
+    "delivered_files": 17,
+    "other_baseline_files_unchanged": 1751,
+    "existing_source_files_unchanged": 205,
+    "new_optional_dependency_manifest": true,
+    "specialist_tests_passed": 44,
+    "skipped": 0,
+    "configured_discovery_skip_count": 0,
+    "full_suite_rerun": false,
+    "main_discovery_count": 1669,
+    "main_discovery_skips": 0
+  }
+}

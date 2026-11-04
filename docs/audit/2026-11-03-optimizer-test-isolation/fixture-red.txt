@@ -1,0 +1,23 @@
+test_caller_can_override_diagnostic_status_without_bypassing_transaction (test_test_runner.OptimizerFixtureContract.test_caller_can_override_diagnostic_status_without_bypassing_transaction) ... FAIL
+test_transaction_fixture_runs_metrics_without_health_report_processes (test_test_runner.OptimizerFixtureContract.test_transaction_fixture_runs_metrics_without_health_report_processes) ... FAIL
+
+======================================================================
+FAIL: test_caller_can_override_diagnostic_status_without_bypassing_transaction (test_test_runner.OptimizerFixtureContract.test_caller_can_override_diagnostic_status_without_bypassing_transaction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_test_runner.py", line 195, in test_caller_can_override_diagnostic_status_without_bypassing_transaction
+    self.assertTrue(callable(getattr(self, 'run_optimizer', None)),
+AssertionError: False is not true : explicit optimizer transaction fixture is required
+
+======================================================================
+FAIL: test_transaction_fixture_runs_metrics_without_health_report_processes (test_test_runner.OptimizerFixtureContract.test_transaction_fixture_runs_metrics_without_health_report_processes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_test_runner.py", line 178, in test_transaction_fixture_runs_metrics_without_health_report_processes
+    self.assertTrue(callable(getattr(self, 'run_optimizer', None)),
+AssertionError: False is not true : explicit optimizer transaction fixture is required
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.034s
+
+FAILED (failures=2)

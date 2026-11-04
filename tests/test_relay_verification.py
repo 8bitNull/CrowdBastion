@@ -12,7 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'lib'))
@@ -329,9 +329,9 @@ class RelayVerification(unittest.TestCase):
 
 
 class ShellVerification(unittest.TestCase):
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
-    setUp = test_workflows.Workflows.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
 
     def test_cli_is_read_only_and_preserves_incomplete_exit(self):
         run = self.run_shell('main --verify-relay', overrides='''
@@ -341,6 +341,26 @@ locked_operation() { record UNEXPECTED_LOCK; return 99; }
         self.assertEqual(run.returncode, 2, run.stdout+run.stderr)
         self.assertIn('VERIFY', self.commands())
         self.assertNotIn('UNEXPECTED_LOCK', self.commands())
+
+    def test_lifecycle_cli_is_read_only_and_dispatches_explicit_mode(self):
+        run = self.run_shell('main --verify-relay-lifecycle', overrides='''
+verify_relay() { record VERIFY "$@"; return 2; }
+locked_operation() { record UNEXPECTED_LOCK; return 99; }
+''')
+        self.assertEqual(run.returncode, 2, run.stdout+run.stderr)
+        self.assertIn('lifecycle', self.commands())
+        self.assertNotIn('UNEXPECTED_LOCK', self.commands())
+
+    def test_lifecycle_wrapper_passes_option_and_remote_center_role(self):
+        run = self.run_shell('verify_relay "" lifecycle', 'q\n', overrides='''
+load_node_roles() { NODE_ROLES=remote; }
+python3() { record PYTHON "$@"; return 2; }
+cscli() { record UNEXPECTED_CSCLI; return 99; }
+''')
+        self.assertEqual(run.returncode, 2, run.stdout+run.stderr)
+        self.assertIn('--lifecycle', self.commands())
+        self.assertIn('--remote', self.commands())
+        self.assertNotIn('UNEXPECTED_CSCLI', self.commands())
 
     def test_relay_menu_exposes_third_option(self):
         run = self.run_shell('manage_relay_diagnostics', '3\n0\n', overrides='verify_relay() { record VERIFY; return 2; }')

@@ -138,12 +138,12 @@ class RemoteConfig(unittest.TestCase):
         self.assertEqual(outside.read_text(),'keep')
 
 
-import test_workflows
+import workflow_fixture as test_workflows
 class RemoteWorkflow(unittest.TestCase):
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     def setUp(self):
-        test_workflows.Workflows.setUp(self)
+        test_workflows.WorkflowFixtureMixin.setUp(self)
         (self.base/'etc/os-release').write_text('ID=debian\n')
         directory=self.config/'bouncers'; directory.mkdir()
         self.file=directory/'crowdsec-firewall-bouncer.yaml'
@@ -270,7 +270,9 @@ systemctl() {{
         import yaml
         local=yaml.safe_load(Path(str(self.file)+'.local').read_text())
         self.assertEqual(local['nftables_hooks'],['input','forward'])
-        self.assertEqual(local['iptables_chains'],['INPUT','FORWARD'])
+        self.assertEqual(local['iptables_chains'],[])
+        self.assertEqual(local['iptables_v4_chains'],['INPUT','FORWARD'])
+        self.assertEqual(local['iptables_v6_chains'],['INPUT','FORWARD'])
         self.assertEqual(local['api_url'],url)
         self.assertNotIn('fresh-secret-no-print',r.stdout+r.stderr+self.commands())
         self.assertNotIn('cscli',self.commands())

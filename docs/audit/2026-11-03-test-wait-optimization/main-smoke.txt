@@ -1,0 +1,11 @@
+test_clock_advances_only_on_sleep_across_shell_substitutions (test_nginx_reload.VirtualReloadClock.test_clock_advances_only_on_sleep_across_shell_substitutions) ... ok
+test_invalid_sleep_is_rejected_without_advancing_clock (test_nginx_reload.VirtualReloadClock.test_invalid_sleep_is_rejected_without_advancing_clock) ... ok
+test_real_verifier_still_requires_fresh_workers_and_master_log (test_nginx_reload.VirtualReloadClock.test_real_verifier_still_requires_fresh_workers_and_master_log) ... ok
+test_silent_reload_rejection_restores_real_ip_configuration_and_registry (test_real_ip_reload_review.RealIPReloadReview.test_silent_reload_rejection_restores_real_ip_configuration_and_registry) ... ok
+test_silent_host_rollback_rejection_keeps_package_account (test_script_review_fixes.AdditionalTransactionReview.test_silent_host_rollback_rejection_keeps_package_account) ... ok
+test_worker_that_dies_before_second_sample_is_not_accepted (test_nginx_reload.ReloadProcessEvidence.test_worker_that_dies_before_second_sample_is_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 8.654s
+
+OK

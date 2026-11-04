@@ -1,0 +1,32 @@
+line: Nov  3 01:00:00 relay-test sshd[1234]: Failed password for invalid user test from 203.0.113.77 port 2222 ssh2
+	├ s00-raw
+	|	└ 🟢 crowdsecurity/syslog-logs (+12 ~9)
+	├ s01-parse
+	|	├ 🔴 custom/openssh-session-normalize
+	|	├ 🔴 local/realm-forwardx-observation
+	|	├ 🔴 crowdsecurity/apache2-logs
+	|	├ 🔴 crowdsecurity/appsec-logs
+	|	├ 🔴 crowdsecurity/iptables-logs
+	|	├ 🔴 crowdsecurity/nginx-logs
+	|	├ 🔴 crowdsecurity/nginx-proxy-manager-logs
+	|	├ 🔴 crowdsecurity/postfix-logs
+	|	├ 🔴 crowdsecurity/postscreen-logs
+	|	└ 🟢 crowdsecurity/sshd-logs (+8 ~1)
+	├ s02-enrich
+	|	├ 🟢 custom/admin-whitelist (unchanged)
+	|	├ 🟢 custom/tg-whitelist (unchanged)
+	|	├ 🟢 crowdsecurity/dateparse-enrich (+2 ~2)
+	|	├ 🟢 crowdsecurity/geoip-enrich (+9)
+	|	├ 🔴 crowdsecurity/http-logs
+	|	├ 🟢 crowdsecurity/public-dns-allowlist (unchanged)
+	|	├ 🟢 custom/telegram-whitelist (unchanged)
+	|	└ 🟢 crowdsecurity/whitelists (unchanged)
+	├-------- parser success 🟢
+	├ Scenarios
+		├ 🟢 crowdsecurity/ssh-bf
+		├ 🟢 crowdsecurity/ssh-bf_user-enum
+		├ 🟢 crowdsecurity/ssh-slow-bf
+		├ 🟢 crowdsecurity/ssh-slow-bf_user-enum
+		├ 🟢 crowdsecurity/ssh-time-based-bf
+		└ 🟢 crowdsecurity/ssh-time-based-bf_user-enum
+

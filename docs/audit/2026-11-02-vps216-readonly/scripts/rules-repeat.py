@@ -1,0 +1,8 @@
+SNAPSHOT = "import hashlib,json,os,re,subprocess,time\nr={'checked_at':time.time(),'families':{},'method':'iptables-save output; generation comments omitted; chain declaration packet/byte counters normalized to [0:0]; no rule counters requested; ipset membership excluded'}\nfor binary in ['iptables','ip6tables']:\n    p=subprocess.run([binary+'-save'],capture_output=True,text=True,timeout=15,env=dict(os.environ,LC_ALL='C'))\n    lines=[line for line in p.stdout.splitlines() if not line.startswith('#')]\n    normalized=[re.sub(r'^(\\S+\\s+\\S+\\s+)\\[\\d+:\\d+\\]$',r'\\g<1>[0:0]',line) if line.startswith(':') else line for line in lines]\n    r['families'][binary]={'exit':p.returncode,'raw_digest_excluding_generation_comments':hashlib.sha256(('\\n'.join(lines)+'\\n').encode()).hexdigest(),'normalized_rule_sha256':hashlib.sha256(('\\n'.join(normalized)+'\\n').encode()).hexdigest(),'tables':[line[1:] for line in lines if line.startswith('*')],'lines':len(lines),'policy_counter_declarations':[line for line in lines if re.match(r'^:\\S+\\s+\\S+\\s+\\[\\d+:\\d+\\]$',line)]}\nprint(json.dumps(r,indent=2))\n"
+import contextlib,io,json,time
+samples=[]
+for index in range(2):
+ output=io.StringIO()
+ with contextlib.redirect_stdout(output):exec(compile(SNAPSHOT,'<readonly-rule-snapshot>','exec'),{})
+ samples.append(json.loads(output.getvalue()))
+print(json.dumps({'checked_at':time.time(),'samples':samples,'normalized_rules_equal':all(samples[0]['families'][family]['normalized_rule_sha256']==samples[1]['families'][family]['normalized_rule_sha256'] for family in ['iptables','ip6tables'])},indent=2))

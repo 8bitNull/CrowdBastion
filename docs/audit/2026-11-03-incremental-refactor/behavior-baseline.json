@@ -1,0 +1,1350 @@
+{
+  "anytls": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "20988dca5340cfa7f49cb8a8dd63f3d05f718ea402d71aeb70b9ec330af8f9aa"
+  },
+  "cancel-0": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "518cf1caa02b03b1ab882eeacf08a93e86332fc3d4341b893b3822c33732d6c4"
+  },
+  "cancel-1": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "518cf1caa02b03b1ab882eeacf08a93e86332fc3d4341b893b3822c33732d6c4"
+  },
+  "cancel-2": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e7740ea8adb99d9ca0aefe37673bbc1983adbeb407388eec7997e79adb8c758a"
+  },
+  "cancel-3": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e7740ea8adb99d9ca0aefe37673bbc1983adbeb407388eec7997e79adb8c758a"
+  },
+  "cancel-4": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "dcd54fe0c6e47e2b00c3b4d5363f4254541ea5254b7f16ade9a424f400188125"
+  },
+  "cancel-5": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "dcd54fe0c6e47e2b00c3b4d5363f4254541ea5254b7f16ade9a424f400188125"
+  },
+  "cancel-6": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "2441b2c30af21873c474104f79ae07af528a1e8953cdb4db3c43cbf88fc218c2"
+  },
+  "cancel-7": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "2441b2c30af21873c474104f79ae07af528a1e8953cdb4db3c43cbf88fc218c2"
+  },
+  "full-home": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "3fba1f6becd9d4f5877d866982b32d51d7299dc40779319a020c154a77629993"
+  },
+  "help": {
+    "commands": "",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "bda8f91c1d3424112043c2d39b4415c4c34d81b6dd94362d6b67c5ae317ed7c8"
+  },
+  "hy1-faketcp": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "6e89c8255059032a34054d82fde1af82aea641e7731f949999ea903c276d77e9"
+  },
+  "hy2-quic": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e1a5377511bb4a2b354f06034e4f3dab11f2d4c31fec443907398232f8838396"
+  },
+  "invalid-choice": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "0cbdb1ffce707fbb76eaf524220d88c46daa170e6b3b1b635ba8f8b4ad4498b1",
+    "stdout_sha256": "2821e082c76766a1c9734e0d032e952fb0175322d427c26aeb2b870e18f20dba"
+  },
+  "network-apply-2": {
+    "commands": "network-tool plan\nnetwork-tool apply\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "ae9fc9d31d13bbeb1451026caa9e043fb0f9e0c26334b1c718b00376752d5617"
+  },
+  "network-apply-3": {
+    "commands": "network-tool plan\nnetwork-tool apply\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5aafc33c0585c63ff3a9d9254cb549130aa8d14f30adda4c47609dcf9b7db62a"
+  },
+  "network-apply-4": {
+    "commands": "network-tool plan\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "846ca7f000462f379c88093601e43d78c66dee7dfd455de244fa4fba73affeac"
+  },
+  "network-apply-5": {
+    "commands": "network-tool plan\nnetwork-tool apply\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "347a4494297ec09787aa8122ca4a472ed37f5b4fb059ca9ba31458d76ab8ca62"
+  },
+  "network-apply-6": {
+    "commands": "network-tool plan\nnetwork-tool apply\n",
+    "exit": 75,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "854f3a2ed197d6167e747e8db449d663faa12c95f9b2d02b622ad7d85bb427a7"
+  },
+  "network-apply-7": {
+    "commands": "network-tool plan\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "ed7201db0ccc858c316abcdaad7ee5d9f0fb590c96689dffa8f212ea114eeca4"
+  },
+  "network-commit-9": {
+    "commands": "network-tool commit\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "07033b8bcec82659ffb5d2569cf5d9009817c4676a16de23aa73f8a96de8e48a"
+  },
+  "network-plan-1": {
+    "commands": "network-tool plan\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "b7107c127484080f372814b80ea3aa6cf1232a07aef8aaf8c819aff6be719b3b"
+  },
+  "network-rollback-10": {
+    "commands": "network-tool rollback\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "533d447d3f2d73593a8d28009a65f00ea5c999a37fd549a4e49b975d0ce8f1b4"
+  },
+  "network-status-0": {
+    "commands": "network-tool status\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "c49da99cf9896d0199069228f1bb288cbe56283b388c157c8b2b212f9ad5c856"
+  },
+  "network-verify-8": {
+    "commands": "network-tool verify\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "f028143d8c196fa40dcbf6b13a1e700fb9ee7711e6e0f2c15147dc575f4e7d54"
+  },
+  "port-policy-apply-2": {
+    "commands": "port-policy-tool plan\nport-policy-tool apply\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "00b7593cda977762ba861a2243d95a4dcbd05b2de686df7ba95201f694886fee"
+  },
+  "port-policy-apply-3": {
+    "commands": "port-policy-tool plan\nport-policy-tool apply\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "3709ad11616de2bf42ca3fb23e54a2a179e76a0c74c046ead2584df7537dc264"
+  },
+  "port-policy-apply-4": {
+    "commands": "port-policy-tool plan\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "c2beae260798ba3a433ff1fdfe67827ac0499bcb842cb582334a4674034cfa8c"
+  },
+  "port-policy-apply-5": {
+    "commands": "port-policy-tool plan\nport-policy-tool apply\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "34767924f76eab168ebbe5bae891915912ba320d7548e0ec715785220be0c132"
+  },
+  "port-policy-apply-6": {
+    "commands": "port-policy-tool plan\nport-policy-tool apply\n",
+    "exit": 75,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "9078241bf2851923d54e12692540d629e9b25c525e1dfb1f6b028c3196a1c8fb"
+  },
+  "port-policy-apply-7": {
+    "commands": "port-policy-tool plan\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "c6bea9f1962bd6cc7a423f74d68c38176e8fd0ff317507a91d15cabe27e5b826"
+  },
+  "port-policy-commit-9": {
+    "commands": "port-policy-tool commit\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "07033b8bcec82659ffb5d2569cf5d9009817c4676a16de23aa73f8a96de8e48a"
+  },
+  "port-policy-plan-1": {
+    "commands": "port-policy-tool plan\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "b7107c127484080f372814b80ea3aa6cf1232a07aef8aaf8c819aff6be719b3b"
+  },
+  "port-policy-rollback-10": {
+    "commands": "port-policy-tool rollback\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "533d447d3f2d73593a8d28009a65f00ea5c999a37fd549a4e49b975d0ce8f1b4"
+  },
+  "port-policy-status-0": {
+    "commands": "port-policy-tool status\n",
+    "exit": 0,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "c49da99cf9896d0199069228f1bb288cbe56283b388c157c8b2b212f9ad5c856"
+  },
+  "port-policy-verify-8": {
+    "commands": "port-policy-tool verify\n",
+    "exit": 1,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      },
+      "run/lock": {
+        "directory": true,
+        "mode": 493
+      },
+      "run/lock/crowdsec-1key.lock": {
+        "mode": 384,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "f028143d8c196fa40dcbf6b13a1e700fb9ee7711e6e0f2c15147dc575f4e7d54"
+  },
+  "shadowsocks-dual": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "41cf45d7a99cb8ac8507a388a8816d8e10fecb09e987cddbb58465357e5e41bb"
+  },
+  "ss2022-udp": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "82cf7db0216c52edc36c0bf1e16326ab65db11fa4631a37f0cb8f7c024ad74fc"
+  },
+  "trojan-tls": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "642dcf2435f389aca214f48825fae77c969019d7359785f61e1457529d6c35da"
+  },
+  "tuic-quic": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "9f9120b60803ede55a07cecc29f0471e03fa88ccee078b7ade94b69d80d6da8f"
+  },
+  "unknown": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "1409272c543ded2008855bd7cde6d252ca5cbe380036fae8de7e18fa7adf4ac4"
+  },
+  "vless-tls": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5e0ed36282b8fdd7dc1698608c7fec9757ad93c7b3b2d5e6eb097b7e1d761d5d"
+  },
+  "vmess-ws": {
+    "commands": "",
+    "exit": 2,
+    "files": {
+      "etc/cron.d": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec": {
+        "directory": true,
+        "mode": 493
+      },
+      "etc/crowdsec/config.yaml": {
+        "mode": 420,
+        "sha256": "ed95b623f563fc1c5138ffb9905fdc37d893960a50b96415e5a53d4e1dd55c52"
+      },
+      "etc/crowdsec/local_api_credentials.yaml": {
+        "mode": 420,
+        "sha256": "7e44c832a60a5b2b19380d501570e9e15bfe1557c838f23b225e7cf0919fd938"
+      },
+      "etc/crowdsec/profiles.yaml": {
+        "mode": 420,
+        "sha256": "d5ac61ed4edcd58df35cc84a984187b0a0a60db355827649bf027c74500ce4cd"
+      }
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "5ba4c0ece931d439c01954f814c07b79a41b90958c7c2b5be0ba0916e728bb12"
+  }
+}

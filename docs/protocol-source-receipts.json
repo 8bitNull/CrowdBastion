@@ -1,0 +1,205 @@
+{
+  "fetched_after_general_fixes": true,
+  "receipts": [
+    {
+      "name": "v2node-search",
+      "url": "https://api.github.com/search/repositories?q=V2Node&per_page=5",
+      "final_url": "https://api.github.com/search/repositories?q=V2Node&per_page=5",
+      "fetched_utc": "2026-11-03T05:54:25.285572+00:00",
+      "sha256": "7b3d819498c0e8e7a4f1ab4b428d3f808a1d381cd17f38c47ee8ff3f6d4f0513",
+      "bytes": 26093
+    },
+    {
+      "name": "shadowsocks",
+      "url": "https://shadowsocks.org/doc/what-is-shadowsocks.html",
+      "final_url": "https://shadowsocks.org/doc/what-is-shadowsocks.html",
+      "fetched_utc": "2026-11-03T05:54:25.160722+00:00",
+      "sha256": "3159345488979ad10ede2e0ac1d9d0bdd0b8f6998605f3ddc3fff524bc4d872d",
+      "bytes": 26136
+    },
+    {
+      "name": "trojan",
+      "url": "https://trojan-gfw.github.io/trojan/protocol",
+      "final_url": "https://trojan-gfw.github.io/trojan/protocol",
+      "fetched_utc": "2026-11-03T05:54:25.063166+00:00",
+      "sha256": "b65bfdd27f175aaee7166dd11ced52de61f4fbac28468daa8bec59f35eb90f06",
+      "bytes": 8309
+    },
+    {
+      "name": "hysteria2",
+      "url": "https://v2.hysteria.network/docs/advanced/Full-Server-Config/",
+      "final_url": "https://v2.hysteria.network/docs/advanced/Full-Server-Config/",
+      "fetched_utc": "2026-11-03T05:54:25.226884+00:00",
+      "sha256": "0632ad9d3fac1172747e7239876720c52789210faabd8c5a5c933d6406f06e96",
+      "bytes": 127291
+    },
+    {
+      "name": "hysteria1",
+      "url": "https://v1.hysteria.network/docs/advanced-usage/",
+      "final_url": "https://v1.hysteria.network/docs/advanced-usage/",
+      "fetched_utc": "2026-11-03T05:54:25.032660+00:00",
+      "sha256": "334a1f7a713b13d14aaaf839cf98d1e3001679dd41e44fd887122052655cf9fd",
+      "bytes": 42862
+    },
+    {
+      "name": "tuic",
+      "url": "https://api.github.com/repos/tuic-protocol/tuic/git/trees/master?recursive=1",
+      "final_url": "https://api.github.com/repos/tuic-protocol/tuic/git/trees/master?recursive=1",
+      "fetched_utc": "2026-11-03T05:54:25.102495+00:00",
+      "sha256": "8974cc93e81214bae2916ac715da95bd79c07629bc8d133447273994442b4ef8",
+      "bytes": 2658
+    },
+    {
+      "name": "anytls",
+      "url": "https://raw.githubusercontent.com/anytls/anytls-go/main/docs/protocol.md",
+      "final_url": "https://raw.githubusercontent.com/anytls/anytls-go/main/docs/protocol.md",
+      "fetched_utc": "2026-11-03T05:54:25.098625+00:00",
+      "sha256": "d5c703fb5ff2f9ec8727d2c1070f7e812ca2789633e1e9290ea504b998bb31de",
+      "bytes": 10577
+    },
+    {
+      "name": "singbox",
+      "url": "https://sing-box.sagernet.org/configuration/inbound/",
+      "final_url": "https://sing-box.sagernet.org/configuration/inbound/",
+      "fetched_utc": "2026-11-03T05:54:25.218328+00:00",
+      "sha256": "169ecbc160b25f9e15b38e1fcb7a443a997574073252a614e996bfb788ac9794",
+      "bytes": 127194
+    },
+    {
+      "name": "vmess",
+      "url": "https://xtls.github.io/config/inbounds/vmess.html",
+      "final_url": "https://xtls.github.io/config/inbounds/vmess.html",
+      "fetched_utc": "2026-11-03T05:54:39.991957+00:00",
+      "sha256": "213d2972b5bb738a2cb5014015edf7bd55ea85c690ed7dd27e5acefacf618096",
+      "bytes": 56548
+    },
+    {
+      "name": "vless",
+      "url": "https://xtls.github.io/config/inbounds/vless.html",
+      "final_url": "https://xtls.github.io/config/inbounds/vless.html",
+      "fetched_utc": "2026-11-03T05:54:40.020013+00:00",
+      "sha256": "31f9771d9a1c862d8d70dc65dd1d669c0e7cf738eb0cbf33bce8a5484342ea87",
+      "bytes": 64443
+    },
+    {
+      "name": "xray-transport",
+      "url": "https://xtls.github.io/config/transport.html",
+      "final_url": "https://xtls.github.io/config/transport.html",
+      "fetched_utc": "2026-11-03T05:54:40.039499+00:00",
+      "sha256": "4ff03446bd384bedea0035204800bfd68b41321b46b2dcd884030f06c5233d96",
+      "bytes": 79241
+    },
+    {
+      "name": "tuic-spec",
+      "url": "https://raw.githubusercontent.com/tuic-protocol/tuic/master/SPEC.md",
+      "final_url": "https://raw.githubusercontent.com/tuic-protocol/tuic/master/SPEC.md",
+      "fetched_utc": "2026-11-03T05:54:40.062952+00:00",
+      "sha256": "0e7042cb46634bda61351a7366f7478642183aa9af2f394b6a434ea1321363fa",
+      "bytes": 7194
+    },
+    {
+      "name": "v2node-repo",
+      "url": "https://api.github.com/repos/wyx2685/v2node",
+      "final_url": "https://api.github.com/repos/wyx2685/v2node",
+      "fetched_utc": "2026-11-03T05:54:40.309022+00:00",
+      "sha256": "4d2d811cdef29fb6896a4ab6cf611a4fe60770d968334c170c3c4c08f8282f5a",
+      "bytes": 5027
+    },
+    {
+      "name": "anytls-commit",
+      "url": "https://api.github.com/repos/anytls/anytls-go/commits/main",
+      "final_url": "https://api.github.com/repos/anytls/anytls-go/commits/main",
+      "fetched_utc": "2026-11-03T05:54:40.139023+00:00",
+      "sha256": "c726e89a0fa638f37e7fd1fde640fa44b213d9c794d8b6b37ac0886e76632b64",
+      "bytes": 8531
+    },
+    {
+      "name": "tuic-commit",
+      "url": "https://api.github.com/repos/tuic-protocol/tuic/commits/master",
+      "final_url": "https://api.github.com/repos/tuic-protocol/tuic/commits/master",
+      "fetched_utc": "2026-11-03T05:54:40.180202+00:00",
+      "sha256": "d2f6c08137ba614047211afb44cc920f005dbb906beb6232f054ad99e7e54cbb",
+      "bytes": 4133
+    },
+    {
+      "name": "trojan-commit",
+      "url": "https://api.github.com/repos/trojan-gfw/trojan/commits/master",
+      "final_url": "https://api.github.com/repos/trojan-gfw/trojan/commits/master",
+      "fetched_utc": "2026-11-03T05:54:40.273650+00:00",
+      "sha256": "c06b87600ecda3016bb063d62625ff37670f16be25a014deb129df5a2e5b41d8",
+      "bytes": 5067
+    },
+    {
+      "name": "v2node-tree-main",
+      "url": "https://api.github.com/repos/wyx2685/v2node/git/trees/main?recursive=1",
+      "final_url": "https://api.github.com/repos/wyx2685/v2node/git/trees/main?recursive=1",
+      "fetched_utc": "2026-11-03T05:55:48.253425+00:00",
+      "sha256": "ff912682d5342af098d64b4c4dba70bd58e19d156b7383c4d92dae1abfb4e629",
+      "bytes": 18636
+    },
+    {
+      "name": "v2node-commit-main",
+      "url": "https://api.github.com/repos/wyx2685/v2node/commits/main",
+      "final_url": "https://api.github.com/repos/wyx2685/v2node/commits/main",
+      "fetched_utc": "2026-11-03T05:55:48.684698+00:00",
+      "sha256": "d400af6debd9028a341ba563a177e12cc6dd1e0f232e389a260ef05f07438431",
+      "bytes": 5753
+    },
+    {
+      "name": "singbox-tuic",
+      "url": "https://sing-box.sagernet.org/configuration/inbound/tuic/",
+      "final_url": "https://sing-box.sagernet.org/configuration/inbound/tuic/",
+      "fetched_utc": "2026-11-03T05:55:48.891616+00:00",
+      "sha256": "931a6ce9b297b8968ef4957a7f814ed6c148ead01c897220a973321a12efef9f",
+      "bytes": 132819
+    },
+    {
+      "name": "singbox-hysteria",
+      "url": "https://sing-box.sagernet.org/configuration/inbound/hysteria/",
+      "final_url": "https://sing-box.sagernet.org/configuration/inbound/hysteria/",
+      "fetched_utc": "2026-11-03T05:55:49.066742+00:00",
+      "sha256": "4c56f8cf82eeebb5c537b4c1b4da1971b2f376f828f5a2917ec9fc5697606902",
+      "bytes": 136902
+    },
+    {
+      "name": "v2node-readme",
+      "url": "https://raw.githubusercontent.com/wyx2685/v2node/129abe1a3db0d8f314e1c21a30a9d41fc42ecfc1/README.md",
+      "final_url": "https://raw.githubusercontent.com/wyx2685/v2node/129abe1a3db0d8f314e1c21a30a9d41fc42ecfc1/README.md",
+      "fetched_utc": "2026-11-03T05:56:16.607151+00:00",
+      "sha256": "89feb3dc737e2c0435752b15d2625f3d0fcce6b03f13a3e1b45f07b6fbea58c5",
+      "bytes": 665
+    },
+    {
+      "name": "v2node-version",
+      "url": "https://raw.githubusercontent.com/wyx2685/v2node/129abe1a3db0d8f314e1c21a30a9d41fc42ecfc1/cmd/version.go",
+      "final_url": "https://raw.githubusercontent.com/wyx2685/v2node/129abe1a3db0d8f314e1c21a30a9d41fc42ecfc1/cmd/version.go",
+      "fetched_utc": "2026-11-03T05:56:16.846222+00:00",
+      "sha256": "de5e444b254a1e032db2b32dbef15fc608eccfb53873e4d3bfda7719e6b42752",
+      "bytes": 480
+    },
+    {
+      "name": "xray-docs-commit",
+      "url": "https://api.github.com/repos/XTLS/Xray-docs-next/commits/main",
+      "final_url": "https://api.github.com/repos/XTLS/Xray-docs-next/commits/main",
+      "fetched_utc": "2026-11-03T05:56:17.156333+00:00",
+      "sha256": "cce8047ea302cd7820316ce65872e32c2d04fbc18f5a4d67bb1c852d27ff40ea",
+      "bytes": 19125
+    },
+    {
+      "name": "xray-transport-pinned",
+      "url": "https://raw.githubusercontent.com/XTLS/Xray-docs-next/e9f8a16331af0dd80a7bf8d2793205555d7909d2/docs/config/transport.md",
+      "final_url": "https://raw.githubusercontent.com/XTLS/Xray-docs-next/e9f8a16331af0dd80a7bf8d2793205555d7909d2/docs/config/transport.md",
+      "fetched_utc": "2026-11-03T06:00:27.286484+00:00",
+      "sha256": "d209051b528db0ec1d2e5dc4fec19dc669bffc7bae6efe4325dac86ff3232081",
+      "bytes": 12230
+    },
+    {
+      "name": "singbox-shadowsocks",
+      "url": "https://sing-box.sagernet.org/configuration/inbound/shadowsocks/",
+      "final_url": "https://sing-box.sagernet.org/configuration/inbound/shadowsocks/",
+      "fetched_utc": "2026-11-03T06:00:41.532089+00:00",
+      "sha256": "4969a146b0318f18d8f5700212a183d78066ba0c7290786aaeeae9741aa06611",
+      "bytes": 135172
+    }
+  ]
+}

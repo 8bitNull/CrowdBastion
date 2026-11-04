@@ -1,0 +1,197 @@
+{
+  "at": "2026-11-03T09:32:34.648903+00:00",
+  "backup": "/var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z",
+  "status": "verified",
+  "file_integrity": {
+    "/etc/crowdsec/config.yaml": true,
+    "/etc/crowdsec/acquis.yaml": true,
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": true,
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": true,
+    "/etc/forwardx/realm/forwardx-realm-both-56017.toml": true,
+    "/etc/forwardx/realm/forwardx-realm-both-58372.toml": true,
+    "/etc/systemd/system/forwardx-realm-both-56017.service": true,
+    "/etc/systemd/system/forwardx-realm-both-58372.service": true,
+    "/usr/local/bin/realm": true
+  },
+  "new_files": {
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": {
+      "sha256": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+      "matches": true,
+      "uid": 0,
+      "mode": "0o644"
+    },
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": {
+      "sha256": "eb5fb894aea15ca7908bdea43f02bd6444102cdb5636a4181e5b7b8daf7941a0",
+      "matches": true,
+      "uid": 0,
+      "mode": "0o644"
+    },
+    "/etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf": {
+      "sha256": "8a8f3ecec507adbd84dde64af4a4953e5360898b562b715b94d8464258dbb7b2",
+      "matches": true,
+      "uid": 0,
+      "mode": "0o644"
+    }
+  },
+  "commands": {
+    "services": {
+      "exit": 0,
+      "stdout": "MainPID=505\nNRestarts=0\nId=forwardx-realm-both-56017.service\nActiveState=active\n\nMainPID=511\nNRestarts=0\nId=forwardx-realm-both-58372.service\nActiveState=active\n\nMainPID=504\nNRestarts=0\nId=forwardx-agent.service\nActiveState=active\n\nMainPID=524502\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=2109\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n",
+      "stderr": ""
+    },
+    "config_test": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": "time=\"2026-11-03T01:32:34-08:00\" level=info msg=\"Loading yaml file: '/etc/crowdsec/config.yaml' with additional values from '/etc/crowdsec/config.yaml.local'\"\n"
+    },
+    "firewall_check": {
+      "exit": 0,
+      "stdout": "[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 16850，实际集合网络 16850，遗漏 0。\n",
+      "stderr": ""
+    },
+    "relay_status": {
+      "exit": 2,
+      "stdout": "当前情况：本次没有发现运行问题。是否确实能拦截攻击，还需要单独验证。\n检查结论：运行检查通过，实际拦截待验证\n检查范围：中转防火墙\n已确认：本地检测服务运行、防火墙防护服务运行、已发现来源 IP 封禁规则。\n待确认：外部连接是否确实被拦截。\n本次未发现需要修复的问题。\n下一步：按实际流量路径完成一次外部拦截验证。\n历史验收：尚无中转入口验收记录；使用 --verify-relay。\n中转防护只读检查：未发送请求、未创建封禁、未修改防火墙。\n用户态监听通常检查 INPUT；内核 NAT 检查 FORWARD；Docker bridge 需另核对实际路径。\n[已发现] crowdsec 运行。\n[已发现] crowdsec-firewall-bouncer 运行。\nBouncer 后端：iptables\n[已检查] 当前后端未使用已知有续封缺陷的 nftables 实现；实际续封仍需流量验收。\nIPv4 封禁集合：已发现\nIPv4 配置链：INPUT, FORWARD, DOCKER-USER\nIPv4 INPUT: 已发现来源 IP 集合封禁规则引用\nIPv4 FORWARD: 已发现来源 IP 集合封禁规则引用\nIPv4 DOCKER-USER: 已发现规则引用，需另核对 FORWARD 跳转顺序。\nIPv6 封禁集合：已发现\nIPv6 配置链：INPUT, FORWARD, DOCKER-USER\nIPv6 INPUT: 已发现来源 IP 集合封禁规则引用\nIPv6 FORWARD: 已发现来源 IP 集合封禁规则引用\nIPv6 DOCKER-USER: 已发现规则引用，需另核对 FORWARD 跳转顺序。\n以上为规则引用清单；下面使用统一检查核对入口顺序及决策同步。\n[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 16850，实际集合网络 16850，遗漏 0。\n[尚未验证] 实际业务阻断尚未验证；规则引用不证明顺序、匹配范围、LAPI 决策同步或已建立连接被阻断。\n多跳/隧道节点可能只看到上游 IP；先核对来源，避免封禁整条链路。\n此模式不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗。\n",
+      "stderr": ""
+    },
+    "namespaces": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "journal_check": {
+      "exit": 0,
+      "stdout": "Nov 03 01:25:38 audit-node-02.example.com systemd-journald[212]: Journal stopped\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: Collecting audit messages is disabled.\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: Journal started\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 128M, 111.9M free.\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[523584]: Journal stopped\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: Collecting audit messages is disabled.\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: Journal started\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 1.9G, 1.9G free.\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524095]: Journal stopped\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: Collecting audit messages is disabled.\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: Journal started\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 128M, 111.9M free.\n",
+      "stderr": ""
+    },
+    "journal_effective": {
+      "exit": 0,
+      "stdout": "# /etc/systemd/journald.conf\n#  This file is part of systemd.\n#\n#  systemd is free software; you can redistribute it and/or modify it under the\n#  terms of the GNU Lesser General Public License as published by the Free\n#  Software Foundation; either version 2.1 of the License, or (at your option)\n#  any later version.\n#\n# Entries in this file show the compile time defaults. Local configuration\n# should be created by either modifying this file (or a copy of it placed in\n# /etc/ if the original file is shipped in /usr/), or by creating \"drop-ins\" in\n# the /etc/systemd/journald.conf.d/ directory. The latter is generally\n# recommended. Defaults can be restored by simply deleting the main\n# configuration file and all drop-ins located in /etc/.\n#\n# Use 'systemd-analyze cat-config systemd/journald.conf' to display the full config.\n#\n# See journald.conf(5) for details.\n\n[Journal]\n#Storage=auto\n#Compress=yes\n#Seal=yes\n#SplitMode=uid\n#SyncIntervalSec=5m\n#RateLimitIntervalSec=30s\n#RateLimitBurst=10000\n#SystemMaxUse=\n#SystemKeepFree=\n#SystemMaxFileSize=\n#SystemMaxFiles=100\n#RuntimeMaxUse=\n#RuntimeKeepFree=\n#RuntimeMaxFileSize=\n#RuntimeMaxFiles=100\n#MaxRetentionSec=0\n#MaxFileSec=1month\n#ForwardToSyslog=no\n#ForwardToKMsg=no\n#ForwardToConsole=no\n#ForwardToWall=yes\n#TTYPath=/dev/console\n#MaxLevelStore=debug\n#MaxLevelSyslog=debug\n#MaxLevelKMsg=notice\n#MaxLevelConsole=info\n#MaxLevelWall=emerg\n#MaxLevelSocket=debug\n#LineMax=48K\n#ReadKMsg=yes\n#Audit=yes\n\n# /etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf\n# CrowdBastion realm protection rollout: bound log storage without forced vacuum.\n[Journal]\nSystemMaxUse=128M\nSystemKeepFree=512M\nRuntimeMaxUse=32M\nRuntimeKeepFree=16M\n\n# /usr/lib/systemd/journald.conf.d/syslog.conf\n# Undo upstream commit 46b131574fdd7d77 for now. For details see\n#  http://lists.freedesktop.org/archives/systemd-devel/2014-November/025550.html\n\n[Journal]\nForwardToSyslog=yes\n",
+      "stderr": ""
+    }
+  },
+  "bouncers": [
+    {
+      "name": "cs-firewall-bouncer-1791289557",
+      "type": "Python-urllib",
+      "last_pull": "2026-11-03T09:32:38.100720192Z",
+      "revoked": false
+    },
+    {
+      "name": "cs-web-1key-c1a156b124fe3ff5",
+      "type": "crowdsec-openresty-bouncer",
+      "last_pull": "2026-11-03T09:32:01.902921825Z",
+      "revoked": false
+    }
+  ],
+  "metrics": {
+    "realm_acquisition": {},
+    "bouncers": {
+      "cs-firewall-bouncer-1791289557": {
+        "": {
+          "processed": {
+            "byte": 60409270833,
+            "packet": 72163498
+          }
+        },
+        "CAPI": {
+          "active_decisions": {
+            "ip": 16796
+          },
+          "dropped": {
+            "byte": 6563410,
+            "packet": 117614
+          }
+        },
+        "crowdsec": {
+          "active_decisions": {
+            "ip": 14
+          },
+          "dropped": {
+            "byte": 3886342,
+            "packet": 51162
+          }
+        },
+        "cscli": {
+          "active_decisions": {
+            "ip": 0
+          },
+          "dropped": {
+            "byte": 1509,
+            "packet": 27
+          }
+        }
+      },
+      "cs-web-1key-c1a156b124fe3ff5": {
+        "": {
+          "processed": {
+            "request": 160510
+          }
+        },
+        "CAPI": {
+          "dropped": {
+            "request": 292
+          }
+        },
+        "crowdsec": {
+          "dropped": {
+            "request": 11923
+          }
+        }
+      }
+    },
+    "ssh_acquisition": {
+      "journalctl:journalctl-_SYSTEMD_UNIT=ssh.service": {
+        "parsed": 3,
+        "reads": 6,
+        "unparsed": 3
+      }
+    }
+  },
+  "pid_continuity": {
+    "forwardx-realm-both-56017.service": true,
+    "forwardx-realm-both-58372.service": true,
+    "forwardx-agent.service": true,
+    "crowdsec-firewall-bouncer.service": true
+  },
+  "realm_follower": [
+    {
+      "pid": "524534",
+      "args": [
+        "journalctl",
+        "--follow",
+        "-n",
+        "0",
+        "_SYSTEMD_UNIT=forwardx-realm-both-56017.service",
+        "_SYSTEMD_UNIT=forwardx-realm-both-58372.service",
+        ""
+      ]
+    }
+  ],
+  "enforcement_result": {
+    "status": "passed",
+    "drop_counters": {
+      "before": {
+        "crowdsec-blacklists-2": 3
+      },
+      "after": {
+        "crowdsec-blacklists-2": 6
+      }
+    },
+    "cleanup": {
+      "decision_delete_exit": 0,
+      "test_absent_from_sets": true,
+      "udp_listener_stopped": true,
+      "veth_delete_exit": 0,
+      "namespace_delete_exit": 0,
+      "namespace_absent": true,
+      "veth_absent": true,
+      "no_test_decision": true
+    },
+    "coverage": "actual realm TCP listeners; controlled UDP echo behind production INPUT; IPv4 synthetic ingress, not public WAN/backend authentication"
+  },
+  "backend_tcp": {
+    "('192.0.2.13', 2053)": true,
+    "('192.0.2.19', 8443)": true
+  }
+}

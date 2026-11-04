@@ -1,0 +1,14 @@
+test_cleanup_continues_after_delete_timeout_and_accepts_null_decision_list (__main__.EnforcementFailureTests.test_cleanup_continues_after_delete_timeout_and_accepts_null_decision_list) ... ok
+test_input_evidence_retains_exact_drop_rule_counters (__main__.EnforcementFailureTests.test_input_evidence_retains_exact_drop_rule_counters) ... ok
+test_namespace_creation_side_effect_then_timeout_is_removed (__main__.EnforcementFailureTests.test_namespace_creation_side_effect_then_timeout_is_removed) ... ok
+test_preexisting_link_prevents_any_owned_creation (__main__.EnforcementFailureTests.test_preexisting_link_prevents_any_owned_creation) ... ok
+test_preexisting_namespace_is_never_deleted (__main__.EnforcementFailureTests.test_preexisting_namespace_is_never_deleted) ... ok
+test_preexisting_peer_link_is_never_deleted (__main__.EnforcementFailureTests.test_preexisting_peer_link_is_never_deleted) ... ok
+test_sighup_and_repeated_signals_finish_cleanup (__main__.EnforcementFailureTests.test_sighup_and_repeated_signals_finish_cleanup) ... ok
+test_sigterm_and_repeated_signals_finish_cleanup (__main__.EnforcementFailureTests.test_sigterm_and_repeated_signals_finish_cleanup) ... ok
+test_veth_creation_side_effect_then_timeout_is_removed (__main__.EnforcementFailureTests.test_veth_creation_side_effect_then_timeout_is_removed) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.906s
+
+OK

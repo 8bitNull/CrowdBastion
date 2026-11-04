@@ -1,0 +1,93 @@
+test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) ... 
+  test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='n\nn\nn\n') ... FAIL
+  test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\ny\ny\nn\n') ... FAIL
+  test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\n') ... FAIL
+  test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\ny\ny\n') ... FAIL
+test_optimize_validation_failure_restores_selected_config (test_workflows.Workflows.test_optimize_validation_failure_restores_selected_config) ... FAIL
+test_optimize_repeated_metrics_selection_skips_service_load (test_workflows.Workflows.test_optimize_repeated_metrics_selection_skips_service_load) ... FAIL
+
+======================================================================
+FAIL: test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='n\nn\nn\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 665, in test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate
+    self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+AssertionError: b'api[438 chars]ec-workflows-j7hkddqx/etc/crowdsec/acquis.yaml\ninjected-write' != b'api[438 chars]ec-workflows-j7hkddqx/etc/crowdsec/acquis.yaml\n'
+
+======================================================================
+FAIL: test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\ny\ny\nn\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 664, in test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate
+    self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+AssertionError: 1 != 0 : 
+资源概况:
+               total        used        free      shared  buff/cache   available
+Mem:           19996        8842        2756           9        8766       11154
+Swap:           4095           5        4090
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         196G   92G   95G  50% /
+[INFO] 逐项选择基础修复（默认不选），选择完成后还需确认执行。
+配置处理失败: while scanning a simple key
+  in "<unicode string>", line 14, column 1:
+    injected-write
+    ^
+could not find expected ':'
+  in "<unicode string>", line 14, column 15:
+    injected-write
+                  ^
+
+
+======================================================================
+FAIL: test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 665, in test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate
+    self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+AssertionError: b'api[438 chars]ec-workflows-j7hkddqx/etc/crowdsec/acquis.yaml\ninjected-write' != b'api[438 chars]ec-workflows-j7hkddqx/etc/crowdsec/acquis.yaml\n'
+
+======================================================================
+FAIL: test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate (test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate) (answers='y\ny\ny\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 664, in test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate
+    self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+AssertionError: 1 != 0 : 
+资源概况:
+               total        used        free      shared  buff/cache   available
+Mem:           19996        8847        2751           9        8766       11149
+Swap:           4095           5        4090
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         196G   92G   95G  50% /
+[INFO] 逐项选择基础修复（默认不选），选择完成后还需确认执行。
+配置处理失败: while scanning a simple key
+  in "<unicode string>", line 14, column 1:
+    injected-write
+    ^
+could not find expected ':'
+  in "<unicode string>", line 14, column 15:
+    injected-write
+                  ^
+
+
+======================================================================
+FAIL: test_optimize_validation_failure_restores_selected_config (test_workflows.Workflows.test_optimize_validation_failure_restores_selected_config)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 689, in test_optimize_validation_failure_restores_selected_config
+    self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+AssertionError: b'api[193 chars]led: true\n  listen_addr: 127.0.0.1\n  listen_[238 chars]ml\n' != b'api[193 chars]led: false\n  listen_addr: 0.0.0.0\n  listen_p[243 chars]ml\n'
+
+======================================================================
+FAIL: test_optimize_repeated_metrics_selection_skips_service_load (test_workflows.Workflows.test_optimize_repeated_metrics_selection_skips_service_load)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-test-tiers/tests/test_workflows.py", line 680, in test_optimize_repeated_metrics_selection_skips_service_load
+    self.assertNotIn('systemctl restart', self.commands())
+AssertionError: 'systemctl restart' unexpectedly found in 'optimizer-health\ncrowdsec -t\nsystemctl restart crowdsec\nsystemctl is-active --quiet crowdsec\n'
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.286s
+
+FAILED (failures=6)
+EXPECTED MUTATIONS DETECTED: canceled write, missing rollback and repeated service load all failed original assertions

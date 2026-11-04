@@ -5,15 +5,15 @@ import subprocess
 import unittest
 
 import yaml
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = test_workflows.ROOT
 
 
 class TelegramStatus(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def setup_channel(self):
         result = self.run_shell('setup_telegram_notification', '123:ABC\n-123\n\nn\n')

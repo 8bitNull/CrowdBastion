@@ -1,0 +1,7 @@
+1. 只读初始 preflight 仅识别尾部统一重定向的旧Hub命令，因此 recognized_entries 为空；这不表示任务不存在。cron-detail.json 按token提取确认原命令每个cscli/systemctl子命令各有重定向，时间30 3 * * *，前缀 disabled duplicate updater。原 preflight.json 保留。
+2. 首次 package 生成器将 json.dumps 的嵌套dict直接插入Python赋值；PREFLIGHT含JSON布尔值，远端在prefix第3行 NameError: name 'true' is not defined，尚未进入stage脚本和任何写入。stage-first.json为空、stage-first.stderr.txt及package-first.json/scripts/package-first.py保留。改用Python repr生成安全文字常量后重试成功。首包tar与重试tar的gzip时间不同，分别留各自摘要；manager/lib指纹不变。不把失败首包算作部署。
+3. 自查时将资源祖先的符号链接检查移至 mkdir 之前，避免复制目录存在链接时预先在链接目标建目录；回滚脚本拒绝未知参数，--check明确只检查。修正在stage成功前完成。
+4. 全仓输出中的Telegram 429/5xx与过期心跳文本是既有测试诊断。唯一全仓结果为1440项，1351通过，89条件跳过，0失败；173源码测前后不变。产品没有后续改动，不重复全仓。
+5. 新版完整网站健康的logs本来已按web来源筛选，不能把共享classifier的全量输入修正描述成现场防护故障修复；部署后共享全量classification为ok，正式健康所有运行项ok、traffic仍pending。
+6. 没有独立reviewer，实际采用作者顺序自查。备份私有材料与原源码权限分别核查，不chmod原0755 __pycache__。新建发布/预备目录属于已授权生产准备；正式切换前只称入口/cron尚未切换，没有宣称生产完全零变更。
+7. 最终本地核验器误把此前只读样本 whitelisted=9 写死，部署后正常首页请求已将该计数推进至10，因此在第27行拒绝。生产健康及分类均为ok，750对象/规则/服务核验此前通过；这是验证器固定动态计数的错误。保留原核验器 scripts/local-verify-first.py；用原代码和同一输入重新执行捕获 local-verification-initial.txt / .stderr.txt（不补写首次未重定向的输出）。改为核对唯一字段、真实数值类型与正数条件。第一次凭据扫描保留为credential-scan-initial.json，新脚本/说明变更后重做最终精确扫描；产品源码、全仓结果及生产部署无需重跑。

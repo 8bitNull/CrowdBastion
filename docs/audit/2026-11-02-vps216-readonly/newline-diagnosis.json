@@ -1,0 +1,8 @@
+{
+  "artifact": "docs/audit/2026-11-02-vps216-readonly/health-initial.stderr.txt",
+  "raw_crlf_sequences": 1,
+  "raw_sha256": "34648b1d00569454f1ce56337ca6289c65e77fc9ff3961bb0eb19ee9413b764a",
+  "universal_newline_text_sha256": "0b11d6288a5348ddc6512548b54a7e88b47044dfd2e7c1d5f25d4c429cb92f4b",
+  "first_scan_text_sha256": "0b11d6288a5348ddc6512548b54a7e88b47044dfd2e7c1d5f25d4c429cb92f4b",
+  "original_bytes_preserved": true
+}

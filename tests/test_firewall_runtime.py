@@ -131,6 +131,40 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.coverage(), 'ok')
         self.assertEqual(self.coverage(v6='-P INPUT ACCEPT\n'), 'fault')
 
+    def indirect_rules(self):
+        return ('-N DOCKER-USER\n-N PRECHECK\n' + self.rules().replace(
+            '-A FORWARD -j CROWDSEC_CHAIN', '-A FORWARD -j DOCKER-USER'))
+
+    def test_unconditional_docker_forward_path_covers_both_families(self):
+        rules = self.indirect_rules()
+        self.assertEqual(self.coverage(v4=rules, v6=rules), 'ok')
+
+    def test_unconditional_multi_hop_path_reaches_configured_bouncer_chain(self):
+        rules = self.indirect_rules().replace('-A INPUT -j CROWDSEC_CHAIN',
+            '-A INPUT -j PRECHECK\n-A PRECHECK -j DOCKER-USER')
+        self.assertEqual(self.coverage(v4=rules, v6=rules), 'ok')
+        self.local.write_text('iptables_chain: BLOCKLIST\n')
+        self.assertEqual(self.coverage(v4=rules.replace('CROWDSEC_CHAIN', 'BLOCKLIST'),
+                                       v6=rules.replace('CROWDSEC_CHAIN', 'BLOCKLIST')), 'ok')
+
+    def test_indirect_path_refuses_conditional_accept_return_goto_and_missing(self):
+        rules = self.indirect_rules()
+        for replacement in ('-A DOCKER-USER -p tcp -j CROWDSEC_CHAIN',
+                            '-A DOCKER-USER -j ACCEPT', '-A DOCKER-USER -j RETURN',
+                            '-A DOCKER-USER -g CROWDSEC_CHAIN',
+                            '-A DOCKER-USER -j ABSENT'):
+            with self.subTest(replacement=replacement):
+                unsafe = rules.replace('-A DOCKER-USER -j CROWDSEC_CHAIN', replacement)
+                self.assertEqual(self.coverage(v4=unsafe), 'fault')
+                self.assertEqual(self.coverage(v6=unsafe), 'fault')
+
+    def test_indirect_path_refuses_cycle_and_undefined_transit_chain(self):
+        rules = self.indirect_rules()
+        cycle = rules.replace('-A DOCKER-USER -j CROWDSEC_CHAIN', '-A DOCKER-USER -j FORWARD')
+        self.assertEqual(self.coverage(v4=cycle), 'fault')
+        undefined = rules.replace('-N DOCKER-USER\n', '')
+        self.assertEqual(self.coverage(v4=undefined), 'fault')
+
     def test_coverage_refuses_accept_before_bouncer(self):
         self.assertEqual(self.coverage(v4='-A INPUT -j ACCEPT\n'+self.rules()), 'fault')
 
@@ -205,6 +239,20 @@ class MigrationTests(unittest.TestCase):
         self.assertTrue((self.state/'crowdsec_firewall_evidence.py').is_file())
         self.assertTrue((self.state/'crowdsec_remote_bouncer.py').is_file())
         self.assertEqual(self.state.stat().st_mode & 0o777, 0o700)
+
+    def test_snapshot_does_not_duplicate_common_and_family_jumps(self):
+        self.snapshot()
+        applied = yaml.safe_load((self.state/'local.applied').read_text())
+        self.assertEqual(applied['iptables_chains'], [])
+        for family in ['v4', 'v6']:
+            self.assertEqual(applied['iptables_'+family+'_chains'], ['INPUT', 'FORWARD', 'DOCKER-USER'])
+
+    def test_preflight_rejects_invalid_chain_list_before_transaction_snapshot(self):
+        self.config.write_text('mode: nftables\niptables_v4_chains: false\n')
+        with patch.object(migrate, 'cron_risks', return_value=[]), patch.object(migrate, 'restore_services', return_value=[]):
+            with self.assertRaisesRegex(migrate.MigrationError, '未准备迁移'):
+                self.tx.preflight()
+        self.assertFalse(self.state.exists())
 
     def test_rollback_restores_existing_local_and_absent_dropin(self):
         self.tx.local.write_text('api_key: local-secret\n')
@@ -398,10 +446,10 @@ class MigrationTests(unittest.TestCase):
 
 
 class StartupTransactions(unittest.TestCase):
-    import test_workflows as workflows
-    setUp = workflows.Workflows.setUp
-    run_shell = workflows.Workflows.run_shell
-    commands = workflows.Workflows.commands
+    import workflow_fixture as workflows
+    setUp = workflows.WorkflowFixtureMixin.setUp
+    run_shell = workflows.WorkflowFixtureMixin.run_shell
+    commands = workflows.WorkflowFixtureMixin.commands
 
     def setup_config(self):
         config = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'

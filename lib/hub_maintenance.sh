@@ -38,13 +38,15 @@ hub_begin() {
     fi
     HUB_TX_ACTION="$1"
     CORE_CONFIG_LOADING=''
-    mkdir -p -- "$(dirname "$HUB_LOCK_FILE")" || return 1
-    exec {HUB_TX_FD}>"$HUB_LOCK_FILE" || return 1
-    if ! flock -n "$HUB_TX_FD"; then
+    change_lock_tool lock-prepare --lock-path "$HUB_LOCK_FILE" || return $?
+    exec {HUB_TX_FD}<>"$HUB_LOCK_FILE" || return 1
+    local lock_result=0
+    change_lock_tool lock-check --lock-path "$HUB_LOCK_FILE" --fd "$HUB_TX_FD" || lock_result=$?
+    if [[ "$lock_result" != 0 ]]; then
         hub_event 'outcome=busy' || true
         hub_release
         log_warn '已有 Hub 维护任务，跳过本次操作。'
-        return 75
+        return "$lock_result"
     fi
     if [[ "$1" != install ]] && ! systemctl is-active --quiet crowdsec; then
         hub_release
@@ -146,12 +148,7 @@ hub_maintenance() (
     local action="${1:-}" result=0
     case "$action" in update) ;; remove) [[ $# -gt 1 ]] || return 1 ;; *) log_err '不支持的 Hub 操作。'; return 1 ;; esac
     shift
-    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then
-        require_commands flock || return 1
-        mkdir -p "$(dirname "$MAINTENANCE_LOCK")" || return 1
-        exec 9> "$MAINTENANCE_LOCK" || return 1
-        flock -n 9 || { log_warn '已有管理操作，跳过本次 Hub 维护。'; return 75; }
-    fi
+    maintenance_lock_acquire || return $?
     if declare -F firewall_migration_pending >/dev/null && firewall_migration_pending; then
         log_warn '防火墙迁移尚未结束，跳过 Hub 维护。'; return 75
     fi

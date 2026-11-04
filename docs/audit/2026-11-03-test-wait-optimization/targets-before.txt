@@ -1,0 +1,8 @@
+test_silent_reload_rejection_restores_real_ip_configuration_and_registry (test_real_ip_reload_review.RealIPReloadReview.test_silent_reload_rejection_restores_real_ip_configuration_and_registry) ... ok
+test_silent_host_rollback_rejection_keeps_package_account (test_script_review_fixes.AdditionalTransactionReview.test_silent_host_rollback_rejection_keeps_package_account) ... ok
+test_worker_that_dies_before_second_sample_is_not_accepted (test_nginx_reload.ReloadProcessEvidence.test_worker_that_dies_before_second_sample_is_not_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 40.494s
+
+OK

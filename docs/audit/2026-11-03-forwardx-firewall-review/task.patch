@@ -1,0 +1,446 @@
+--- a/docs/firewall-maintenance.md
++++ b/docs/firewall-maintenance.md
+@@ -30,6 +30,10 @@
+ 
+ 链配置修复、迁移及 Bouncer 接入现在按官方实现的“通用列表＋地址族列表”合并语义生成覆盖：`iptables_chains: []`，IPv4／IPv6 分别保存去重后的实际链。通用和分地址族中的自定义链会保留；本地凭据配置的 IPv4 Docker 链不会因此复制到 IPv6。基础软件包 YAML 和凭据不会被清空。原有配置只有在明确运行对应配置／修复操作时更新，单纯状态查询不改写。
+ 
++缺省和显式 `null` 链列表按官方实现视为空列表，不凭空补入 INPUT；启动修复及远端接入需要的 INPUT／FORWARD 由对应操作明确补齐。远端重新接入会基于当前有效的托管覆盖保留自定义链与其他字段，基础包配置更新不等于允许清除仍生效的覆盖。
++
++对已托管远端配置，启动修复先校验所有权，只在写入结果与计划一致时更新 `.remote.json` 指纹；已有外部漂移会被拒绝；写入期间配置值或类型偏离计划时，也不会更新托管指纹。启动事务同时备份覆盖文件、drop-in 和已存在的托管记录，失败时一起恢复。此流程使用原维护锁，不保证断电、SIGKILL 或不遵守锁的特权并发修改下的原子性。
++
+ 当前自动迁移范围为：本机 loopback HTTP LAPI、正在以 root 运行的官方 Bouncer、显式 `-c /etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml` 启动参数、默认 DROP 策略、可识别的双栈原生 input／forward 集合引用、默认集合及链布局、双栈 Docker DOCKER-USER 链均存在。自定义链／集合、远端 LAPI、非 SSH 会话或规则恢复任务冲突时停止。`iptables`、`ip6tables`、`ipset`、`nft`、`ip`、`cscli` 和 systemd 工具需要已安装；脚本不自动换包、升级 Bouncer 或修改 API 账号。
+ 
+ 1. 在当前 SSH 会话运行维护入口，选择 `3`。使用 sudo 时通过 `sudo --preserve-env=SSH_CONNECTION bash crowdbastion.sh --firewall-maintenance` 保留连接信息；无法读取连接信息时拒绝迁移。脚本创建私有事务目录，备份原配置和业务规则，保存独立回退代码，先启用 **8 分钟回退定时器**，再建立当前有效封禁快照和当前 SSH 来源／实际端口保护，切换后端。
+--- a/docs/relay-mode.md
++++ b/docs/relay-mode.md
+@@ -61,6 +61,8 @@
+ 
+ 外部测试需要逐项明确选择“成功／失败／不确定”。输入 `q`、EOF 或 Ctrl+C 会结束，若已显示封禁命令且尚未确认来源退出集合，则提示等待本次决策到期并核查恢复。来源原本已经在适用封禁集合中时，向导要求更换测试来源。
+ 
++本轮中断处理范围为 q／EOF／Ctrl+C；TERM、HUP、SIGKILL 或终端输出失效不保证能写出新结论或历史记录。已有记录始终只是带时间和配置指纹的历史参考，不能代表被终止的本轮验证。测试命令和原因已在执行前展示，中止后仍需核对短期决策到期及业务恢复。
++
+ | 验收结论 | 含义 | 退出码 |
+ | --- | --- | --- |
+ | 本次入口验证通过（人工确认） | 全部人工连接对照和本机集合／计数／恢复证据齐全 | `0` |
+@@ -68,6 +70,8 @@
+ | 验证未完成 | 缺少结果、读取失败、决策未同步、计数无证据、取消或路径不支持 | `2`；Ctrl+C 为 `130` |
+ 
+ **范围：** 支持 nftables 中直接挂在 INPUT/FORWARD 的来源集合匹配、计数和最终 DROP/REJECT 规则，以及 iptables 后端中 INPUT/FORWARD 首条无条件跳转至配置的 CrowdSec 链、链内无额外条件的来源集合 DROP/REJECT 规则。iptables 可以使用 nf_tables 兼容层；证据通过对应地址族的 `iptables-save`／`ip6tables-save` 计数和实际引用的 `ipset save <集合名>` 取得。ipset-only 模式必须已经接入同样可识别的 iptables 规则，只有集合不能验收。
++
++nftables 会检查所选 hooked 链内的完整规则序列；出现前置／后置放行、RETURN、跳转或无法识别规则时，该链不提供通过证据。计数身份包含相关链结构、rule handle，以及可取得的命名计数器 handle。默认分地址族布局可验收；同一自定义 inet 链混合 IPv4／IPv6 规则时会保守报告未完成。
+ 
+ ipset 当前识别 `hash:ip`／`hash:net` 和正确的 inet／inet6 地址族，拒绝 nomatch、netmask／bitmask 及未知类型；未引用的其他集合不参与测试来源证据。整个 iptables/ipset 快照有 15 秒时间预算、最多 32 个引用集合及 16 × 1024 × 1024 字符的总输出预算（输出收集后校验，不是进程内存硬限制）。尚无带计数的可识别来源规则、前置 ACCEPT／条件跳转、额外端口／接口／连接状态条件、Docker bridge、自定义跳转图和未核对来源均保持未完成。
+ 
+--- a/docs/superpowers/plans/2026-11-03-forwardx-firewall-review.md
++++ b/docs/superpowers/plans/2026-11-03-forwardx-firewall-review.md
+@@ -0,0 +1,11 @@
++# ForwardX implementation review and repair
++
++User requested another review/fix cycle for the delivered chain and relay-acceptance changes. Reuse the isolated worktree; preserve original dirty baseline and prior audit artifacts. No SSH, deployment, commit or push.
++
++- [x] RED/GREEN: official Bouncer missing/null slices mean empty, not implicit INPUT. Required INPUT/FORWARD remain explicit in startup/remote writers. Preserve family-only scope in credential setup and status.
++- [x] RED/GREEN: remote reapply uses valid owned overlay as part of effective config, preserving custom fields/chains across base package changes.
++- [x] RED/GREEN: startup writes keep managed remote ownership coherent; verify ownership before any change, update marker only for the exact controlled result, back up marker with startup transaction and restore configuration/marker together on failure. Do not adopt arbitrary drift.
++- [x] RED/GREEN: reject nftables evidence with unsafe rules in selected hooked chain; bind counter identity to relevant chain structure and available named-counter identity.
++- [x] Review cancellation scope: documented q/EOF/Ctrl+C must remain correct. Record TERM limitations separately unless concrete required semantics justify changing the API.
++- [x] Focused regression suite; independent second review of repairs; full suite once code is final, plus syntax/static/doc checks.
++- [x] Copy only this round's files back with new baseline guards; retain prior reports/artifacts unchanged and distinguish their historical live-source manifest entries. Write fresh report/logs/manifest.
+--- a/lib/crowdbastion_relay_verify.py
++++ b/lib/crowdbastion_relay_verify.py
+@@ -46,7 +46,7 @@
+         raise Incomplete('防火墙返回的规则格式无法识别。')
+     address = ipaddress.ip_address(source)
+     namespace = {family, 'inet'}
+-    sets, chains, named = {}, {}, {}
++    sets, chains, named, named_handles = {}, {}, {}, {}
+     for item in records:
+         block = item.get('set', {})
+         name = block.get('name')
+@@ -58,16 +58,53 @@
+                 sets[(block['family'], '@'+name)] = any(contains(elem, address) for elem in elements)
+         block = item.get('chain', {})
+         if block.get('family') in namespace and block.get('table') == table:
+-            chains[(block.get('family'), block.get('name'))] = block.get('hook')
++            chains[(block.get('family'), block.get('name'))] = block
+         block = item.get('counter', {})
+         packets = block.get('packets')
+         if block.get('table') == table and type(packets) is int and packets >= 0:
+             named[(block.get('family'), block.get('name'))] = packets
++            named_handles[(block.get('family'), block.get('name'))] = block.get('handle')
++    grouped, unsafe = {}, set()
++    for item in records:
++        rule = item.get('rule', {})
++        group = (rule.get('family'), rule.get('chain'))
++        if (rule.get('family') not in namespace or rule.get('table') != table
++                or chains.get(group, {}).get('hook') != hook):
++            continue
++        expressions = rule.get('expr', [])
++        if not isinstance(expressions, list) or any(not isinstance(expr, dict) for expr in expressions):
++            raise Incomplete('封禁规则表达式无法读取。')
++        # Every rule in the selected hooked chain must be safe, including
++        # rules before the DROP from which we intend to use counters.
++        match = expressions[0].get('match', {}) if expressions else {}
++        right = match.get('right')
++        safe = (len(expressions) >= 2 and set(expressions[0]) == {'match'}
++                and set(expressions[-1]) in ({'drop'}, {'reject'})
++                and all(set(expr) == {'counter'} for expr in expressions[1:-1])
++                and match.get('op') in ('==', 'in')
++                and match.get('left') == {'payload': {'protocol': family, 'field': 'saddr'}}
++                and isinstance(right, str) and (group[0], right) in sets)
++        if not safe:
++            unsafe.add(group)
++        grouped.setdefault(group, []).append(rule)
++    identities = {}
++    for group, rules in grouped.items():
++        structure, counter_ids = [], []
++        for rule in rules:
++            stable = [{key: {} if key == 'counter' and isinstance(value, dict) else value
++                       for key, value in expr.items()} for expr in rule.get('expr', [])]
++            structure.append({'handle': rule.get('handle'), 'expr': stable})
++            counter_ids.extend((expr['counter'], named_handles.get((group[0], expr['counter'])))
++                               for expr in rule.get('expr', []) if isinstance(expr.get('counter'), str))
++        identities[group] = hashlib.sha256(json.dumps(
++            [chains[group], structure, counter_ids], sort_keys=True).encode()).hexdigest()
+     result = {'matched': False, 'present': False, 'rule_counters': {}, 'source_counters': {}}
+     for item in records:
+         rule = item.get('rule', {})
+         version = rule.get('family')
+-        if version not in namespace or rule.get('table') != table or chains.get((version, rule.get('chain'))) != hook:
++        group = (version, rule.get('chain'))
++        if (version not in namespace or rule.get('table') != table or group in unsafe
++                or chains.get(group, {}).get('hook') != hook):
+             continue
+         expressions = rule.get('expr', [])
+         if not isinstance(expressions, list) or any(not isinstance(expr, dict) for expr in expressions):
+@@ -92,9 +129,7 @@
+         present = any(sets[(version, name)] for name in references)
+         result['present'] |= present
+         # Counters reset or replacement rules must not appear as an increase.
+-        stable = [{key: {} if key == 'counter' and isinstance(value, dict) else value
+-                   for key, value in expr.items()} for expr in expressions]
+-        fingerprint = hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest()
++        fingerprint = identities[group]
+         for index, expr in enumerate(expressions):
+             counter = expr.get('counter')
+             packets = named.get((version, counter)) if isinstance(counter, str) else counter.get('packets') if isinstance(counter, dict) else None
+--- a/lib/crowdsec_config.py
++++ b/lib/crowdsec_config.py
+@@ -64,11 +64,13 @@
+ def canonical_iptables_chains(data, required_v4=(), required_v6=()):
+     """Preserve effective additive lists, emitting each jump once per family."""
+     def chains(value):
++        if value is None:
++            return []
+         if not isinstance(value, (list, tuple)) or any(
+                 not isinstance(item, str) or not re.fullmatch(r'[A-Za-z0-9_.-]+', item) for item in value):
+             raise ValueError('Bouncer iptables chains 配置无效。')
+         return list(value)
+-    common = chains(data.get('iptables_chains', ['INPUT']))
++    common = chains(data.get('iptables_chains', []))
+     result = {'iptables_chains': []}
+     for family, required in [('v4', required_v4), ('v6', required_v6)]:
+         key = 'iptables_'+family+'_chains'
+--- a/lib/crowdsec_firewall_runtime.py
++++ b/lib/crowdsec_firewall_runtime.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+ """Firewall startup and live chain checks. Never restore saved rule tables."""
+ import argparse
++import json
+ import os
+ import tempfile
+ from pathlib import Path
+@@ -92,6 +93,14 @@
+ 
+ 
+ def write_startup(config, dropin=DROPIN):
++    marker = Path(str(config)+'.remote.json')
++    record = None
++    if marker.exists() or marker.is_symlink():
++        from crowdsec_remote_bouncer import owned, record_startup
++        record = owned(config)
++        previous_state = marker.read_bytes()
++        if json.loads(previous_state) != record:
++            raise ValueError('托管记录在启动配置准备期间改变。')
+     data = merged_config(config)
+     if data.get('mode') != 'iptables':
+         raise ValueError('启动修复只适用于 iptables 后端；其他后端请先检查或迁移。')
+@@ -103,6 +112,8 @@
+         raise ValueError('配置路径不能是符号链接。')
+     if docker and dropin.exists() and dropin.read_bytes() not in (ORDER, LEGACY_ORDER):
+         raise ValueError('Docker 启动顺序文件已由其他配置管理，拒绝覆盖。')
++    if record is not None and (owned(config) != record or marker.read_bytes() != previous_state):
++        raise ValueError('托管配置在写入前改变。')
+     write(local, overrides, private=True)
+     if docker and not dropin.exists():
+         dropin.parent.mkdir(parents=True, exist_ok=True)
+@@ -115,6 +126,8 @@
+         finally:
+             if os.path.exists(temporary):
+                 os.unlink(temporary)
++    if record is not None:
++        record_startup(config, previous_state, overrides)
+ 
+ 
+ class PathCoverageError(ValueError):
+--- a/lib/crowdsec_remote_bouncer.py
++++ b/lib/crowdsec_remote_bouncer.py
+@@ -11,7 +11,7 @@
+ import urllib.request
+ from urllib.parse import urlsplit
+ import yaml
+-from crowdsec_config import canonical_iptables_chains
++from crowdsec_config import canonical_iptables_chains, merged_config, read_mapping
+ 
+ class RemoteError(ValueError):
+     pass
+@@ -95,17 +95,34 @@
+     finally:
+         if os.path.exists(name): os.unlink(name)
+ 
++def record_startup(base, previous_state, expected_local):
++    """Refresh an already checked owner only for the exact planned write."""
++    check_paths(base)
++    _,local,state=paths(base)
++    if state.read_bytes()!=previous_state:
++        raise RemoteError('托管记录发生变化，未接纳启动配置。')
++    payload=local.read_bytes()
++    if yaml.safe_dump(yaml.safe_load(payload),sort_keys=True)!=yaml.safe_dump(expected_local,sort_keys=True):
++        raise RemoteError('启动配置与计划不一致，未接纳外部更改。')
++    record=json.loads(previous_state)
++    after=hashlib.sha256(payload).hexdigest()
++    if record['sha256']!=after:
++        record['sha256']=after
++        atomic(state,json.dumps(record).encode())
++
+ def apply(base,data):
+     url=validate(data.get('url'),data.get('key'))
+     check_paths(base)
+     base,local,state=paths(base)
+-    if local.exists() or state.exists(): owned(base)
++    managed = local.exists() or state.exists()
++    if managed: owned(base)
+     if not base.is_file(): raise RemoteError('缺少官方 Bouncer 基础配置，请先安装软件包。')
+-    config=yaml.safe_load(base.read_text())
++    config=merged_config(base)
+     if not isinstance(config,dict) or config.get('mode') not in ('nftables','iptables','ipset'):
+         raise RemoteError('基础 Bouncer 配置或防火墙后端无效。')
+-    overrides = {'api_url':url,'api_key':data['key'], 'insecure_skip_verify':False,
+-                     'cert_path':'', 'key_path':'', 'nftables_hooks':['input','forward']}
++    overrides = read_mapping(local) if managed else {}
++    overrides.update(api_url=url,api_key=data['key'],insecure_skip_verify=False,
++                     cert_path='',key_path='',nftables_hooks=['input','forward'])
+     if config['mode'] == 'iptables':
+         overrides.update(canonical_iptables_chains(config, ['INPUT','FORWARD'], ['INPUT','FORWARD']))
+     preflight(url,data['key'])
+--- a/lib/firewall.sh
++++ b/lib/firewall.sh
+@@ -84,7 +84,9 @@
+     }
+     python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "$cfg" || return 1
+     systemctl is-active --quiet crowdsec-firewall-bouncer || return 1
+-    begin_config_change "${cfg}.local" "$FIREWALL_DROPIN" || return 1
++    local startup_paths=("${cfg}.local" "$FIREWALL_DROPIN")
++    if [[ -e "${cfg}.remote.json" || -L "${cfg}.remote.json" ]]; then startup_paths+=("${cfg}.remote.json"); fi
++    begin_config_change "${startup_paths[@]}" || return 1
+     trap firewall_startup_exit EXIT
+     trap 'exit 130' INT
+     trap 'exit 143' TERM
+--- a/tests/test_chain_normalization.py
++++ b/tests/test_chain_normalization.py
+@@ -70,7 +70,7 @@
+ 
+     def test_invalid_common_or_family_list_is_rejected_before_write(self):
+         for field, value in [('iptables_chains', 'INPUT'), ('iptables_chains', [42]),
+-                             ('iptables_v4_chains', ['INPUT;echo']), ('iptables_v6_chains', None)]:
++                             ('iptables_v4_chains', ['INPUT;echo']), ('iptables_v6_chains', False)]:
+             with self.subTest(field=field, value=value):
+                 bad = self.data | {field: value}
+                 self.base.write_text(yaml.safe_dump(bad))
+--- a/tests/test_firewall_runtime.py
++++ b/tests/test_firewall_runtime.py
+@@ -66,8 +66,8 @@
+         self.assertEqual(self.local.read_bytes(), again)
+         self.assertEqual(self.config.read_bytes(), before)
+         self.assertEqual(data['api_key'], 'local-canary')
+-        self.assertEqual(data['iptables_v6_chains'], ['INPUT', 'CUSTOM6', 'FORWARD', 'DOCKER-USER'])
+-        self.assertEqual(data['iptables_v4_chains'], ['INPUT', 'CUSTOM4', 'FORWARD', 'DOCKER-USER'])
++        self.assertEqual(data['iptables_v6_chains'], ['CUSTOM6', 'INPUT', 'FORWARD', 'DOCKER-USER'])
++        self.assertEqual(data['iptables_v4_chains'], ['CUSTOM4', 'INPUT', 'FORWARD', 'DOCKER-USER'])
+         self.assertEqual(self.dropin.read_bytes(), runtime.ORDER)
+         self.assertEqual(self.local.stat().st_mode & 0o777, 0o600)
+ 
+@@ -248,7 +248,7 @@
+             self.assertEqual(applied['iptables_'+family+'_chains'], ['INPUT', 'FORWARD', 'DOCKER-USER'])
+ 
+     def test_preflight_rejects_invalid_chain_list_before_transaction_snapshot(self):
+-        self.config.write_text('mode: nftables\niptables_v4_chains: null\n')
++        self.config.write_text('mode: nftables\niptables_v4_chains: false\n')
+         with patch.object(migrate, 'cron_risks', return_value=[]), patch.object(migrate, 'restore_services', return_value=[]):
+             with self.assertRaisesRegex(migrate.MigrationError, '未准备迁移'):
+                 self.tx.preflight()
+--- a/tests/test_forwardx_review_regressions.py
++++ b/tests/test_forwardx_review_regressions.py
+@@ -0,0 +1,162 @@
++"""Re-review failures reproduced without host firewall or service changes."""
++import json
++from pathlib import Path
++import tempfile
++import unittest
++from unittest.mock import patch
++
++import yaml
++import test_workflows
++import crowdsec_config as config
++import crowdsec_firewall_runtime as runtime
++import crowdsec_remote_bouncer as remote
++import crowdbastion_relay_verify as verify
++from test_relay_verification import fixture
++
++
++class ChainReviewRegressions(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.base = self.root/'bouncer.yaml'
++        self.base.write_text('mode: iptables\niptables_chains: [INPUT, CUSTOM]\n')
++        self.local = Path(str(self.base)+'.local')
++        self.state = Path(str(self.base)+'.remote.json')
++
++    def apply(self):
++        with patch.object(remote, 'preflight'):
++            remote.apply(self.base, {'url':'http://127.0.0.1:8080/', 'key':'new-secret'})
++
++    def test_missing_common_does_not_invent_input_for_family_only_scope(self):
++        result = config.canonical_iptables_chains({'iptables_v4_chains':['CUSTOM4'], 'iptables_v6_chains':['CUSTOM6']})
++        self.assertEqual(result, {'iptables_chains':[], 'iptables_v4_chains':['CUSTOM4'], 'iptables_v6_chains':['CUSTOM6']})
++
++    def test_explicit_null_lists_have_official_empty_slice_semantics(self):
++        result = config.canonical_iptables_chains({'iptables_chains':None, 'iptables_v4_chains':None, 'iptables_v6_chains':None})
++        self.assertEqual(result, {'iptables_chains':[], 'iptables_v4_chains':[], 'iptables_v6_chains':[]})
++
++    def test_reapply_keeps_active_custom_chains_after_package_base_changes(self):
++        self.apply()
++        self.base.write_text('mode: iptables\niptables_chains: [INPUT]\n')
++        self.apply()
++        effective = config.merged_config(self.base)
++        self.assertEqual(effective['iptables_v4_chains'], ['INPUT','CUSTOM','FORWARD'])
++        self.assertEqual(effective['iptables_v6_chains'], ['INPUT','CUSTOM','FORWARD'])
++        remote.owned(self.base)
++
++    def test_startup_docker_normalization_keeps_ownership_valid_and_idempotent(self):
++        self.apply()
++        dropin = self.root/'order.conf'
++        with patch.object(runtime, 'docker_present', return_value=True):
++            runtime.write_startup(self.base, dropin)
++            try:
++                remote.owned(self.base)
++            except remote.RemoteError as error:
++                self.fail('our startup writer invalidated remote ownership: '+str(error))
++            first = {p:p.read_bytes() for p in [self.local,self.state,dropin]}
++            runtime.write_startup(self.base, dropin)
++        self.assertEqual(first, {p:p.read_bytes() for p in first})
++        self.assertIn('DOCKER-USER', config.merged_config(self.base)['iptables_v4_chains'])
++
++    def test_startup_refuses_preexisting_owned_overlay_drift_before_write(self):
++        self.apply()
++        self.local.write_text(self.local.read_text()+'unknown_external: keep\n')
++        before = self.local.read_bytes()
++        with patch.object(runtime, 'docker_present', return_value=True), self.assertRaises(ValueError):
++            runtime.write_startup(self.base, self.root/'order.conf')
++        self.assertEqual(self.local.read_bytes(), before)
++        self.assertFalse((self.root/'order.conf').exists())
++
++    def test_startup_does_not_bless_an_external_edit_during_write(self):
++        self.apply()
++        old_marker = self.state.read_bytes()
++        real_write = runtime.write
++        def changed(path, data, **options):
++            real_write(path, data, **options)
++            self.local.write_text(self.local.read_text()+'external_edit: keep\n')
++        with patch.object(runtime, 'docker_present', return_value=True), patch.object(runtime, 'write', side_effect=changed):
++            with self.assertRaises(remote.RemoteError):
++                runtime.write_startup(self.base, self.root/'order.conf')
++        self.assertEqual(self.state.read_bytes(), old_marker)
++        self.assertIn('external_edit', self.local.read_text())
++
++    def test_startup_does_not_bless_false_changed_to_integer_zero(self):
++        self.apply()
++        old_marker = self.state.read_bytes()
++        real_write = runtime.write
++        def changed(path, data, **options):
++            real_write(path, data, **options)
++            self.local.write_text(self.local.read_text().replace('insecure_skip_verify: false', 'insecure_skip_verify: 0'))
++        with patch.object(runtime, 'docker_present', return_value=True), patch.object(runtime, 'write', side_effect=changed):
++            with self.assertRaises(remote.RemoteError):
++                runtime.write_startup(self.base, self.root/'order.conf')
++        self.assertEqual(self.state.read_bytes(), old_marker)
++
++
++class NftReviewRegressions(unittest.TestCase):
++    def evidence(self, payload):
++        return verify.nft_evidence(payload, 'ip', 'crowdsec', {'crowdsec-blacklists'}, 'input', '1.1.1.1')
++
++    def test_new_accept_before_drop_is_not_counter_growth(self):
++        before = self.evidence(fixture(source=True,packets=10))
++        payload = fixture(source=True,packets=14)
++        payload['nftables'].insert(-1, {'rule':{'family':'ip','table':'crowdsec','chain':'ban','handle':8,'expr':[{'accept':None}]}})
++        after = self.evidence(payload)
++        self.assertFalse(after['matched'])
++        self.assertFalse(verify.counter_increased(before, after))
++
++    def test_named_counter_replacement_is_not_growth(self):
++        first = fixture(source=True,packets=10); second = fixture(source=True,packets=14)
++        first['nftables'][2]['counter']['handle'] = 44
++        second['nftables'][2]['counter']['handle'] = 45
++        self.assertFalse(verify.counter_increased(self.evidence(first), self.evidence(second)))
++
++
++class ManagedStartupRollback(unittest.TestCase):
++    setUp = test_workflows.Workflows.setUp
++    run_shell = test_workflows.Workflows.run_shell
++    commands = test_workflows.Workflows.commands
++
++    def test_restart_failure_restores_managed_overlay_and_marker_together(self):
++        import hashlib
++        directory = self.config/'bouncers'; directory.mkdir()
++        base = directory/'crowdsec-firewall-bouncer.yaml'
++        base.write_text('mode: iptables\n')
++        local = Path(str(base)+'.local'); local.write_text('api_key: keep-secret\n')
++        marker = Path(str(base)+'.remote.json')
++        marker.write_text(json.dumps({'manager':'crowdsec-1key-remote-v1','sha256':hashlib.sha256(local.read_bytes()).hexdigest()}))
++        before = {p:p.read_bytes() for p in [local,marker]}
++        overrides = '''
++source "$SCRIPT_DIR/lib/firewall.sh"
++FIREWALL_DROPIN="$TRACE.order"
++firewall_write_startup() {
++ command python3 - "$1" "$FIREWALL_DROPIN" "$SCRIPT_DIR/lib" <<'PYTHON'
++import sys
++from pathlib import Path
++sys.path.insert(0,sys.argv[3])
++import crowdsec_firewall_runtime as runtime
++runtime.docker_present=lambda:True
++runtime.write_startup(Path(sys.argv[1]),Path(sys.argv[2]))
++PYTHON
++}
++check_firewall_runtime() { return 0; }
++wait_firewall_decisions() { return 0; }
++systemctl() {
++ record systemctl "$@"
++ if [[ "$1" == restart && ! -f "$TRACE.first-restart" ]]; then touch "$TRACE.first-restart"; return 1; fi
++ return 0
++}
++'''
++        result = self.run_shell('repair_firewall_startup', overrides=overrides)
++        self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
++        self.assertTrue(Path(str(self.trace)+'.first-restart').exists(), result.stdout+result.stderr)
++        self.assertEqual(self.commands().count('restart crowdsec-firewall-bouncer'), 2)
++        self.assertEqual(before, {p:p.read_bytes() for p in before})
++        remote.owned(base)
++        self.assertFalse(Path(str(self.trace)+'.order').exists())
++        self.assertNotIn('keep-secret', result.stdout+result.stderr+self.commands())
++
++
++if __name__ == '__main__':
++    unittest.main()

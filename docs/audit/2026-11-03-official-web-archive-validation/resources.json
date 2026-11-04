@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://github.com/crowdsecurity/cs-openresty-bouncer/releases/download/v1.2.3/crowdsec-openresty-bouncer.tgz",
+    "path": "/tmp/crowdsec-official-openresty.tgz",
+    "sha256": "2a3dceeb166b3fabb450c1c9a5ccd960d1493f5aa52677a9be2be36d6014a0bf",
+    "bytes": 38274,
+    "tar_members": 29
+  },
+  {
+    "url": "https://github.com/ledgetech/lua-resty-http/archive/refs/tags/v0.17.1.tar.gz",
+    "path": "/tmp/crowdsec-http",
+    "sha256": "f52a0538b20a2d45025f318c18a138b78f6f88f07713dd0ed502183cb3d16f17",
+    "bytes": 45509,
+    "tar_members": 48
+  }
+]

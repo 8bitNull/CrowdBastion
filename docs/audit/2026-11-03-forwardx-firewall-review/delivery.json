@@ -1,0 +1,32 @@
+{
+  "at": "2026-11-03T14:21:20.035837+00:00",
+  "destination": "/projects/script/CrowdBastion",
+  "source_worktree": "/projects/script/CrowdBastion-forwardx-safety",
+  "before_files_backup": "/tmp/codeg-acp/8-a6066baf/forwardx-rereview-original-tq8hnjmv",
+  "delivered_files": {
+    "docs/firewall-maintenance.md": "33b6b59bb6390baa90b5a49b7fa8478e3d802b2aa2ef42078aaf5da54b9adacc",
+    "docs/relay-mode.md": "4c113b1869b90adb5ce17b66aa0713d3f078a5cded3459726f64208c91a9711a",
+    "docs/superpowers/plans/2026-11-03-forwardx-firewall-review.md": "f7c355ac75f20edfac5467d8768a8e259081b5f3d8289c73caf0a59a3f8f232d",
+    "lib/crowdbastion_relay_verify.py": "ffea505ae3065d5d520a6677626a8a470394322c400df2daa480efa84ffc9c05",
+    "lib/crowdsec_config.py": "318a9a0992fe04d75dfa1a9b9455e60748c97d7a766203e409b9d9ff84a248e9",
+    "lib/crowdsec_firewall_runtime.py": "52d077c697f2bf9471067ec850d4916c469e8ce366100c4e41179b3ac59dd4b1",
+    "lib/crowdsec_remote_bouncer.py": "100dd5fb592f991831036b83cdb87b85e0a627ed41663922577817ed37e69a88",
+    "lib/firewall.sh": "53f1bca784e761b3066cac773562f2a1455f9419da944a7f2bbb1f87ffdb3398",
+    "tests/test_chain_normalization.py": "0a6ec392513330c8ee8d4ab4307d82597dfe3de62412b7df77e9d024ec1befbb",
+    "tests/test_firewall_runtime.py": "c9d13bee41c30adda1160e9d6bb2c5c9eb5e8e651e7b40fa3e1b9d8d4e79d080",
+    "tests/test_forwardx_review_regressions.py": "cf9ab16529ae8faef56b2c7817733477df54959d1f32fc995a34aea9e395a0da",
+    "docs/audit/2026-11-03-forwardx-firewall-review.md": "f352166eb2b5ba24d63f0487c1f686c54e0afa8dfe376f4e6ab32b3ac4d93a4e"
+  },
+  "full_suite": {
+    "tests": 1655,
+    "passed": 1566,
+    "skipped": 89,
+    "failures": 0,
+    "seconds": 515.995
+  },
+  "focused_tests": 175,
+  "new_regressions": 10,
+  "production_actions": false,
+  "committed_or_pushed": false,
+  "status": "copied_and_verified"
+}

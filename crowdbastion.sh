@@ -48,6 +48,8 @@ UPDATE_BACKUPS='/var/backups/crowdsec-1key'
 UPDATE_LOG='/var/log/crowdsec-1key-update.log'
 CORE_RULES_CHANGED=false
 source "${SCRIPT_DIR}/lib/maintenance.sh"
+source "${SCRIPT_DIR}/lib/port_policy.sh"
+source "${SCRIPT_DIR}/lib/network.sh"
 # shellcheck source=lib/native_web_bouncer.sh
 source "${SCRIPT_DIR}/lib/nginx_reload.sh"
 source "${SCRIPT_DIR}/lib/native_web_bouncer.sh"
@@ -62,6 +64,8 @@ source "${SCRIPT_DIR}/lib/appsec_audit.sh"
 source "${SCRIPT_DIR}/lib/relay.sh"
 # shellcheck source=lib/v2bx.sh
 source "${SCRIPT_DIR}/lib/v2bx.sh"
+# shellcheck source=lib/protocol_guidance.sh
+source "${SCRIPT_DIR}/lib/protocol_guidance.sh"
 # shellcheck source=lib/remote_bouncer.sh
 source "${SCRIPT_DIR}/lib/remote_bouncer.sh"
 # shellcheck source=lib/health_summary.sh
@@ -1799,6 +1803,12 @@ check_web_health_status() {
 }
 
 smart_audit_and_optimize() (
+    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then locked_operation smart_audit_and_optimize "$@"; return $?; fi
+    load_node_roles || { log_err '用途配置无法读取；请先检查或重新选择用途。'; return 1; }
+    local optimize_web=true
+    if [[ -n "$NODE_ROLES" ]] && ! node_has_role web && ! node_web_deployed; then
+        optimize_web=false
+    fi
     CORE_CONFIG_TRACKING=true
     CORE_CONFIG_PENDING=false
     require_core || return 1
@@ -1812,6 +1822,10 @@ smart_audit_and_optimize() (
     local paths=() selected=()
     log_info '逐项选择基础修复（默认不选），选择完成后还需确认执行。'
     for item in rules logs metrics; do
+        if [[ "$item" == logs && "$optimize_web" == false ]]; then
+            log_info '不适用：当前用途无托管网站，跳过 HTTP/AppSec 修复；独立网站仍可使用网站专项命令。'
+            continue
+        fi
         case "$item" in
             rules) prompt answer '补齐基础日志检测集合？[y/N]: ' || return 0 ;;
             logs) prompt answer '修复 HTTP 日志采集？[y/N]: ' || return 0 ;;
@@ -1866,6 +1880,7 @@ smart_audit_and_optimize() (
     log_info '配置写入前备份；校验后统一加载，无变化时跳过加载。'
     if [[ "$rules" == true ]]; then log_info '基础集合使用 Hub 事务，配置校验或加载失败时尝试恢复规则及下载数据。'; fi
     confirm '仅应用上述所选项目？' || return 0
+    environment_change_guard || return $?
     begin_config_change "${paths[@]}" || return 1
     backup_ready=true
     if [[ "$metrics" == true ]]; then enable_prometheus_metrics || return 1; fi
@@ -2150,14 +2165,19 @@ manage_real_ip() {
 manage_diagnostics() {
     local choice
     while true; do
-        printf '\n检查与修复\n1. 检查整体运行情况\n2. 排查网站问题\n3. 检查中转节点\n4. 管理 V2bX 落地节点\n5. 修复基础配置\n0. 返回\n'
-        prompt choice '请选择 [0-5]: ' || return 0
+        printf '\n检查与修复\n1. 检查整体运行情况\n2. 排查网站问题\n3. 检查中转节点\n4. 管理 V2bX 落地节点\n5. 修复基础配置\n6. 短时环境压力检查\n7. 可选 TCP 配置与归属检查\n8. 选定入口端口策略\n9. 查看已声明的程序、协议与传输画像\n10. 代理协议使用导航（交互选择，无需环境变量）\n0. 返回\n'
+        prompt choice '请选择 [0-10]: ' || return 0
         case "$choice" in
             1) interactive_health_check; continue ;;
             2) manage_website_diagnostics; continue ;;
             3) manage_relay_diagnostics; continue ;;
             4) manage_v2bx_node; continue ;;
             5) manage_basic_repairs; continue ;;
+            6) environment_tool --human ;;
+            7) manage_network_configuration; continue ;;
+            8) manage_port_policy; continue ;;
+            9) protocol_status ;;
+            10) manage_proxy_guidance; continue ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2185,12 +2205,13 @@ manage_website_diagnostics() {
 manage_relay_diagnostics() {
     local choice
     while true; do
-        printf '\n检查中转节点\n1. 查看中转防护运行情况\n2. 检查连接来源和转发路径\n3. 引导验证中转入口拦截\n0. 返回\n'
-        prompt choice '请选择 [0-3]: ' || return 0
+        printf '\n检查中转节点\n1. 查看中转防护运行情况\n2. 检查连接来源和转发路径\n3. 引导验证中转入口拦截\n4. 验证续封、删除和自然到期\n0. 返回\n'
+        prompt choice '请选择 [0-4]: ' || return 0
         case "$choice" in
             1) check_relay_status ;;
             2) check_relay_path ;;
             3) verify_relay ;;
+            4) verify_relay '' lifecycle ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2201,14 +2222,16 @@ manage_relay_diagnostics() {
 manage_basic_repairs() {
     local choice
     while true; do
-        printf '\n修复基础配置\n1. 排查服务器自身 IP 被封禁的问题\n2. 修复防火墙与检测服务的连接\n3. 检查后选择需要修复的项目\n4. 改善日志数据库写入（需使用本地磁盘）\n5. 防火墙启动检查、修复与迁移\n0. 返回\n'
-        prompt choice '请选择 [0-5]: ' || return 0
+        printf '\n修复基础配置\n1. 排查服务器自身 IP 被封禁的问题\n2. 修复防火墙与检测服务的连接\n3. 检查后选择需要修复的项目\n4. 改善日志数据库写入（需使用本地磁盘）\n5. 防火墙启动检查、修复与迁移\n6. 可选 TCP 配置与归属检查\n7. 选定入口端口策略\n0. 返回\n'
+        prompt choice '请选择 [0-7]: ' || return 0
         case "$choice" in
             1) diagnose_self_report ;;
             2) locked_operation repair_firewall_bouncer ;;
             3) locked_operation smart_audit_and_optimize ;;
             4) locked_operation enable_sqlite_wal ;;
             5) locked_operation manage_firewall_maintenance ;;
+            6) manage_network_configuration; continue ;;
+            7) manage_port_policy; continue ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac
@@ -2295,8 +2318,12 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
 用法：sudo bash crowdbastion.sh [操作]
 兼容入口：install-crowdsec-1panel.sh；已有服务和配置沿用旧版运行标识。
 不带参数进入交互菜单。命令行保留交互确认，失败返回非零状态。
+修改操作需要预先安装 Python3，以安全取得管理锁；缺少时停止，不自动绕过锁安装。
 首页：1 检查防护情况；2 安装或调整防护；3 管理封禁与放行；4 高级管理。
 高级管理保留安装、规则、专项排查、通知、卸载与用途设置入口。
+高级管理 4 → 检查与修复 4：6 环境压力；7 TCP 配置；8 端口策略；9 协议画像。
+首页 5 → 9：代理协议使用导航；交互选择程序、协议、传输与拓扑，无需设置环境变量。
+安装/调整页 8 或检查与修复 10 也可进入；旧菜单编号与用途设置保持兼容。
 首次终端运行显示用途引导；选择只保存偏好。原命令行操作参数保持兼容。
 
 常用入口（查看详情可用终端滚动或分页）：
@@ -2323,12 +2350,18 @@ CrowdBastion — 基于 CrowdSec 的服务器防护与运维管理工具
   --relay-status-details 显示中转检查的技术详情
   --relay-path         检查连接来源、转发路径和防护位置
   --verify-relay       引导验收中转入口拦截（外部结果人工确认，本机只读）
+  --verify-relay-lifecycle  引导验收续封、精确删除和自然到期（本机只读）
   --install-relay-bouncer   安装防火墙防护并连接远端检测中心
   --configure-relay-bouncer 修改远端检测中心地址和连接密钥
   --relay-bouncer-status    查看远端检测中心连接和防护状态
   --remove-relay-bouncer    移除远端连接配置并停用防护（保留软件包）
 
-V2bX 落地节点：检查、记录日志和异常告警：
+代理协议指导（只读；不等同程序安装或专项日志检测）：
+  --protocol-status   只读协议/传输声明画像（NODE_PROGRAM/NODE_PROTOCOL/NODE_TRANSPORT）
+  菜单交互选择 AnyTLS、VMess、VLESS、Shadowsocks/2022、Trojan、Hysteria 1/2、TUIC。
+  V2Node 是候选程序，实际仓库/版本仍需核验；TLS 安全层不能单独确定 TCP 传输。
+
+V2bX 落地节点专项：检查、记录日志和异常告警：
   --diagnose-v2bx      检查 V2bX 配置、日志、连接来源，显示简短结论
   --diagnose-v2bx-details 显示落地检查的技术详情
   --v2bx-log-check     检查本机运行日志，隐去敏感信息并报告核验状态
@@ -2357,6 +2390,19 @@ V2bX 落地节点：检查、记录日志和异常告警：
   --update-hub         更新检测规则（更新失败时恢复备份）
   --enable-cron        每天 03:30 自动更新检测规则
   --runtime-status     比较当前源码与定时任务维护副本
+  --environment-status 只读短时采样宿主机 I/O 与内存压力，输出 JSON
+  --network-status     只读检查 sysctl 归属、加载顺序、运行值与维护副本
+  --network-plan       只读规划私有 JSON 中选定的 TCP 内核默认值
+  --network-apply      确认后暂存选定 TCP 配置，15 分钟未提交自动回退
+  --network-verify     核验配置和本机服务/API；实际中转吞吐另行验收
+  --network-commit     重新核验并提交网络配置
+  --network-rollback   回退未提交网络配置，保留外部漂移
+  --port-policy-plan   只读规划私有 JSON 中明确选定的端口策略
+  --port-policy-status 查看端口策略范围、规则与事务状态
+  --port-policy-apply  确认后暂存端口策略，15 分钟未提交自动回退
+  --port-policy-verify 独立核验已暂存规则（外部流量仍需验收）
+  --port-policy-commit 重新核验并提交端口策略
+  --port-policy-rollback 回退未提交策略，保留发生漂移的外部修改
   --sync-runtime       同步维护副本，保留 cron 原执行时间
   --relay-acceptance   查看上次中转验收的范围、时间与配置变化提示
   --prepare-v2bx-observer 交互生成并校验私有持续记录配置
@@ -2411,6 +2457,8 @@ main_operation() {
         --relay-status-details) check_relay_status details ;;
         --relay-path) check_relay_path ;;
         --verify-relay) verify_relay ;;
+        --verify-relay-lifecycle) verify_relay '' lifecycle ;;
+        --protocol-status) protocol_status ;;
         --diagnose-v2bx) diagnose_v2bx ;;
         --diagnose-v2bx-details) diagnose_v2bx details ;;
         --v2bx-log-check) check_v2bx_logs ;;
@@ -2454,6 +2502,19 @@ main_operation() {
         --deep-clean|--purge|--uninstall) deep_purge_residuals ;;
         --enable-cron) enable_auto_update ;;
         --runtime-status) show_maintenance_runtime_status ;;
+        --environment-status) environment_tool ;;
+        --network-status) network_action status ;;
+        --network-plan) network_action plan ;;
+        --network-apply) network_action apply ;;
+        --network-verify) network_action verify ;;
+        --network-commit) network_action commit ;;
+        --network-rollback) network_action rollback ;;
+        --port-policy-plan) port_policy_action plan ;;
+        --port-policy-status) port_policy_action status ;;
+        --port-policy-apply) port_policy_action apply ;;
+        --port-policy-verify) port_policy_action verify ;;
+        --port-policy-commit) port_policy_action commit ;;
+        --port-policy-rollback) port_policy_action rollback ;;
         --sync-runtime) sync_maintenance_runtime ;;
         --relay-acceptance) show_relay_acceptance ;;
         --prepare-v2bx-observer) generate_v2bx_observer_config ;;
@@ -2477,7 +2538,7 @@ main_operation() {
 main() {
     if [[ $# -gt 1 ]]; then log_err '每次只能指定一个操作。'; return 1; fi
     case "${1:-}" in
-        ''|--help|-h|--runtime-status|--relay-acceptance|--firewall-check|--status|--status-json|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
+        ''|--help|-h|--protocol-status|--network-status|--network-plan|--port-policy-plan|--port-policy-status|--runtime-status|--environment-status|--relay-acceptance|--firewall-check|--status|--status-json|--status-details|--relay-status-details|--diagnose-v2bx-details|--relay-status|--relay-bouncer-status|--relay-path|--verify-relay|--verify-relay-lifecycle|--diagnose-v2bx|--v2bx-log-check|--v2bx-observe|--v2bx-observer-status|--v2bx-alerts-status|--appsec-status|--check-logs|--diagnose-real-ip|--diagnose-host-real-ip|--check-clean|--update-hub|--telegram-smart-status) main_operation "$@" ;;
         *) locked_operation main_operation "$@" ;;
     esac
 }

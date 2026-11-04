@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-03T11:31:33.473083+00:00",
+  "backup": "/var/backups/crowdbastion/vps144-static-review-20261103T113133Z",
+  "new_files": {
+    "/usr/local/lib/crowdbastion-static-policy/apply.py": "74a673b059dd7cd5204cad9205f3e7ca954991c166437082cb8ae998dc2e20cc",
+    "/etc/systemd/system/crowdbastion-static-policy.service": "88f0a054fe3bc3d2a76d9cdd8b6d42e1ee2e2c575d0dee95e8c0ea336991e067"
+  },
+  "before_files": {
+    "/usr/local/lib/crowdbastion-static-policy/apply.py": "/var/backups/crowdbastion/vps144-static-review-20261103T113133Z/apply.py.before",
+    "/etc/systemd/system/crowdbastion-static-policy.service": "/var/backups/crowdbastion/vps144-static-review-20261103T113133Z/crowdbastion-static-policy.service.before"
+  },
+  "service_restarts": [
+    "crowdbastion-static-policy"
+  ],
+  "business_restarts": [],
+  "services_before": "MainPID=58009\nNRestarts=0\nId=forwardx-agent.service\nActiveState=active\n\nMainPID=444\nNRestarts=0\nId=forwardx-realm-both-53534.service\nActiveState=active\n\nMainPID=445\nNRestarts=0\nId=forwardx-realm-both-53536.service\nActiveState=active\n\nMainPID=446\nNRestarts=0\nId=forwardx-realm-both-53537.service\nActiveState=active\n\nMainPID=60520\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=37807\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n\nMainPID=35161\nNRestarts=0\nId=systemd-journald.service\nActiveState=active\n",
+  "live_lookup_calls": 18,
+  "live_mutation_calls": [],
+  "rule_graph_unchanged": true,
+  "unit_status": "Restart=on-failure\nRestartUSec=10s\nTimeoutStartUSec=10min\nTimeoutStopUSec=5min\nExecMainStatus=0\nActiveState=active\nSubState=exited\nUnitFileState=enabled\n",
+  "status": "deployed_and_verified"
+}

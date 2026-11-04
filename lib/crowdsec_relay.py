@@ -13,7 +13,7 @@ import sys
 import yaml
 from crowdbastion_health import emit
 from crowdsec_firewall import assess as assess_firewall_backend
-from crowdsec_config import acquisition_locations, go_escape, go_glob, merged_config, read, write
+from crowdsec_config import acquisition_locations, go_escape, go_glob, merged_config, read, write, canonical_iptables_chains
 
 
 SSH_FILTERS = ['_SYSTEMD_UNIT=ssh.service', '_SYSTEMD_UNIT=sshd.service']
@@ -235,9 +235,7 @@ def audit(root, core_required=True):
                 re.fullmatch(re.escape(base)+r'(?:-[0-9]+)?', name) for base in bases)}
             print(label+' 封禁集合：'+('已发现' if names else '尚未发现'))
             if mode == 'iptables':
-                chains = data.get('iptables_v4_chains' if family == 'ipv4' else 'iptables_v6_chains', data.get('iptables_chains', ['INPUT']))
-                if not isinstance(chains, list) or any(not isinstance(chain, str) for chain in chains):
-                    raise ValueError('Bouncer iptables chains 配置无效。')
+                chains = canonical_iptables_chains(data)['iptables_v4_chains' if family == 'ipv4' else 'iptables_v6_chains']
                 print(label+' 配置链：'+', '.join(chains))
                 rules = command([binary, '-S'])
                 found = iptables_paths(rules, names) if rules is not None else set()

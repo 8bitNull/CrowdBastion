@@ -8,7 +8,7 @@ import sys
 import tempfile
 import unittest
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT / 'lib/crowdsec_relay_paths.py'
@@ -142,9 +142,9 @@ class RelayPaths(unittest.TestCase):
 
 
 class RelayPathRouting(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_cli_bypasses_lock_and_cancellation_does_not_run_audit(self):
         p = self.run_shell('main --relay-path', '0\n', overrides='locked_operation() { record LOCK; return 99; }; check_relay_status() { record AUDIT; return 2; }')

@@ -1,0 +1,64 @@
+======================================================================
+ERROR: test_cold_start_creates_both_families_without_restore_or_flush (test_vps45_static_policy.StaticPolicyTests.test_cold_start_creates_both_families_without_restore_or_flush)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 23, in test_cold_start_creates_both_families_without_restore_or_flush
+    m=self.module();calls=[]
+      ^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 11, in module
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/script/CrowdBastion-vps45-repair/docs/audit/2026-11-02-vps45-repair/scripts/static-policy.py'
+
+======================================================================
+ERROR: test_existing_rules_are_not_changed (test_vps45_static_policy.StaticPolicyTests.test_existing_rules_are_not_changed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 15, in test_existing_rules_are_not_changed
+    m=self.module();calls=[]
+      ^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 11, in module
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/script/CrowdBastion-vps45-repair/docs/audit/2026-11-02-vps45-repair/scripts/static-policy.py'
+
+======================================================================
+ERROR: test_failure_removes_only_added_rules_in_reverse_order (test_vps45_static_policy.StaticPolicyTests.test_failure_removes_only_added_rules_in_reverse_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 37, in test_failure_removes_only_added_rules_in_reverse_order
+    m=self.module();calls=[];adds=[];deletes=[]
+      ^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 11, in module
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/script/CrowdBastion-vps45-repair/docs/audit/2026-11-02-vps45-repair/scripts/static-policy.py'
+
+======================================================================
+ERROR: test_unreadable_checks_refuse_mutation (test_vps45_static_policy.StaticPolicyTests.test_unreadable_checks_refuse_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 52, in test_unreadable_checks_refuse_mutation
+    m=self.module();calls=[]
+      ^^^^^^^^^^^^^
+  File "/projects/script/CrowdBastion-vps45-repair/tests/test_vps45_static_policy.py", line 11, in module
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1073, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1130, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/projects/script/CrowdBastion-vps45-repair/docs/audit/2026-11-02-vps45-repair/scripts/static-policy.py'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (errors=4)

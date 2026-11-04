@@ -8,7 +8,7 @@ import sys
 import tempfile
 import unittest
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT/'lib/crowdsec_v2bx_logs.py'
@@ -283,9 +283,9 @@ class V2bXLogs(unittest.TestCase):
 
 
 class LogCheckRouting(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_cli_and_menu_are_read_only(self):
         overrides = 'check_v2bx_logs() { record LOGCHECK; return 2; }; locked_operation() { record LOCK; return 99; }'

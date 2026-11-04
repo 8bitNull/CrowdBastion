@@ -1,0 +1,28 @@
+{
+  "file_count": 22,
+  "files": {
+    "crowdbastion.sh": "a9d7339259cecfa0ee5d6751baac32506a451c17989d730238097231bef39fa3",
+    "docs/cli-reference.md": "94dce017ec80402a5f2315ccd8ba1accc023b373f43ec32ba2fbd0997ce1167d",
+    "docs/firewall-maintenance.md": "5f31676d77ee8eeb2feee076a685af33e3b32c6e1e995c2566c53ceec8efceab",
+    "docs/relay-mode.md": "897e7523b8e3ee13db31f78930aaa14894b66ef06e7c12d819e8278ecbdf6f2a",
+    "docs/superpowers/plans/2026-11-03-forwardx-firewall.md": "f52c33a777d7f906bebc4749c03213f66a6be41432b2530b49758c0b5dd14109",
+    "docs/superpowers/specs/2026-11-03-forwardx-firewall-design.md": "2571aad763ebab529c966a0ad2ac97828ca1fada1a1b1fddc817565cd9f29102",
+    "lib/crowdbastion_relay_verify.py": "e9bf10555c7e2cb666be822d3788f6bca2b499aaf525233bad396fbc7874c2c7",
+    "lib/crowdbastion_ux.py": "857cec02d29438960fbd802ce115d541e9fba20de161884afa555af7f34e2095",
+    "lib/crowdsec_config.py": "dd9ae305482863172c69297be3ff7debb405baf2d4d368f863c5ea475c688fd5",
+    "lib/crowdsec_firewall_migrate.py": "e1858214f9d26b6c6e0a324d015b75b85b6e2b4344c86273c7fb8d96d32e1220",
+    "lib/crowdsec_firewall_runtime.py": "d7afe3233dcd35b4a6ddf0b9461fcc6a57c9eac18910db48e281909fd45309c6",
+    "lib/crowdsec_relay.py": "22e6bd4759e36b1a914215cf735872e777ae64e9c7d98f24f45c97f0ebe552be",
+    "lib/crowdsec_remote_bouncer.py": "be119e3a260fec2434a83ec1293d2af53690f631e3faaa95d219d16eedc60e44",
+    "lib/relay.sh": "043dba3ae07fb2c760995f12f44aaf74aad22fd73afbf956b888e9649d2deffc",
+    "tests/test_chain_normalization.py": "eb8408a21dcb261f7a4c7be9066858363b179f6ac9e129545fe65e474dacf92b",
+    "tests/test_firewall_runtime.py": "cfdfeea91567046da184e1fa7a606d1bc2fe4e92a9d01e8e14464d088d300a03",
+    "tests/test_relay_iptables_acceptance.py": "b38901eb6b19ac249dea6b01688243989f1f4b2cf02466de962dd78df9e0c857",
+    "tests/test_relay_lifecycle.py": "d9a8772419db214ba11c2b2441b395001d0b2102d758d9373eb7d49fe759038f",
+    "tests/test_relay_verification.py": "89512c376b69ebd3fe18ddcc0e2e0f5948e83f682b35c0d7c993044f1fa58997",
+    "tests/test_remote_bouncer.py": "df65fabc341bea3ac3965184a7ea8462334ff32919460753b84a9dfb1e9ca5f3",
+    "tests/test_user_experience.py": "bf6d97e50f7bcb9d305df10619f3dee8b1debaf4b8b95006d4c9935c608cd84c",
+    "tests/test_workflows.py": "50d979c1c64352cb1d0b35cde3d247d63521c863e304ec226c3c97b4c73296c5"
+  },
+  "review_diff_sha256": "c5d12e7a1fadc75bdd8ccda9056792982b596b36873a1d1c27b0f0aa6a23f04c"
+}

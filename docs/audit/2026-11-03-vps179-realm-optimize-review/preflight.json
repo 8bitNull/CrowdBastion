@@ -1,0 +1,119 @@
+{
+  "at": "2026-11-03T09:55:43.095786+00:00",
+  "files": {
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": {
+      "sha256": "eb5fb894aea15ca7908bdea43f02bd6444102cdb5636a4181e5b7b8daf7941a0",
+      "mode": "0o644",
+      "uid": 0,
+      "text": "source: journalctl\njournalctl_filter:\n- _SYSTEMD_UNIT=forwardx-realm-both-56017.service\n- _SYSTEMD_UNIT=forwardx-realm-both-58372.service\nlabels:\n  type: realm-forwardx\n"
+    },
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": {
+      "sha256": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+      "mode": "0o644",
+      "uid": 0,
+      "text": "name: local/realm-forwardx-observation\ndescription: ForwardX realm diagnostics only; never extracts source_ip or emits decisions\nfilter: \"evt.Line.Labels.type == 'realm-forwardx'\"\nonsuccess: next_stage\ngrok:\n  pattern: '^.*?\\[%{YEAR:realm_year}-%{MONTHNUM:realm_month}-%{MONTHDAY:realm_day}\\]\\[%{TIME:realm_time}\\]\\[%{DATA:realm_module}\\]\\[%{LOGLEVEL:realm_level}\\](?:\\[%{WORD:realm_protocol}\\])?%{GREEDYDATA:realm_message}$'\n  apply_on: Line.Raw\nstatics:\n  - meta: log_type\n    value: realm_forwardx_observation\n  - meta: service\n    value: realm\n  - meta: realm_level\n    expression: evt.Parsed.realm_level\n  - meta: realm_module\n    expression: evt.Parsed.realm_module\n  - meta: realm_protocol\n    expression: evt.Parsed.realm_protocol\n"
+    },
+    "/etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf": {
+      "sha256": "8a8f3ecec507adbd84dde64af4a4953e5360898b562b715b94d8464258dbb7b2",
+      "mode": "0o644",
+      "uid": 0,
+      "text": "# CrowdBastion realm protection rollout: bound log storage without forced vacuum.\n[Journal]\nSystemMaxUse=128M\nSystemKeepFree=512M\nRuntimeMaxUse=32M\nRuntimeKeepFree=16M\n"
+    },
+    "/var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z/rollback.py": {
+      "sha256": "7fc8b5df756e41fff586f32ed1bb787c33d7406956491191762a673507854e23",
+      "mode": "0o600",
+      "uid": 0,
+      "text": "\"\"\"Undo only the three owned files from the VPS179 realm observation rollout.\n\nRun with the backup path as argv[1]. Refuses external modifications. Does not\nrestore firewall tables, decisions, application state or ForwardX configuration.\n\"\"\"\nfrom pathlib import Path\nimport fcntl,hashlib,json,os,subprocess,sys\nbase=Path(sys.argv[1]).resolve()\nassert base.parent==Path('/var/backups/crowdbastion') and base.name.startswith('vps179-realm-opt-')\nlock=open('/run/lock/crowdsec-1key.lock','a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)\napplied=json.loads((base/'apply-result.json').read_text())\nexpected=applied['new_files'];owned={}\nfor name,digest in expected.items():\n p=Path(name)\n assert not p.is_symlink() and p.is_file() and hashlib.sha256(p.read_bytes()).hexdigest()==digest,('refuse modified file',name)\n owned[p]=p.read_bytes()\nremoved=[];errors=[]\ndef run(args):\n p=subprocess.run(args,capture_output=True,text=True,timeout=55)\n if p.returncode:raise RuntimeError(str(args)+': '+p.stderr[-1000:])\ntry:\n for p in owned:p.unlink();removed.append(p)\n run(['crowdsec','-t'])\n for unit in ('systemd-journald','crowdsec'):run(['systemctl','restart',unit])\n print('Removed owned realm observation and journal-cap files; ForwardX and Bouncer unchanged.')\nexcept BaseException:\n for p in removed:\n  if p.exists():errors.append('cannot restore externally recreated file '+str(p));continue\n  fd=os.open(p,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o644)\n  with os.fdopen(fd,'wb') as out:out.write(owned[p])\n for unit in ('systemd-journald','crowdsec'):\n  try:run(['systemctl','restart',unit])\n  except Exception as error:errors.append(str(error))\n if errors:print(json.dumps({'restore_errors':errors}),file=sys.stderr)\n raise\n"
+    }
+  },
+  "services": {
+    "exit": 0,
+    "stdout": "MainPID=504\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-11-01 02:03:14 PST\nId=forwardx-agent.service\nActiveState=active\n\nMainPID=505\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-11-01 02:03:14 PST\nId=forwardx-realm-both-56017.service\nActiveState=active\n\nMainPID=511\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-11-01 02:03:14 PST\nId=forwardx-realm-both-58372.service\nActiveState=active\n\nMainPID=524502\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 01:28:26 PST\nId=crowdsec.service\nActiveState=active\n\nMainPID=2109\nNRestarts=0\nExecMainStartTimestamp=Sun 2026-11-01 02:03:26 PST\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n\nMainPID=524481\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 01:28:23 PST\nId=systemd-journald.service\nActiveState=active\n",
+    "stderr": ""
+  },
+  "realm_messages": {
+    "forwardx-realm-both-56017.service": [
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-56017.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793682047055276",
+        "MESSAGE": "[2026-11-02][21:00:47][realm_core::tcp::socket][WARN][tcp]connect to 192.0.2.13:2053 as 192.0.2.13:2053: Connection timed out (os error 110), try next ip"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-56017.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793682047055276",
+        "MESSAGE": "[2026-11-02][21:00:47][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:38908 => 192.0.2.13:2053, error: Connection timed out (os error 110)"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-56017.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793684267088071",
+        "MESSAGE": "[2026-11-02][21:37:47][realm_core::tcp::socket][WARN][tcp]connect to 192.0.2.13:2053 as 192.0.2.13:2053: Connection timed out (os error 110), try next ip"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-56017.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793684267088071",
+        "MESSAGE": "[2026-11-02][21:37:47][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:56698 => 192.0.2.13:2053, error: Connection timed out (os error 110)"
+      }
+    ],
+    "forwardx-realm-both-58372.service": [
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-58372.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793527394289200",
+        "MESSAGE": "fd: soft=65535, hard=65535"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-58372.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793527394308216",
+        "MESSAGE": "log: level=warn, output=stdout"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-58372.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793527394308216",
+        "MESSAGE": "dns: mode=ipv4_and_ipv6, protocol=tcp+udp, min-ttl=0, max-ttl=86400, cache-size=32, servers=system"
+      },
+      {
+        "_SYSTEMD_UNIT": "forwardx-realm-both-58372.service",
+        "SYSLOG_IDENTIFIER": "realm",
+        "__REALTIME_TIMESTAMP": "1793527394308216",
+        "MESSAGE": "inited: [::]:58372 -> [192.0.2.19:8443]; options: ipv6-only=false, accept-mptcp=false; send-mptcp=false; send-proxy=false, send-proxy-version=2, accept-proxy=false, accept-proxy-timeout=5s; tcp-keepalive=15s[3] connect-timeout=300s, associate-timeout=30s; balance=off"
+      }
+    ]
+  },
+  "metrics": {
+    "exit": 0,
+    "stdout": "{\n  \"realm_acquisition\": {},\n  \"realm_parser\": {},\n  \"ssh\": {\n    \"journalctl:journalctl-_SYSTEMD_UNIT=ssh.service\": {\n      \"parsed\": 5,\n      \"reads\": 10,\n      \"unparsed\": 5\n    }\n  }\n}",
+    "stderr": ""
+  },
+  "firewall": {
+    "exit": 0,
+    "stdout": "[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 16833，实际集合网络 16833，遗漏 0。\n",
+    "stderr": ""
+  },
+  "netns": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "sockets": {
+    "exit": 0,
+    "stdout": "Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                                                     \nudp   UNCONN 0      0            0.0.0.0:68         0.0.0.0:*    users:((\"dhclient\",pid=348,fd=7))                          \nudp   UNCONN 0      0                  *:58372            *:*    users:((\"realm\",pid=511,fd=6))                             \nudp   UNCONN 0      0                  *:56017            *:*    users:((\"realm\",pid=505,fd=6))                             \ntcp   LISTEN 0      32768      127.0.0.1:7422       0.0.0.0:*    users:((\"crowdsec\",pid=524502,fd=100))                     \ntcp   LISTEN 0      5          127.0.0.1:7423       0.0.0.0:*    users:((\"python3\",pid=279489,fd=7))                        \ntcp   LISTEN 0      511          0.0.0.0:81         0.0.0.0:*    users:((\"nginx\",pid=500522,fd=60),(\"nginx\",pid=1972,fd=60))\ntcp   LISTEN 0      511          0.0.0.0:80         0.0.0.0:*    users:((\"nginx\",pid=500522,fd=56),(\"nginx\",pid=1972,fd=56))\ntcp   LISTEN 0      128          0.0.0.0:53322      0.0.0.0:*    users:((\"sshd\",pid=613,fd=6))                              \ntcp   LISTEN 0      32768      127.0.0.1:6060       0.0.0.0:*    users:((\"crowdsec\",pid=524502,fd=18))                      \ntcp   LISTEN 0      511          0.0.0.0:443        0.0.0.0:*    users:((\"nginx\",pid=500522,fd=58),(\"nginx\",pid=1972,fd=58))\ntcp   LISTEN 0      32768      127.0.0.1:8080       0.0.0.0:*    users:((\"crowdsec\",pid=524502,fd=31))                      \ntcp   LISTEN 0      1024               *:56017            *:*    users:((\"realm\",pid=505,fd=7))                             \ntcp   LISTEN 0      511             [::]:81            [::]:*    users:((\"nginx\",pid=500522,fd=61),(\"nginx\",pid=1972,fd=61))\ntcp   LISTEN 0      511             [::]:80            [::]:*    users:((\"nginx\",pid=500522,fd=57),(\"nginx\",pid=1972,fd=57))\ntcp   LISTEN 0      128             [::]:53322         [::]:*    users:((\"sshd\",pid=613,fd=7))                              \ntcp   LISTEN 0      1024               *:58372            *:*    users:((\"realm\",pid=511,fd=7))                             \ntcp   LISTEN 0      511             [::]:443           [::]:*    users:((\"nginx\",pid=500522,fd=59),(\"nginx\",pid=1972,fd=59))\ntcp   LISTEN 0      511                *:3000             *:*    users:((\"node\",pid=2004,fd=21))                            \n",
+    "stderr": ""
+  },
+  "journald": {
+    "exit": 0,
+    "stdout": "Nov 03 01:25:38 audit-node-02.example.com systemd-journald[212]: Journal stopped\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: Collecting audit messages is disabled.\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: Journal started\nNov 03 01:25:38 audit-node-02.example.com systemd-journald[523584]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 128M, 111.9M free.\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[523584]: Journal stopped\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: Collecting audit messages is disabled.\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: Journal started\nNov 03 01:26:23 audit-node-02.example.com systemd-journald[524095]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 1.9G, 1.9G free.\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524095]: Journal stopped\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: Collecting audit messages is disabled.\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: Journal started\nNov 03 01:28:23 audit-node-02.example.com systemd-journald[524481]: System Journal (/var/log/journal/91b76e53984c4eef91ef3a6c5f536290) is 16M, max 128M, 111.9M free.\n",
+    "stderr": ""
+  },
+  "log_sources": {
+    "exit": 0,
+    "stdout": " 524533  524502 journalctl      journalctl --follow -n 0 _SYSTEMD_UNIT=ssh.service\n 524534  524502 journalctl      journalctl --follow -n 0 _SYSTEMD_UNIT=forwardx-realm-both-56017.service _SYSTEMD_UNIT=forwardx-realm-both-58372.service",
+    "stderr": ""
+  },
+  "backup_manifest_check": {}
+}

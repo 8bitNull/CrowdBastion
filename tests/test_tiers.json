@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "quick": [
+    "test_test_runner",
+    "test_audit_safety",
+    "test_chain_normalization",
+    "test_change_transactions",
+    "test_firewall_evidence",
+    "test_firewall_runtime",
+    "test_firewall_startup",
+    "test_forwardx_review_regressions",
+    "test_lock_safety",
+    "test_environment_preflight",
+    "test_network",
+    "test_port_policy",
+    "test_profile_privacy",
+    "test_relay_iptables",
+    "test_relay_iptables_acceptance",
+    "test_relay_lifecycle",
+    "test_relay_verification",
+    "test_remote_bouncer"
+  ],
+  "integration": [
+    "test_nginx_reload",
+    "test_notify_integration",
+    "test_notify_runtime",
+    "test_web_bouncer_runtime"
+  ],
+  "archive": [
+    "test_vps167_rollback_review",
+    "test_vps45_static_policy"
+  ]
+}

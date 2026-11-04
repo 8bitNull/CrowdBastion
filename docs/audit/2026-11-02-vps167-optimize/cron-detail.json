@@ -1,0 +1,33 @@
+{
+  "cron_lines": [
+    {
+      "disabled": true,
+      "comment": "# CrowdSec 每日规则库与黑名单自动同步"
+    },
+    {
+      "schedule": "30 3 * * *",
+      "disabled": true,
+      "prefix": "# crowdbastion: disabled duplicate updater: ",
+      "command_tokens": [
+        "root",
+        "/usr/bin/cscli",
+        "hub",
+        "update",
+        ">/dev/null",
+        "2>&1",
+        "&&",
+        "/usr/bin/cscli",
+        "hub",
+        "upgrade",
+        ">/dev/null",
+        "2>&1",
+        "&&",
+        "/bin/systemctl",
+        "reload",
+        "crowdsec",
+        ">/dev/null",
+        "2>&1"
+      ]
+    }
+  ]
+}

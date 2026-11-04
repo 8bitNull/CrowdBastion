@@ -1,0 +1,12 @@
+Reviewer: /root/optimizer_fixture_review (fresh context; read-only).
+Critical: none. Important: none. Minor: none.
+
+New explicit run_optimizer passes user_input, timeout and subprocess results unchanged. Caller overrides are appended after the diagnostic replacement.
+
+Actual optimizer locks, core dependencies, YAML checks, confirmation, log discovery, config writes, validation, service loading and rollback remain. Production ignores preliminary health result via || true, and the report runs in a subshell; returning2 does not bypass transaction guards.
+
+Only ten designated original test call sites change; original assertions remain. Four original complete integration cases and separate health report tests retain run_shell, with no global default behavior change.
+
+New contracts read actual metrics config and assert restart, plus no health helper and caller override precedence, so they do not merely assert mock behavior.
+
+Independent 2 new contracts + 4 original integration tests: 6 passed in7.166s. No file edits; no full suite run by reviewer.

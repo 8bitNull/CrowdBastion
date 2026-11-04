@@ -1,0 +1,16 @@
+{
+  "at": "2026-11-03T09:25:36.862077+00:00",
+  "backup": "/var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z",
+  "new_files": {
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": "eb5fb894aea15ca7908bdea43f02bd6444102cdb5636a4181e5b7b8daf7941a0",
+    "/etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf": "8a8f3ecec507adbd84dde64af4a4953e5360898b562b715b94d8464258dbb7b2"
+  },
+  "restarted": [
+    "systemd-journald",
+    "crowdsec"
+  ],
+  "live_config_validation": "",
+  "status": "rolled_back",
+  "error": "realm acquisition did not register"
+}

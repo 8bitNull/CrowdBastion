@@ -39,6 +39,7 @@ verify_relay() {
     require_commands python3 || return 1
     load_node_roles || return 1
     local args=(--root "$CS_DIR" --record "$RELAY_ACCEPTANCE_FILE")
+    [[ "${2:-}" != lifecycle ]] || args+=(--lifecycle)
     if [[ "${1:-}" == remote ]] || node_has_role remote || [[ -e "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]]; then
         args+=(--remote)
     fi

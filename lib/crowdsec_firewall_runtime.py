@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Firewall startup and live chain checks. Never restore saved rule tables."""
 import argparse
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -10,7 +11,7 @@ import subprocess
 import sys
 
 import yaml
-from crowdsec_config import merged_config, read_mapping, write
+from crowdsec_config import merged_config, read_mapping, write, canonical_iptables_chains
 from crowdbastion_health import emit
 
 UNIT = 'crowdsec-firewall-bouncer.service'
@@ -87,17 +88,19 @@ def docker_present():
 
 def expected_chains(config, docker):
     """Keep custom chains and honor family-specific overrides."""
-    result = {}
-    for family in ('v4', 'v6'):
-        chains = config.get('iptables_'+family+'_chains', config.get('iptables_chains', ['INPUT']))
-        if not isinstance(chains, list) or not all(isinstance(c, str) and re.fullmatch(r'[\w-]+', c) for c in chains):
-            raise ValueError('防火墙链配置无效。')
-        result['iptables_'+family+'_chains'] = list(dict.fromkeys(
-            chains+['INPUT', 'FORWARD']+(['DOCKER-USER'] if docker else [])))
-    return result
+    required = ['INPUT', 'FORWARD']+(['DOCKER-USER'] if docker else [])
+    return canonical_iptables_chains(config, required, required)
 
 
 def write_startup(config, dropin=DROPIN):
+    marker = Path(str(config)+'.remote.json')
+    record = None
+    if marker.exists() or marker.is_symlink():
+        from crowdsec_remote_bouncer import owned, record_startup
+        record = owned(config)
+        previous_state = marker.read_bytes()
+        if json.loads(previous_state) != record:
+            raise ValueError('托管记录在启动配置准备期间改变。')
     data = merged_config(config)
     if data.get('mode') != 'iptables':
         raise ValueError('启动修复只适用于 iptables 后端；其他后端请先检查或迁移。')
@@ -109,6 +112,8 @@ def write_startup(config, dropin=DROPIN):
         raise ValueError('配置路径不能是符号链接。')
     if docker and dropin.exists() and dropin.read_bytes() not in (ORDER, LEGACY_ORDER):
         raise ValueError('Docker 启动顺序文件已由其他配置管理，拒绝覆盖。')
+    if record is not None and (owned(config) != record or marker.read_bytes() != previous_state):
+        raise ValueError('托管配置在写入前改变。')
     write(local, overrides, private=True)
     if docker and not dropin.exists():
         dropin.parent.mkdir(parents=True, exist_ok=True)
@@ -121,6 +126,8 @@ def write_startup(config, dropin=DROPIN):
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
+    if record is not None:
+        record_startup(config, previous_state, overrides)
 
 
 class PathCoverageError(ValueError):
@@ -129,14 +136,17 @@ class PathCoverageError(ValueError):
 
 class IncompletePathError(ValueError):
     """Decision state cannot establish whether an empty chain is idle."""
+    def __init__(self, message, diagnostic=None):
+        super().__init__(message)
+        self.diagnostic = diagnostic
 
 
-def active_ban_families(config):
+def active_ban_families(config, *, timings=None):
     from crowdsec_firewall_evidence import live, networks
-    return {network.version for network in networks(live(config), 0)}
+    return {network.version for network in networks(live(config, timings=timings), 0)}
 
 
-def iptables_references(config, docker):
+def iptables_references(config, docker, *, timings=None):
     """Return only sets on unconditional source DROP paths in both families."""
     data = merged_config(config)
     chain = data.get('iptables_chain', 'CROWDSEC_CHAIN')
@@ -144,7 +154,7 @@ def iptables_references(config, docker):
         raise PathCoverageError('Bouncer 后端或链名称无效。')
     references = {}
     active = None
-    incomplete = False
+    incomplete = None
     for binary, family in [('iptables', 'v4'), ('ip6tables', 'v6')]:
         if data.get('disable_ipv4' if family == 'v4' else 'disable_ipv6', False):
             raise PathCoverageError('无法确认被禁用地址族的双栈覆盖。')
@@ -176,9 +186,9 @@ def iptables_references(config, docker):
                 raise PathCoverageError('CrowdSec 链不存在。')
             if active is None:
                 try:
-                    active = active_ban_families(config)
-                except (OSError, ValueError, TypeError, yaml.YAMLError, subprocess.SubprocessError):
-                    incomplete = True
+                    active = active_ban_families(config, timings=timings)
+                except (OSError, ValueError, TypeError, yaml.YAMLError, subprocess.SubprocessError) as error:
+                    incomplete = error
                     active = set()
             if (4 if family == 'v4' else 6) in active:
                 raise PathCoverageError('有效决策所在地址族缺少封禁规则。')
@@ -187,13 +197,30 @@ def iptables_references(config, docker):
                                 and any(re.fullmatch(re.escape(name)+r'(?:-\d+)?', t[5]) for name in names)
                                 for t in drops):
             raise PathCoverageError('CrowdSec 链含缺失或无法确认的来源封禁路径。')
+        first_rules = {}
+        user_chains = {t[1] for t in lines if len(t) == 2 and t[0] == '-N'}
+        for tokens in lines:
+            if len(tokens) >= 2 and tokens[0] == '-A':
+                first_rules.setdefault(tokens[1], tokens)
         for entry in expected_chains(data, docker)['iptables_'+family+'_chains']:
-            rules = [t for t in lines if t[:2] == ['-A', entry]]
-            if not rules or rules[0] != ['-A', entry, '-j', chain]:
-                raise PathCoverageError('入口未首先无条件跳转 CrowdSec。')
+            current, visited = entry, set()
+            while current != chain:
+                if current in visited:
+                    raise PathCoverageError('入口跳转路径存在循环。')
+                visited.add(current)
+                rule = first_rules.get(current, [])
+                if len(rule) != 4 or rule[:3] != ['-A', current, '-j']:
+                    raise PathCoverageError('入口未首先无条件跳转 CrowdSec。')
+                target = rule[3]
+                # Only ordinary jumps into declared user chains can prove an
+                # indirect path. Targets such as ACCEPT/RETURN and goto or
+                # conditional rules must never establish coverage.
+                if target != chain and target not in user_chains:
+                    raise PathCoverageError('入口跳转目标不是已声明的用户链。')
+                current = target
         references[4 if family == 'v4' else 6] = {t[5] for t in drops}
-    if incomplete:
-        raise IncompletePathError('无法确认空链对应地址族是否有有效决策。')
+    if incomplete is not None:
+        raise IncompletePathError('无法确认空链对应地址族是否有有效决策。', incomplete)
     return references
 
 

@@ -2,10 +2,11 @@
 import json
 from pathlib import Path
 import unittest
+from reload_clock import virtual_reload_clock
 
 import test_native_workflows
 import test_notify
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class NotificationTransactions(unittest.TestCase):
@@ -131,9 +132,9 @@ notify_tool() {
 
 
 class NativeReloadTransactions(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_native_workflows.NativeWorkflows.fixture
 
     def reject(self, overrides):
@@ -174,9 +175,9 @@ web_tool() { [[ "$1" != forget ]] || return 1; web_tool_base "$@"; }
 
 
 class V2bxPurge(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def service_state(self, active='active', enabled='enabled', loaded='loaded'):
         return '''
@@ -221,10 +222,10 @@ systemctl() {
 
 
 class AdditionalTransactionReview(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
-    appsec_docker_stub = test_workflows.Workflows.appsec_docker_stub
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
+    appsec_docker_stub = test_workflows.WorkflowFixtureMixin.appsec_docker_stub
 
     def test_silent_host_rollback_rejection_keeps_package_account(self):
         snapshot = self.base/'accounts-before.json'
@@ -235,8 +236,7 @@ restore_config_change() { return 0; }
 eval "$(declare -f systemctl | sed '1s/systemctl/systemctl_base/')"
 systemctl() { if [[ "$1" == reload ]]; then record silent_reload_rejection; return 0; fi; systemctl_base "$@"; }
 cscli() { record cscli "$@"; echo '[{"name":"crowdsec-nginx-bouncer-123"}]'; }
-sleep() { command sleep "$@"; }
-'''
+'''+virtual_reload_clock()
         result = self.run_shell(f'host_web_rollback_package nginx {snapshot} crowdsec-nginx-bouncer', overrides=overrides, timeout=15)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('silent_reload_rejection', self.commands())

@@ -1,0 +1,1604 @@
+{
+  "checked_at": 1793622966.2283163,
+  "uid": 0,
+  "os": {
+    "PRETTY_NAME": "Debian GNU/Linux 12 (bookworm)",
+    "VERSION_ID": "12",
+    "ID": "debian"
+  },
+  "kernel": {
+    "exit": 0,
+    "output": "6.18.8-x64v3-xanmod1"
+  },
+  "uptime": "96171.42",
+  "memory_kib": {
+    "MemTotal": 976952,
+    "MemAvailable": 576168,
+    "SwapTotal": 1958908,
+    "SwapFree": 1771832
+  },
+  "disk_root_bytes": {
+    "total": 10540265472,
+    "used": 8649977856,
+    "free": 1890287616
+  },
+  "services": {
+    "crowdsec.service": {
+      "MainPID": "1245",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-01 01:53:29 PST",
+      "ExecMainStatus": "0",
+      "After": "network.target nss-lookup.target systemd-journald.socket sysinit.target syslog.target basic.target remote-fs.target system.slice",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/lib/systemd/system/crowdsec.service",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "MainPID": "1306",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-01 01:53:37 PST",
+      "ExecMainStatus": "0",
+      "After": "nss-lookup.target sysinit.target syslog.target system.slice crowdsec.service systemd-journald.socket basic.target network.target remote-fs.target docker.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/crowdsec-firewall-bouncer.service",
+      "UnitFileState": "enabled"
+    },
+    "crowdsec-1key-bot.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "",
+      "ExecMainStatus": "0",
+      "After": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "",
+      "UnitFileState": ""
+    },
+    "crowdbastion-notify.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "",
+      "ExecMainStatus": "0",
+      "After": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "",
+      "UnitFileState": ""
+    },
+    "docker.service": {
+      "MainPID": "700",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-01 01:53:23 PST",
+      "ExecMainStatus": "0",
+      "After": "firewalld.service systemd-journald.socket basic.target network-online.target docker.socket containerd.service sysinit.target system.slice nss-lookup.target time-set.target",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/lib/systemd/system/docker.service",
+      "UnitFileState": "enabled"
+    },
+    "nginx.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "",
+      "ExecMainStatus": "0",
+      "After": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "",
+      "UnitFileState": ""
+    },
+    "crowdsec-v2bx-observer.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "",
+      "ExecMainStatus": "0",
+      "After": "",
+      "LoadState": "not-found",
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "FragmentPath": "",
+      "UnitFileState": ""
+    },
+    "V2bX.service": {
+      "MainPID": "661",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-01 01:53:22 PST",
+      "ExecMainStatus": "0",
+      "After": "sysinit.target systemd-journald.socket system.slice -.mount nss-lookup.target basic.target network.target",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "running",
+      "FragmentPath": "/etc/systemd/system/V2bX.service",
+      "UnitFileState": "enabled"
+    },
+    "systemd-sysctl.service": {
+      "MainPID": "0",
+      "Result": "success",
+      "NRestarts": "0",
+      "ExecMainStartTimestamp": "Sun 2026-11-01 01:53:17 PST",
+      "ExecMainStatus": "0",
+      "After": "systemd-journald.socket system.slice systemd-modules-load.service",
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "SubState": "exited",
+      "FragmentPath": "/lib/systemd/system/systemd-sysctl.service",
+      "UnitFileState": "static"
+    }
+  },
+  "source_roots": {
+    "/root/crowdsec-1key": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o700",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1793334568.52,
+        "symlink": false
+      },
+      "files": {
+        "crowdbastion.sh": {
+          "exists": true,
+          "mode": "0o777",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316733.081016,
+          "symlink": false,
+          "size": 119618,
+          "sha256": "dae2350fe3f1438a1167a133d93529778e5c81e37ce973c2261d044b3c0671ca"
+        },
+        "install-crowdsec-1panel.sh": {
+          "exists": true,
+          "mode": "0o777",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793334568.365086,
+          "symlink": true,
+          "target": "crowdbastion.sh",
+          "size": 119618,
+          "sha256": "dae2350fe3f1438a1167a133d93529778e5c81e37ce973c2261d044b3c0671ca"
+        },
+        "lib/appsec_audit.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 7145,
+          "sha256": "fafcd3e65fa950b9fe1ba341d9afccece10db0a8b549877297eb8309a686a171"
+        },
+        "lib/crowdbastion_health.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793325400.728,
+          "symlink": false,
+          "size": 12586,
+          "sha256": "54eb53a6861be0bafc10939195c22afd2f0097a3ce2b395ea5bb5520862140dd"
+        },
+        "lib/crowdbastion_node.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791952262.444,
+          "symlink": false,
+          "size": 3153,
+          "sha256": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052"
+        },
+        "lib/crowdbastion_relay_verify.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791979628.7434187,
+          "symlink": false,
+          "size": 17858,
+          "sha256": "71f40858a0935dd4e084db6a51c919e7a1521666fe4f58be622178116ad82aa1"
+        },
+        "lib/crowdsec_appsec.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 6018,
+          "sha256": "b4d6bb07e315c5c36b05c44336e0a2f7c39b6422c247edae3695766c1c5acc1b"
+        },
+        "lib/crowdsec_bot.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793274091.948,
+          "symlink": false,
+          "size": 70569,
+          "sha256": "99f3fedfc98ad01a47ba6e9d6037d253c7419cba2fc696a9b842ccd2ac1eeb42"
+        },
+        "lib/crowdsec_bot_actions.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 14095,
+          "sha256": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728"
+        },
+        "lib/crowdsec_bot_api.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793277326.164,
+          "symlink": false,
+          "size": 17936,
+          "sha256": "44e956569bba505c815878e3c04aa3862779b062a24db9b6c06366a7a92b6e20"
+        },
+        "lib/crowdsec_bot_health.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 5914,
+          "sha256": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea"
+        },
+        "lib/crowdsec_bot_settings.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793275042.188,
+          "symlink": false,
+          "size": 4159,
+          "sha256": "39ea8092f28ce9483661fc1ac0869cc8e21708396a5f7818dff7f0769a66b632"
+        },
+        "lib/crowdsec_config.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792482513.5254383,
+          "symlink": false,
+          "size": 39914,
+          "sha256": "825719596c1b2602071fa66a7329bf43900d5fb95f80836c43da6bfd05dba12f"
+        },
+        "lib/crowdsec_detection_diagnose.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 5514,
+          "sha256": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f"
+        },
+        "lib/crowdsec_execution.lua": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 909,
+          "sha256": "1d83436fa09816f6ba15f7b222dc41a2bdbbf0cc8772ed9ee77e4f9009a53de1"
+        },
+        "lib/crowdsec_execution.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792474343.724,
+          "symlink": false,
+          "size": 9954,
+          "sha256": "f54fbfb3ce6a38d42f28e3386c6c46a58ae482772231db385d893b94bf489ea4"
+        },
+        "lib/crowdsec_firewall.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 4138,
+          "sha256": "91dceb03c9d911a063026315319c7444e611d73b7b52d8178e8c45918339b106"
+        },
+        "lib/crowdsec_host.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 1266,
+          "sha256": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a"
+        },
+        "lib/crowdsec_hub_snapshot.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791852444.1483889,
+          "symlink": false,
+          "size": 12430,
+          "sha256": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5"
+        },
+        "lib/crowdsec_maintenance.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 13914,
+          "sha256": "64b3863e4f42249824443b90b8d565215170177970777e7ef3e9df96272f4abd"
+        },
+        "lib/crowdsec_nginx_reload.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793325089.032,
+          "symlink": false,
+          "size": 8449,
+          "sha256": "84804d8393593d66be5b5cd922890c782205d0d326fcf628540c0a8ba3a057a0"
+        },
+        "lib/crowdsec_notify.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 33693,
+          "sha256": "2f40e4ece66d41045408ed9d5348d6ddec97fa0da6e113914c1e98eaf6f45940"
+        },
+        "lib/crowdsec_notify_client.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 3264,
+          "sha256": "611314c1f13b920fd90c41100405fd4679145bd2ea9367b55d09693d88f4aa8c"
+        },
+        "lib/crowdsec_notify_setup.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 8967,
+          "sha256": "6a9b0a5e6085f6bb5e8a9ef1ccc2776e6be484bc694a528de0087879d8523839"
+        },
+        "lib/crowdsec_realip.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 12245,
+          "sha256": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059"
+        },
+        "lib/crowdsec_realip_diagnose.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 6850,
+          "sha256": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167"
+        },
+        "lib/crowdsec_relay.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 15285,
+          "sha256": "045fbe66ef28a917b429cf5c8cdbb7f3bfa99f1c29d45a2e0141f4fd1fe3e3d7"
+        },
+        "lib/crowdsec_relay_paths.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791852444.1483889,
+          "symlink": false,
+          "size": 10797,
+          "sha256": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6"
+        },
+        "lib/crowdsec_remote_bouncer.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793316642.8561583,
+          "symlink": false,
+          "size": 6369,
+          "sha256": "150ed2e809bd51401183d2313cd47d3472ade56748c991b550e29b4702a5901a"
+        },
+        "lib/crowdsec_request_audit.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 13669,
+          "sha256": "7a3836b6cf8bd60fc1739a554368fa5faf172a73f225d30378f8cf91abc1ac97"
+        },
+        "lib/crowdsec_safety.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 5760,
+          "sha256": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f"
+        },
+        "lib/crowdsec_telegram.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 19163,
+          "sha256": "93000b23cbabc9c38e30d2585b302848c86fa6c6eaff1b91ce57a2540074a514"
+        },
+        "lib/crowdsec_transport.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 6961,
+          "sha256": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e"
+        },
+        "lib/crowdsec_v2bx.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 26964,
+          "sha256": "c8ee8e7bd5281995a5ed83450c530e737cd751217aaaed113e7ff9c82010b9ed"
+        },
+        "lib/crowdsec_v2bx_alerts.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316642.8545895,
+          "symlink": false,
+          "size": 19101,
+          "sha256": "507d42a574f5fab6a44a139d3c0ceefe8cba22434c6a9c046acb277b6e5e5324"
+        },
+        "lib/crowdsec_v2bx_logs.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791898130.5160518,
+          "symlink": false,
+          "size": 14281,
+          "sha256": "ffd60cae8e47c9e9a43beed9da43bb88dc210bbe065941b2c0782cbaf4669b9b"
+        },
+        "lib/crowdsec_v2bx_observe.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791898130.5160518,
+          "symlink": false,
+          "size": 14315,
+          "sha256": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848"
+        },
+        "lib/crowdsec_v2bx_service.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 16565,
+          "sha256": "e45c9fca60516798ee1a64d0a78e15cd9242096e4f0edae1419ce4f692577c1c"
+        },
+        "lib/crowdsec_v2bx_stream.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791904853.2268355,
+          "symlink": false,
+          "size": 9339,
+          "sha256": "1f0122f14eeb5acc4205ea0f61a583d5863340958ba115974395e536f0c456ce"
+        },
+        "lib/crowdsec_web.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 28701,
+          "sha256": "a71c4a8b445f00e4c648812a1932951797f49cfa37f56ab466536a5203f9d69e"
+        },
+        "lib/custom_bot.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793274091.944,
+          "symlink": false,
+          "size": 9004,
+          "sha256": "f92b8e2a93bb0a41486a1245d01b79ff51d2d679a19f0e7fc8a7076184584936"
+        },
+        "lib/health_summary.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793325400.728,
+          "symlink": false,
+          "size": 5630,
+          "sha256": "64f8f493740f2e35925827ec91996dfc8fa308f244d0c1aea7a515075866913b"
+        },
+        "lib/host_web_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793316473.2054696,
+          "symlink": false,
+          "size": 13918,
+          "sha256": "3fd57583a328614a88113a371642ba40484a4bab835208b508deac9c73711910"
+        },
+        "lib/hub_maintenance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791907502.376,
+          "symlink": false,
+          "size": 7182,
+          "sha256": "026cfcf883dd6284d5d67e73dd6c48e01771b50d4ad37f9fe9025b29028c3260"
+        },
+        "lib/maintenance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 9816,
+          "sha256": "b02d3dc1cf651afb776a1c1e43edce1796fca6db3f57a5326835a4c47bb8f0e0"
+        },
+        "lib/native_web_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316831.7936654,
+          "symlink": false,
+          "size": 14575,
+          "sha256": "36b5b13c2553164a3c0e3172b82b6ed2608db75fba6706bf4fcdc4a6e7725167"
+        },
+        "lib/nginx_reload.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793323761.476,
+          "symlink": false,
+          "size": 6810,
+          "sha256": "d75639c08c5f311e5419cbc02c09b99c26e9743522ccb8221b8567559df910b9"
+        },
+        "lib/node_guidance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 7034,
+          "sha256": "dfd86aec31d77c1ef97fec6f7462a9212c35ccfaa0a41872b2f1ecf5fb163722"
+        },
+        "lib/notify.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316831.7933471,
+          "symlink": false,
+          "size": 10422,
+          "sha256": "3744143ecf27a19fe9de7818018ee4709ea4fafa65044bc241a7b680bb83dddc"
+        },
+        "lib/private_transport.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 4914,
+          "sha256": "ad5392f57ab151f692ec5162d01c0fa1c8b72dd358d9354d8acb671708c6f336"
+        },
+        "lib/real_ip.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793323145.6452131,
+          "symlink": false,
+          "size": 12126,
+          "sha256": "4734bff20a52be82858f30843550c90c31c4b65f597fd73b6e326344dc2a3c69"
+        },
+        "lib/relay.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791979628.7434187,
+          "symlink": false,
+          "size": 3089,
+          "sha256": "a19c81ee3843707ad7d69e310f8024482884d4d7665a804ec562429191c19ade"
+        },
+        "lib/remote_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 12780,
+          "sha256": "ad54d5515302c95dc2628472d221b26950e767d06f9f93b5cd75a4ed0d669cce"
+        },
+        "lib/v2bx.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 5569,
+          "sha256": "eb3deb3620423008e16c81fb25d6fd5eb2b362030ecb31046d4c058b8bb3b44e"
+        }
+      }
+    },
+    "/opt/crowdbastion/releases/review-20261030-vps4": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o700",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1793334568.332,
+        "symlink": false
+      },
+      "files": {
+        "crowdbastion.sh": {
+          "exists": true,
+          "mode": "0o777",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316733.081016,
+          "symlink": false,
+          "size": 119618,
+          "sha256": "dae2350fe3f1438a1167a133d93529778e5c81e37ce973c2261d044b3c0671ca"
+        },
+        "install-crowdsec-1panel.sh": {
+          "exists": true,
+          "mode": "0o777",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793334568.1590848,
+          "symlink": true,
+          "target": "crowdbastion.sh",
+          "size": 119618,
+          "sha256": "dae2350fe3f1438a1167a133d93529778e5c81e37ce973c2261d044b3c0671ca"
+        },
+        "lib/appsec_audit.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 7145,
+          "sha256": "fafcd3e65fa950b9fe1ba341d9afccece10db0a8b549877297eb8309a686a171"
+        },
+        "lib/crowdbastion_health.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793325400.728,
+          "symlink": false,
+          "size": 12586,
+          "sha256": "54eb53a6861be0bafc10939195c22afd2f0097a3ce2b395ea5bb5520862140dd"
+        },
+        "lib/crowdbastion_node.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791952262.444,
+          "symlink": false,
+          "size": 3153,
+          "sha256": "8edf0a25d807ed6a5411a3ead07a37704bba0b79e52a39bdecef2232dcfa3052"
+        },
+        "lib/crowdbastion_relay_verify.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791979628.7434187,
+          "symlink": false,
+          "size": 17858,
+          "sha256": "71f40858a0935dd4e084db6a51c919e7a1521666fe4f58be622178116ad82aa1"
+        },
+        "lib/crowdsec_appsec.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 6018,
+          "sha256": "b4d6bb07e315c5c36b05c44336e0a2f7c39b6422c247edae3695766c1c5acc1b"
+        },
+        "lib/crowdsec_bot.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793274091.948,
+          "symlink": false,
+          "size": 70569,
+          "sha256": "99f3fedfc98ad01a47ba6e9d6037d253c7419cba2fc696a9b842ccd2ac1eeb42"
+        },
+        "lib/crowdsec_bot_actions.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 14095,
+          "sha256": "04447573741a9ec462852820709ec5344c6162b710417b6bda96c15d94fa3728"
+        },
+        "lib/crowdsec_bot_api.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793277326.164,
+          "symlink": false,
+          "size": 17936,
+          "sha256": "44e956569bba505c815878e3c04aa3862779b062a24db9b6c06366a7a92b6e20"
+        },
+        "lib/crowdsec_bot_health.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 5914,
+          "sha256": "18bc0c1811bbbaad91bc1a8d39e183897c74de9a198449d248ebd234f81398ea"
+        },
+        "lib/crowdsec_bot_settings.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793275042.188,
+          "symlink": false,
+          "size": 4159,
+          "sha256": "39ea8092f28ce9483661fc1ac0869cc8e21708396a5f7818dff7f0769a66b632"
+        },
+        "lib/crowdsec_config.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792482513.5254383,
+          "symlink": false,
+          "size": 39914,
+          "sha256": "825719596c1b2602071fa66a7329bf43900d5fb95f80836c43da6bfd05dba12f"
+        },
+        "lib/crowdsec_detection_diagnose.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 5514,
+          "sha256": "12f2861beeda0660fdcdda0d476f972aa969e67d1d78c6b02eb1da6d8cc0437f"
+        },
+        "lib/crowdsec_execution.lua": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 909,
+          "sha256": "1d83436fa09816f6ba15f7b222dc41a2bdbbf0cc8772ed9ee77e4f9009a53de1"
+        },
+        "lib/crowdsec_execution.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792474343.724,
+          "symlink": false,
+          "size": 9954,
+          "sha256": "f54fbfb3ce6a38d42f28e3386c6c46a58ae482772231db385d893b94bf489ea4"
+        },
+        "lib/crowdsec_firewall.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 4138,
+          "sha256": "91dceb03c9d911a063026315319c7444e611d73b7b52d8178e8c45918339b106"
+        },
+        "lib/crowdsec_host.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 1266,
+          "sha256": "98de067f896949d4e6a4f0da0c9c71d7c383db0490dcb4066ec6284ccf4be32a"
+        },
+        "lib/crowdsec_hub_snapshot.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791852444.1483889,
+          "symlink": false,
+          "size": 12430,
+          "sha256": "4ef49d155241d66f3b8662f0c1035321dbe3313c46da16984c907e54763daba5"
+        },
+        "lib/crowdsec_maintenance.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 13914,
+          "sha256": "64b3863e4f42249824443b90b8d565215170177970777e7ef3e9df96272f4abd"
+        },
+        "lib/crowdsec_nginx_reload.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793325089.032,
+          "symlink": false,
+          "size": 8449,
+          "sha256": "84804d8393593d66be5b5cd922890c782205d0d326fcf628540c0a8ba3a057a0"
+        },
+        "lib/crowdsec_notify.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 33693,
+          "sha256": "2f40e4ece66d41045408ed9d5348d6ddec97fa0da6e113914c1e98eaf6f45940"
+        },
+        "lib/crowdsec_notify_client.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 3264,
+          "sha256": "611314c1f13b920fd90c41100405fd4679145bd2ea9367b55d09693d88f4aa8c"
+        },
+        "lib/crowdsec_notify_setup.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 8967,
+          "sha256": "6a9b0a5e6085f6bb5e8a9ef1ccc2776e6be484bc694a528de0087879d8523839"
+        },
+        "lib/crowdsec_realip.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 12245,
+          "sha256": "7fb1e00a4347b272797696b9d2a33563b04b79edbef6038641bed06f06adf059"
+        },
+        "lib/crowdsec_realip_diagnose.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 6850,
+          "sha256": "6e5087c39c5d441e6ab535f6708869684cffdcc68b7b30d497944e79738b9167"
+        },
+        "lib/crowdsec_relay.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 15285,
+          "sha256": "045fbe66ef28a917b429cf5c8cdbb7f3bfa99f1c29d45a2e0141f4fd1fe3e3d7"
+        },
+        "lib/crowdsec_relay_paths.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791852444.1483889,
+          "symlink": false,
+          "size": 10797,
+          "sha256": "e9cf9e848e56579299af5c25ba7851db23c9cdca9ec06dbdd4675a28a3e24cf6"
+        },
+        "lib/crowdsec_remote_bouncer.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793316642.8561583,
+          "symlink": false,
+          "size": 6369,
+          "sha256": "150ed2e809bd51401183d2313cd47d3472ade56748c991b550e29b4702a5901a"
+        },
+        "lib/crowdsec_request_audit.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 13669,
+          "sha256": "7a3836b6cf8bd60fc1739a554368fa5faf172a73f225d30378f8cf91abc1ac97"
+        },
+        "lib/crowdsec_safety.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 5760,
+          "sha256": "5b34fb8409e38f8dc5ec6348b11b0e849a642d6002f0fbb58f8fa788becb924f"
+        },
+        "lib/crowdsec_telegram.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793278350.9,
+          "symlink": false,
+          "size": 19163,
+          "sha256": "93000b23cbabc9c38e30d2585b302848c86fa6c6eaff1b91ce57a2540074a514"
+        },
+        "lib/crowdsec_transport.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 6961,
+          "sha256": "1e970b16fabe6d11fc9e43a9c46c69b338306081525af00af29278cb6e9ac33e"
+        },
+        "lib/crowdsec_v2bx.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 26964,
+          "sha256": "c8ee8e7bd5281995a5ed83450c530e737cd751217aaaed113e7ff9c82010b9ed"
+        },
+        "lib/crowdsec_v2bx_alerts.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316642.8545895,
+          "symlink": false,
+          "size": 19101,
+          "sha256": "507d42a574f5fab6a44a139d3c0ceefe8cba22434c6a9c046acb277b6e5e5324"
+        },
+        "lib/crowdsec_v2bx_logs.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791898130.5160518,
+          "symlink": false,
+          "size": 14281,
+          "sha256": "ffd60cae8e47c9e9a43beed9da43bb88dc210bbe065941b2c0782cbaf4669b9b"
+        },
+        "lib/crowdsec_v2bx_observe.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791898130.5160518,
+          "symlink": false,
+          "size": 14315,
+          "sha256": "6652629764bae6ac006b5b8b8a3f702f692648cc6d39a15fea318fa2d3389848"
+        },
+        "lib/crowdsec_v2bx_service.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 16565,
+          "sha256": "e45c9fca60516798ee1a64d0a78e15cd9242096e4f0edae1419ce4f692577c1c"
+        },
+        "lib/crowdsec_v2bx_stream.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791904853.2268355,
+          "symlink": false,
+          "size": 9339,
+          "sha256": "1f0122f14eeb5acc4205ea0f61a583d5863340958ba115974395e536f0c456ce"
+        },
+        "lib/crowdsec_web.py": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 28701,
+          "sha256": "a71c4a8b445f00e4c648812a1932951797f49cfa37f56ab466536a5203f9d69e"
+        },
+        "lib/custom_bot.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793274091.944,
+          "symlink": false,
+          "size": 9004,
+          "sha256": "f92b8e2a93bb0a41486a1245d01b79ff51d2d679a19f0e7fc8a7076184584936"
+        },
+        "lib/health_summary.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793325400.728,
+          "symlink": false,
+          "size": 5630,
+          "sha256": "64f8f493740f2e35925827ec91996dfc8fa308f244d0c1aea7a515075866913b"
+        },
+        "lib/host_web_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793316473.2054696,
+          "symlink": false,
+          "size": 13918,
+          "sha256": "3fd57583a328614a88113a371642ba40484a4bab835208b508deac9c73711910"
+        },
+        "lib/hub_maintenance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791907502.376,
+          "symlink": false,
+          "size": 7182,
+          "sha256": "026cfcf883dd6284d5d67e73dd6c48e01771b50d4ad37f9fe9025b29028c3260"
+        },
+        "lib/maintenance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 9816,
+          "sha256": "b02d3dc1cf651afb776a1c1e43edce1796fca6db3f57a5326835a4c47bb8f0e0"
+        },
+        "lib/native_web_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316831.7936654,
+          "symlink": false,
+          "size": 14575,
+          "sha256": "36b5b13c2553164a3c0e3172b82b6ed2608db75fba6706bf4fcdc4a6e7725167"
+        },
+        "lib/nginx_reload.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793323761.476,
+          "symlink": false,
+          "size": 6810,
+          "sha256": "d75639c08c5f311e5419cbc02c09b99c26e9743522ccb8221b8567559df910b9"
+        },
+        "lib/node_guidance.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 7034,
+          "sha256": "dfd86aec31d77c1ef97fec6f7462a9212c35ccfaa0a41872b2f1ecf5fb163722"
+        },
+        "lib/notify.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1793316831.7933471,
+          "symlink": false,
+          "size": 10422,
+          "sha256": "3744143ecf27a19fe9de7818018ee4709ea4fafa65044bc241a7b680bb83dddc"
+        },
+        "lib/private_transport.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791765597.3671253,
+          "symlink": false,
+          "size": 4914,
+          "sha256": "ad5392f57ab151f692ec5162d01c0fa1c8b72dd358d9354d8acb671708c6f336"
+        },
+        "lib/real_ip.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1793323145.6452131,
+          "symlink": false,
+          "size": 12126,
+          "sha256": "4734bff20a52be82858f30843550c90c31c4b65f597fd73b6e326344dc2a3c69"
+        },
+        "lib/relay.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791979628.7434187,
+          "symlink": false,
+          "size": 3089,
+          "sha256": "a19c81ee3843707ad7d69e310f8024482884d4d7665a804ec562429191c19ade"
+        },
+        "lib/remote_bouncer.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 0,
+          "gid": 0,
+          "mtime": 1792462447.912,
+          "symlink": false,
+          "size": 12780,
+          "sha256": "ad54d5515302c95dc2628472d221b26950e767d06f9f93b5cd75a4ed0d669cce"
+        },
+        "lib/v2bx.sh": {
+          "exists": true,
+          "mode": "0o666",
+          "uid": 1000,
+          "gid": 1000,
+          "mtime": 1791969901.508,
+          "symlink": false,
+          "size": 5569,
+          "sha256": "eb3deb3620423008e16c81fb25d6fd5eb2b362030ecb31046d4c058b8bb3b44e"
+        }
+      }
+    },
+    "/usr/local/lib/crowdsec-1key/current": {
+      "metadata": {
+        "exists": false
+      },
+      "files": {}
+    },
+    "/usr/local/lib/crowdsec-1key-bot": {
+      "metadata": {
+        "exists": false
+      },
+      "files": {}
+    },
+    "/usr/local/lib/crowdsec-1key-bot/runtime/current": {
+      "metadata": {
+        "exists": false
+      },
+      "files": {}
+    },
+    "/usr/local/lib/crowdbastion-notify": {
+      "metadata": {
+        "exists": false
+      },
+      "files": {}
+    }
+  },
+  "git": {
+    "head": {
+      "exit": 128,
+      "output": ""
+    },
+    "status": {
+      "exit": 128,
+      "output": ""
+    }
+  },
+  "releases": {
+    "/opt/crowdbastion/releases": [
+      "review-20261030-vps4"
+    ],
+    "/usr/local/lib/crowdsec-1key": []
+  },
+  "manager_flags": {
+    "--status-json": false,
+    "--status": true,
+    "--check-config": false
+  },
+  "configs": {
+    "/var/lib/crowdbastion/node-roles.json": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/etc/crowdsec/crowdsec-1key-bot.json": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o600",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1791875436.0345042,
+        "symlink": false,
+        "size": 1276,
+        "sha256": "e08f15d984d23434dca6c93f8c18f5a1d2def29148416fbfe2c89a8d47c84977"
+      },
+      "keys": [
+        "api_key",
+        "api_url",
+        "blacklists_ipv4",
+        "blacklists_ipv6",
+        "deny_action",
+        "deny_log",
+        "disable_ipv6",
+        "insecure_skip_verify",
+        "ipset_type",
+        "iptables_add_rule_comments",
+        "iptables_chains",
+        "log_compression",
+        "log_dir",
+        "log_level",
+        "log_max_age",
+        "log_max_backups",
+        "log_max_size",
+        "log_mode",
+        "mode",
+        "nftables",
+        "nftables_hooks",
+        "pf",
+        "prometheus",
+        "supported_decisions_types",
+        "update_frequency"
+      ],
+      "values": {
+        "mode": "nftables",
+        "iptables_chains": [
+          "INPUT"
+        ],
+        "iptables_add_rule_comments": true,
+        "disable_ipv6": false
+      }
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o600",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1793334717.6709163,
+        "symlink": false,
+        "size": 64,
+        "sha256": "041bdeec6dc050bf8b976fc9f52b855b98b7854a5d9efb0c03d0ac1ac6fb27fa"
+      },
+      "keys": [
+        "iptables_chains",
+        "mode"
+      ],
+      "values": {
+        "mode": "iptables",
+        "iptables_chains": [
+          "INPUT",
+          "FORWARD",
+          "DOCKER-USER"
+        ]
+      }
+    },
+    "/etc/crowdsec/config.yaml": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o600",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1788433299.0,
+        "symlink": false,
+        "size": 1721,
+        "sha256": "52dc9cc3c3e1b09111543475c02081d88acd84b46846f1ded12fdf0c1fd45784"
+      }
+    },
+    "/etc/crowdsec/config.yaml.local": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/var/lib/crowdbastion/firewall-migration": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/run/lock": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o1777",
+        "uid": 0,
+        "gid": 0,
+        "mtime": 1793526799.928,
+        "symlink": false
+      }
+    },
+    "/run/lock/crowdsec-1key.lock": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/etc/crowdsec/crowdsec-1key-web-installs.json": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/etc/cron.d/crowdsec-autoupdate": {
+      "metadata": {
+        "exists": false
+      }
+    },
+    "/var/spool/cron/crontabs/root": {
+      "metadata": {
+        "exists": true,
+        "mode": "0o600",
+        "uid": 0,
+        "gid": 101,
+        "mtime": 1793334799.455744,
+        "symlink": false,
+        "size": 422,
+        "sha256": "558e1fbe61e77249867618851b505061e21db1dbf0b8f5d52843187617bdd077"
+      }
+    }
+  },
+  "migration_markers": {
+    "committed": {
+      "exists": false
+    },
+    "rolled-back": {
+      "exists": false
+    }
+  },
+  "crons": [
+    {
+      "file": "/var/spool/cron/crontabs/root",
+      "disabled": true,
+      "schedule_fields": [],
+      "script_paths": [],
+      "line_sha256": "10624b086b29b063b377bc6a4fa848edfbf7429608a469059f9a3baf10c24901"
+    }
+  ],
+  "containers": [
+    {
+      "name": "nginx",
+      "image": "nginx:alpine",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "OOMKilled": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-01T09:53:25.589397078Z"
+      },
+      "health": null,
+      "network": "host",
+      "restart_policy": {
+        "Name": "always",
+        "MaximumRetryCount": 0
+      },
+      "mounts": [
+        {
+          "source": "/var/lib/docker/volumes/web_php-socket-php/_data",
+          "destination": "/run/php",
+          "rw": true
+        },
+        {
+          "source": "/var/lib/docker/volumes/web_php-socket-php74/_data",
+          "destination": "/run/php74",
+          "rw": true
+        },
+        {
+          "source": "/home/web/certs",
+          "destination": "/etc/nginx/certs",
+          "rw": true
+        },
+        {
+          "source": "/home/web/conf.d",
+          "destination": "/etc/nginx/conf.d",
+          "rw": true
+        },
+        {
+          "source": "/home/web/nginx.conf",
+          "destination": "/etc/nginx/nginx.conf",
+          "rw": true
+        },
+        {
+          "source": "/home/web/stream.d",
+          "destination": "/etc/nginx/stream.d",
+          "rw": true
+        },
+        {
+          "source": "/home/web/log/nginx",
+          "destination": "/var/log/nginx",
+          "rw": true
+        },
+        {
+          "source": "/home/web/html",
+          "destination": "/var/www/html",
+          "rw": true
+        },
+        {
+          "source": "/home/web/letsencrypt",
+          "destination": "/var/www/letsencrypt",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "name": "gost-http-proxy",
+      "image": "ginuerzh/gost",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "ExitCode": 1,
+        "StartedAt": "2026-10-30T04:32:33.668882616Z"
+      },
+      "health": null,
+      "network": "host",
+      "restart_policy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "mounts": []
+    },
+    {
+      "name": "gost",
+      "image": "ginuerzh/gost",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "OOMKilled": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-01T09:53:25.56758525Z"
+      },
+      "health": null,
+      "network": "gost_default",
+      "restart_policy": {
+        "Name": "always",
+        "MaximumRetryCount": 0
+      },
+      "mounts": []
+    },
+    {
+      "name": "openlist",
+      "image": "openlistteam/openlist:latest-aria2",
+      "state": {
+        "Status": "running",
+        "Running": true,
+        "Restarting": false,
+        "OOMKilled": false,
+        "ExitCode": 0,
+        "StartedAt": "2026-11-01T09:53:25.579864533Z"
+      },
+      "health": null,
+      "network": "bridge",
+      "restart_policy": {
+        "Name": "always",
+        "MaximumRetryCount": 0
+      },
+      "mounts": [
+        {
+          "source": "/home/docker/openlist",
+          "destination": "/opt/openlist/data",
+          "rw": true
+        }
+      ]
+    }
+  ],
+  "versions": {
+    "crowdsec": {
+      "exit": 0,
+      "output": "version: v1.8.2-debian-pragmatic-amd64-3d369d64\nCodename: alphaga\nBuildDate: 2026-10-27_14:00:42\nGoVersion: 1.27.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.2-debian-pragmatic-amd64-3d369d64-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite\nExcluded components: cscli_setup"
+    },
+    "cscli": {
+      "exit": 0,
+      "output": "version: v1.8.2-debian-pragmatic-amd64-3d369d64\nCodename: alphaga\nBuildDate: 2026-10-27_14:05:00\nGoVersion: 1.27.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.2-debian-pragmatic-amd64-3d369d64-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: cscli_setup, datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite"
+    },
+    "packages": {
+      "exit": 0,
+      "output": "crowdsec\t1.8.2\ncrowdsec-firewall-bouncer-iptables\t\ndocker-ce\t5:29.9.2-1~debian.12~bookworm\nipset\t7.17-1\niptables\t1.8.9-2"
+    }
+  },
+  "listeners": {
+    "exit": 0,
+    "output": "udp UNCONN 0      0        0.0.0.0:443   0.0.0.0:*\nudp UNCONN 0      0           [::]:443      [::]:*\ntcp LISTEN 0      511      0.0.0.0:80    0.0.0.0:*\ntcp LISTEN 0      128      0.0.0.0:53322 0.0.0.0:*\ntcp LISTEN 0      32768    0.0.0.0:5244  0.0.0.0:*\ntcp LISTEN 0      32768  127.0.0.1:8080  0.0.0.0:*\ntcp LISTEN 0      32768  127.0.0.1:6060  0.0.0.0:*\ntcp LISTEN 0      32768    0.0.0.0:51080 0.0.0.0:*\ntcp LISTEN 0      511      0.0.0.0:443   0.0.0.0:*\ntcp LISTEN 0      511         [::]:80       [::]:*\ntcp LISTEN 0      128         [::]:53322    [::]:*\ntcp LISTEN 0      32768       [::]:5244     [::]:*\ntcp LISTEN 0      32768          *:8443        *:*\ntcp LISTEN 0      32768       [::]:51080    [::]:*\ntcp LISTEN 0      511         [::]:443      [::]:*"
+  }
+}

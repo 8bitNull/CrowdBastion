@@ -1,0 +1,62 @@
+{
+  "file_hashes_match": true,
+  "runtime_match": true,
+  "managed_keys": 64,
+  "changes": {
+    "net.ipv4.tcp_syn_retries": "6",
+    "net.ipv4.tcp_synack_retries": "5",
+    "net.ipv4.tcp_orphan_retries": "0",
+    "net.ipv4.tcp_fin_timeout": "60",
+    "net.ipv4.tcp_autocorking": "1",
+    "net.ipv4.tcp_no_metrics_save": "0",
+    "net.ipv4.tcp_tw_reuse": "2"
+  },
+  "tcp_mem_unchanged": true,
+  "unique_active_network_settings": 64,
+  "boot_config_matches": true,
+  "services": "MainPID=661\nNRestarts=0\nId=V2bX.service\nActiveState=active\n\nMainPID=6185\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=1306\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n\nMainPID=700\nNRestarts=0\nId=docker.service\nActiveState=active",
+  "service_pids_unchanged": true,
+  "private_policy": "gost public-access policy verify complete",
+  "private_ports_dualstack_loopback": true,
+  "crowdsec_first_rules_preserved": true,
+  "qdisc": "qdisc fq 0: root refcnt 2 limit 10000p flow_limit 100p buckets 1024 orphan_mask 1023 quantum 3028b initial_quantum 15140b low_rate_threshold 550Kbit refill_delay 40ms timer_slack 10us horizon 10s horizon_drop \n Sent 273005987 bytes 1897743 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\n  flows 258 (inactive 258 throttled 0)\n  gc 41 highprio 0 throttled 1716 latency 18.8us",
+  "api_samples": [
+    {
+      "records": 15350,
+      "seconds": 0.536
+    },
+    {
+      "records": 15350,
+      "seconds": 0.462
+    },
+    {
+      "records": 15350,
+      "seconds": 0.462
+    }
+  ],
+  "decision_membership": {
+    "expected": 15350,
+    "kernel": 15350,
+    "missing": 0,
+    "state": "ok"
+  },
+  "counter_delta": {
+    "Tcp:OutSegs": 425,
+    "Tcp:RetransSegs": 0,
+    "Udp:RcvbufErrors": 0,
+    "Udp:SndbufErrors": 0,
+    "UdpLite:RcvbufErrors": 0,
+    "UdpLite:SndbufErrors": 0,
+    "TcpExt:ListenOverflows": 0,
+    "TcpExt:ListenDrops": 0,
+    "TcpExt:TCPAbortOnMemory": 0,
+    "TcpExt:TCPMemoryPressures": 0,
+    "Udp6InErrors": 0,
+    "Udp6RcvbufErrors": 0,
+    "Udp6SndbufErrors": 0
+  },
+  "sockstat": "sockets: used 159\nTCP: inuse 22 orphan 0 tw 55 alloc 37 mem 0\nUDP: inuse 2 mem 0\nUDPLITE: inuse 0\nRAW: inuse 0\nFRAG: inuse 0 memory 0",
+  "v2bx_memory_bytes": "72908800",
+  "vmstat": "procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----\n r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st\n 1  0 179680  80420    828 539860    0    1    82    10  107  170  1  0 95  4  0\n 1  0 179680  80420    828 539860    0    0     0     4   88  161  0  0 100  0  0\n 1  0 179680  80420    828 539860    0    0     0     0   71  127  0  1 99  0  0",
+  "verification_scope": "configuration, low-load service stability and decision membership; no relay throughput benchmark"
+}

@@ -1,0 +1,69 @@
+{
+  "seconds": 29.810124379000627,
+  "run": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "id": "test_workflows.Workflows.test_optimize_repairs_missing_1panel_log_acquisition",
+      "seconds": 1.8670876499963924,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_rules_only_preserves_config_and_reloads_once",
+      "seconds": 2.347167310072109,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_logs_only_does_not_install_rules_or_enable_metrics",
+      "seconds": 2.0471636410802603,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_metrics_only_does_not_install_rules_or_write_acquisition",
+      "seconds": 2.066735061001964,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_empty_selection_final_cancel_and_eof_do_not_mutate",
+      "seconds": 8.7033521970734,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_repeated_metrics_selection_skips_service_load",
+      "seconds": 4.341016930993646,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_validation_failure_restores_selected_config",
+      "seconds": 2.1049585989676416,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_metric_port_conflict_stops_before_rules_and_log_changes",
+      "seconds": 2.090538240969181,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_service_failure_restores_selected_config",
+      "seconds": 2.4136231179581955,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_workflows.Workflows.test_optimize_interruption_restores_staged_configuration",
+      "seconds": 1.8101506429957226,
+      "status": "passed",
+      "skip_reasons": []
+    }
+  ]
+}

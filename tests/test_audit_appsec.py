@@ -2,14 +2,15 @@
 import importlib.util
 import unittest
 from pathlib import Path
+import workflow_fixture
 import test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 
 class AppSecAudit(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = workflow_fixture.WorkflowFixtureMixin.setUp
+    run_shell = workflow_fixture.WorkflowFixtureMixin.run_shell
+    commands = workflow_fixture.WorkflowFixtureMixin.commands
 
     def test_override_refuses_host_link_before_mutation(self):
         file = self.config/'bouncers/crowdsec-nginx-bouncer.conf'

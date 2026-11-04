@@ -1,0 +1,35 @@
+{
+  "at": "2026-11-03T09:28:22.456364+00:00",
+  "backup": "/var/backups/crowdbastion/vps179-realm-opt-20261103T092310Z",
+  "new_files": {
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": "eb5fb894aea15ca7908bdea43f02bd6444102cdb5636a4181e5b7b8daf7941a0",
+    "/etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf": "8a8f3ecec507adbd84dde64af4a4953e5360898b562b715b94d8464258dbb7b2"
+  },
+  "restarted": [
+    "systemd-journald",
+    "crowdsec"
+  ],
+  "live_config_validation": "",
+  "realm_journal_followers": [
+    {
+      "pid": "524534",
+      "argv": [
+        "journalctl",
+        "--follow",
+        "-n",
+        "0",
+        "_SYSTEMD_UNIT=forwardx-realm-both-56017.service",
+        "_SYSTEMD_UNIT=forwardx-realm-both-58372.service",
+        ""
+      ]
+    }
+  ],
+  "realm_acquisition_metrics": {},
+  "metrics_note": "Acquisition metrics appear after the first new event; follower existence and validated config establish readiness, not live event parsing.",
+  "service_states": "MainPID=505\nNRestarts=0\nId=forwardx-realm-both-56017.service\nActiveState=active\n\nMainPID=511\nNRestarts=0\nId=forwardx-realm-both-58372.service\nActiveState=active\n\nMainPID=504\nNRestarts=0\nId=forwardx-agent.service\nActiveState=active\n\nMainPID=524502\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=2109\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n",
+  "protected_hashes_unchanged": true,
+  "journal_effective": "al=yes\n#SplitMode=uid\n#SyncIntervalSec=5m\n#RateLimitIntervalSec=30s\n#RateLimitBurst=10000\n#SystemMaxUse=\n#SystemKeepFree=\n#SystemMaxFileSize=\n#SystemMaxFiles=100\n#RuntimeMaxUse=\n#RuntimeKeepFree=\n#RuntimeMaxFileSize=\n#RuntimeMaxFiles=100\n#MaxRetentionSec=0\n#MaxFileSec=1month\n#ForwardToSyslog=no\n#ForwardToKMsg=no\n#ForwardToConsole=no\n#ForwardToWall=yes\n#TTYPath=/dev/console\n#MaxLevelStore=debug\n#MaxLevelSyslog=debug\n#MaxLevelKMsg=notice\n#MaxLevelConsole=info\n#MaxLevelWall=emerg\n#MaxLevelSocket=debug\n#LineMax=48K\n#ReadKMsg=yes\n#Audit=yes\n\n# /etc/systemd/journald.conf.d/60-crowdbastion-storage-cap.conf\n# CrowdBastion realm protection rollout: bound log storage without forced vacuum.\n[Journal]\nSystemMaxUse=128M\nSystemKeepFree=512M\nRuntimeMaxUse=32M\nRuntimeKeepFree=16M\n\n# /usr/lib/systemd/journald.conf.d/syslog.conf\n# Undo upstream commit 46b131574fdd7d77 for now. For details see\n#  http://lists.freedesktop.org/archives/systemd-devel/2014-November/025550.html\n\n[Journal]\nForwardToSyslog=yes\n",
+  "journal_disk": "Archived and active journals take up 16M in the file system.\n",
+  "status": "applied"
+}

@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 import crowdsec_firewall as firewall
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class FirewallStartup(unittest.TestCase):
@@ -171,9 +171,9 @@ class FirewallStartup(unittest.TestCase):
 
 
 class FirewallStartupCallers(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_startup_defect_blocks_remote_and_repair_before_mutation(self):
         config = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'

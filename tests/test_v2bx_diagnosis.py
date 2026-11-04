@@ -8,7 +8,7 @@ import sys
 import tempfile
 import unittest
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 HELPER = ROOT / 'lib/crowdsec_v2bx.py'
@@ -77,6 +77,22 @@ class V2bXDiagnosis(unittest.TestCase):
         self.assertEqual(data['runtime']['version'], 'v0.4.1')
         self.assertEqual(data['sockets'][0]['address'], '::')
         self.assertFalse(data['sockets'][0]['service_pid_match'])
+
+    def test_capability_profile_preserves_panel_unknown_and_source_boundaries(self):
+        self.write_config(nodes=[{'Core': 'xray', 'NodeType': 'vless', 'Transport': 'PASSWORD_CANARY'},
+                                 {'Core': 'sing', 'NodeType': 'anytls'},
+                                 {'Core': 'hysteria2', 'NodeType': 'hysteria2'},
+                                 {'Core': 'sing', 'NodeType': 'V2Node'}])
+        data = self.report('--entries', '1:relay-proxy')
+        profiles = [n.get('capabilities') for n in data['nodes']]
+        self.assertTrue(all(isinstance(p, dict) for p in profiles), 'diagnosis omits protocol guidance')
+        self.assertEqual(profiles[0]['network'], 'unknown')
+        self.assertEqual(profiles[0]['topology'], 'shared-relay')
+        self.assertEqual(profiles[1]['udp_payload'], 'over_tcp')
+        self.assertEqual(profiles[2]['network'], 'udp+quic')
+        self.assertEqual(profiles[3]['protocol'], 'unknown')
+        self.assertTrue(all(p['runtime_status'] == 'unverified' and not p['automatic_ban'] for p in profiles))
+        self.assertNotIn('CANARY', json.dumps(data))
 
     def test_bouncer_only_skips_local_core_and_acquisition(self):
         self.write_config()
@@ -337,9 +353,9 @@ class V2bXDiagnosis(unittest.TestCase):
 
 
 class V2bXRouting(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_cli_bypasses_lock_and_propagates_unverified(self):
         result = self.run_shell('main --diagnose-v2bx', overrides=
@@ -347,6 +363,15 @@ class V2bXRouting(unittest.TestCase):
                                'locked_operation() { record LOCK; return 99; }')
         self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
         self.assertEqual(self.commands(), 'V2BX\n')
+
+    def test_generic_protocol_cli_bypasses_lock_and_does_not_claim_backend_inventory(self):
+        result = self.run_shell('main --protocol-status', overrides=
+                               'NODE_PROGRAM=v2node; NODE_PROTOCOL=anytls; NODE_TRANSPORT=udp-over-tcp; '
+                               'locked_operation() { record LOCK; return 99; }')
+        self.assertEqual(result.returncode, 2, result.stdout+result.stderr)
+        self.assertIn('candidate_repository_host_provenance_unknown', result.stdout)
+        self.assertIn('UDP-over-TCP', result.stdout)
+        self.assertEqual(self.commands(), '')
 
     def test_menu_routes_without_lock_and_eof_exits(self):
         result = self.run_shell('manage_diagnostics', '4\n1\n0\n0\n', overrides=

@@ -15,6 +15,8 @@
 | [管理与维护](management-guide.md) | WebUI、Telegram、Hub 更新和恢复 |
 | [自定义 Telegram 机器人](2026-10-13-custom-telegram-bot.md) | 可选交互查询与迁移回滚 |
 | [Telegram 分级降噪](telegram-noise-control.md) | 普通汇总、紧急提醒、确认与恢复、持久化队列 |
+| [选定入口端口策略](port-policy.md) | 私有 JSON、SSH 保护、双栈 host/Docker 原始目标端口、暂存与回退 |
+| [可选 TCP 配置与归属](network-configuration.md) | 链接别名、loader 优先级、内核默认值恢复及实际吞吐边界 |
 | [维护边界](optimization-boundary.md) | 配置所有权、支持前提与验收要求 |
 
 ## 中转与 V2bX 落地
@@ -25,12 +27,15 @@
 | [中心与远端运维](remote-bouncer-operations.md) | LAPI、凭据、决策范围、故障恢复 |
 | [性能测量](relay-benchmark.md) | 目标节点的测量方法，不以仿真吞吐设阈值 |
 | [V2bX 指南](v2bx-guide.md) | 三内核诊断、日志核查、持久观察采样与支持格式 |
+| [程序／协议／传输能力](protocol-capabilities.md) | VMess/VLESS、SS、Trojan、Hysteria、TUIC、AnyTLS、V2Node 候选及官方来源 |
 | [V2bX 部署验收](v2bx-deployment-acceptance.md) | 生产版本、实际入口、来源与仅观察试点条件 |
 | [结构化事件契约](v2bx-structured-events.md) | 明确拒绝、固定字段、隐私与日志限额 |
 | [实验补丁索引](../experimental/README.md) | 固定版本源码实验，不是自动升级入口 |
 | [仅观察规则样板](../rules/v2bx/README.md) | 规范化投影的解析器／场景，未安装 |
 
 ## 验收、历史与计划
+
+2026-11-03 [脚本保护与协议说明交付记录](audit/2026-11-03-script-hardening-delivery.md)记录本轮行为、兼容性裁决及验证边界；最终复审、全仓回归与同步证据由交付阶段追加。
 
 [验证记录](verification.md)保存各轮检查方法和结果；[验收索引](audit/README.md)指向报告及证据。系统试用放行以 [VPS 修复进度](audit/2026-10-12-vps-repair-progress.md)和 [兼容性矩阵](audit/2026-10-12-vps-compatibility.md)为准，不能用源码测试数量替代目标系统验收。
 

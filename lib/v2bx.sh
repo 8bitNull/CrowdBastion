@@ -71,13 +71,14 @@ v2bx_observer_service() {
 manage_v2bx_node() {
     local choice
     while true; do
-        printf '\nV2bX 落地节点\n按配置检查、样本分析、持续记录、异常告警的顺序接入；已有配置可直接检查。\n1. 检查节点配置和连接来源\n2. 分析已有日志样本（需路径和内核类型）\n3. 管理持续日志记录\n4. 管理异常告警（先完成持续记录）\n观察与告警不提供业务攻击自动封禁。\n0. 返回\n'
-        prompt choice '请选择 [0-4]: ' || return 0
+        printf '\nV2bX 落地节点（专项检测）\n按配置检查、样本分析、持续记录、异常告警的顺序接入；已有配置可直接检查。\n1. 检查节点配置和连接来源\n2. 分析已有日志样本（需路径和内核类型）\n3. 管理持续日志记录\n4. 管理异常告警（先完成持续记录）\n5. 选择协议和传输，查看适用指导（只读）\n观察与告警不提供业务攻击自动封禁；通用协议指导不代表新增日志解析支持。\n0. 返回\n'
+        prompt choice '请选择 [0-5]: ' || return 0
         case "$choice" in
             1) diagnose_v2bx interactive ;;
             2) check_v2bx_logs ;;
             3) manage_v2bx_observer; continue ;;
             4) manage_v2bx_alerts; continue ;;
+            5) guided_protocol_status ;;
             0) return 0 ;;
             *) log_warn '无效选项。'; continue ;;
         esac

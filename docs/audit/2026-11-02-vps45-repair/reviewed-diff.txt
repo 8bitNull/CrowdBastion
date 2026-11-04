@@ -1,0 +1,80 @@
+diff --git a/lib/crowdsec_firewall_runtime.py b/lib/crowdsec_firewall_runtime.py
+index ca42ba6..aa673dd 100644
+--- a/lib/crowdsec_firewall_runtime.py
++++ b/lib/crowdsec_firewall_runtime.py
+@@ -187,10 +187,27 @@ def iptables_references(config, docker):
+                                 and any(re.fullmatch(re.escape(name)+r'(?:-\d+)?', t[5]) for name in names)
+                                 for t in drops):
+             raise PathCoverageError('CrowdSec 链含缺失或无法确认的来源封禁路径。')
++        first_rules = {}
++        user_chains = {t[1] for t in lines if len(t) == 2 and t[0] == '-N'}
++        for tokens in lines:
++            if len(tokens) >= 2 and tokens[0] == '-A':
++                first_rules.setdefault(tokens[1], tokens)
+         for entry in expected_chains(data, docker)['iptables_'+family+'_chains']:
+-            rules = [t for t in lines if t[:2] == ['-A', entry]]
+-            if not rules or rules[0] != ['-A', entry, '-j', chain]:
+-                raise PathCoverageError('入口未首先无条件跳转 CrowdSec。')
++            current, visited = entry, set()
++            while current != chain:
++                if current in visited:
++                    raise PathCoverageError('入口跳转路径存在循环。')
++                visited.add(current)
++                rule = first_rules.get(current, [])
++                if len(rule) != 4 or rule[:3] != ['-A', current, '-j']:
++                    raise PathCoverageError('入口未首先无条件跳转 CrowdSec。')
++                target = rule[3]
++                # Only ordinary jumps into declared user chains can prove an
++                # indirect path. Targets such as ACCEPT/RETURN and goto or
++                # conditional rules must never establish coverage.
++                if target != chain and target not in user_chains:
++                    raise PathCoverageError('入口跳转目标不是已声明的用户链。')
++                current = target
+         references[4 if family == 'v4' else 6] = {t[5] for t in drops}
+     if incomplete:
+         raise IncompletePathError('无法确认空链对应地址族是否有有效决策。')
+diff --git a/tests/test_firewall_runtime.py b/tests/test_firewall_runtime.py
+index 5ee0f12..a056d37 100644
+--- a/tests/test_firewall_runtime.py
++++ b/tests/test_firewall_runtime.py
+@@ -131,6 +131,40 @@ class RuntimeTests(unittest.TestCase):
+         self.assertEqual(self.coverage(), 'ok')
+         self.assertEqual(self.coverage(v6='-P INPUT ACCEPT\n'), 'fault')
+ 
++    def indirect_rules(self):
++        return ('-N DOCKER-USER\n-N PRECHECK\n' + self.rules().replace(
++            '-A FORWARD -j CROWDSEC_CHAIN', '-A FORWARD -j DOCKER-USER'))
++
++    def test_unconditional_docker_forward_path_covers_both_families(self):
++        rules = self.indirect_rules()
++        self.assertEqual(self.coverage(v4=rules, v6=rules), 'ok')
++
++    def test_unconditional_multi_hop_path_reaches_configured_bouncer_chain(self):
++        rules = self.indirect_rules().replace('-A INPUT -j CROWDSEC_CHAIN',
++            '-A INPUT -j PRECHECK\n-A PRECHECK -j DOCKER-USER')
++        self.assertEqual(self.coverage(v4=rules, v6=rules), 'ok')
++        self.local.write_text('iptables_chain: BLOCKLIST\n')
++        self.assertEqual(self.coverage(v4=rules.replace('CROWDSEC_CHAIN', 'BLOCKLIST'),
++                                       v6=rules.replace('CROWDSEC_CHAIN', 'BLOCKLIST')), 'ok')
++
++    def test_indirect_path_refuses_conditional_accept_return_goto_and_missing(self):
++        rules = self.indirect_rules()
++        for replacement in ('-A DOCKER-USER -p tcp -j CROWDSEC_CHAIN',
++                            '-A DOCKER-USER -j ACCEPT', '-A DOCKER-USER -j RETURN',
++                            '-A DOCKER-USER -g CROWDSEC_CHAIN',
++                            '-A DOCKER-USER -j ABSENT'):
++            with self.subTest(replacement=replacement):
++                unsafe = rules.replace('-A DOCKER-USER -j CROWDSEC_CHAIN', replacement)
++                self.assertEqual(self.coverage(v4=unsafe), 'fault')
++                self.assertEqual(self.coverage(v6=unsafe), 'fault')
++
++    def test_indirect_path_refuses_cycle_and_undefined_transit_chain(self):
++        rules = self.indirect_rules()
++        cycle = rules.replace('-A DOCKER-USER -j CROWDSEC_CHAIN', '-A DOCKER-USER -j FORWARD')
++        self.assertEqual(self.coverage(v4=cycle), 'fault')
++        undefined = rules.replace('-N DOCKER-USER\n', '')
++        self.assertEqual(self.coverage(v4=undefined), 'fault')
++
+     def test_coverage_refuses_accept_before_bouncer(self):
+         self.assertEqual(self.coverage(v4='-A INPUT -j ACCEPT\n'+self.rules()), 'fault')
+ 

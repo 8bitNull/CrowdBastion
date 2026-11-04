@@ -1,17 +1,79 @@
 #!/usr/bin/env bash
 
 maintenance_tool() { python3 "${SCRIPT_DIR}/lib/crowdsec_maintenance.py" "$@"; }
+environment_tool() { PYTHONDONTWRITEBYTECODE=1 python3 "${SCRIPT_DIR}/lib/crowdbastion_environment.py" "$@"; }
+environment_change_guard() {
+    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then
+        log_err '环境变更检查需要先取得管理锁。'; return 75
+    fi
+    environment_tool --guard --human
+}
+
+# Render only the current command's report; never rerun a guarded operation to
+# obtain a human summary. Keep the original helper exit, including 75/failure
+# after successful recovery. Explicit plan/status and direct Python retain JSON.
+change_human_action() {
+    local kind="$1" action="$2" output result=0
+    case "$kind" in
+        network) output=$(network_tool "$action") || result=$? ;;
+        port-policy) output=$(port_policy_tool "$action") || result=$? ;;
+        *) return 1 ;;
+    esac
+    printf '%s\n' "$output" | PYTHONDONTWRITEBYTECODE=1 python3 "${SCRIPT_DIR}/lib/crowdbastion_ux.py" change-result "$kind" "$action" "$result" || {
+        [[ "$result" != 0 ]] || result=1
+    }
+    return "$result"
+}
+
+# Shared ordering and exit handling; public kind-specific action names remain
+# the lock/migration dispatch boundary. Read-only CLI actions retain raw JSON.
+change_configuration_action() {
+    local kind="$1" action="$2" question="$3" tool
+    case "$kind" in
+        network) tool=network_tool ;;
+        port-policy) tool=port_policy_tool ;;
+        *) return 1 ;;
+    esac
+    if [[ "$action" == apply ]]; then
+        change_human_action "$kind" plan || return $?
+        confirm "$question" || return 0
+        change_human_action "$kind" apply
+    elif [[ "$action" == status || "$action" == plan ]]; then
+        "$tool" "$action"
+    else
+        change_human_action "$kind" "$action"
+    fi
+}
+
+# The Python pre-open rejects links and unsafe ancestors before Bash reopens
+# without truncation. Owned entries in trusted/sticky parents cannot be replaced
+# by an unprivileged process. Validate the inherited descriptor/inode and flock
+# before any operation; an environment flag alone is never evidence of a lock.
+change_lock_tool() {
+    require_commands python3 || { log_err '安全锁检查需要 Python3；请先安装 python3，再重试。'; return 1; }
+    PYTHONDONTWRITEBYTECODE=1 python3 "${SCRIPT_DIR}/lib/crowdbastion_change.py" "$@"
+}
+maintenance_lock_acquire() {
+    local result=0
+    if [[ "${MAINTENANCE_LOCK_HELD:-}" == true ]]; then
+        change_lock_tool lock-check --lock-path "$MAINTENANCE_LOCK" --fd 9
+        return $?
+    fi
+    change_lock_tool lock-prepare --lock-path "$MAINTENANCE_LOCK" || return $?
+    exec 9<> "$MAINTENANCE_LOCK" || return 1
+    change_lock_tool lock-check --lock-path "$MAINTENANCE_LOCK" --fd 9 || result=$?
+    if [[ "$result" != 0 ]]; then
+        exec 9>&-
+        [[ "$result" != 75 ]] || log_warn '已有管理操作正在执行，请稍后重试。'
+        return "$result"
+    fi
+}
 
 locked_operation() (
-    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then
-        require_commands flock || return 1
-        mkdir -p "$(dirname "$MAINTENANCE_LOCK")" || return 1
-        exec 9> "$MAINTENANCE_LOCK" || return 1
-        if ! flock -n 9; then log_warn '另一个 CrowdSec 管理操作正在执行，请稍后重试。'; return 75; fi
-    fi
+    maintenance_lock_acquire || return $?
     if declare -F firewall_migration_pending >/dev/null && firewall_migration_pending; then
         case "$*" in
-            'main_operation --firewall-maintenance'|manage_firewall_maintenance) ;;
+            'main_operation --firewall-maintenance'|'main_operation --port-policy-rollback'|'main_operation --network-rollback'|'network_action rollback'|'port_policy_action rollback'|manage_firewall_maintenance) ;;
             *) log_err '防火墙迁移尚未结束，其他修改暂停；请使用 --firewall-maintenance 完成或回退。'; return 75 ;;
         esac
     fi

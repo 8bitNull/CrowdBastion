@@ -1,0 +1,38 @@
+{
+  "targets_before_seconds": 29.810124379000627,
+  "targets_after_seconds": 7.526498829014599,
+  "quick": {
+    "counts": {
+      "run": 311,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "expected_failures": 0,
+      "unexpected_successes": 0
+    },
+    "seconds": 32.82476655498613
+  },
+  "full": {
+    "counts": {
+      "run": 1669,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 89,
+      "expected_failures": 0,
+      "unexpected_successes": 0
+    },
+    "seconds": 486.76848737406544,
+    "statuses": {
+      "passed": 1580,
+      "skipped": 89
+    }
+  },
+  "previous_full_seconds": 580.0354575240053,
+  "same_skip_ids_and_reasons": true,
+  "local_profile_python_calls_before": 186,
+  "local_profile_python_calls_after": 26,
+  "notes": [
+    "Whole-suite timings are separate single observations, not controlled measurements.",
+    "The ten original transaction test assertions and the four real integration methods are unchanged."
+  ]
+}

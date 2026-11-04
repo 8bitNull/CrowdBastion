@@ -1,0 +1,5 @@
+[已检查] 开机规则覆盖与 Docker 启动顺序
+[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。
+[已检查] 决策入核：适用网络 12347，实际集合网络 12347，遗漏 0。
+  phase=decision_coverage error_code=none duration_seconds=1.834 retryable=false
+  阶段耗时：config_read=0.005s, rules_read=0.010s, config_read=0.008s, api_request=0.208s, api_response=0.162s, decision_selection=0.119s, ipset_read=0.020s, ipset_compare=1.303s, decision_coverage=0.000s

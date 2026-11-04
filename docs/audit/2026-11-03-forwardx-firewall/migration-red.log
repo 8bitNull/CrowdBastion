@@ -1,0 +1,21 @@
+test_snapshot_does_not_duplicate_common_and_family_jumps (test_firewall_runtime.MigrationTests.test_snapshot_does_not_duplicate_common_and_family_jumps) ... FAIL
+
+======================================================================
+FAIL: test_snapshot_does_not_duplicate_common_and_family_jumps (test_firewall_runtime.MigrationTests.test_snapshot_does_not_duplicate_common_and_family_jumps)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_firewall_runtime.py", line 246, in test_snapshot_does_not_duplicate_common_and_family_jumps
+    self.assertEqual(applied['iptables_chains'], [])
+AssertionError: Lists differ: ['INPUT', 'FORWARD', 'DOCKER-USER'] != []
+
+First list contains 3 additional elements.
+First extra element 0:
+'INPUT'
+
+- ['INPUT', 'FORWARD', 'DOCKER-USER']
++ []
+
+----------------------------------------------------------------------
+Ran 1 test in 0.042s
+
+FAILED (failures=1)

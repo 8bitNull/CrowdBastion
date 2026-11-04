@@ -1,7 +1,8 @@
 """Fail-closed destructive safety and explicitly requested administrator protection."""
-from test_workflows import Workflows
+import unittest
+from workflow_fixture import WorkflowFixtureMixin
 
-class AuditSafety(Workflows):
+class AuditSafety(WorkflowFixtureMixin, unittest.TestCase):
     def run_shell(self, action, user_input='', overrides='', timeout=5):
         return super().run_shell(action, user_input, 'ip() { echo "[]"; };\n'+overrides, timeout)
 
@@ -75,8 +76,3 @@ class AuditSafety(Workflows):
         self.assertNotIn('cscli capi status', self.commands())
         self.assertNotRegex(self.commands(), r'decisions (delete|add)|allowlists (add|create)|systemctl restart|curl')
 
-# Do not inherit and duplicate the baseline workflow suite.
-for name in list(vars(Workflows)):
-    if name.startswith('test_') and name not in AuditSafety.__dict__:
-        setattr(AuditSafety, name, None)
-del Workflows

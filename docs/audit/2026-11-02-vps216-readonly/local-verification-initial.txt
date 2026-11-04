@@ -1,0 +1,8 @@
+首次 local-verify.py 在真实凭据扫描之后退出 1，尚未生成 verification.json 或 manifest.json。
+
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/docs/audit/2026-11-02-vps216-readonly/scripts/local-verify.py", line 45, in <module>
+    for name,digest in scan['scanned_artifacts'].items():assert sha(ROOT/name)==digest,('changed since credential scan',name)
+AssertionError: ('changed since credential scan', 'docs/audit/2026-11-02-vps216-readonly/health-initial.stderr.txt')
+
+原因：原始 SSH stderr 含 CRLF，read_text() 启用通用换行转换；远端扫描记录的是输入文本重新编码后的摘要，首次本地验证错误地用原始字节摘要比较。与凭据泄漏或生产对象变化无关。保留原始 stderr、首次扫描结果和 local-verify-first.py；修正为分别核对原始字节与归一化文本摘要，再重新扫描修正后的完整文本清单。没有重复执行生产部署或修改服务。

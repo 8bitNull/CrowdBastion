@@ -177,6 +177,7 @@ def save_acceptance(path, root, scope, code, now=None, fingerprint=None):
     # Omit source and control addresses; they are unnecessary to identify the entry.
     data = dict(version=1, time=time.time() if now is None else now, code=code,
                 scope={key: scope[key] for key in ('target', 'port', 'protocol', 'family', 'hook')},
+                verification=scope.get('verification', 'basic'),
                 fingerprint=fingerprint or tree_fingerprint(root), external_results='operator_confirmed')
     fd, temporary = tempfile.mkstemp(prefix='.relay-acceptance-', dir=path.parent)
     try:
@@ -211,15 +212,86 @@ def acceptance_summary(path, root, now=None):
     if data['fingerprint'] != tree_fingerprint(root):
         freshness = '检测到配置变化，请重验'
     verdict = {0: '通过（人工确认）', 1: '未通过', 2: '未完成', 130: '已中断'}[data['code']]
+    verification = data.get('verification', 'basic')
+    if verification not in ('basic', 'lifecycle'):
+        raise ValueError('invalid verification scope')
+    coverage = '完整生命周期' if verification == 'lifecycle' else '基础连接对照'
     stamp = time.strftime('%Y-%m-%d %H:%M:%S %z', time.localtime(data['time']))
     return (f'历史验收：{stamp} / {target}:{scope["port"]} / {scope["protocol"]} / '
-            f'{"IPv4" if scope["family"] == "ip" else "IPv6"} / {scope["hook"].upper()} / 新连接 / {verdict}。\n'
+            f'{"IPv4" if scope["family"] == "ip" else "IPv6"} / {scope["hook"].upper()} / 新连接 / {coverage} / {verdict}。\n'
             f'记录适用性：{freshness}；仅供该入口参考。网络、规则或业务变化也需重验，不改变当前健康结论。')
+
+
+def change_summary(report, kind, action, code):
+    """Fixed human outcomes from one trusted helper report; never echo errors."""
+    if kind not in ('network', 'port-policy') or not isinstance(report, dict):
+        raise ValueError('invalid result')
+    label = 'TCP 配置' if kind == 'network' else '端口策略'
+    state = report.get('state')
+    error = report.get('error_code')
+    followup = f'独立验收后运行 --{kind}-verify、--{kind}-commit，或 --{kind}-rollback。'
+    if action == 'status' and any(row.get('state') not in ('committed', 'rolled_back', 'preparation_incomplete')
+                                  for row in report.get('transactions', [])):
+        return f'{label}存在未完成事务；请用 --{kind}-status 查看具体状态，核对后提交或回退。'
+    if error == 'pending_change':
+        pending = {'network': 'TCP 配置', 'port-policy': '端口策略'}.get(report.get('pending_kind'), '其他类型')
+        return f'存在未完成的{pending}事务；先查看对应 status 并提交或回退，再继续。'
+    if report.get('refusal_code') == 'transaction_expired':
+        return '事务已过期，拒绝提交；请查看状态并回退，自动回退仍可继续。'
+    if error == 'apply_failed':
+        return ('应用失败，已恢复本次变更；请核对状态后重试。' if state == 'rolled_back' else
+                '应用失败，回退尚未完成；请查看状态并重试 rollback，保留自动重试。')
+    if state in ('unstable', 'unknown') and report.get('phase') == 'environment_sample':
+        return '环境压力持续或无法确认稳定；暂缓修改，检查宿主机存储与内存后重试。'
+    if code == 75:
+        return '操作暂缓：管理锁忙或环境无法确认稳定；检查状态后重试。'
+    if state == 'verification_failed':
+        return '核验未通过，未提交；请检查配置、运行状态与期限，再核验或回退。'
+    if state == 'rollback_incomplete':
+        return '回退尚未完成；外部漂移保持不动，请核对 status 并重试 rollback。自动重试保留。'
+    if code != 0:
+        return f'{label}操作未完成；请用 --{kind}-status 和 --{kind}-plan 查看结构化证据，核对支持条件与权限。'
+    if report.get('unchanged') is True:
+        return f'{label}无需变更；已核验当前配置，未创建新事务。实际流量与吞吐需独立验收。'
+    if action == 'plan' and state == 'ready':
+        lines = [f'{label}计划可执行；应用后 15 分钟内须提交，否则自动回退。']
+        if kind == 'network':
+            for row in report.get('changes', []):
+                key, before, after = row['key'], str(row['before']), str(row['after'])
+                if not re.fullmatch(r'net\.ipv4\.tcp_[a-z_]+', key) or not before.isdigit() or not after.isdigit():
+                    raise ValueError('invalid selection')
+                lines.append(f'  {key}: {before} → {after}')
+        else:
+            for row in report.get('scope', {}).get('ingress', []):
+                interface, protocol, port = row['interface'], row['protocol'], row['port']
+                mode = {'public': '公网', 'local': '仅本机', 'sources': '指定来源'}[row['mode']]
+                if not re.fullmatch(r'[A-Za-z0-9_.:-]{1,15}', interface) or protocol not in ('tcp', 'udp') or type(port) is not int or not 1 <= port <= 65535:
+                    raise ValueError('invalid selection')
+                sources = ', '.join(str(ipaddress.ip_network(value)) for value in row['sources'])
+                lines.append(f'  {interface} {protocol}/{port}: {mode}'+(f' ({sources})' if sources else ''))
+            released = len(report.get('released_selectors', []))
+            if released: lines.append(f'  将释放 {released} 个原有受管入口；详情先运行 --port-policy-plan。')
+        lines.append(f'完整范围与归属见 --{kind}-plan；规则核验不代表实际流量或吞吐通过。')
+        return '\n'.join(lines)
+    if state == 'staged':
+        return f'{label}已暂存；未提交将按原期限自动回退。'+followup
+    if state == 'verified' and report.get('id'):
+        return '未提交事务核验通过；仍须在原期限内提交。'+followup
+    if state == 'committed': return f'{label}事务已提交；实际流量与吞吐仍需独立验收。'
+    if state == 'rolled_back': return f'{label}事务已回退。'
+    if state == 'verified': return f'{label}本地核验通过；实际流量与吞吐仍需独立验收。'
+    if state == 'absent': return f'{label}尚无托管配置或事务。'
+    if state == 'audited':
+        return 'TCP 配置归属只读审计完成；动态配置、别名及加载顺序详情见 --network-status。此结果不表示可应用或吞吐通过。'
+    raise ValueError('unexpected result')
 
 
 def main(args):
     action, *values = args
-    if action == 'fingerprint':
+    if action == 'change-result':
+        kind, operation, code = values
+        print(change_summary(json.load(sys.stdin), kind, operation, int(code)))
+    elif action == 'fingerprint':
         print(tree_fingerprint(values[0]))
     elif action == 'runtime':
         current = code_fingerprint(values[0])

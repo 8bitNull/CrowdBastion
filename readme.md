@@ -40,6 +40,7 @@ CrowdBastion 把 CrowdSec 安装、日志检测、IP 封禁和日常维护集中
 | **中转 VPS，需要本机检测** | 检测本机系统／SSH 日志中的攻击，执行 IP 封禁 | 首页 `2`，按本地中转用途安装基础防护 |
 | **中转 VPS，已有检测中心** | 接收中心的封禁决策，在本机防火墙执行 | 首页 `2`，按远端执行用途连接检测中心 |
 | **V2bX 落地节点** | 检查配置、日志与连接来源，支持持续观察和告警；业务检测仅观察 | 首页 `2`，按落地用途检查，详见 [落地指南](docs/v2bx-guide.md) |
+| **AnyTLS／Hysteria／TUIC 等代理节点** | 按实际协议与传输提供只读指导，按需核对环境、TCP 配置及入口端口；不自动安装代理程序 | 首页 `5 → 9`，详见 [协议导航](docs/usage-guide.md#代理协议使用导航) |
 
 网站接入覆盖 **1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）及宿主机 Nginx/OpenResty**，具体条件见 [AppSec 指南](docs/appsec-guide.md)。中转模式适用于 gost、realm、socat、Nginx Stream 或 NAT 节点，详见 [中转部署](docs/relay-mode.md)和 [中心运维](docs/remote-bouncer-operations.md)。
 
@@ -47,7 +48,7 @@ CrowdBastion 把 CrowdSec 安装、日志检测、IP 封禁和日常维护集中
 
 ## 快速开始
 
-**运行环境：** systemd Linux、root／sudo 权限、Git、Bash 和 Python 3。配置操作还需 PyYAML，安装入口会准备该依赖；手动准备方法见 [环境说明](docs/usage-guide.md#准备环境与下载)。
+**运行环境：** systemd Linux、root／sudo 权限、Git、Bash 和 Python 3。首次安装前必须已安装 Python 3，安全管理锁依赖它；缺少时会在修改前停止，不自动绕过锁。配置操作还需 PyYAML，安装入口会准备该依赖；手动准备方法见 [环境说明](docs/usage-guide.md#准备环境与下载)。
 
 ```bash
 git clone --branch main https://github.com/8bitNull/CrowdBastion.git
@@ -66,6 +67,8 @@ sudo bash crowdbastion.sh
 3. **检查并继续处理。** 完成步骤后，在引导中选 `9`，或返回首页选 `1` 检查。检查页选 `1` 执行推荐操作、`2` 查看技术详情、`3` 重新检查、`4` 导出脱敏报告、`0` 返回。成功修改配置或服务后自动只读复查；取消或失败保留本页，仍可选 `3` 手动重查。
 
 网站向导先选择宿主机、Docker host 或 bridge，再按引擎、私有地址（仅 bridge）、拦截组件、请求验证的顺序接入。私有网关需自行准备；“网站防护接入”也可选 `8` 登记地址、选 `9` 查看撤销顺序。首页 `3` 为远端执行节点提供本机状态与中心操作说明；防火墙维护可从 `4 → 4 → 5 → 5` 进入。
+
+新增代理协议导航可从首页 `5 → 9` 进入，交互选择程序、协议、传输与入口拓扑，无需先配置环境变量。独立代理程序可在首次用途提示选 `0` 后进入该页；现有“V2bX 落地”用途仍用于 V2bX 专项检查，不用于推断所有代理程序。
 
 菜单输入 `0` 返回，`Ctrl+D` 退出；删除、停用和卸载需明确确认。
 
@@ -133,6 +136,10 @@ bash crowdbastion.sh --help
 | 查看中转防火墙状态 | `--relay-status`；详情用 `--relay-status-details` |
 | 查看远端决策执行节点状态 | `--relay-bouncer-status` |
 | 检查 V2bX 配置与日志 | `--diagnose-v2bx`；详情用 `--diagnose-v2bx-details` |
+| 检查宿主机短时环境压力 | `--environment-status`（JSON）；菜单 `4 → 4 → 6`（简短结论） |
+| 审计 TCP 配置归属与维护副本 | `--network-status`；可选调整见 [网络配置](docs/network-configuration.md) |
+| 管理明确选定的入口端口 | 菜单 `4 → 4 → 8`；先按 [端口策略](docs/port-policy.md) 准备私有 JSON |
+| 区分程序、协议与传输 | `--protocol-status`；声明方式与 [官方来源索引](docs/protocol-capabilities.md) |
 | 配置管理界面或通知 | 菜单 `4 → 5` |
 
 命令行入口的运行方式为 `sudo bash crowdbastion.sh 参数`。更多操作见 [命令行参考](docs/cli-reference.md)和 [管理维护](docs/management-guide.md)。
@@ -152,6 +159,8 @@ bash crowdbastion.sh --help
 已配置定时更新的安装，更新仓库后还需同步其脚本副本，详见 [日常维护与更新](docs/usage-guide.md#日常维护与更新)。
 
 </details>
+
+网络与端口策略均为独立可选操作，默认安装和状态检查不调整策略。暂存变更需独立验收并在 15 分钟期限内提交，否则自动回退；本地核验不等于公网阻断或吞吐通过。
 
 ## 文档导航
 

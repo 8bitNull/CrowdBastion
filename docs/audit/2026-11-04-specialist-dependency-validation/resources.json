@@ -1,0 +1,98 @@
+[
+  {
+    "kind": "github-release",
+    "tag": "v1.8.1",
+    "name": "crowdsec-release.tgz",
+    "url": "https://github.com/crowdsecurity/crowdsec/releases/download/v1.8.1/crowdsec-release.tgz",
+    "sha256": "ae64cdab8ee49534d6c36eab4ce40b5478842a4b4abfe83f7796aace569821eb",
+    "bytes": 121003328
+  },
+  {
+    "kind": "github-release",
+    "tag": "v3.3.3",
+    "name": "gost_3.3.3_linux_amd64.tar.gz",
+    "url": "https://github.com/go-gost/gost/releases/download/v3.3.3/gost_3.3.3_linux_amd64.tar.gz",
+    "sha256": "f4c1255dc892a7014c0ad6e5f1c3573108f7bea4403f04f21873406ab58aa666",
+    "bytes": 17926332
+  },
+  {
+    "kind": "debian-package",
+    "package": "nginx",
+    "version": "1.22.1-9+deb12u10",
+    "url": "https://deb.debian.org/debian-security/pool/updates/main/n/nginx/nginx_1.22.1-9+deb12u10_amd64.deb",
+    "sha256": "cc7ae36d024f602861eeefe64656d14481b3bd224d81f8d69f789de49f16375a",
+    "size": 531468
+  },
+  {
+    "kind": "debian-package",
+    "package": "libnginx-mod-http-lua",
+    "version": "1:0.10.23-1+deb12u1",
+    "url": "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-http-lua/libnginx-mod-http-lua_0.10.23-1+deb12u1_amd64.deb",
+    "sha256": "c6060e48e01172b6a04fc9b13271cb056bc8377199292d6b03f2207f15b0c598",
+    "size": 156896
+  },
+  {
+    "kind": "debian-package",
+    "package": "libnginx-mod-http-ndk",
+    "version": "1:0.3.2-3",
+    "url": "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-http-ndk/libnginx-mod-http-ndk_0.3.2-3_amd64.deb",
+    "sha256": "1ba51305af78458549aa587bfaae2555f950ffd11ebebacf8f7a9e5cfe1a583e",
+    "size": 9568
+  },
+  {
+    "kind": "debian-package",
+    "package": "lua-resty-core",
+    "version": "0.1.25-1",
+    "url": "https://deb.debian.org/debian/pool/main/l/lua-resty-core/lua-resty-core_0.1.25-1_all.deb",
+    "sha256": "ec3474d16db332c6deb9c35c13ff3e09f10773705e3b42c0e80cb318b67dc9e5",
+    "size": 32236
+  },
+  {
+    "kind": "debian-package",
+    "package": "lua-resty-lrucache",
+    "version": "0.13-10",
+    "url": "https://deb.debian.org/debian/pool/main/l/lua-resty-lrucache/lua-resty-lrucache_0.13-10_all.deb",
+    "sha256": "74b1a5621936fa0aac1e85dfe2ee49f8fa9dad1856bdbc52e4109528916a8400",
+    "size": 10340
+  },
+  {
+    "kind": "debian-package",
+    "package": "libluajit2-5.1-2",
+    "version": "2.1-20230119-1",
+    "url": "https://deb.debian.org/debian/pool/main/l/luajit2/libluajit2-5.1-2_2.1-20230119-1_amd64.deb",
+    "sha256": "83f4cb79e75286a1100ed7fd0f849b5823c911067fc9d6a1e29dfbdc84353909",
+    "size": 257988
+  },
+  {
+    "kind": "debian-package",
+    "package": "libluajit2-5.1-common",
+    "version": "2.1-20230119-1",
+    "url": "https://deb.debian.org/debian/pool/main/l/luajit2/libluajit2-5.1-common_2.1-20230119-1_all.deb",
+    "sha256": "bff99b1b6fe144bce4f3466a18a3984a2e66af7a7e249382aa6d38241af2e9fb",
+    "size": 46604
+  },
+  {
+    "kind": "debian-package",
+    "package": "lua-cjson",
+    "version": "2.1.0+dfsg-2.2",
+    "url": "https://deb.debian.org/debian/pool/main/l/lua-cjson/lua-cjson_2.1.0+dfsg-2.2_amd64.deb",
+    "sha256": "ccb427f4941cd3871fc77237d81b93cef326a49cb80ecb8d5f33ad69a8b274d4",
+    "size": 19380
+  },
+  {
+    "kind": "debian-package",
+    "package": "libpcre3",
+    "version": "2:8.39-15",
+    "url": "https://deb.debian.org/debian/pool/main/p/pcre3/libpcre3_8.39-15_amd64.deb",
+    "sha256": "993ea623ce5b42d67f653f2faaa7ef15e7c9d72bfcb93e22a1eaff7aa3532303",
+    "size": 340864
+  },
+  {
+    "kind": "pypi-wheel",
+    "version": "1.14.0",
+    "filename": "pycdlib-1.14.0-py2.py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/0c/dd/95557c0e3bad0e8ba10c0f17d9deffb139b106eda528a744e544799cbbfb/pycdlib-1.14.0-py2.py3-none-any.whl",
+    "sha256": "a905827335f0066af3fd416c5cf9b1f29dffaf4d0914b714555213d1809f38d4",
+    "bytes": 213201
+  }
+]

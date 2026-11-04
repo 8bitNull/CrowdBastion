@@ -2,13 +2,13 @@
 import json
 import shlex
 import unittest
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class RealIPWorkflows(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def fixture(self, npm=False):
         directory = self.base/('data' if npm else 'http.d')

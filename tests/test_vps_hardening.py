@@ -4,15 +4,15 @@ from pathlib import Path
 import shlex
 import unittest
 
-import test_workflows
+import workflow_fixture as test_workflows
 import test_native_workflows
 from test_web_install import REMOTE_WAF
 
 
 class FirewallBackendSafety(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_fresh_install_avoids_nftables_renewal_backend(self):
         result = self.run_shell('install_bouncer_package')
@@ -106,9 +106,9 @@ class FirewallBackendSafety(unittest.TestCase):
 
 
 class UnifiedFailurePolicy(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_native_workflows.NativeWorkflows.fixture
 
     def native_install(self):

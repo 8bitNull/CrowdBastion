@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 import yaml
-import test_workflows
+import workflow_fixture as test_workflows
 import test_native_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -182,9 +182,9 @@ class AdapterContracts(unittest.TestCase):
 
 
 class AdapterWorkflows(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_host_custom_log_path_is_discovered_without_changing_configuration(self):
         directory = self.base/'custom-http'
@@ -235,9 +235,9 @@ class AdapterWorkflows(unittest.TestCase):
 
 
 class NpmPersistence(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_native_workflows.NativeWorkflows.fixture
 
     def test_npm_generated_site_rebuild_keeps_custom_entry_and_account(self):
@@ -272,9 +272,9 @@ class NpmPersistence(unittest.TestCase):
 
 
 class PrivateBridgeWorkflows(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_native_workflows.NativeWorkflows.fixture
 
     def bridge_fixture(self):
@@ -345,9 +345,9 @@ class PrivateBridgeWorkflows(unittest.TestCase):
 
 
 class PrivateBridgeDiagnostics(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_native_workflows.NativeWorkflows.fixture
     bridge_fixture = PrivateBridgeWorkflows.bridge_fixture
 

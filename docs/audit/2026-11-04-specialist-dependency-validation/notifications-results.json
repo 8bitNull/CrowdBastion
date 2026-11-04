@@ -1,0 +1,136 @@
+{
+  "group": "notifications",
+  "seconds": 21.343643822008744,
+  "run": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "id": "test_notify_integration.OfficialNotificationPipeline.test_official_projection_ingests_and_deduplicates_without_forwarding_request_logs",
+      "seconds": 0.7868238819064572,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_notify_integration.OfficialNotificationPipeline.test_official_test_command_requires_a_real_transport_receipt",
+      "seconds": 1.7435994850238785,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramReceipts.test_cli_exit_zero_without_delivery_is_not_success",
+      "seconds": 2.025515106972307,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramReceipts.test_http_rejection_fails_even_if_official_cli_exits_successfully",
+      "seconds": 1.9406117119360715,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramReceipts.test_official_plugin_single_message_has_verified_api_receipt",
+      "seconds": 1.2448412369703874,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramReceipts.test_ok_false_overrides_http_200_and_clears_prior_success",
+      "seconds": 1.9865897960262373,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramReceipts.test_successful_receipt_expires_on_configuration_change_or_after_24_hours",
+      "seconds": 2.1585867810063064,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_alert_context_is_fallback_when_events_are_absent",
+      "seconds": 0.65161297400482,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_batched_notification_counts_alerts_and_limits_details",
+      "seconds": 0.6635508290491998,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_context_from_different_path_is_not_paired_with_event",
+      "seconds": 0.64889822807163,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_decision_is_not_reported_as_verified_bouncer_enforcement",
+      "seconds": 0.6597980509977788,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_empty_first_event_does_not_hide_later_evidence",
+      "seconds": 0.7166841679718345,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_false_simulation_flag_is_not_treated_as_a_truthy_pointer",
+      "seconds": 0.6522091949591413,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_missing_data_and_empty_ua_are_distinguished",
+      "seconds": 0.7373332099523395,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_missing_decision_and_simulation_are_explicit",
+      "seconds": 0.6583259479375556,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_missing_source_and_decision_fields_are_not_guessed",
+      "seconds": 0.6599829100305215,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_notification_keeps_queryable_id_and_original_decision_types",
+      "seconds": 0.655374952009879,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_real_appsec_context_completes_matching_event_evidence",
+      "seconds": 0.6494355180766433,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_real_event_meta_paths_and_ua_are_rendered_and_json_escaped",
+      "seconds": 0.6406341410474852,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_request_samples_keep_path_ua_pairs_and_bound_message_size",
+      "seconds": 0.7280047410167754,
+      "status": "passed",
+      "skip_reasons": []
+    },
+    {
+      "id": "test_telegram.TelegramRendering.test_zero_id_is_not_presented_as_persistent_alert_id",
+      "seconds": 0.6423192039364949,
+      "status": "passed",
+      "skip_reasons": []
+    }
+  ]
+}

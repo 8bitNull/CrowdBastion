@@ -1,0 +1,82 @@
+[
+  {
+    "command": "crowdbastion_health.py event",
+    "calls": 92,
+    "seconds": 2.9260458946228027
+  },
+  {
+    "command": "-c import yaml",
+    "calls": 40,
+    "seconds": 1.434734582901001
+  },
+  {
+    "command": "crowdsec_config.py repair-log-acquis",
+    "calls": 6,
+    "seconds": 0.36054062843322754
+  },
+  {
+    "command": "crowdsec_config.py web-log-file",
+    "calls": 6,
+    "seconds": 0.3548438549041748
+  },
+  {
+    "command": "crowdsec_config.py log-repair-file",
+    "calls": 6,
+    "seconds": 0.35013675689697266
+  },
+  {
+    "command": "crowdsec_maintenance.py health-metrics",
+    "calls": 4,
+    "seconds": 0.3287160396575928
+  },
+  {
+    "command": "crowdsec_maintenance.py audit-acquisition",
+    "calls": 4,
+    "seconds": 0.32015299797058105
+  },
+  {
+    "command": "crowdsec_maintenance.py managed-web-deployed",
+    "calls": 4,
+    "seconds": 0.3185131549835205
+  },
+  {
+    "command": "crowdbastion_change.py lock-prepare",
+    "calls": 4,
+    "seconds": 0.29006481170654297
+  },
+  {
+    "command": "crowdbastion_node.py load",
+    "calls": 8,
+    "seconds": 0.2789428234100342
+  },
+  {
+    "command": "crowdbastion_change.py lock-check",
+    "calls": 4,
+    "seconds": 0.2765629291534424
+  },
+  {
+    "command": "crowdsec_config.py appsec-listeners",
+    "calls": 4,
+    "seconds": 0.22578191757202148
+  },
+  {
+    "command": "crowdbastion_health.py /tmp/codeg-acp/8-a6066baf/crowdbastion-health.nzJrlQXz/events",
+    "calls": 1,
+    "seconds": 0.03765511512756348
+  },
+  {
+    "command": "crowdbastion_health.py /tmp/codeg-acp/8-a6066baf/crowdbastion-health.viyTRynZ/events",
+    "calls": 1,
+    "seconds": 0.02897810935974121
+  },
+  {
+    "command": "crowdbastion_health.py /tmp/codeg-acp/8-a6066baf/crowdbastion-health.fDtaEkXs/events",
+    "calls": 1,
+    "seconds": 0.02847003936767578
+  },
+  {
+    "command": "crowdbastion_health.py /tmp/codeg-acp/8-a6066baf/crowdbastion-health.0LdhkqCj/events",
+    "calls": 1,
+    "seconds": 0.02602076530456543
+  }
+]

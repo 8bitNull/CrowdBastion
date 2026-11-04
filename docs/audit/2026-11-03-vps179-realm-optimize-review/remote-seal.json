@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-03T10:15:36.665842+00:00",
+  "historical_manifest_preserved": true,
+  "expected_historical_drift": [
+    "rollback.py"
+  ],
+  "files": {
+    "rollback.py": "077f61d3ec1c16c916d9779e58286df68bcaedff7918ed479703af55c487c475",
+    "enforcement-review-result.json": "696c2b39b16afe5fdd42285c9a1692d67912f99ad7a1c340937621ee0c80cf59",
+    "review-20261103/deployment.json": "81c1918e71586a7794d8eb95cb44de73c593a8a6edb21e03d4f2305cbe49f770",
+    "review-20261103/rollback.before.py": "7fc8b5df756e41fff586f32ed1bb787c33d7406956491191762a673507854e23",
+    "review-20261103/final-result.json": "9bafd2d562d757b6101fef5bfeb74c70f79db765ae88e2d0709372e1d4411a0e"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-03T11:57:29.560730+00:00",
+  "realm_count": 13,
+  "realm_pids_unchanged": true,
+  "protected_files": 14,
+  "protected_hashes_unchanged": true,
+  "active_services_compared": 16,
+  "followup_service_pids_unchanged": true,
+  "inventory_service_pids_unchanged": true,
+  "realm_total_rss_mib": 83.77,
+  "status": "verified"
+}

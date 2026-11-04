@@ -19,12 +19,14 @@ existing_deployment_tool() { python3 "${SCRIPT_DIR}/lib/crowdsec_existing_deploy
 wait_firewall_decisions() { python3 "${SCRIPT_DIR}/lib/crowdsec_firewall_evidence.py" "$1" --wait 30; }
 
 repair_existing_deployment() (
+    if [[ "${MAINTENANCE_LOCK_HELD:-}" != true ]]; then locked_operation repair_existing_deployment "$@"; return $?; fi
     local cfg="${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml" plan rows index family backup result=0
     local cron_backups=() completed=false
     check_firewall_runtime || true
     plan=$(existing_deployment_tool plan "$cfg") || return 1
     printf '%s\n' "$plan" | python3 -c 'import json,sys; p=json.load(sys.stdin); print("修复范围：保留自定义链，补齐双栈入口与 Docker 启动顺序；备份后仅重启 Bouncer，限时等待决策同步。"); print("已发现开机规则风险：", len(p["cron_risks"])); print("需要人工处理的恢复服务：", ", ".join(p["restore_services"]) or "无")' || return 1
     confirm '现在备份并修复已有防火墙部署？' || return 0
+    environment_change_guard || return $?
     # Each selected crontab transition has its own private backup, restored in
     # reverse order only if the current content still matches our after state.
     existing_repair_exit() {
@@ -82,7 +84,9 @@ repair_firewall_startup() (
     }
     python3 "${SCRIPT_DIR}/lib/crowdsec_firewall.py" guard "$cfg" || return 1
     systemctl is-active --quiet crowdsec-firewall-bouncer || return 1
-    begin_config_change "${cfg}.local" "$FIREWALL_DROPIN" || return 1
+    local startup_paths=("${cfg}.local" "$FIREWALL_DROPIN")
+    if [[ -e "${cfg}.remote.json" || -L "${cfg}.remote.json" ]]; then startup_paths+=("${cfg}.remote.json"); fi
+    begin_config_change "${startup_paths[@]}" || return 1
     trap firewall_startup_exit EXIT
     trap 'exit 130' INT
     trap 'exit 143' TERM

@@ -1,0 +1,101 @@
+{
+  "at": "2026-11-03T11:20:57.812682+00:00",
+  "files": {
+    "/usr/local/lib/crowdbastion-static-policy/apply.py": {
+      "sha256": "c8d831620f63396109e3358186603c8e84045ba7b81af9ca82e7b3ccf0f00dd0",
+      "uid": 0,
+      "mode": "0o600",
+      "text": "from pathlib import Path\nimport json,subprocess\nrules=json.loads(Path('/usr/local/lib/crowdbastion-static-policy/rules.json').read_text())\nfor item in rules:\n if item['binary'] not in ('iptables','ip6tables') or item['table'] not in ('raw','mangle','filter','nat','security') or item['rule'][0]!='-A':raise RuntimeError('invalid static rule')\n prefix=[item['binary'],'-w','5','-t',item['table']]\n p=subprocess.run(prefix+['-C']+item['rule'][1:],capture_output=True)\n if p.returncode==1:subprocess.run(prefix+item['rule'],check=True)\n elif p.returncode:raise RuntimeError('static rule lookup failed')\n"
+    },
+    "/usr/local/lib/crowdbastion-static-policy/rules.json": {
+      "sha256": "7bedf0bbd7e3499f3d92783778a9e425b174cc4c77e6941251b07eddbe08c446",
+      "uid": 0,
+      "mode": "0o600",
+      "text": "[\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"mangle\",\n    \"rule\": [\n      \"-A\",\n      \"FORWARD\",\n      \"-p\",\n      \"tcp\",\n      \"-m\",\n      \"tcp\",\n      \"--tcp-flags\",\n      \"SYN,RST\",\n      \"SYN\",\n      \"-j\",\n      \"TCPMSS\",\n      \"--clamp-mss-to-pmtu\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"mangle\",\n    \"rule\": [\n      \"-A\",\n      \"OUTPUT\",\n      \"-p\",\n      \"tcp\",\n      \"-m\",\n      \"tcp\",\n      \"--tcp-flags\",\n      \"SYN,RST\",\n      \"SYN\",\n      \"-j\",\n      \"TCPMSS\",\n      \"--set-mss\",\n      \"1448\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"mangle\",\n    \"rule\": [\n      \"-A\",\n      \"OUTPUT\",\n      \"-p\",\n      \"tcp\",\n      \"-m\",\n      \"tcp\",\n      \"--tcp-flags\",\n      \"SYN,RST\",\n      \"SYN\",\n      \"-j\",\n      \"TCPMSS\",\n      \"--clamp-mss-to-pmtu\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"mangle\",\n    \"rule\": [\n      \"-A\",\n      \"POSTROUTING\",\n      \"-p\",\n      \"tcp\",\n      \"-m\",\n      \"tcp\",\n      \"--tcp-flags\",\n      \"SYN,RST\",\n      \"SYN\",\n      \"-j\",\n      \"TCPMSS\",\n      \"--set-mss\",\n      \"1448\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"filter\",\n    \"rule\": [\n      \"-A\",\n      \"INPUT\",\n      \"-m\",\n      \"state\",\n      \"--state\",\n      \"RELATED,ESTABLISHED\",\n      \"-j\",\n      \"ACCEPT\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"filter\",\n    \"rule\": [\n      \"-A\",\n      \"INPUT\",\n      \"-i\",\n      \"lo\",\n      \"-j\",\n      \"ACCEPT\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"filter\",\n    \"rule\": [\n      \"-A\",\n      \"INPUT\",\n      \"-p\",\n      \"tcp\",\n      \"-m\",\n      \"tcp\",\n      \"--dport\",\n      \"53322\",\n      \"-j\",\n      \"ACCEPT\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"filter\",\n    \"rule\": [\n      \"-A\",\n      \"FORWARD\",\n      \"-i\",\n      \"lo\",\n      \"-j\",\n      \"ACCEPT\"\n    ]\n  },\n  {\n    \"binary\": \"iptables\",\n    \"table\": \"filter\",\n    \"rule\": [\n      \"-A\",\n      \"OUTPUT\",\n      \"-m\",\n      \"state\",\n      \"--state\",\n      \"RELATED,ESTABLISHED\",\n      \"-j\",\n      \"ACCEPT\"\n    ]\n  }\n]"
+    },
+    "/etc/systemd/system/crowdbastion-static-policy.service": {
+      "sha256": "c1b7ba54a9feb1ae5494aa5d953ce86c8d213c088d6c82d86a047d6abd99e33d",
+      "uid": 0,
+      "mode": "0o644",
+      "text": "[Unit]\nDescription=CrowdBastion static non-dynamic firewall rules\nAfter=local-fs.target\nBefore=crowdsec-firewall-bouncer.service\n[Service]\nType=oneshot\nExecStart=/usr/bin/python3 -B /usr/local/lib/crowdbastion-static-policy/apply.py\nRemainAfterExit=yes\nUMask=0077\n[Install]\nWantedBy=multi-user.target\n"
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": {
+      "sha256": "b4ea512aede61caaf0faf93376c12e7f006dcc97275ffa5a93ac289bb235ca32",
+      "uid": 0,
+      "mode": "0o600",
+      "text": "mode: iptables\niptables_chains: []\niptables_v4_chains:\n- INPUT\n- FORWARD\niptables_v6_chains:\n- INPUT\n- FORWARD\n"
+    },
+    "/etc/sysctl.d/99-zz-crowdbastion-network.conf": {
+      "sha256": "9dc7e8283b162109e1ab81383f86fef0a390dcc285d4ff47d71b2f6d20faa01d",
+      "uid": 0,
+      "mode": "0o644",
+      "text": "# CrowdBastion owned selected TCP defaults; earlier assignments remain reported.\nnet.ipv4.tcp_syn_retries = 6\nnet.ipv4.tcp_synack_retries = 5\nnet.ipv4.tcp_orphan_retries = 0\nnet.ipv4.tcp_fin_timeout = 60\nnet.ipv4.tcp_autocorking = 1\nnet.ipv4.tcp_no_metrics_save = 0\nnet.ipv4.tcp_tw_reuse = 2\n"
+    },
+    "/etc/crowdsec/acquis.d/crowdbastion-realm-forwardx.yaml": {
+      "sha256": "0ac251351a2e2a169e4d2da25d68b362bdf7c3f13e856de3ecaebe3a9dd1e084",
+      "uid": 0,
+      "mode": "0o644",
+      "text": "source: journalctl\njournalctl_filter:\n- _SYSTEMD_UNIT=forwardx-realm-both-53534.service\n- _SYSTEMD_UNIT=forwardx-realm-both-53536.service\n- _SYSTEMD_UNIT=forwardx-realm-both-53537.service\nlabels:\n  type: realm-forwardx\n"
+    },
+    "/etc/crowdsec/parsers/s01-parse/20-realm-forwardx-observation.yaml": {
+      "sha256": "36d94e65538e81a30da3d30d28bccfb6ffbd4d2c740dd382115c3ca7f90e4e95",
+      "uid": 0,
+      "mode": "0o644",
+      "text": "name: local/realm-forwardx-observation\ndescription: ForwardX realm diagnostics only; never extracts source_ip or emits decisions\nfilter: \"evt.Line.Labels.type == 'realm-forwardx'\"\nonsuccess: next_stage\ngrok:\n  pattern: '^.*?\\[%{YEAR:realm_year}-%{MONTHNUM:realm_month}-%{MONTHDAY:realm_day}\\]\\[%{TIME:realm_time}\\]\\[%{DATA:realm_module}\\]\\[%{LOGLEVEL:realm_level}\\](?:\\[%{WORD:realm_protocol}\\])?%{GREEDYDATA:realm_message}$'\n  apply_on: Line.Raw\nstatics:\n  - meta: log_type\n    value: realm_forwardx_observation\n  - meta: service\n    value: realm\n  - meta: realm_level\n    expression: evt.Parsed.realm_level\n  - meta: realm_module\n    expression: evt.Parsed.realm_module\n  - meta: realm_protocol\n    expression: evt.Parsed.realm_protocol\n"
+    }
+  },
+  "commands": {
+    "services": {
+      "exit": 0,
+      "stdout": "MainPID=58009\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 18:59:45 CST\nId=forwardx-agent.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=444\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 03:00:43 CST\nId=forwardx-realm-both-53534.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=445\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 03:00:43 CST\nId=forwardx-realm-both-53536.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=446\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 03:00:43 CST\nId=forwardx-realm-both-53537.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=60520\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 19:01:16 CST\nId=crowdsec.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=37807\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 18:47:22 CST\nId=crowdsec-firewall-bouncer.service\nActiveState=active\nUnitFileState=enabled\n\nMainPID=35161\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 18:45:42 CST\nId=systemd-journald.service\nActiveState=active\nUnitFileState=static\n\nMainPID=0\nNRestarts=0\nExecMainStartTimestamp=Tue 2026-11-03 18:38:09 CST\nId=crowdbastion-static-policy.service\nActiveState=active\nUnitFileState=enabled\n",
+      "stderr": ""
+    },
+    "firewall": {
+      "exit": 0,
+      "stdout": "[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 12346，实际集合网络 12346，遗漏 0。\n  phase=decision_coverage error_code=none duration_seconds=1.921 retryable=false\n  阶段耗时：config_read=0.004s, rules_read=0.009s, config_read=0.006s, api_request=0.224s, api_response=0.168s, decision_selection=0.147s, ipset_read=0.024s, ipset_compare=1.339s, decision_coverage=0.000s\n",
+      "stderr": ""
+    },
+    "health": {
+      "exit": 2,
+      "stdout": "{\"version\": 1, \"checked_at\": 1793704868.4222553, \"config_path\": \"/etc/crowdsec/config.yaml\", \"checks\": {\"traffic\": \"pending\", \"core\": \"ok\", \"bouncer\": \"ok\", \"api\": \"ok\", \"config\": \"ok\", \"registry\": \"ok\", \"metrics\": \"ok\", \"renewal\": \"ok\", \"firewall_startup\": \"ok\", \"firewall_paths\": \"ok\", \"decisions\": \"ok\", \"logs\": \"ok\", \"acquisition\": \"ok\", \"rules\": \"ok\"}, \"required\": [\"traffic\", \"core\", \"logs\", \"bouncer\", \"api\", \"config\", \"registry\", \"metrics\", \"renewal\", \"firewall_startup\", \"firewall_paths\", \"decisions\", \"acquisition\", \"rules\"], \"summary\": {\"verdict\": \"运行检查通过，实际拦截待验证\", \"status\": 2, \"confirmed\": \"本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则\", \"attention\": \"\", \"additional\": 0, \"impact\": \"\", \"action\": \"verify\", \"action_label\": \"查看如何验证实际拦截\", \"next\": \"按实际流量路径完成一次外部拦截验证。\"}, \"roles\": [\"relay\"], \"scope\": \"本地中转\"}\n",
+      "stderr": ""
+    },
+    "network": {
+      "exit": 0,
+      "stdout": "{\n  \"state\": \"audited\",\n  \"problems\": [],\n  \"running\": {\n    \"net.core.default_qdisc\": \"fq\",\n    \"net.core.netdev_budget\": \"340\",\n    \"net.core.netdev_budget_usecs\": \"8000\",\n    \"net.core.netdev_max_backlog\": \"32768\",\n    \"net.core.optmem_max\": \"65536\",\n    \"net.core.rmem_default\": \"262144\",\n    \"net.core.rmem_max\": \"33554432\",\n    \"net.core.somaxconn\": \"65535\",\n    \"net.core.wmem_default\": \"262144\",\n    \"net.core.wmem_max\": \"33554432\",\n    \"net.ipv4.conf.all.accept_redirects\": \"0\",\n    \"net.ipv4.conf.all.forwarding\": \"1\",\n    \"net.ipv4.conf.all.rp_filter\": \"1\",\n    \"net.ipv4.conf.all.send_redirects\": \"0\",\n    \"net.ipv4.conf.default.accept_redirects\": \"0\",\n    \"net.ipv4.conf.default.forwarding\": \"1\",\n    \"net.ipv4.conf.default.rp_filter\": \"1\",\n    \"net.ipv4.conf.default.send_redirects\": \"0\",\n    \"net.ipv4.icmp_echo_ignore_broadcasts\": \"1\",\n    \"net.ipv4.icmp_ignore_bogus_error_responses\": \"1\",\n    \"net.ipv4.ip_forward\": \"1\",\n    \"net.ipv4.ip_local_port_range\": \"1024\\t65535\",\n    \"net.ipv4.tcp_autocorking\": \"1\",\n    \"net.ipv4.tcp_congestion_control\": \"bbr\",\n    \"net.ipv4.tcp_ecn\": \"1\",\n    \"net.ipv4.tcp_ecn_fallback\": \"1\",\n    \"net.ipv4.tcp_fastopen\": \"3\",\n    \"net.ipv4.tcp_fin_timeout\": \"60\",\n    \"net.ipv4.tcp_keepalive_intvl\": \"15\",\n    \"net.ipv4.tcp_keepalive_probes\": \"2\",\n    \"net.ipv4.tcp_keepalive_time\": \"600\",\n    \"net.ipv4.tcp_max_orphans\": \"32768\",\n    \"net.ipv4.tcp_max_syn_backlog\": \"32768\",\n    \"net.ipv4.tcp_max_tw_buckets\": \"55000\",\n    \"net.ipv4.tcp_mem\": \"262144\\t524288\\t1048576\",\n    \"net.ipv4.tcp_mtu_probing\": \"1\",\n    \"net.ipv4.tcp_no_metrics_save\": \"0\",\n    \"net.ipv4.tcp_orphan_retries\": \"0\",\n    \"net.ipv4.tcp_rfc1337\": \"0\",\n    \"net.ipv4.tcp_rmem\": \"4096\\t131072\\t33554432\",\n    \"net.ipv4.tcp_sack\": \"1\",\n    \"net.ipv4.tcp_slow_start_after_idle\": \"0\",\n    \"net.ipv4.tcp_syn_retries\": \"6\",\n    \"net.ipv4.tcp_synack_retries\": \"5\",\n    \"net.ipv4.tcp_syncookies\": \"1\",\n    \"net.ipv4.tcp_timestamps\": \"1\",\n    \"net.ipv4.tcp_tw_reuse\": \"2\",\n    \"net.ipv4.tcp_window_scaling\": \"1\",\n    \"net.ipv4.tcp_wmem\": \"4096\\t65536\\t33554432\",\n    \"net.ipv4.udp_rmem_min\": \"8192\",\n    \"net.ipv4.udp_wmem_min\": \"8192\",\n    \"net.ipv6.conf.all.accept_redirects\": \"0\",\n    \"net.ipv6.conf.all.disable_ipv6\": \"0\",\n    \"net.ipv6.conf.all.forwarding\": \"1\",\n    \"net.ipv6.conf.default.accept_redirects\": \"0\",\n    \"net.ipv6.conf.default.disable_ipv6\": \"0\",\n    \"net.ipv6.conf.default.forwarding\": \"1\",\n    \"net.ipv6.conf.lo.forwarding\": \"1\",\n    \"net.netfilter.nf_conntrack_acct\": \"1\",\n    \"net.netfilter.nf_conntrack_max\": \"262144\",\n    \"net.netfilter.nf_conntrack_tcp_timeout_close_wait\": \"15\",\n    \"net.netfilter.nf_conntrack_tcp_timeout_established\": \"7200\",\n    \"net.netfilter.nf_conntrack_tcp_timeout_fin_wait\": \"15\",\n    \"net.netfilter.nf_conntrack_tcp_timeout_time_wait\": \"30\"\n  },\n  \"owned_file\": {\n    \"path\": \"/etc/sysctl.d/99-zz-crowdbastion-network.conf\",\n    \"state\": \"managed\"\n  },\n  \"runtime\": {\n    \"active\": [\n      {\n        \"manager\": \"/usr/local/lib/crowdsec-1key/current/manager.sh\",\n        \"matches_source\": true,\n        \"real_path\": \"/usr/local/lib/crowdsec-1key/release-1793703142-13400/manager.sh\",\n        \"schedule\": \"30 3 * * *\",\n        \"sha256\": \"ce4bbd2ce4d509946c40739ca0039e422d9e59025c386bbf60c90c5078deca36\"\n      }\n    ],\n    \"cron_sha256\": \"ec2a6d9041cb25fc5eec725a575ae525d4039543ef71aec470d8eebce614055c\",\n    \"current\": \"/usr/local/lib/crowdsec-1key/current/manager.sh\",\n    \"current_matches_source\": true,\n    \"current_sha256\": \"ce4bbd2ce4d509946c40739ca0039e422d9e59025c386bbf60c90c5078deca36\",\n    \"manager\": \"/opt/crowdbastion/releases/20261103-vps144/crowdbastion.sh\",\n    \"source_sha256\": \"ce4bbd2ce4d509946c40739ca0039e422d9e59025c386bbf60c90c5078deca36\",\n    \"state\": \"known\"\n  },\n  \"transactions\": [\n    {\n      \"deadline\": 1793704044,\n      \"error_code\": null,\n      \"errors\": [],\n      \"id\": \"1fbe690645314c398bb46f6ddec4dfca\",\n      \"kind\": \"network\",\n      \"state\": \"committed\",\n      \"version\": 1\n    }\n  ]\n}",
+      "stderr": ""
+    },
+    "metrics": {
+      "exit": 0,
+      "stdout": "{\n  \"acquisition\": {\n    \"file:/var/log/auth.log\": {\n      \"parsed\": 6,\n      \"reads\": 56,\n      \"unparsed\": 50,\n      \"whitelisted\": 6\n    }\n  },\n  \"realm_parsers\": {}\n}",
+      "stderr": ""
+    },
+    "rules4": {
+      "exit": 0,
+      "stdout": "# Generated by iptables-save v1.8.9 (nf_tables) on Tue Nov  3 19:21:08 2026\n*mangle\n:PREROUTING ACCEPT [1668441:1336314948]\n:INPUT ACCEPT [1668436:1336314161]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [1652887:1311564644]\n:POSTROUTING ACCEPT [1652887:1311564644]\n[0:0] -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu\n[89896:5393072] -A OUTPUT -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1448\n[89896:5393072] -A OUTPUT -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu\n[89896:5393072] -A POSTROUTING -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1448\nCOMMIT\n# Completed on Tue Nov  3 19:21:08 2026\n# Generated by iptables-save v1.8.9 (nf_tables) on Tue Nov  3 19:21:08 2026\n*filter\n:INPUT ACCEPT [18453:1326192]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [230950:15774456]\n:CROWDSEC_CHAIN - [0:0]\n[87570:144058955] -A INPUT -j CROWDSEC_CHAIN\n[1642948:1334580604] -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT\n[5404:324240] -A INPUT -i lo -j ACCEPT\n[39:2340] -A INPUT -p tcp -m tcp --dport 53322 -j ACCEPT\n[0:0] -A FORWARD -j CROWDSEC_CHAIN\n[0:0] -A FORWARD -i lo -j ACCEPT\n[1421937:1295790188] -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT\n[8:454] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-1 src -m comment --comment \"CrowdSec: cscli\" -j DROP\n[51:2256] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-0 src -m comment --comment \"CrowdSec: CAPI\" -j DROP\nCOMMIT\n# Completed on Tue Nov  3 19:21:08 2026\n",
+      "stderr": ""
+    },
+    "rules6": {
+      "exit": 0,
+      "stdout": "# Generated by ip6tables-save v1.8.9 (nf_tables) on Tue Nov  3 19:21:08 2026\n*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n:CROWDSEC_CHAIN - [0:0]\n[5:280] -A INPUT -j CROWDSEC_CHAIN\n[0:0] -A FORWARD -j CROWDSEC_CHAIN\n[0:0] -A CROWDSEC_CHAIN -m set --match-set crowdsec6-blacklists-0 src -m comment --comment \"CrowdSec: CAPI\" -j DROP\nCOMMIT\n# Completed on Tue Nov  3 19:21:08 2026\n",
+      "stderr": ""
+    },
+    "namespaces": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "timers": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "journal": {
+      "exit": 0,
+      "stdout": "Nov 03 18:59:45 localhost systemd[1]: Stopping forwardx-agent.service - ForwardX Agent...\nNov 03 18:59:45 localhost systemd[1]: forwardx-agent.service: Deactivated successfully.\nNov 03 18:59:45 localhost systemd[1]: Stopped forwardx-agent.service - ForwardX Agent.\nNov 03 18:59:45 localhost systemd[1]: forwardx-agent.service: Consumed 1min 1.716s CPU time.\nNov 03 18:59:45 localhost systemd[1]: Started forwardx-agent.service - ForwardX Agent.\n",
+      "stderr": ""
+    }
+  },
+  "backup_drift": {},
+  "backup_sqlite_check": "ok"
+}

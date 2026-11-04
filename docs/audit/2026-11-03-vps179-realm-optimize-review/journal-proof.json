@@ -1,0 +1,46 @@
+{
+  "at": "2026-11-03T10:10:00.640764+00:00",
+  "backup": "/var/backups/crowdbastion/vps179-realm-review-20261103T101000Z",
+  "test_units": [
+    "crowdbastion-realm-probe-a-301d4260",
+    "crowdbastion-realm-probe-b-301d4260"
+  ],
+  "isolated_api_port": 62351,
+  "isolated_metrics_port": 48569,
+  "production_api_untouched": true,
+  "production_services_restarted": false,
+  "unit_progress": {
+    "crowdbastion-realm-probe-a-301d4260": {
+      "parsed_before": 0,
+      "parsed_after": 1,
+      "attempts": 1
+    },
+    "crowdbastion-realm-probe-b-301d4260": {
+      "parsed_before": 1,
+      "parsed_after": 2,
+      "attempts": 1
+    }
+  },
+  "effective_db_is_private": true,
+  "local_override_removed": true,
+  "acquisition": {
+    "journalctl:journalctl-_SYSTEMD_UNIT=crowdbastion-realm-probe-a-301d4260.service._SYSTEMD_UNIT=crowdbastion-realm-probe-b-301d4260.service": {
+      "parsed": 2,
+      "reads": 2
+    }
+  },
+  "parsers": {
+    "local/realm-forwardx-observation": {
+      "hits": 2,
+      "parsed": 2
+    }
+  },
+  "alerts": {},
+  "decisions": {},
+  "status": "passed",
+  "isolated_core_stopped": true,
+  "test_units_inactive": {
+    "crowdbastion-realm-probe-a-301d4260": true,
+    "crowdbastion-realm-probe-b-301d4260": true
+  }
+}

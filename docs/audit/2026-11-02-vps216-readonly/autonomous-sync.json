@@ -1,0 +1,23 @@
+{
+  "checked_at": 1793622811.5192833,
+  "method": "Only cscli bouncers list; no decision fetch, lapi status, or requests using a bouncer credential during this observation.",
+  "before": [
+    {
+      "name": "cs-firewall-bouncer-1791875435",
+      "last_pull": "2026-11-02T12:33:29.096038724Z",
+      "type": "crowdsec-firewall-bouncer",
+      "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56"
+    }
+  ],
+  "after": [
+    {
+      "name": "cs-firewall-bouncer-1791875435",
+      "last_pull": "2026-11-02T12:33:39.096332017Z",
+      "type": "crowdsec-firewall-bouncer",
+      "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56"
+    }
+  ],
+  "firewall_pull_advanced": true,
+  "seconds": 8.364,
+  "finished_at": 1793622820.1916704
+}

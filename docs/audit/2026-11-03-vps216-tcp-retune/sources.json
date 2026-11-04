@@ -1,0 +1,58 @@
+[
+  {
+    "name": "ip-sysctl-v6.18",
+    "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/Documentation/networking/ip-sysctl.rst",
+    "final_url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/Documentation/networking/ip-sysctl.rst",
+    "bytes": 122209,
+    "sha256": "05f8a726f88cc29b646519762f5fe856877d9eb1f61064f14f3eca827b965182",
+    "path": "/tmp/crowdbastion216-retune/research/ip-sysctl-v6.18.txt"
+  },
+  {
+    "name": "tcp-source-v6.18",
+    "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/net/ipv4/tcp.c",
+    "final_url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/net/ipv4/tcp.c",
+    "bytes": 146866,
+    "sha256": "29061d64abd0870c080a203719915911403a8bdfdea4d6aa5ce53b24357e31cf",
+    "path": "/tmp/crowdbastion216-retune/research/tcp-source-v6.18.txt"
+  },
+  {
+    "name": "tcp-ipv4-source-v6.18",
+    "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/net/ipv4/tcp_ipv4.c",
+    "final_url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/net/ipv4/tcp_ipv4.c",
+    "bytes": 103087,
+    "sha256": "b29b3a3023b0636f9978280796dd5f297e99617f31c081af08eca5f77002e6cd",
+    "path": "/tmp/crowdbastion216-retune/research/tcp-ipv4-source-v6.18.txt"
+  },
+  {
+    "name": "tc-fq",
+    "url": "https://man7.org/linux/man-pages/man8/tc-fq.8.html",
+    "final_url": "https://man7.org/linux/man-pages/man8/tc-fq.8.html",
+    "bytes": 11497,
+    "sha256": "b7a26effb0565c0647c2348a1e7fa7372ea1746d533306f4ef155edd54e48416",
+    "path": "/tmp/crowdbastion216-retune/research/tc-fq.txt"
+  },
+  {
+    "name": "anytls-inbound",
+    "url": "https://sing-box.sagernet.org/configuration/inbound/anytls/",
+    "final_url": "https://sing-box.sagernet.org/configuration/inbound/anytls/",
+    "bytes": 130311,
+    "sha256": "f118e9c905df527507358b81ef187f777dd27a1448359beecda644109c84dcec",
+    "path": "/tmp/crowdbastion216-retune/research/anytls-inbound.txt"
+  },
+  {
+    "name": "anytls-protocol",
+    "url": "https://raw.githubusercontent.com/anytls/anytls-go/main/docs/protocol.md",
+    "final_url": "https://raw.githubusercontent.com/anytls/anytls-go/main/docs/protocol.md",
+    "bytes": 10577,
+    "sha256": "d5c703fb5ff2f9ec8727d2c1070f7e812ca2789633e1e9290ea504b998bb31de",
+    "path": "/tmp/crowdbastion216-retune/research/anytls-protocol.txt"
+  },
+  {
+    "name": "sysctl-net",
+    "url": "https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html",
+    "final_url": "https://www.kernel.org/doc/html/latest/admin-guide/sysctl/net.html",
+    "bytes": 41331,
+    "sha256": "f87d888e97648a98c970331aba6622d6777401c0ed4f4341f1e300f9ecf8b2f7",
+    "path": "/tmp/crowdbastion216-retune/research/sysctl-net.txt"
+  }
+]

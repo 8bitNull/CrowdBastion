@@ -248,6 +248,29 @@ class LandingService(unittest.TestCase):
         manager.disable()
         self.assertIn(('disable', '--now', self.mod.UNIT), calls)
 
+    def test_protocol_dependency_shipped_and_old_recorded_bundle_can_disable(self):
+        manager, calls = self.manager()
+        manager.install(self.config)
+        protocol = manager.code/'crowdbastion_protocols.py'
+        self.assertTrue(protocol.exists(), 'fresh helper snapshot omits diagnostic dependency')
+        imported = subprocess.run([sys.executable, '-I', '-c',
+                                  'import sys; sys.path.insert(0, sys.argv[1]); import crowdsec_v2bx; import crowdsec_v2bx_service',
+                                  str(manager.code)], text=True, capture_output=True)
+        self.assertEqual(imported.returncode, 0, imported.stderr)
+        manifest_path = manager.code/'manifest.json'
+        manifest = json.loads(manifest_path.read_text())
+        for name in ('crowdbastion_protocols.py', 'crowdbastion_health.py'):
+            manifest.pop(name)
+            (manager.code/name).unlink()
+        manifest_path.write_text(json.dumps(manifest))
+        self.assertEqual(manager.status()['status'], 'observing')
+        manager.disable()
+        self.assertIn(('disable', '--now', self.mod.UNIT), calls)
+        # Recorded historical bytes are still protected even without optional helpers.
+        (manager.code/'crowdsec_v2bx.py').write_text('# altered old diagnostic')
+        with self.assertRaises(ValueError):
+            manager.disable()
+
     def test_runtime_dependency_failure_precedes_mutation(self):
         manager, calls = self.manager()
         def fail_runtime():raise RuntimeError('missing yaml')

@@ -11,6 +11,7 @@ import tempfile
 import urllib.request
 from urllib.parse import urlsplit
 import yaml
+from crowdsec_config import canonical_iptables_chains, merged_config, read_mapping
 
 class RemoteError(ValueError):
     pass
@@ -94,19 +95,40 @@ def atomic(path,data):
     finally:
         if os.path.exists(name): os.unlink(name)
 
+def record_startup(base, previous_state, expected_local):
+    """Refresh an already checked owner only for the exact planned write."""
+    check_paths(base)
+    _,local,state=paths(base)
+    if state.read_bytes()!=previous_state:
+        raise RemoteError('托管记录发生变化，未接纳启动配置。')
+    payload=local.read_bytes()
+    if yaml.safe_dump(yaml.safe_load(payload),sort_keys=True)!=yaml.safe_dump(expected_local,sort_keys=True):
+        raise RemoteError('启动配置与计划不一致，未接纳外部更改。')
+    record=json.loads(previous_state)
+    after=hashlib.sha256(payload).hexdigest()
+    if record['sha256']!=after:
+        record['sha256']=after
+        atomic(state,json.dumps(record).encode())
+
 def apply(base,data):
     url=validate(data.get('url'),data.get('key'))
     check_paths(base)
     base,local,state=paths(base)
-    if local.exists() or state.exists(): owned(base)
+    managed = local.exists() or state.exists()
+    if managed: owned(base)
     if not base.is_file(): raise RemoteError('缺少官方 Bouncer 基础配置，请先安装软件包。')
-    config=yaml.safe_load(base.read_text())
+    config=merged_config(base)
     if not isinstance(config,dict) or config.get('mode') not in ('nftables','iptables','ipset'):
         raise RemoteError('基础 Bouncer 配置或防火墙后端无效。')
+    overrides = read_mapping(local) if managed else {}
+    overrides.update(api_url=url,api_key=data['key'],insecure_skip_verify=False,
+                     cert_path='',key_path='',nftables_hooks=['input','forward'])
+    if config['mode'] == 'iptables':
+        overrides.update(canonical_iptables_chains(config, ['INPUT','FORWARD'], ['INPUT','FORWARD']))
     preflight(url,data['key'])
     old={p:(p.read_bytes(),p.stat().st_mode & 0o777) if p.exists() else None for p in (local,state)}
     try:
-        atomic(local,yaml.safe_dump({'api_url':url,'api_key':data['key'], 'insecure_skip_verify':False, 'cert_path':'', 'key_path':'', 'iptables_chains':['INPUT','FORWARD'], 'nftables_hooks':['input','forward']}).encode())
+        atomic(local,yaml.safe_dump(overrides).encode())
         atomic(state,json.dumps({'manager':'crowdsec-1key-remote-v1','sha256':digest(local)}).encode())
     except Exception:
         for path,previous in old.items():

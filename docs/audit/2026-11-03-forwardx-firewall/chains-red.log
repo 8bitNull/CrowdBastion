@@ -1,0 +1,88 @@
+test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) ... 
+  test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_chains', value='INPUT') ... FAIL
+  test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_chains', value=[42]) ... FAIL
+  test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_v4_chains', value=['INPUT;echo']) ... FAIL
+  test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_v6_chains', value=None) ... FAIL
+test_local_credential_setup_normalizes_and_keeps_docker_ipv4_only (test_chain_normalization.ChainNormalization.test_local_credential_setup_normalizes_and_keeps_docker_ipv4_only) ... FAIL
+test_remote_setup_preserves_effective_custom_paths_and_package_bytes (test_chain_normalization.ChainNormalization.test_remote_setup_preserves_effective_custom_paths_and_package_bytes) ... FAIL
+test_startup_keeps_common_and_family_paths_once_and_is_idempotent (test_chain_normalization.ChainNormalization.test_startup_keeps_common_and_family_paths_once_and_is_idempotent) ... FAIL
+
+======================================================================
+FAIL: test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_chains', value='INPUT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 77, in test_invalid_common_or_family_list_is_rejected_before_write
+    with patch.object(runtime, 'docker_present', return_value=False), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_chains', value=[42])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 77, in test_invalid_common_or_family_list_is_rejected_before_write
+    with patch.object(runtime, 'docker_present', return_value=False), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_v4_chains', value=['INPUT;echo'])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 77, in test_invalid_common_or_family_list_is_rejected_before_write
+    with patch.object(runtime, 'docker_present', return_value=False), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_common_or_family_list_is_rejected_before_write (test_chain_normalization.ChainNormalization.test_invalid_common_or_family_list_is_rejected_before_write) (field='iptables_v6_chains', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 77, in test_invalid_common_or_family_list_is_rejected_before_write
+    with patch.object(runtime, 'docker_present', return_value=False), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_local_credential_setup_normalizes_and_keeps_docker_ipv4_only (test_chain_normalization.ChainNormalization.test_local_credential_setup_normalizes_and_keeps_docker_ipv4_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 53, in test_local_credential_setup_normalizes_and_keeps_docker_ipv4_only
+    self.assertEqual(self.effective(data), {
+AssertionError: {'v4'[18 chars]N', 'INPUT', 'V4', 'INPUT', 'DOCKER-USER'], 'v[34 chars]V6']} != {'v4'[18 chars]N', 'V4', 'DOCKER-USER'], 'v6': ['INPUT', 'COMMON', 'V6']}
+- {'v4': ['INPUT', 'COMMON', 'INPUT', 'V4', 'INPUT', 'DOCKER-USER'],
+?                            ---------     ---------
+
++ {'v4': ['INPUT', 'COMMON', 'V4', 'DOCKER-USER'],
+-  'v6': ['INPUT', 'COMMON', 'INPUT', 'V6']}
+?                            ---------
+
++  'v6': ['INPUT', 'COMMON', 'V6']}
+
+======================================================================
+FAIL: test_remote_setup_preserves_effective_custom_paths_and_package_bytes (test_chain_normalization.ChainNormalization.test_remote_setup_preserves_effective_custom_paths_and_package_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 64, in test_remote_setup_preserves_effective_custom_paths_and_package_bytes
+    self.assertEqual(self.effective(data), {
+AssertionError: {'v4': ['INPUT', 'FORWARD', 'V4', 'INPUT'], 'v6': ['INPUT',[13 chars]V6']} != {'v4': ['INPUT', 'COMMON', 'V4', 'FORWARD'], 'v6': ['INPUT'[24 chars]RD']}
+- {'v4': ['INPUT', 'FORWARD', 'V4', 'INPUT'], 'v6': ['INPUT', 'FORWARD', 'V6']}
++ {'v4': ['INPUT', 'COMMON', 'V4', 'FORWARD'],
++  'v6': ['INPUT', 'COMMON', 'V6', 'FORWARD']}
+
+======================================================================
+FAIL: test_startup_keeps_common_and_family_paths_once_and_is_idempotent (test_chain_normalization.ChainNormalization.test_startup_keeps_common_and_family_paths_once_and_is_idempotent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion-forwardx-safety/tests/test_chain_normalization.py", line 41, in test_startup_keeps_common_and_family_paths_once_and_is_idempotent
+    self.assertEqual(self.effective(data), {
+AssertionError: {'v4'[18 chars]N', 'INPUT', 'V4', 'INPUT', 'FORWARD'], 'v6': [50 chars]RD']} != {'v4'[18 chars]N', 'V4', 'FORWARD'], 'v6': ['INPUT', 'COMMON'[14 chars]RD']}
+- {'v4': ['INPUT', 'COMMON', 'INPUT', 'V4', 'INPUT', 'FORWARD'],
+?                            ---------     ---------
+
++ {'v4': ['INPUT', 'COMMON', 'V4', 'FORWARD'],
+-  'v6': ['INPUT', 'COMMON', 'INPUT', 'V6', 'INPUT', 'FORWARD']}
+?                            ---------     ---------
+
++  'v6': ['INPUT', 'COMMON', 'V6', 'FORWARD']}
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.080s
+
+FAILED (failures=7)

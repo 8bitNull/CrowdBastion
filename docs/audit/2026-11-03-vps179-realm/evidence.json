@@ -1,0 +1,555 @@
+{
+  "at": "2026-11-03T09:05:57.985127+00:00",
+  "versions": {
+    "crowdsec": {
+      "exit": 0,
+      "stdout": "version: v1.8.2-debian-pragmatic-amd64-3d369d64\nCodename: alphaga\nBuildDate: 2026-10-27_14:00:42\nGoVersion: 1.27.1\nPlatform: linux\nlibre2: C++\nUser-Agent: crowdsec/v1.8.2-debian-pragmatic-amd64-3d369d64-linux\nConstraint_parser: >= 1.0, <= 3.0\nConstraint_scenario: >= 1.0, <= 3.0\nConstraint_api: v1\nConstraint_acquis: >= 1.0, < 2.0\nBuilt-in optional components: datasource_appsec, datasource_cloudwatch, datasource_docker, datasource_file, datasource_http, datasource_journalctl, datasource_k8s-audit, datasource_kafka, datasource_kinesis, datasource_kubernetes, datasource_loki, datasource_s3, datasource_syslog, datasource_victorialogs, datasource_wineventlog, db_mysql, db_postgres, db_sqlite\nExcluded components: cscli_setup",
+      "stderr": ""
+    },
+    "bouncer": {
+      "exit": 0,
+      "stdout": "version: v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56\nBuildDate: 2026-08-04_11:27:10\nGoVersion: 1.26.3\nPlatform: linux",
+      "stderr": ""
+    },
+    "iptables": {
+      "exit": 0,
+      "stdout": "iptables v1.8.11 (nf_tables)",
+      "stderr": ""
+    }
+  },
+  "realm_processes": [
+    {
+      "pid": "505",
+      "exe": "/usr/local/bin/realm",
+      "config_paths": [
+        "/etc/forwardx/realm/forwardx-realm-both-56017.toml"
+      ],
+      "version": {
+        "exit": 0,
+        "stdout": "Realm 2.9.4 [brutal][batched-udp][proxy][balance][transport][multi-thread]",
+        "stderr": ""
+      },
+      "configs": {
+        "/etc/forwardx/realm/forwardx-realm-both-56017.toml": {
+          "log": {
+            "level": "warn"
+          },
+          "network": {
+            "use_udp": true,
+            "tcp_timeout": 300,
+            "udp_timeout": 30,
+            "ipv6_only": false,
+            "send_proxy": false,
+            "send_proxy_version": 2,
+            "accept_proxy": false,
+            "accept_proxy_timeout": 5
+          },
+          "endpoints": [
+            {
+              "listen": "[::0]:56017",
+              "remote": "192.0.2.13:2053"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "pid": "511",
+      "exe": "/usr/local/bin/realm",
+      "config_paths": [
+        "/etc/forwardx/realm/forwardx-realm-both-58372.toml"
+      ],
+      "version": {
+        "exit": 0,
+        "stdout": "Realm 2.9.4 [brutal][batched-udp][proxy][balance][transport][multi-thread]",
+        "stderr": ""
+      },
+      "configs": {
+        "/etc/forwardx/realm/forwardx-realm-both-58372.toml": {
+          "log": {
+            "level": "warn"
+          },
+          "network": {
+            "use_udp": true,
+            "tcp_timeout": 300,
+            "udp_timeout": 30,
+            "ipv6_only": false,
+            "send_proxy": false,
+            "send_proxy_version": 2,
+            "accept_proxy": false,
+            "accept_proxy_timeout": 5
+          },
+          "endpoints": [
+            {
+              "listen": "[::0]:58372",
+              "remote": "192.0.2.19:8443"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "bouncer_config": {
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": {
+      "api_url": "http://127.0.0.1:8080",
+      "mode": "iptables",
+      "iptables_chains": [
+        "INPUT",
+        "FORWARD",
+        "DOCKER-USER"
+      ]
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": {
+      "mode": "nftables",
+      "update_frequency": "10s",
+      "log_mode": "file",
+      "log_dir": "/var/log/",
+      "log_level": "info",
+      "api_url": "http://127.0.0.1:8080/",
+      "disable_ipv6": false,
+      "deny_action": "DROP",
+      "supported_decisions_types": [
+        "ban"
+      ],
+      "blacklists_ipv4": "crowdsec-blacklists",
+      "blacklists_ipv6": "crowdsec6-blacklists",
+      "iptables_chains": [
+        "INPUT",
+        "DOCKER-USER"
+      ],
+      "nftables": {
+        "ipv4": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec",
+          "chain": "crowdsec-chain",
+          "priority": -10
+        },
+        "ipv6": {
+          "enabled": true,
+          "set-only": false,
+          "table": "crowdsec6",
+          "chain": "crowdsec6-chain",
+          "priority": -10
+        }
+      }
+    }
+  },
+  "acquisition": {
+    "/etc/crowdsec/acquis.yaml": [
+      {
+        "source": "journalctl",
+        "journalctl_filter": [
+          "_SYSTEMD_UNIT=ssh.service"
+        ],
+        "labels": {
+          "type": "syslog"
+        }
+      },
+      {
+        "filenames": [
+          "/home/docker/npm/data/logs/*host*_access.log",
+          "/home/docker/npm/data/logs/*host*_error.log",
+          "/home/docker/npm/data/logs/fallback_http_access.log",
+          "/home/docker/npm/data/logs/fallback_http_error.log"
+        ],
+        "labels": {
+          "type": "nginx-proxy-manager"
+        }
+      }
+    ],
+    "/etc/crowdsec/acquis.d/crowdsec-1key-appsec.yaml": [
+      {
+        "source": "appsec",
+        "listen_addr": "127.0.0.1:7422",
+        "appsec_configs": [
+          "crowdsecurity/appsec-default"
+        ],
+        "labels": {
+          "type": "appsec"
+        }
+      }
+    ],
+    "/etc/crowdsec/acquis.d/crowdsec-1key-log-repair.yaml": [
+      {
+        "filenames": [
+          "/home/docker/npm/data/logs/fallback_error.log"
+        ],
+        "labels": {
+          "type": "nginx-proxy-manager"
+        }
+      }
+    ],
+    "/etc/crowdsec/acquis.d/web-sites.yaml": [
+      {
+        "filenames": [
+          "/home/web/log/nginx/*.log"
+        ],
+        "labels": {
+          "type": "nginx"
+        }
+      }
+    ]
+  },
+  "iptables": {
+    "exit": 0,
+    "stdout": "# Generated by iptables-save v1.8.11 (nf_tables) on Tue Nov  3 01:05:59 2026\n*raw\n:PREROUTING ACCEPT [23495138:20857255770]\n:OUTPUT ACCEPT [17657259:20624646093]\n[0:0] -A PREROUTING -d 172.17.0.2/32 ! -i docker0 -j DROP\nCOMMIT\n# Completed on Tue Nov  3 01:05:59 2026\n# Generated by iptables-save v1.8.11 (nf_tables) on Tue Nov  3 01:05:59 2026\n*filter\n:INPUT ACCEPT [23454598:20854485822]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [17657259:20624646093]\n:CROWDSEC_CHAIN - [0:0]\n:DOCKER - [0:0]\n:DOCKER-BRIDGE - [0:0]\n:DOCKER-CT - [0:0]\n:DOCKER-FORWARD - [0:0]\n:DOCKER-INTERNAL - [0:0]\n:DOCKER-USER - [0:0]\n[23487312:20846285431] -A INPUT -j CROWDSEC_CHAIN\n[44:2096] -A INPUT ! -i lo -p tcp -m tcp --dport 81 -j DROP\n[205:11648] -A INPUT ! -i lo -p tcp -m tcp --dport 3000 -j DROP\n[0:0] -A FORWARD -j CROWDSEC_CHAIN\n[0:0] -A FORWARD -j DOCKER-USER\n[0:0] -A FORWARD -j DOCKER-FORWARD\n[27539:2073523] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-1 src -m comment --comment \"CrowdSec: crowdsec\" -j DROP\n[12597:673175] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-0 src -m comment --comment \"CrowdSec: CAPI\" -j DROP\n[0:0] -A DOCKER ! -i docker0 -o docker0 -j DROP\n[0:0] -A DOCKER-BRIDGE -o docker0 -j DOCKER\n[0:0] -A DOCKER-CT -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT\n[0:0] -A DOCKER-FORWARD -j DOCKER-CT\n[0:0] -A DOCKER-FORWARD -j DOCKER-INTERNAL\n[0:0] -A DOCKER-FORWARD -j DOCKER-BRIDGE\n[0:0] -A DOCKER-FORWARD -i docker0 -j ACCEPT\n[0:0] -A DOCKER-USER -j CROWDSEC_CHAIN\nCOMMIT\n# Completed on Tue Nov  3 01:05:59 2026\n# Generated by iptables-save v1.8.11 (nf_tables) on Tue Nov  3 01:05:59 2026\n*nat\n:PREROUTING ACCEPT [330550:17063999]\n:INPUT ACCEPT [293463:15025090]\n:OUTPUT ACCEPT [581790:37977740]\n:POSTROUTING ACCEPT [581790:37977740]\n:DOCKER - [0:0]\n[330311:17048405] -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER\n[0:0] -A OUTPUT ! -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER\n[0:0] -A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE\nCOMMIT\n# Completed on Tue Nov  3 01:05:59 2026",
+    "stderr": ""
+  },
+  "ip6tables": {
+    "exit": 0,
+    "stdout": "# Generated by ip6tables-save v1.8.11 (nf_tables) on Tue Nov  3 01:05:59 2026\n*filter\n:INPUT ACCEPT [24686:2112301]\n:FORWARD ACCEPT [94:7496]\n:OUTPUT ACCEPT [3525:275717]\n:CROWDSEC_CHAIN - [0:0]\n:DOCKER - [0:0]\n:DOCKER-BRIDGE - [0:0]\n:DOCKER-CT - [0:0]\n:DOCKER-FORWARD - [0:0]\n:DOCKER-INTERNAL - [0:0]\n:DOCKER-USER - [0:0]\n[24679:2111549] -A INPUT -j CROWDSEC_CHAIN\n[0:0] -A INPUT ! -i lo -p tcp -m tcp --dport 81 -j DROP\n[0:0] -A INPUT ! -i lo -p tcp -m tcp --dport 3000 -j DROP\n[94:7496] -A FORWARD -j CROWDSEC_CHAIN\n[94:7496] -A FORWARD -j DOCKER-USER\n[94:7496] -A FORWARD -j DOCKER-FORWARD\n[0:0] -A CROWDSEC_CHAIN -m set --match-set crowdsec6-blacklists-1 src -m comment --comment \"CrowdSec: crowdsec\" -j DROP\n[0:0] -A CROWDSEC_CHAIN -m set --match-set crowdsec6-blacklists-0 src -m comment --comment \"CrowdSec: CAPI\" -j DROP\n[94:7496] -A DOCKER-FORWARD -j DOCKER-CT\n[94:7496] -A DOCKER-FORWARD -j DOCKER-INTERNAL\n[94:7496] -A DOCKER-FORWARD -j DOCKER-BRIDGE\n[94:7496] -A DOCKER-USER -j CROWDSEC_CHAIN\nCOMMIT\n# Completed on Tue Nov  3 01:05:59 2026\n# Generated by ip6tables-save v1.8.11 (nf_tables) on Tue Nov  3 01:05:59 2026\n*nat\n:PREROUTING ACCEPT [1:80]\n:INPUT ACCEPT [0:0]\n:OUTPUT ACCEPT [2304:184320]\n:POSTROUTING ACCEPT [2305:184400]\n:DOCKER - [0:0]\n[0:0] -A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER\n[0:0] -A OUTPUT ! -d ::1/128 -m addrtype --dst-type LOCAL -j DOCKER\nCOMMIT\n# Completed on Tue Nov  3 01:05:59 2026",
+    "stderr": ""
+  },
+  "ipsets": {
+    "exit": 0,
+    "stdout": "Name: crowdsec-blacklists-0\nType: hash:net\nRevision: 7\nHeader: family inet hashsize 4096 maxelem 131072 timeout 300 bucketsize 12 initval 0x1e9538bd\nSize in memory: 600728\nReferences: 1\nNumber of entries: 16310\n\nName: crowdsec-blacklists-1\nType: hash:net\nRevision: 7\nHeader: family inet hashsize 1024 maxelem 131072 timeout 300 bucketsize 12 initval 0x9e0b201a\nSize in memory: 5264\nReferences: 1\nNumber of entries: 14\n\nName: crowdsec6-blacklists-0\nType: hash:net\nRevision: 7\nHeader: family inet6 hashsize 1024 maxelem 131072 timeout 300 bucketsize 12 initval 0x7703ec39\nSize in memory: 39096\nReferences: 1\nNumber of entries: 486\n\nName: crowdsec6-blacklists-1\nType: hash:net\nRevision: 7\nHeader: family inet6 hashsize 1024 maxelem 131072 timeout 300 bucketsize 12 initval 0xc58756a8\nSize in memory: 312\nReferences: 1\nNumber of entries: 0",
+    "stderr": ""
+  },
+  "metrics": {
+    "acquisition": {
+      "appsec:appsec": {
+        "parsed": 4186,
+        "pour": 168,
+        "reads": 4186,
+        "whitelisted": 2
+      },
+      "file:/home/docker/npm/data/logs/default-host_access.log": {
+        "parsed": 1137,
+        "pour": 2264,
+        "reads": 1137
+      },
+      "file:/home/docker/npm/data/logs/default-host_error.log": {
+        "parsed": 2,
+        "pour": 2,
+        "reads": 2
+      },
+      "file:/home/docker/npm/data/logs/fallback_error.log": {
+        "parsed": 5,
+        "reads": 19,
+        "unparsed": 14,
+        "whitelisted": 10
+      },
+      "file:/home/docker/npm/data/logs/fallback_http_access.log": {
+        "parsed": 134,
+        "pour": 184,
+        "reads": 199,
+        "unparsed": 65
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-10_access.log": {
+        "parsed": 5393,
+        "pour": 2460,
+        "reads": 5393,
+        "whitelisted": 250
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-10_error.log": {
+        "parsed": 1297,
+        "pour": 443,
+        "reads": 1408,
+        "unparsed": 111
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-11_access.log": {
+        "parsed": 4807,
+        "pour": 1483,
+        "reads": 4807
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-11_error.log": {
+        "parsed": 1318,
+        "pour": 624,
+        "reads": 1339,
+        "unparsed": 21
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-12_access.log": {
+        "parsed": 15618,
+        "pour": 11147,
+        "reads": 15618,
+        "whitelisted": 696
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-12_error.log": {
+        "parsed": 1027,
+        "pour": 366,
+        "reads": 1076,
+        "unparsed": 49,
+        "whitelisted": 5
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-13_access.log": {
+        "parsed": 17,
+        "pour": 7,
+        "reads": 17
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-13_error.log": {
+        "parsed": 4,
+        "pour": 3,
+        "reads": 4
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-14_access.log": {
+        "parsed": 62,
+        "pour": 60,
+        "reads": 62
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-14_error.log": {
+        "parsed": 28,
+        "pour": 6,
+        "reads": 28
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-19_access.log": {
+        "parsed": 5715,
+        "pour": 3874,
+        "reads": 5715,
+        "whitelisted": 849
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-19_error.log": {
+        "parsed": 1656,
+        "pour": 236,
+        "reads": 2104,
+        "unparsed": 448
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-22_access.log": {
+        "parsed": 8,
+        "reads": 8,
+        "whitelisted": 8
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-25_access.log": {
+        "parsed": 11,
+        "pour": 5,
+        "reads": 11
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-26_access.log": {
+        "parsed": 76,
+        "pour": 65,
+        "reads": 76,
+        "whitelisted": 5
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-3_access.log": {
+        "parsed": 343,
+        "pour": 147,
+        "reads": 343,
+        "whitelisted": 267
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-3_error.log": {
+        "parsed": 174,
+        "pour": 43,
+        "reads": 182,
+        "unparsed": 8
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-5_access.log": {
+        "parsed": 4047,
+        "pour": 2821,
+        "reads": 4048,
+        "unparsed": 1,
+        "whitelisted": 376
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-5_error.log": {
+        "parsed": 482,
+        "pour": 206,
+        "reads": 495,
+        "unparsed": 13
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-6_access.log": {
+        "parsed": 523,
+        "pour": 1067,
+        "reads": 523
+      },
+      "file:/home/docker/npm/data/logs/proxy-host-6_error.log": {
+        "parsed": 1010,
+        "pour": 490,
+        "reads": 1025,
+        "unparsed": 15
+      },
+      "journalctl:journalctl-_SYSTEMD_UNIT=ssh.service": {
+        "parsed": 40,
+        "pour": 18,
+        "reads": 101,
+        "unparsed": 61
+      }
+    },
+    "bouncers": {
+      "cs-firewall-bouncer-1791289557": {
+        "": {
+          "processed": {
+            "byte": 60406540139,
+            "packet": 72158747
+          }
+        },
+        "CAPI": {
+          "active_decisions": {
+            "ip": 16796
+          },
+          "dropped": {
+            "byte": 6570547,
+            "packet": 117735
+          }
+        },
+        "crowdsec": {
+          "active_decisions": {
+            "ip": 14
+          },
+          "dropped": {
+            "byte": 3911798,
+            "packet": 51456
+          }
+        },
+        "cscli": {
+          "active_decisions": {
+            "ip": 0
+          },
+          "dropped": {
+            "byte": 1509,
+            "packet": 27
+          }
+        }
+      },
+      "cs-web-1key-c1a156b124fe3ff5": {
+        "": {
+          "processed": {
+            "request": 160737
+          }
+        },
+        "CAPI": {
+          "dropped": {
+            "request": 293
+          }
+        },
+        "crowdsec": {
+          "dropped": {
+            "request": 11931
+          }
+        }
+      }
+    },
+    "decisions": {
+      "crowdsecurity/appsec-vpatch": {
+        "crowdsec": {
+          "ban": 5
+        }
+      },
+      "crowdsecurity/http-admin-interface-probing": {
+        "crowdsec": {
+          "ban": 3
+        }
+      },
+      "crowdsecurity/http-bad-user-agent": {
+        "crowdsec": {
+          "ban": 2
+        }
+      },
+      "crowdsecurity/http-open-proxy": {
+        "crowdsec": {
+          "ban": 2
+        }
+      },
+      "crowdsecurity/http-probing": {
+        "crowdsec": {
+          "ban": 9
+        }
+      },
+      "crowdsecurity/http-sensitive-files": {
+        "crowdsec": {
+          "ban": 5
+        }
+      },
+      "crowdsecurity/http-wordpress-scan": {
+        "crowdsec": {
+          "ban": 2
+        }
+      },
+      "http:bruteforce": {
+        "CAPI": {
+          "ban": 337
+        }
+      },
+      "http:crawl": {
+        "CAPI": {
+          "ban": 16
+        }
+      },
+      "http:exploit": {
+        "CAPI": {
+          "ban": 137
+        }
+      },
+      "http:scan": {
+        "CAPI": {
+          "ban": 14675
+        }
+      },
+      "ssh:bruteforce": {
+        "CAPI": {
+          "ban": 1631
+        }
+      }
+    }
+  },
+  "followup": {
+    "at": "2026-11-03T09:07:47.540033+00:00",
+    "services": {
+      "exit": 0,
+      "stdout": "MainPID=116932\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=2109\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n\nMainPID=505\nNRestarts=0\nId=forwardx-realm-both-56017.service\nActiveState=active\n\nMainPID=511\nNRestarts=0\nId=forwardx-realm-both-58372.service\nActiveState=active"
+    },
+    "peers": {
+      "exit": 0,
+      "ports": {
+        "56017": {
+          "connections": 65,
+          "distinct_peer_addresses": 1,
+          "largest_peer_connection_count": 65
+        },
+        "58372": {
+          "connections": 0,
+          "distinct_peer_addresses": 0,
+          "largest_peer_connection_count": 0
+        }
+      }
+    },
+    "bouncers": {
+      "exit": 0,
+      "data": [
+        {
+          "name": "cs-firewall-bouncer-1791289557",
+          "type": "crowdsec-firewall-bouncer",
+          "last_pull": "2026-11-03T09:07:38.099833805Z",
+          "revoked": false
+        },
+        {
+          "name": "cs-web-1key-c1a156b124fe3ff5",
+          "type": "crowdsec-openresty-bouncer",
+          "last_pull": "2026-11-03T09:07:32.090880861Z",
+          "revoked": false
+        }
+      ]
+    },
+    "config_sha256": {
+      "/etc/forwardx/realm/forwardx-realm-both-56017.toml": "7a83fe85ffc066f72b23591a55d3ea40e2999f296255910586118cfb82ce0aac",
+      "/etc/forwardx/realm/forwardx-realm-both-58372.toml": "4b606350ab375784c110efaab5de8242f94dfa085488b64290f8f5d98dee3476",
+      "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": "7b6d1d14c0b961d570df811b00adb45d213774e79a3dfa271eb88c0d89a0766b"
+    }
+  },
+  "realm_log_summary": {
+    "56017": "24-hour journal sample contains backend connect timeout warnings/errors, not authentication failures",
+    "58372": "No entries in the queried 24-hour window"
+  },
+  "inspection_commands": [
+    "ss -lntup",
+    "ss -Hntp state established ( sport = 56017 or sport = 58372 )",
+    "cscli metrics show -o json",
+    "cscli bouncers list -o json",
+    "iptables-save -c",
+    "ip6tables-save -c",
+    "ipset list -t",
+    "crowdbastion --relay-status-details",
+    "crowdbastion --firewall-check"
+  ],
+  "source": {
+    "realm-xwPF_commit": "ef90071cca0073a4dd41f62708a6c9e82a27873c",
+    "reviewed_paths": [
+      "README.md",
+      "lib/core.sh",
+      "lib/realm.sh",
+      "lib/rules.sh",
+      "lib/server.sh",
+      "xwPF.sh"
+    ],
+    "upstream_reference": "https://github.com/zhboner/realm/blob/master/readme.md",
+    "firewall_reference": "https://docs.crowdsec.net/u/bouncers/firewall/"
+  }
+}

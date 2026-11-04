@@ -1,9 +1,10 @@
 """Hub transactions use real temporary files and isolated command stubs."""
-from test_workflows import Workflows
+import unittest
+from workflow_fixture import WorkflowFixtureMixin
 import shlex
 import subprocess
 
-class HubMaintenance(Workflows):
+class HubMaintenance(WorkflowFixtureMixin, unittest.TestCase):
     def complete_inventory_stub(self):
         import json
         names = ['linux', 'sshd', 'nginx', 'nginx-proxy-manager', 'http-cve',
@@ -293,7 +294,3 @@ systemctl() { record systemctl "$@"; if [[ "$*" == 'reload crowdsec' ]]; then ((
         self.assertTrue((runner.parent/'lib/hub_maintenance.sh').exists())
         self.assertTrue((runner.parent/'lib/crowdsec_hub_snapshot.py').exists())
 
-for name in list(vars(Workflows)):
-    if name.startswith('test_') and name not in HubMaintenance.__dict__:
-        setattr(HubMaintenance,name,None)
-del Workflows

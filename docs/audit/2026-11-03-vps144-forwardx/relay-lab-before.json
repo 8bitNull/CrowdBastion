@@ -1,0 +1,631 @@
+{
+  "at": "2026-11-03T10:50:58.810874+00:00",
+  "namespace": "cb144lab-21db1fa19e77",
+  "scope": "isolated loopback realm byte-integrity lab; no WAN claim",
+  "status": "passed",
+  "cleanup": {
+    "realm-53537_stopped": true,
+    "realm-53536_stopped": true,
+    "realm-53534_stopped": true,
+    "backend_stopped": true,
+    "namespace_absent": true
+  },
+  "directory": "/var/backups/crowdbastion/vps144-20261103T103358Z/relay-lab-1sfti4ka",
+  "realm_version": "Realm 2.9.4 [brutal][batched-udp][proxy][balance][transport][multi-thread]",
+  "ipv6": "tested",
+  "checks": [
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.775,
+        0.864,
+        1.398
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.85,
+        0.43,
+        0.724
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.017,
+        0.336,
+        1.327
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.228,
+        1.373,
+        0.637
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.544,
+        0.894,
+        1.199
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.19,
+        0.381,
+        0.234
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.874,
+        0.384,
+        0.348
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.007,
+        0.391,
+        2.107
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.431,
+        1.399,
+        0.584
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.911,
+        1.044,
+        1.156
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.665,
+        0.135,
+        0.434
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.744,
+        0.761,
+        0.194
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.461,
+        1.674,
+        2.392
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.405,
+        1.523,
+        2.557
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.455,
+        1.172,
+        1.38
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.463,
+        1.707,
+        1.922
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.693,
+        1.57,
+        1.88
+      ]
+    },
+    {
+      "family": "ipv4",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.254,
+        1.386,
+        1.082
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.573,
+        1.586,
+        2.705
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.097,
+        2.056,
+        1.819
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53534,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.759,
+        2.749,
+        1.382
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.363,
+        0.921,
+        1.103
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.92,
+        2.395,
+        1.077
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53536,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.743,
+        0.809,
+        2.894
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.194,
+        2.027,
+        2.229
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.088,
+        2.402,
+        1.191
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "tcp",
+      "port": 53537,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.966,
+        2.238,
+        0.676
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.584,
+        1.376,
+        1.044
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.757,
+        0.218,
+        0.128
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53534,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.914,
+        0.78,
+        1.069
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        3.354,
+        0.701,
+        0.404
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        2.389,
+        0.952,
+        0.436
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53536,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.59,
+        0.204,
+        0.844
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 0,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.952,
+        0.73,
+        1.236
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 1,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        1.632,
+        0.907,
+        0.779
+      ]
+    },
+    {
+      "family": "ipv6",
+      "protocol": "udp",
+      "port": 53537,
+      "client": 2,
+      "sizes": [
+        64,
+        512,
+        1200
+      ],
+      "identity_preserved": true,
+      "local_rtt_ms": [
+        0.503,
+        0.237,
+        0.083
+      ]
+    }
+  ],
+  "roundtrips": 108
+}

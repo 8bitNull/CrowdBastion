@@ -1,0 +1,12 @@
+{
+  "at": "2026-11-03T12:12:43.311375+00:00",
+  "python_syntax_and_json": "passed",
+  "report_links": "all_exist",
+  "private_key_and_sensitive_assignment_scan": "no_matches",
+  "original_sealed_files_verified": 13,
+  "executed_script_matches_reviewed_body": true,
+  "review_rounds": 3,
+  "production_full_unit_and_coldboot_tests": "not_run",
+  "product_suite": "not_run",
+  "status": "passed"
+}

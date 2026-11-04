@@ -29,6 +29,7 @@ select_node_roles() {
     [[ -f "${CS_DIR}/config.yaml" ]] && log_info '发现本地检测配置；请根据实际用途选择。'
     [[ -f "${CS_DIR}/bouncers/crowdsec-firewall-bouncer.yaml.remote.json" ]] && log_info '发现托管远端连接；请选择远端执行或远端执行 + 落地。'
     log_info '远端执行不能与网站／本地中转同选。选择用途只保存偏好。'
+    log_info '独立 AnyTLS/Hysteria/TUIC 等程序可从首页 [5] → [9] 进入协议导航，无需选择 V2bX 用途。'
     while true; do
         prompt answer '用途编号 [0-4，可用空格组合]: ' || return 0
         [[ "$answer" == 0 ]] && return 0
@@ -80,7 +81,7 @@ node_recommendation() {
     else
         log_info '建议：先检查连接来源和转发路径 [4] → [4] → [3] → [2]，或 --relay-path；规则引用不等于流量阻断验收。'
     fi
-    node_has_role node && log_info '落地建议：检查 V2bX 配置与连接来源 --diagnose-v2bx；运行日志 --v2bx-log-check。'
+    node_has_role node && log_info '落地建议：检查 V2bX 配置与连接来源 --diagnose-v2bx；运行日志 --v2bx-log-check；程序/协议/传输声明画像 --protocol-status（不验证实际运行）。'
     return 0
 }
 
@@ -118,10 +119,11 @@ guided_setup() {
         done
         node_has_role node && printf 'V2bX 日志观察本身不提供业务攻击自动封禁。\n'
         node_has_role web && printf '第 2 项先选择网站运行方式；Docker bridge 按引擎、私有地址、拦截组件的顺序接入。\n'
-        printf '9. 检查当前防护情况\n0. 返回首页\n'
+        printf '8. 其他代理程序与协议使用导航\n9. 检查当前防护情况\n0. 返回首页\n'
         prompt choice '请选择步骤: ' || return 0
         case "$choice" in
             0) return 0 ;;
+            8) manage_proxy_guidance; continue ;;
             9) interactive_health_check; continue ;;
         esac
         if [[ ! "$choice" =~ ^[1-8]$ ]] || (( choice > ${#steps[@]} )); then

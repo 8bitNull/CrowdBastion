@@ -1,0 +1,25 @@
+{
+  "at": "2026-11-03T12:09:10.359145+00:00",
+  "unit_before": {
+    "exit": 0,
+    "stdout": "MainPID=0\nResult=exit-code\nExecMainStatus=1\nActiveState=failed\n",
+    "stderr": ""
+  },
+  "recent_unit_journal": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "reset_failed": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "unit_after": {
+    "exit": 0,
+    "stdout": "MainPID=0\nResult=success\nExecMainStatus=1\nActiveState=inactive\n",
+    "stderr": ""
+  },
+  "scope": "Acknowledged recorded historical failure only; no unit restart and no full sysctl reload",
+  "status": "historical_failure_acknowledged"
+}

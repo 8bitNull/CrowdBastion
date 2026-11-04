@@ -1,0 +1,679 @@
+{
+  "checked_at": 1793622963.764766,
+  "protected_files": {
+    "/etc/crowdsec/config.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 1721,
+      "sha256": "52dc9cc3c3e1b09111543475c02081d88acd84b46846f1ded12fdf0c1fd45784"
+    },
+    "/etc/crowdsec/config.yaml.local": {
+      "exists": false
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 1276,
+      "sha256": "e08f15d984d23434dca6c93f8c18f5a1d2def29148416fbfe2c89a8d47c84977"
+    },
+    "/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml.local": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 64,
+      "sha256": "041bdeec6dc050bf8b976fc9f52b855b98b7854a5d9efb0c03d0ac1ac6fb27fa"
+    },
+    "/etc/crowdsec/local_api_credentials.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 158,
+      "sha256": "e4e19236511da4c67834550ae6dad4ceb87dd5958e407c958ace106853b3b4c8"
+    },
+    "/etc/crowdsec/online_api_credentials.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 162,
+      "sha256": "7aad51b93f3ed2588af46d239b4b38de3834791781f401e8b00c4ce520412728"
+    },
+    "/var/spool/cron/crontabs/root": {
+      "exists": true,
+      "uid": 0,
+      "gid": 101,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 422,
+      "sha256": "558e1fbe61e77249867618851b505061e21db1dbf0b8f5d52843187617bdd077"
+    },
+    "/etc/cron.d/crowdsec-autoupdate": {
+      "exists": false
+    },
+    "/etc/default/netfilter-persistent": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 659,
+      "sha256": "be5b9054bebf0c0121f12ebdd206f8f8ad179d2139cc4cbd03ce2cec4ccceb5a"
+    },
+    "/etc/iptables/rules.v4": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o640",
+      "symlink": false,
+      "size": 1775,
+      "sha256": "b5b60d0b1c9ed57790c97cc44c182c74bb223a9c5ba95a4e1441bbf9e4c874f1"
+    },
+    "/etc/iptables/rules.v6": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o640",
+      "symlink": false,
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/etc/sysctl.d/99-network-optimize.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 2658,
+      "sha256": "3792929c43490a3dddb7833fc9e2cc678891b4d0229b758cf100b2a74babe2e3"
+    },
+    "/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 28,
+      "sha256": "a5e83ab3b540efe5bbe142dd1ab99c2110e7a6dda661c1e967980b615ab865a3"
+    },
+    "/home/docker/gost/docker-compose.yml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 316,
+      "sha256": "970598d65d078b962668c725789c340d6495b93ae6b0871573ee71417a1d08cd"
+    },
+    "/home/web/nginx.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 7792,
+      "sha256": "a4384558dde49df81cefc3da3133daa917563149a002790d5a270701c28a1fbb"
+    },
+    "/etc/V2bX/config.json": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 1340,
+      "sha256": "bf8c33fadc96a1447fe9ee8e4f2e24615681458f9bdcd94b2c1eef5278818385"
+    },
+    "/home/docker/openlist/config.json": {
+      "exists": true,
+      "uid": 1001,
+      "gid": 1001,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 2842,
+      "sha256": "6de727cdd81e8a60c3dbecb0de2b59d72c0e3044f9f14ffe42140aa080db8606"
+    },
+    "/home/web/conf.d/default.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 838,
+      "sha256": "f65ae70cad814841572003addf7fe83dc797d0403af54d2520b94871a58447bc"
+    },
+    "/home/web/conf.d/site-05.example.com.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 2084,
+      "sha256": "1ae1f96b11c1b8575573a6012a9bb7102aef9bdc1dd91e1261249c2f0528a0b9"
+    },
+    "/home/web/conf.d/map.conf": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 228,
+      "sha256": "c35a546a15a40633af6fa8d5f77e5426f03c545e88aeb915bd3a41de9a5ff684"
+    },
+    "/etc/crowdsec/acquis.d/crowdsec-1key-log-repair.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o600",
+      "symlink": false,
+      "size": 98,
+      "sha256": "b2f7f0d1959d468060c63adcb1a182d8131115d46f5069f7acfca7e2890b27db"
+    },
+    "/etc/crowdsec/acquis.d/setup.linux.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 387,
+      "sha256": "d1260ca1a08d9840f9d9d0f79974cb6761785c80642480eee624e60ca83afffc"
+    },
+    "/etc/crowdsec/acquis.d/setup.sshd.yaml": {
+      "exists": true,
+      "uid": 0,
+      "gid": 0,
+      "mode": "0o644",
+      "symlink": false,
+      "size": 365,
+      "sha256": "e17d99363bff2a5eb48e4cfddcadc00280799037f39a294a3ba56c383d654cc9"
+    },
+    "/etc/crowdsec/acquis.yaml": {
+      "exists": false
+    }
+  },
+  "filter_rules": {
+    "iptables": {
+      "exit": 0,
+      "sha256": "93160aa78da4c5a7ff6abed4972edd941ff5eb930c57efad28cb46a47f65bc3d",
+      "lines": 35
+    },
+    "ip6tables": {
+      "exit": 0,
+      "sha256": "3c2a5fdc29ac3b52b570753ca496e0d7481365705d159c732534f48e1b73b3b6",
+      "lines": 20
+    }
+  },
+  "all_table_rule_digests": {
+    "iptables": {
+      "exit": 0,
+      "canonical_sha256": "45b0e96d425c010f181490214caa488b2ad2b600a791584303ed629af18632c5",
+      "lines": 65,
+      "tables": [
+        "mangle",
+        "raw",
+        "filter",
+        "nat"
+      ],
+      "scope": "iptables-save without counters; generation comments excluded; ipset contents excluded"
+    },
+    "ip6tables": {
+      "exit": 0,
+      "canonical_sha256": "3b0ca5251aa5ba457c5fcfc97d212f786a0f6c0021ba6853658a52d8ba391d57",
+      "lines": 31,
+      "tables": [
+        "filter",
+        "nat"
+      ],
+      "scope": "iptables-save without counters; generation comments excluded; ipset contents excluded"
+    }
+  },
+  "original_deployment_manifest": {
+    "exists": true,
+    "uid": 0,
+    "gid": 0,
+    "mode": "0o600",
+    "symlink": false,
+    "size": 5508,
+    "sha256": "3cf9fc9249c49c1b6696842d1d84b8deff906be509000c8111cb42eb983c6bbd"
+  },
+  "historical_source_matches": {
+    "crowdbastion.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/appsec_audit.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdbastion_health.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdbastion_node.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdbastion_relay_verify.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_appsec.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_bot.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_bot_actions.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_bot_api.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_bot_health.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_bot_settings.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_config.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_detection_diagnose.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_execution.lua": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_execution.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_firewall.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_host.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_hub_snapshot.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_maintenance.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_nginx_reload.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_notify.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_notify_client.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_notify_setup.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_realip.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_realip_diagnose.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_relay.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_relay_paths.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_remote_bouncer.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_request_audit.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_safety.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_telegram.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_transport.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx_alerts.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx_logs.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx_observe.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx_service.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_v2bx_stream.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/crowdsec_web.py": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/custom_bot.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/health_summary.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/host_web_bouncer.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/hub_maintenance.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/maintenance.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/native_web_bouncer.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/nginx_reload.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/node_guidance.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/notify.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/private_transport.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/real_ip.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/relay.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/remote_bouncer.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "lib/v2bx.sh": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "rules/v2bx/README.md": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "rules/v2bx/parsers/s01-parse/10-v2bx-observation.yaml": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    },
+    "rules/v2bx/scenarios/v2bx-failure-observation.yaml": {
+      "/root/crowdsec-1key": true,
+      "/opt/crowdbastion/releases/review-20261030-vps4": true
+    }
+  },
+  "v2bx_inventory": {
+    "exit": 2,
+    "data": {
+      "config_status": "readable",
+      "runtime": {
+        "service_status": "readable",
+        "load": "loaded",
+        "active": "active",
+        "main_pid": 661,
+        "version": null,
+        "version_status": "unverified",
+        "config_origin": "default_candidate"
+      },
+      "cores": [
+        {
+          "index": 1,
+          "type": "sing",
+          "log_level": "error",
+          "logging_disabled_declared": false,
+          "custom_config_declared": true
+        }
+      ],
+      "nodes": [
+        {
+          "index": 1,
+          "node_id": 3,
+          "config_status": "local",
+          "core": "sing",
+          "protocol": "anytls",
+          "listen_ip": "::",
+          "port_status": "panel_or_runtime_required",
+          "transport_status": "panel_or_runtime_required",
+          "proxy_protocol_declared": false,
+          "proxy_protocol_support_status": "version_and_transport_required",
+          "entry_declared": "unknown",
+          "source_status": "unverified",
+          "enforcement": "per_path_verification_required",
+          "limit_fields_present": [],
+          "limit_effect_status": "unverified"
+        }
+      ],
+      "sockets": [
+        {
+          "network": "udp",
+          "address": "0.0.0.0",
+          "port": 443,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "udp",
+          "address": "::",
+          "port": 443,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "0.0.0.0",
+          "port": 80,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "0.0.0.0",
+          "port": 53322,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "0.0.0.0",
+          "port": 5244,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "127.0.0.1",
+          "port": 8080,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "127.0.0.1",
+          "port": 6060,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "0.0.0.0",
+          "port": 51080,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "0.0.0.0",
+          "port": 443,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "::",
+          "port": 80,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "::",
+          "port": 53322,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "::",
+          "port": 5244,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "*",
+          "port": 8443,
+          "service_pid_match": true,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "::",
+          "port": 51080,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        },
+        {
+          "network": "tcp",
+          "address": "::",
+          "port": 443,
+          "service_pid_match": false,
+          "node_mapping_status": "unverified"
+        }
+      ],
+      "socket_status": "readable",
+      "acquisition_status": "readable",
+      "logs": [
+        {
+          "config_ref": "Log.Output",
+          "core": "manager",
+          "source": "journal_candidate",
+          "read_status": "readable",
+          "acquisition_matches": 0,
+          "acquisition_status": "not_configured",
+          "sample": {
+            "lines": 200,
+            "connected": 0,
+            "disconnected": 0,
+            "source_present": 0,
+            "failure_candidates": 0,
+            "ordinary_errors": 0,
+            "unclassified": 200
+          },
+          "evidence_scope": "shared_unit",
+          "detection_status": "unverified"
+        },
+        {
+          "config_ref": "Cores[1].Log.Output",
+          "core": "sing",
+          "source": "journal_candidate",
+          "read_status": "readable",
+          "acquisition_matches": 0,
+          "acquisition_status": "not_configured",
+          "sample": {
+            "lines": 200,
+            "connected": 0,
+            "disconnected": 0,
+            "source_present": 0,
+            "failure_candidates": 0,
+            "ordinary_errors": 0,
+            "unclassified": 200
+          },
+          "evidence_scope": "shared_unit",
+          "detection_status": "unverified"
+        }
+      ],
+      "bouncer_status": "unverified",
+      "bouncer_references": {
+        "ipv4": {
+          "INPUT": true,
+          "FORWARD": true
+        },
+        "ipv6": {
+          "INPUT": true,
+          "FORWARD": true
+        }
+      },
+      "end_to_end_status": "unverified"
+    }
+  },
+  "finished_at": 1793622964.1656852
+}

@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import test_workflows
+import workflow_fixture as test_workflows
 import test_node_guidance
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,9 +17,9 @@ sys.path.insert(0, str(ROOT/'lib'))
 
 
 class Interaction(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     roles = test_node_guidance.Guidance.roles
     run_terminal = test_node_guidance.Guidance.run_terminal
 
@@ -329,6 +329,18 @@ class Artifacts(unittest.TestCase):
         (config/'config.yaml').write_text('api: {server: {listen_uri: localhost:8081}}')
         self.assertIn('配置变化', ux.acceptance_summary(path, config, now=1001))
         self.assertNotIn('1.1.1.1', path.read_text())
+
+    def test_lifecycle_history_distinguishes_coverage_from_basic(self):
+        ux = self.ux()
+        config = self.base/'config'; config.mkdir()
+        path = self.base/'acceptance.json'
+        scope = dict(target='198.51.100.1',port=443,protocol='TCP',family='ip',hook='input',verification='lifecycle')
+        ux.save_acceptance(path, config, scope, 0, now=1000)
+        self.assertEqual(json.loads(path.read_text()).get('verification'), 'lifecycle')
+        self.assertIn('完整生命周期', ux.acceptance_summary(path, config, now=1001))
+        scope['verification'] = 'basic'
+        ux.save_acceptance(path, config, scope, 0, now=1000)
+        self.assertNotIn('完整生命周期', ux.acceptance_summary(path, config, now=1001))
 
 
 if __name__ == '__main__':

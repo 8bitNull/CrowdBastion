@@ -1,6 +1,6 @@
 # 一键脚本的最终优化边界
 
-适用对象：`crowdbastion.sh` 及同目录 `lib/`。基线日期：2026-10-11。
+适用对象：`crowdbastion.sh` 及同目录 `lib/`。原支持基线：2026-10-11；可选变更保护与协议说明更新：2026-11-03。
 
 脚本定位为 **Linux 宿主机上的 CrowdSec 安装、接入、验证和维护工具**。达到下面的支持条件与验收标准后，功能进入维护阶段；后续优先修复缺陷和已支持环境的兼容问题。增加新部署体系、修改网站架构或扩大信任范围，需要另立需求并增加相应验证。
 
@@ -17,7 +17,7 @@
 | Docker host 网络 | 使用宿主机 loopback LAPI/AppSec | 引擎已运行并具有匹配监听，配置与挂载可核对 | 监听或凭据不符时停止 |
 | Docker 私有 bridge | 已准备好的同一宿主机私有网关 LAPI/AppSec 接入 | 明确 IPv4 网关和不同端口；匹配当前连接的 bridge NetworkID/IPAM；宿主机精确监听；容器可达；Bouncer 密钥通过 LAPI 认证 | 不推测 `docker0`、不自动改网络/发布端口/安装转发器；IPv6 bridge、overlay、macvlan、共享容器网络及远程 LAPI 不在此自动入口内 |
 
-基础要求为 root、Bash、systemd、Python 3/PyYAML；WebUI 另需 Docker Compose，Hub 定时维护另需 cron/crond。核心具有 Debian/Ubuntu 和 RHEL 系列分支，发行版软件包是否可用由实际软件源与版本决定。本机已经验证 Debian 13 / 1Panel，其他发行版分支不能据此标记为生产通过。
+基础要求为 root、Bash、systemd、预先安装的 Python 3，以及配置操作所需的 PyYAML；安全管理锁依赖 Python 3，首次修改前必须已就绪，缺少时安全停止；WebUI 另需 Docker Compose，Hub 定时维护另需 cron/crond。核心具有 Debian/Ubuntu 和 RHEL 系列分支，发行版软件包是否可用由实际软件源与版本决定。本机已经验证 Debian 13 / 1Panel，其他发行版分支不能据此标记为生产通过。
 
 私有 bridge 端点通过 `--configure-docker-endpoints` 登记，记录与容器名称及 NetworkID 绑定。容器重建可以复用相同持久化挂载和原网络；网络重新创建或端点变化时必须重新核对。这个入口管理端点记录与 Bouncer 接入，**端点监听、转发和防火墙放行由部署者管理**。登记前的 HTTP 探测仅证明连通性，安装时的 LAPI 探测验证凭据；两者都不能代替实际 AppSec 请求验证。
 
@@ -88,7 +88,17 @@ Hub 更新、集合安装及移除共用持久快照、锁、校验和加载事�
 
 本机健康检查仍可返回 2：这表示生产公网攻击阻断证据尚未齐全，不表示所有现有服务异常。完整结果见 [本机检查记录](2026-10-11-host-audit.md) 和 [验证记录](verification.md)。
 
-## 6. 达到边界之后如何维护
+## 6. 本轮可选扩展的边界
+
+[端口策略](port-policy.md)仅管理显式 interface/protocol/destination-port，支持已核实的双栈 iptables INPUT 和 Docker conntrack ORIGINAL 目标端口路径；不改变 Compose、Docker 网络或默认策略，不限制源端口，不为共享中转自动放行或推断客户端。未知 Docker/管理入口/规则归属或不支持的 nftables-only 布局拒绝修改，SSH TCP 入口不作为本功能的限制目标。
+
+[网络配置](network-configuration.md)只覆盖显式选定的七项 per-net TCP 内核默认值，保留原文件和链接，仅新增受管覆盖，不宣称完成配置集中。未知动态赋值、链接归属、loader 优先级或不可用的只读网络命名空间默认值均阻止应用。默认安装、状态和普通 optimize 不执行网络或端口策略，不调整 UDP/QUIC 拥塞控制，不把恢复默认值称为吞吐提升。
+
+共同事务使用稳定运行副本、15 分钟回退和精确漂移检查；发生外部漂移可能需要人工处理后重试。环境短采样不是根因证明、性能测试、命令耗时或内核 D 状态可终止保证。本轮命令注入测试不是实际内核双栈流量、远端访问或生产试点验收。
+
+[协议能力与官方来源](protocol-capabilities.md)把程序、协议、传输分开；TLS 本身不能证明 VMess/VLESS 使用 TCP。V2Node 只有候选仓库线索，未确认用户的版本/配置来源，不声称广泛解析支持。共享中转不能自动归因原客户端，没有新增攻击分类、整 IP 封禁或自动协议安装。
+
+## 7. 达到边界之后如何维护
 
 允许继续优化：可复现缺陷、明确的新版本兼容变化、已支持布局的日志路径补充、只读诊断准确性、回滚和权限缺陷、测试补缺、文档与代码一致性。每次更改先说明触发条件与行为变化，再运行对应回归；涉及 Lua/代理继承/网络时加入真实运行时验证。
 

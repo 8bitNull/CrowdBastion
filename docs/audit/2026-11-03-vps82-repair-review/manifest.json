@@ -1,0 +1,21 @@
+{
+  "docs/audit/2026-11-03-vps82-repair-review/final-result.json": "d0f8139270d8ac4054ba3055c32e4472fe4b2c81cbcf34392ba5451f5cfec110",
+  "docs/audit/2026-11-03-vps82-repair-review/history-ack.json": "48e824c520b74ee658a402ece13f8e3224140c005f8c6bf740c50a7f0fb33f58",
+  "docs/audit/2026-11-03-vps82-repair-review/independent-review.json": "17639fd95fca9eaf220984c5e057ee2d539fa511211d22020da46cc896520e06",
+  "docs/audit/2026-11-03-vps82-repair-review/kernel-reference.json": "b6e8f09670453323f98d233cd5fb8a3f07219bc8e514af70ac3b9b3c9bf37018",
+  "docs/audit/2026-11-03-vps82-repair-review/local-verification.json": "a98aed986c1b7c0d820fd987035c5d3adf4767591df7cf18993f3be9ae16f888",
+  "docs/audit/2026-11-03-vps82-repair-review/preflight-initial.json": "d088fa4a32f8f59ec362e9bc2298253aa2d62cd5dc5bbbfa70fc3e48033eae4a",
+  "docs/audit/2026-11-03-vps82-repair-review/preflight.json": "ac16d8a2f383da348ac045b069861d3b29dca09f0e92c0fa79573d4505c5e0dd",
+  "docs/audit/2026-11-03-vps82-repair-review/repair-result.json": "de18c1f1440f0d795258ced7118c93073e7e6ecf2dd880e97b00de1d110cfda3",
+  "docs/audit/2026-11-03-vps82-repair-review/scripts/acknowledge_history.py": "fe9591417aec63f65d3b9e4f9d533b73cdfdce1895c61a860cd8a6ada90f0efc",
+  "docs/audit/2026-11-03-vps82-repair-review/scripts/apply_repair.py": "9cb8a9e2cf9154bab025112bee8c1fc42c10ecd184c3dcce2aec7923bce42692",
+  "docs/audit/2026-11-03-vps82-repair-review/scripts/executed_repair.py": "b89e1fc5ca5debb792d1cf7617d002048b44d44e12b86753c0268c8d7b191eec",
+  "docs/audit/2026-11-03-vps82-repair-review/scripts/preflight.py": "5d8e46a68c1a6b41ef257af5e815de8372519ce752e77a145dc813945181cba5",
+  "docs/audit/2026-11-03-vps82-repair-review/scripts/seal.py": "5838be6c13c961eb60e46a9565fd0f5e9b4776458f0e2847e8b11b1b0155073b",
+  "docs/audit/2026-11-03-vps82-repair-review/seal-result.json": "70eb0ae79516922884ce00e6ab03af520f933484c2de55d3fb5a256376f1b532",
+  "docs/audit/2026-11-03-vps82-repair-review/tcp-after.json": "0357f7f294c850fe5b8998979d9034220be8e7b23b72506c7a61ba9bd525b40c",
+  "docs/audit/2026-11-03-vps82-repair-review/tcp-before.json": "8ef779a64e03bfddd1f32d120624710bf83c8437094455da498e809d7e8657da",
+  "docs/audit/2026-11-03-vps82-repair-review/verification.json": "331b039220c595f760fdd91515dd99178a16ab9e23d59c97a35e69313a5b3c71",
+  "docs/audit/2026-11-03-vps82-repair-review.md": "3e5749374aec661a1674c6c84ebaf05e1cb24392a80a4ba99b695f85a48e4f38",
+  "docs/superpowers/plans/2026-11-03-vps82-repair-review.md": "104960ab222084d28b1e4895ee839eb983e2493547873fe07780eac71ddf1653"
+}

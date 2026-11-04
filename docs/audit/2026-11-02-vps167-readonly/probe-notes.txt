@@ -1,0 +1,9 @@
+本轮使用既有专用公钥及 known_hosts 严格校验，登录成功，没有密码尝试或主机密钥替换。
+未修改生产代码/配置、启用 cron、增加封禁、发送攻击请求或重启服务；配置测试和正常 HTTP 查询可产生服务日志/计数。
+复用探针时已把 Firewall Bouncer binary 路径改为已知的 /usr/bin，未重复执行此前 VPS45 的已知错误路径。
+health 的独立 reload 日志路径匹配为 false；解析 nginx -T 后确认已有 /var/log/nginx/error.log notice 和 /dev/stdout notice，未把标准路径未出现误判为配置故障，没有执行重载。
+error-timeline 的宽松数字关键字把两条正文处理错误匹配到 authentication；后续按 msg/error 上下文精确分类，core 样本均为 Failed to process request body。初步时间线保留，不据数字命中声明鉴权故障。
+log-analysis-initial 把含 vpatch-CVE 的所有行称为 warning 引用，实际包含 info；限定 warning 等级后本尾部样本为 0，初始 JSON 与脚本保留。
+最近 24h journal 错误计数为 0 不能替代文件日志；本轮继续记录 Bouncer 启动清理 error 和 core 最近的正文处理 error，不将实际存在的错误删去或伪绿。
+只含 whitelisted 计数的 ":" acquisition 项导致新版分类器 pending；真实日志源均有 parsed，保留分类差异而不推断已确认采集故障。
+没有独立 reviewer；本轮为作者顺序自查。未重复执行产品全仓回归，未将 VPS45 的历史 1433 项计作本次验收。

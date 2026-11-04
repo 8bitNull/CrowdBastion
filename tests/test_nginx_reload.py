@@ -4,19 +4,20 @@ import os
 from pathlib import Path
 import re
 import shlex
+from reload_clock import virtual_reload_clock
 import subprocess
 import time
 import unittest
 import urllib.request
 
-import test_workflows
+import workflow_fixture as test_workflows
 import test_web_bouncer_runtime as runtime_tests
 NGINX = runtime_tests.NGINX
 
 
 @unittest.skipUnless(NGINX and Path(NGINX).is_file(), 'Lua-enabled Nginx required')
 class LiveReload(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
 
     @contextlib.contextmanager
     def runtime(self):
@@ -193,8 +194,8 @@ http {{
 
 
 class ReloadProcessEvidence(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
 
     def test_forked_child_inheriting_master_title_is_transient(self):
         result = self.run_shell('nginx_process_snapshot docker web', overrides=r'''
@@ -232,7 +233,7 @@ docker() {
  esac
 }
 '''
-        result = self.run_shell('nginx_reload_verified docker web', overrides=overrides)
+        result = self.run_shell('nginx_reload_verified docker web', overrides=overrides+virtual_reload_clock())
         self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
 
     def test_reload_waits_for_transient_worker_cohort_gap(self):
@@ -363,6 +364,60 @@ exit 0
         result = self.run_shell('nginx_reload_verified docker web', overrides=overrides, timeout=13)
         self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
         self.assertLess(time.monotonic()-started, 11.5)
+
+
+class VirtualReloadClock(unittest.TestCase):
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+
+    def test_clock_advances_only_on_sleep_across_shell_substitutions(self):
+        result = self.run_shell('''
+a=$(nginx_monotonic_us)
+b=$(nginx_monotonic_us)
+sleep 0.2
+(sleep .3)
+c=$(nginx_monotonic_us)
+printf '%s %s\n' "$((b-a))" "$((c-a))"
+''', overrides=virtual_reload_clock(), timeout=3)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        self.assertEqual(result.stdout.strip(), '0 500000')
+
+    def test_invalid_sleep_is_rejected_without_advancing_clock(self):
+        for delay in ('bad', '-1', 'NaN', '1e3', '61', r'\061', r'\x31'):
+            with self.subTest(delay=delay):
+                result = self.run_shell('''
+a=$(nginx_monotonic_us)
+sleep '''+shlex.quote(delay)+'''
+status=$?
+b=$(nginx_monotonic_us)
+printf '%s %s\n' "$status" "$((b-a))"
+''', overrides=virtual_reload_clock(), timeout=3)
+                self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+                self.assertEqual(result.stdout.strip(), '2 0')
+
+    def test_real_verifier_still_requires_fresh_workers_and_master_log(self):
+        for witness in ('fresh', 'stale'):
+            with self.subTest(witness=witness):
+                # Stable fresh PIDs alone are insufficient when the master
+                # has not emitted a fresh accepted-reload log cohort.
+                Path(str(self.trace)+'.workers').unlink(missing_ok=True)
+                overrides = virtual_reload_clock()+'''
+docker() {
+ case "$*" in
+  'top '*) nginx_test_processes;;
+  'exec '*' nginx -s reload') '''+(
+                    'nginx_test_reload' if witness == 'fresh' else
+                    'printf 101 > "$TRACE.workers"')+''';;
+ esac
+ return 0
+}
+'''
+                result = self.run_shell('nginx_reload_verified docker web', overrides=overrides, timeout=15)
+                if witness == 'fresh':
+                    self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+                else:
+                    self.assertNotEqual(result.returncode, 0, result.stdout+result.stderr)
+                    self.assertIn('重载未被证实', result.stderr)
 
 
 if __name__ == '__main__':

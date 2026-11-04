@@ -1,12 +1,12 @@
 """Verification sends a live attack-path probe only after informed confirmation."""
 import unittest
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class AppSecVerification(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def test_declined_loopback_probe_sends_no_request(self):
         result = self.run_shell('verify_appsec', 'http://localhost\nn\n')

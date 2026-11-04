@@ -19,7 +19,7 @@ from urllib.parse import urlsplit
 import uuid
 
 import yaml
-from crowdsec_config import merged_config, read_mapping
+from crowdsec_config import merged_config, read_mapping, canonical_iptables_chains
 from crowdsec_firewall_runtime import DROPIN, ORDER, LEGACY_ORDER, UNIT, chain_coverage, cron_risks, restore_services, iptables_references, run
 
 CONFIG = Path('/etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml')
@@ -185,6 +185,10 @@ class Migration:
             if option in config and config[option] not in (False, None, '', 'CROWDSEC_CHAIN', ['INPUT'], 'crowdsec-blacklists', 'crowdsec6-blacklists', ['crowdsec-blacklists'], ['crowdsec6-blacklists']):
                 # Lists and custom set names require independent review.
                 raise MigrationError('存在自定义防火墙路径或地址族配置，请人工规划迁移。')
+        try:
+            canonical_iptables_chains(config)
+        except ValueError:
+            raise MigrationError('iptables 链列表无效，未准备迁移。') from None
         if config.get('deny_action', 'DROP') != 'DROP':
             raise MigrationError('自动迁移仅支持默认 DROP 策略。')
         if self.dropin.exists() and self.dropin.read_bytes() not in (ORDER, LEGACY_ORDER):
@@ -235,7 +239,7 @@ class Migration:
         atomic(self.state/'files.json', json.dumps(metadata).encode())
         local = read_mapping(self.local) if self.local.exists() else {}
         chains = ['INPUT', 'FORWARD', 'DOCKER-USER']
-        local.update(mode='iptables', iptables_chains=chains, iptables_v4_chains=chains, iptables_v6_chains=chains)
+        local.update(mode='iptables', **canonical_iptables_chains(merged_config(self.config), chains, chains))
         atomic(self.state/'local.applied', yaml.safe_dump(local, sort_keys=False).encode())
         atomic(self.state/'dropin.applied', self.dropin.read_bytes() if self.dropin.exists() else ORDER)
         atomic(self.state/'transaction.json', json.dumps({'ssh': identity, 'created': time.time(),

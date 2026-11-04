@@ -12,15 +12,15 @@ import threading
 import unittest
 
 import yaml
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = test_workflows.ROOT
 
 
 class TelegramRoutes(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def helper(self, *args):
         return subprocess.run(['python3', str(ROOT/'lib/crowdsec_config.py'), *map(str, args)], text=True, capture_output=True)
@@ -113,10 +113,10 @@ class TelegramRoutes(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('CROWDSEC_TEST_RELEASE'), 'set CROWDSEC_TEST_RELEASE for official plugin checks')
 class TelegramRendering(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
 
     def setUp(self):
-        test_workflows.Workflows.setUp(self)
+        test_workflows.WorkflowFixtureMixin.setUp(self)
         release = Path(os.environ['CROWDSEC_TEST_RELEASE'])
         cfg = yaml.safe_load((release/'config/config.yaml').read_text())
         for folder in ['data', 'hub', 'plugins']:

@@ -135,8 +135,8 @@ generate_v2bx_observer_config() {
 manage_quick_actions() {
     local choice
     while true; do
-        printf '\n当前位置：首页 → 常用操作 — %s\n1. 防火墙检查与修复\n2. 中转入口验证\n3. V2bX 落地管理\n4. 网站与真实 IP 检查\n5. 通知管理\n6. 查看维护副本版本\n7. 同步维护副本（保留执行时间）\n8. 查看上次中转验收\n0. 返回首页\n' "$(node_role_label)"
-        prompt choice '请选择 [0-8]: ' || return 0
+        printf '\n当前位置：首页 → 常用操作 — %s\n1. 防火墙检查与修复\n2. 中转入口验证\n3. V2bX 落地管理\n4. 网站与真实 IP 检查\n5. 通知管理\n6. 查看维护副本版本\n7. 同步维护副本（保留执行时间）\n8. 查看上次中转验收\n9. 代理协议使用导航（AnyTLS/QUIC 等）\n0. 返回首页\n' "$(node_role_label)"
+        prompt choice '请选择 [0-9]: ' || return 0
         case "$choice" in
             1) locked_operation manage_firewall_maintenance ;;
             2) verify_relay ;;
@@ -146,6 +146,7 @@ manage_quick_actions() {
             6) show_maintenance_runtime_status ;;
             7) locked_operation sync_maintenance_runtime ;;
             8) show_relay_acceptance ;;
+            9) manage_proxy_guidance ;;
             0) return 0 ;;
             *) log_warn '无效选项。' ;;
         esac

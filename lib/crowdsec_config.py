@@ -61,6 +61,23 @@ def read_mapping(path):
     return data
 
 
+def canonical_iptables_chains(data, required_v4=(), required_v6=()):
+    """Preserve effective additive lists, emitting each jump once per family."""
+    def chains(value):
+        if value is None:
+            return []
+        if not isinstance(value, (list, tuple)) or any(
+                not isinstance(item, str) or not re.fullmatch(r'[A-Za-z0-9_.-]+', item) for item in value):
+            raise ValueError('Bouncer iptables chains 配置无效。')
+        return list(value)
+    common = chains(data.get('iptables_chains', []))
+    result = {'iptables_chains': []}
+    for family, required in [('v4', required_v4), ('v6', required_v6)]:
+        key = 'iptables_'+family+'_chains'
+        result[key] = list(dict.fromkeys(common + chains(data.get(key, [])) + chains(required)))
+    return result
+
+
 def notification_locations(root):
     config = merged_config(str(Path(root)/'config.yaml'))
     profiles = config.get('api', {}).get('server', {}).get('profiles_path', str(Path(root)/'profiles.yaml'))
@@ -599,17 +616,12 @@ def main(args):
         if not isinstance(data, dict) or data.get('mode') not in ('nftables', 'iptables', 'ipset'):
             raise ValueError('请先安装具有有效默认配置的官方 Firewall Bouncer')
         data.update(api_url=url, api_key=key)
-        if docker_chain == 'true' and data['mode'] == 'iptables':
-            chains = list(data.get('iptables_v4_chains') or data.get('iptables_chains') or ['INPUT'])
-            if 'DOCKER-USER' not in chains:
-                chains.append('DOCKER-USER')
-            data['iptables_v4_chains'] = chains
         # Package defaults remain untouched; local values override them.
         local = Path(path+'.local')
         overrides = read_mapping(local) if local.exists() else {}
         overrides.update(api_url=url, api_key=key)
-        if docker_chain == 'true' and data['mode'] == 'iptables':
-            overrides['iptables_v4_chains'] = data['iptables_v4_chains']
+        if data['mode'] == 'iptables':
+            overrides.update(canonical_iptables_chains(data, ['DOCKER-USER'] if docker_chain == 'true' else []))
         write(local, overrides, private=True)
     elif action == 'compose':
         path, directory, url, machine, password, port, *images = args

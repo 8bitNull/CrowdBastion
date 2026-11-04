@@ -1,0 +1,17 @@
+test_changed_cron_mode_is_rejected (test_vps167_rollback_review.ManagerRollbackReview.test_changed_cron_mode_is_rejected) ... ok
+test_check_only_performs_no_writes (test_vps167_rollback_review.ManagerRollbackReview.test_check_only_performs_no_writes) ... ok
+test_complete_rollback_and_repeated_invocation (test_vps167_rollback_review.ManagerRollbackReview.test_complete_rollback_and_repeated_invocation) ... ok
+test_cron_symlink_with_identical_bytes_is_rejected (test_vps167_rollback_review.ManagerRollbackReview.test_cron_symlink_with_identical_bytes_is_rejected) ... ok
+test_dangling_parked_destination_is_not_overwritten (test_vps167_rollback_review.ManagerRollbackReview.test_dangling_parked_destination_is_not_overwritten) ... ok
+test_dry_run_rejects_corrupt_original_cron_backup (test_vps167_rollback_review.ManagerRollbackReview.test_dry_run_rejects_corrupt_original_cron_backup) ... ok
+test_dry_run_rejects_missing_original_cron_backup (test_vps167_rollback_review.ManagerRollbackReview.test_dry_run_rejects_missing_original_cron_backup) ... ok
+test_foreign_current_is_rejected (test_vps167_rollback_review.ManagerRollbackReview.test_foreign_current_is_rejected) ... ok
+test_foreign_parked_source_is_rejected_on_resume (test_vps167_rollback_review.ManagerRollbackReview.test_foreign_parked_source_is_rejected_on_resume) ... ok
+test_foreign_root_is_rejected (test_vps167_rollback_review.ManagerRollbackReview.test_foreign_root_is_rejected) ... ok
+test_retry_after_deployed_source_was_parked (test_vps167_rollback_review.ManagerRollbackReview.test_retry_after_deployed_source_was_parked) ... ok
+test_retry_after_second_rename_fails (test_vps167_rollback_review.ManagerRollbackReview.test_retry_after_second_rename_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.043s
+
+OK

@@ -1,0 +1,6 @@
+test_restart_failure_restores_managed_overlay_and_marker_together (test_forwardx_review_regressions.ManagedStartupRollback.test_restart_failure_restores_managed_overlay_and_marker_together) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.233s
+
+OK

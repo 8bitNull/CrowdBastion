@@ -1,0 +1,409 @@
+{
+  "at": "2026-11-03T11:06:44.726236+00:00",
+  "commands": {
+    "services": {
+      "exit": 0,
+      "stdout": "MainPID=58009\nNRestarts=0\nId=forwardx-agent.service\nActiveState=active\n\nMainPID=444\nNRestarts=0\nId=forwardx-realm-both-53534.service\nActiveState=active\n\nMainPID=445\nNRestarts=0\nId=forwardx-realm-both-53536.service\nActiveState=active\n\nMainPID=446\nNRestarts=0\nId=forwardx-realm-both-53537.service\nActiveState=active\n\nMainPID=60520\nNRestarts=0\nId=crowdsec.service\nActiveState=active\n\nMainPID=37807\nNRestarts=0\nId=crowdsec-firewall-bouncer.service\nActiveState=active\n",
+      "stderr": ""
+    },
+    "config_test": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "firewall": {
+      "exit": 0,
+      "stdout": "[已检查] 开机规则覆盖与 Docker 启动顺序\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n[已检查] 决策入核：适用网络 12346，实际集合网络 12346，遗漏 0。\n  phase=decision_coverage error_code=none duration_seconds=1.805 retryable=false\n  阶段耗时：config_read=0.005s, rules_read=0.011s, config_read=0.007s, api_request=0.220s, api_response=0.159s, decision_selection=0.118s, ipset_read=0.020s, ipset_compare=1.264s, decision_coverage=0.000s\n",
+      "stderr": ""
+    },
+    "runtime": {
+      "exit": 0,
+      "stdout": "当前源码指纹：ce4bbd2ce4d5\n维护副本指纹：ce4bbd2ce4d5\n定时任务副本：与当前源码一致。\n",
+      "stderr": ""
+    },
+    "health": {
+      "exit": 2,
+      "stdout": "{\"version\": 1, \"checked_at\": 1793704016.2108347, \"config_path\": \"/etc/crowdsec/config.yaml\", \"checks\": {\"traffic\": \"pending\", \"core\": \"ok\", \"bouncer\": \"ok\", \"api\": \"ok\", \"config\": \"ok\", \"registry\": \"ok\", \"metrics\": \"ok\", \"renewal\": \"ok\", \"firewall_startup\": \"ok\", \"firewall_paths\": \"ok\", \"decisions\": \"ok\", \"logs\": \"ok\", \"acquisition\": \"ok\", \"rules\": \"ok\"}, \"required\": [\"traffic\", \"core\", \"logs\", \"bouncer\", \"api\", \"config\", \"registry\", \"metrics\", \"renewal\", \"firewall_startup\", \"firewall_paths\", \"decisions\", \"acquisition\", \"rules\"], \"summary\": {\"verdict\": \"运行检查通过，实际拦截待验证\", \"status\": 2, \"confirmed\": \"本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则\", \"attention\": \"\", \"additional\": 0, \"impact\": \"\", \"action\": \"verify\", \"action_label\": \"查看如何验证实际拦截\", \"next\": \"按实际流量路径完成一次外部拦截验证。\"}, \"roles\": [\"relay\"], \"scope\": \"本地中转\"}\n",
+      "stderr": ""
+    },
+    "sockets": {
+      "exit": 0,
+      "stdout": "Netid State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess                              \nudp   UNCONN 0      0            0.0.0.0:68         0.0.0.0:*    users:((\"dhclient\",pid=379,fd=7))   \nudp   UNCONN 0      0                  *:53534            *:*    users:((\"realm\",pid=444,fd=6))      \nudp   UNCONN 0      0                  *:53536            *:*    users:((\"realm\",pid=445,fd=6))      \nudp   UNCONN 0      0                  *:53537            *:*    users:((\"realm\",pid=446,fd=6))      \ntcp   LISTEN 0      128          0.0.0.0:53322      0.0.0.0:*    users:((\"sshd\",pid=472,fd=3))       \ntcp   LISTEN 0      65535      127.0.0.1:8080       0.0.0.0:*    users:((\"crowdsec\",pid=60520,fd=28))\ntcp   LISTEN 0      65535      127.0.0.1:6060       0.0.0.0:*    users:((\"crowdsec\",pid=60520,fd=16))\ntcp   LISTEN 0      1024               *:53534            *:*    users:((\"realm\",pid=444,fd=7))      \ntcp   LISTEN 0      1024               *:53536            *:*    users:((\"realm\",pid=445,fd=7))      \ntcp   LISTEN 0      1024               *:53537            *:*    users:((\"realm\",pid=446,fd=7))      \ntcp   LISTEN 0      128             [::]:53322         [::]:*    users:((\"sshd\",pid=472,fd=4))       \n",
+      "stderr": ""
+    },
+    "qdisc": {
+      "exit": 0,
+      "stdout": "qdisc fq 0: root refcnt 2 limit 10000p flow_limit 100p buckets 1024 orphan_mask 1023 quantum 3028b initial_quantum 15140b low_rate_threshold 550Kbit refill_delay 40ms timer_slack 10us horizon 10s horizon_drop \n Sent 1274673130 bytes 2033268 pkt (dropped 0, overlimits 0 requeues 0) \n backlog 0b 0p requeues 0\n  flows 519 (inactive 519 throttled 0)\n  gc 337 highprio 0 throttled 172409 latency 29.7us\n",
+      "stderr": ""
+    },
+    "kernel": {
+      "exit": 0,
+      "stdout": "net.ipv4.tcp_syn_retries = 6\nnet.ipv4.tcp_synack_retries = 5\nnet.ipv4.tcp_orphan_retries = 0\nnet.ipv4.tcp_fin_timeout = 60\nnet.ipv4.tcp_autocorking = 1\nnet.ipv4.tcp_no_metrics_save = 0\nnet.ipv4.tcp_tw_reuse = 2\nnet.core.default_qdisc = fq\nnet.ipv4.tcp_congestion_control = bbr\nnet.core.rmem_max = 33554432\nnet.core.wmem_max = 33554432\nnet.ipv4.udp_rmem_min = 8192\nnet.ipv4.udp_wmem_min = 8192\nnet.ipv4.tcp_mem = 262144\t524288\t1048576\n",
+      "stderr": ""
+    },
+    "namespaces": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "links": {
+      "exit": 0,
+      "stdout": "[{\"ifindex\":1,\"ifname\":\"lo\",\"flags\":[\"LOOPBACK\",\"UP\",\"LOWER_UP\"],\"mtu\":65536,\"qdisc\":\"noqueue\",\"operstate\":\"UNKNOWN\",\"linkmode\":\"DEFAULT\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"loopback\",\"address\":\"00:00:00:00:00:00\",\"broadcast\":\"00:00:00:00:00:00\"},{\"ifindex\":2,\"ifname\":\"ens18\",\"flags\":[\"BROADCAST\",\"MULTICAST\",\"UP\",\"LOWER_UP\"],\"mtu\":1500,\"qdisc\":\"fq\",\"operstate\":\"UP\",\"linkmode\":\"DEFAULT\",\"group\":\"default\",\"txqlen\":1000,\"link_type\":\"ether\",\"address\":\"02:00:00:00:00:2a\",\"broadcast\":\"ff:ff:ff:ff:ff:ff\",\"altnames\":[\"enp0s18\"]}]\n",
+      "stderr": ""
+    },
+    "cron": {
+      "exit": 0,
+      "stdout": "# CrowdBastion disabled full-table restore: @reboot iptables-restore < /etc/iptables/rules.v4\n",
+      "stderr": ""
+    },
+    "journal": {
+      "exit": 0,
+      "stdout": "Nov 03 18:45:42 localhost systemd-journald[181]: Journal stopped\nNov 03 18:45:42 localhost systemd-journald[35161]: Journal started\nNov 03 18:45:42 localhost systemd-journald[35161]: System Journal (/var/log/journal/bf07e5988a624074ba3087fb747e024d) is 36.1M, max 128.0M, 91.8M free.\n",
+      "stderr": ""
+    },
+    "packages": {
+      "exit": 0,
+      "stdout": "crowdsec install ok installed 1.8.2\ncrowdsec-firewall-bouncer-iptables install ok installed 0.0.36\n",
+      "stderr": ""
+    }
+  },
+  "protected_hashes": {
+    "/usr/local/bin/realm": true,
+    "/etc/forwardx/realm/forwardx-realm-both-53537.toml": true,
+    "/etc/forwardx/realm/forwardx-realm-both-53536.toml": true,
+    "/etc/forwardx/realm/forwardx-realm-both-53534.toml": true
+  },
+  "identity_preserved": {
+    "etc/crowdsec/local_api_credentials.yaml": true,
+    "etc/crowdsec/online_api_credentials.yaml": true,
+    "etc/crowdsec/bouncers/crowdsec-firewall-bouncer.yaml": true
+  },
+  "forwardx_pid_continuity": {
+    "forwardx-agent.service": false,
+    "forwardx-realm-both-53534.service": true,
+    "forwardx-realm-both-53536.service": true,
+    "forwardx-realm-both-53537.service": true
+  },
+  "metrics": {
+    "acquisition": {
+      "file:/var/log/auth.log": {
+        "parsed": 4,
+        "reads": 36,
+        "unparsed": 32,
+        "whitelisted": 4
+      }
+    },
+    "realm_parsers": {}
+  },
+  "bouncers": [
+    {
+      "name": "cs-firewall-bouncer-1791876965",
+      "type": "crowdsec-firewall-bouncer",
+      "last_pull": "2026-11-03T11:06:54.244612874Z",
+      "revoked": false,
+      "version": "v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56"
+    }
+  ],
+  "bouncer_mode": "iptables",
+  "migration": {
+    "status": "committed",
+    "ssh": [
+      "192.0.2.22",
+      "43916",
+      "192.0.2.10",
+      "53322"
+    ],
+    "created": 1793702686.0992503,
+    "base_sha256": "f7d2fa63012e02c8f5b505cfea02e06e0789ded4cfaa0b3330e677ea2a45a10c"
+  },
+  "network_commit": {
+    "deadline": 1793704044,
+    "error_code": null,
+    "errors": [],
+    "id": "1fbe690645314c398bb46f6ddec4dfca",
+    "kind": "network",
+    "state": "committed",
+    "version": 1
+  },
+  "enforcement": {
+    "at": "2026-11-03T10:48:44.121053+00:00",
+    "namespace": "cb144-03e0841e",
+    "reason": "crowdbastion-realm-review-03e0841e",
+    "test_source": "203.0.113.242",
+    "control_source": "203.0.113.243",
+    "coverage": "actual realm TCP listeners; controlled UDP echo behind production INPUT; IPv4 synthetic ingress, not public WAN/backend authentication",
+    "checks": {
+      "before": {
+        "tcp:53534": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53536": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53537": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "udp:17773": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        }
+      },
+      "banned": {
+        "tcp:53534": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53536": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53537": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "udp:17773": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        }
+      },
+      "renewed_past_original_expiry": {
+        "tcp:53534": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53536": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53537": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "udp:17773": {
+          "test": {
+            "reachable": false,
+            "error": "TimeoutError"
+          },
+          "control": {
+            "reachable": true
+          }
+        }
+      },
+      "recovered": {
+        "tcp:53534": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53536": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53537": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "udp:17773": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        }
+      },
+      "natural_expiry_recovered": {
+        "tcp:53534": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53536": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "tcp:53537": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        },
+        "udp:17773": {
+          "test": {
+            "reachable": true
+          },
+          "control": {
+            "reachable": true
+          }
+        }
+      }
+    },
+    "cleanup": {
+      "decision_delete_exit": 0,
+      "udp_listener_stopped": true,
+      "veth_delete_exit": 0,
+      "namespace_delete_exit": 0,
+      "namespace_absent": true,
+      "veth_absent": true,
+      "test_absent_from_sets": true,
+      "no_test_decision": true
+    },
+    "transaction_created": 1793702686.0992503,
+    "bouncer_override_sha256": "b4ea512aede61caaf0faf93376c12e7f006dcc97275ffa5a93ac289bb235ca32",
+    "decision_add_exit": 0,
+    "bouncer_sets": [
+      "crowdsec-blacklists-1"
+    ],
+    "input_rule_evidence": {
+      "before": {
+        "input_jump": "[2628:5732828] -A INPUT -j CROWDSEC_CHAIN",
+        "drop_rules": [
+          {
+            "table": "filter",
+            "chain": "CROWDSEC_CHAIN",
+            "set": "crowdsec-blacklists-1",
+            "packets": 0,
+            "bytes": 0,
+            "rule": "[0:0] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-1 src -m comment --comment \"CrowdSec: cscli\" -j DROP"
+          }
+        ]
+      },
+      "after": {
+        "input_jump": "[2662:5734914] -A INPUT -j CROWDSEC_CHAIN",
+        "drop_rules": [
+          {
+            "table": "filter",
+            "chain": "CROWDSEC_CHAIN",
+            "set": "crowdsec-blacklists-1",
+            "packets": 4,
+            "bytes": 227,
+            "rule": "[4:227] -A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-1 src -m comment --comment \"CrowdSec: cscli\" -j DROP"
+          }
+        ]
+      }
+    },
+    "drop_counters": {
+      "before": {
+        "crowdsec-blacklists-1": 0
+      },
+      "after": {
+        "crowdsec-blacklists-1": 4
+      }
+    },
+    "renewal_verified": true,
+    "expiry_verified": true,
+    "status": "passed"
+  },
+  "guard_removed": true,
+  "forwardx_accounting_preserved": true,
+  "network_values": {
+    "net.ipv4.tcp_syn_retries": "6",
+    "net.ipv4.tcp_synack_retries": "5",
+    "net.ipv4.tcp_orphan_retries": "0",
+    "net.ipv4.tcp_fin_timeout": "60",
+    "net.ipv4.tcp_autocorking": "1",
+    "net.ipv4.tcp_no_metrics_save": "0",
+    "net.ipv4.tcp_tw_reuse": "2",
+    "net.core.default_qdisc": "fq",
+    "net.ipv4.tcp_congestion_control": "bbr",
+    "net.core.rmem_max": "33554432",
+    "net.core.wmem_max": "33554432",
+    "net.ipv4.udp_rmem_min": "8192",
+    "net.ipv4.udp_wmem_min": "8192",
+    "net.ipv4.tcp_mem": "262144\t524288\t1048576"
+  },
+  "socket_counters": {
+    "UdpRcvbufErrors": 0,
+    "UdpSndbufErrors": 0,
+    "UdpMemErrors": 0,
+    "TcpExtListenOverflows": 0,
+    "TcpExtListenDrops": 7
+  },
+  "backend_tcp": {
+    "2087": true,
+    "2096": true
+  },
+  "realm_follower": [
+    "60602"
+  ],
+  "observation_parser_test": {
+    "exit": 0,
+    "classified": true,
+    "source_ip_extracted": false
+  },
+  "status": "verified"
+}

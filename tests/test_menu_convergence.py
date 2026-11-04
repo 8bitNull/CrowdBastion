@@ -2,13 +2,13 @@
 import unittest
 
 import test_node_guidance
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class MenuConvergence(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     roles = test_node_guidance.Guidance.roles
 
     def test_remote_ip_menu_without_core_never_uses_local_cscli(self):

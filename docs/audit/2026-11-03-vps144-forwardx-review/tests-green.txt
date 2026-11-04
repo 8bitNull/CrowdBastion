@@ -1,0 +1,17 @@
+test_executable_rejects_path_override_arguments (__main__.StaticPolicyTest.test_executable_rejects_path_override_arguments) ... ok
+test_final_verification_failure_rolls_back_new_rules (__main__.StaticPolicyTest.test_final_verification_failure_rolls_back_new_rules) ... ok
+test_intact_is_idempotent_and_preserves_first_bouncer_jump (__main__.StaticPolicyTest.test_intact_is_idempotent_and_preserves_first_bouncer_jump) ... ok
+test_invalid_late_manifest_is_rejected_without_commands (__main__.StaticPolicyTest.test_invalid_late_manifest_is_rejected_without_commands) ... ok
+test_late_append_failure_rolls_back_only_new_rules (__main__.StaticPolicyTest.test_late_append_failure_rolls_back_only_new_rules) ... ok
+test_late_lookup_failure_does_not_append (__main__.StaticPolicyTest.test_late_lookup_failure_does_not_append) ... ok
+test_real_cancellation_and_repeated_cleanup_signals (__main__.StaticPolicyTest.test_real_cancellation_and_repeated_cleanup_signals) ... ok
+test_repeat_signal_during_first_ignore_installation_cannot_skip_cleanup (__main__.StaticPolicyTest.test_repeat_signal_during_first_ignore_installation_cannot_skip_cleanup) ... ok
+test_rollback_failure_continues_and_reports_incomplete (__main__.StaticPolicyTest.test_rollback_failure_continues_and_reports_incomplete) ... ok
+test_side_effect_then_timeout_is_owned_and_removed (__main__.StaticPolicyTest.test_side_effect_then_timeout_is_owned_and_removed) ... ok
+test_sticky_lock_parent_and_busy_lock_preserve_existing_file (__main__.StaticPolicyTest.test_sticky_lock_parent_and_busy_lock_preserve_existing_file) ... ok
+test_unsafe_lock_link_and_writable_file_are_rejected (__main__.StaticPolicyTest.test_unsafe_lock_link_and_writable_file_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 23.873s
+
+OK

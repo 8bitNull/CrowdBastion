@@ -1,12 +1,15 @@
 """Read-only Bouncer decision snapshots and referenced ipset coverage."""
 from bisect import bisect_right
+import http.client
 import ipaddress
 import json
 from pathlib import Path
 import re
 import shlex
+import ssl
 import subprocess
 import time
+import urllib.error
 import urllib.request
 
 import yaml
@@ -15,11 +18,19 @@ from crowdsec_config import merged_config
 
 class EvidenceError(ValueError):
     """Only fixed diagnostics may cross the credential-reading boundary."""
+    def __init__(self, message, phase='api_response', error_code='api_response_invalid', retryable=False, duration_seconds=0):
+        super().__init__(message)
+        self.phase = phase
+        self.error_code = error_code
+        self.retryable = retryable
+        self.duration_seconds = duration_seconds
+        self.phase_duration_seconds = duration_seconds
+        self.phases = []
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
-        raise EvidenceError('决策检查拒绝重定向。')
+        raise EvidenceError('决策检查拒绝重定向。', 'api_request', 'api_redirect_refused')
 
 
 def seconds(value):
@@ -44,23 +55,50 @@ def networks(rows, minleft=15):
     return result
 
 
-def live(config):
+def live(config, *, timings=None):
+    """Return rows; optionally append timings measured at actual boundaries."""
+    started = time.monotonic()
+    phase = 'config_read'
+    phase_started = started
+    timings = [] if timings is None else timings
+    first_timing = len(timings)
+
+    def record(code='none', retryable=False):
+        now = time.monotonic()
+        timings.append({'phase': phase, 'duration_seconds': round(now-phase_started, 6),
+                        'error_code': code, 'retryable': retryable})
+        return now
+
+    def advance(next_phase):
+        nonlocal phase, phase_started
+        phase_started = record()
+        phase = next_phase
+
+    def failed(error):
+        now = record(error.error_code, error.retryable)
+        error.duration_seconds = round(now-started, 6)
+        error.phase_duration_seconds = timings[-1]['duration_seconds']
+        error.phases = timings[first_timing:]
+        return error
+
     try:
         data = merged_config(config)
         for field in ('origins', 'scopes', 'scenarios_containing', 'scenarios_not_containing'):
             if data.get(field):
-                raise EvidenceError('存在自定义决策过滤，自动入核比对尚未支持。')
+                raise EvidenceError('存在自定义决策过滤，自动入核比对尚未支持。', phase, 'custom_filter_unsupported')
         if data.get('supported_decisions_types', ['ban']) != ['ban']:
-            raise EvidenceError('自定义决策类型尚未支持自动比对。')
+            raise EvidenceError('自定义决策类型尚未支持自动比对。', phase, 'custom_filter_unsupported')
         url, key = data['api_url'], data['api_key']
         from crowdsec_remote_bouncer import validate
         url = validate(url, key)
         if data.get('insecure_skip_verify') or any(data.get(k) for k in ('cert_path', 'key_path', 'ca_cert_path')):
-            raise EvidenceError('自定义 TLS 认证尚未支持自动决策检查。')
+            raise EvidenceError('自定义 TLS 认证尚未支持自动决策检查。', phase, 'custom_tls_unsupported')
         request = urllib.request.Request(url+'v1/decisions', headers={'X-Api-Key': key})
+        advance('api_request')
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
         with opener.open(request, timeout=10) as response:
             payload = response.read(32*1024*1024+1)
+        advance('api_response')
         if len(payload) > 32*1024*1024:
             raise EvidenceError('决策响应超过检查容量。')
         rows = json.loads(payload)
@@ -69,11 +107,27 @@ def live(config):
         if not isinstance(rows, list):
             raise EvidenceError('决策响应格式无效。')
         networks(rows, 0)
+        record()
         return rows
-    except EvidenceError:
+    except EvidenceError as error:
+        failed(error)
         raise
-    except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError):
-        raise EvidenceError('无法读取有效决策（配置、认证、TLS 或连接错误）；未输出凭据。') from None
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError, yaml.YAMLError, http.client.HTTPException) as error:
+        code, retryable = 'config_invalid', False
+        if phase == 'api_response':
+            code = 'api_response_invalid'
+        elif phase == 'api_request':
+            retryable = True
+            code = 'api_connection_failed'
+            if isinstance(error, urllib.error.HTTPError):
+                code = 'api_auth_failed' if error.code in (401, 403) else 'api_http_error'
+                retryable = error.code == 429 or error.code >= 500
+            elif isinstance(error, TimeoutError) or isinstance(getattr(error, 'reason', None), TimeoutError):
+                code = 'api_timeout'
+            elif isinstance(error, ssl.SSLError) or isinstance(getattr(error, 'reason', None), ssl.SSLError):
+                code, retryable = 'api_tls_error', False
+        raise failed(EvidenceError('决策检查未完成；按阶段和错误码核对配置、API 或连接，未输出凭据。',
+                                   phase, code, retryable)) from None
 
 
 def membership(expected, references, payload):
@@ -112,23 +166,76 @@ def membership(expected, references, payload):
 
 
 def inspect(config, docker=None):
-    from crowdsec_firewall_runtime import iptables_references, docker_present, run, PathCoverageError
+    from crowdsec_firewall_runtime import iptables_references, docker_present, run, PathCoverageError, IncompletePathError
+    started = time.monotonic()
+    phase = 'config_read'
+    phase_started = started
+    phases = []
+    phase_timed_by_live = False
+    def advance(next_phase):
+        nonlocal phase, phase_started
+        now = time.monotonic()
+        phases.append({'phase': phase, 'duration_seconds': round(now-phase_started, 6),
+                       'error_code': 'none', 'retryable': False})
+        phase, phase_started = next_phase, now
+
+    def finish(report, code='none', retryable=False, failure_phase=None):
+        now = time.monotonic()
+        if not phase_timed_by_live:
+            phases.append({'phase': phase, 'duration_seconds': round(now-phase_started, 6),
+                           'error_code': code, 'retryable': retryable})
+        return {**report, 'phase': failure_phase or phase, 'error_code': code,
+                'duration_seconds': round(now-started, 6), 'retryable': retryable, 'phases': phases}
     try:
         data = merged_config(config)
         if data.get('mode') != 'iptables':
-            return {'state': 'unknown', 'reason': '当前后端尚未支持此入核检查。'}
-        refs = iptables_references(config, docker_present() if docker is None else docker)
-        rows = live(config)
+            return finish({'state': 'unknown', 'reason': '当前后端尚未支持此入核检查。'}, 'backend_unsupported')
+        advance('rules_read')
+        nested_timings = []
+        try:
+            refs = iptables_references(config, docker_present() if docker is None else docker,
+                                       timings=nested_timings)
+        finally:
+            # Successful and failed idle-chain probes overlap rules_read.
+            phases.extend({**entry, 'nested': True} for entry in nested_timings)
+        advance('api_request')
+        phase_timed_by_live = True
+        # live() owns config/request/body/response timing, including errors.
+        # Do not append the whole call again under an API phase name.
+        rows = live(config, timings=phases)
+        phase = 'decision_selection'
+        phase_started = time.monotonic()
+        phase_timed_by_live = False
         expected = networks(rows)
         # Read expected decisions before the kernel, allowing normal sync to
         # catch up. Near-expiry decisions are excluded from this snapshot.
-        report = membership(expected, refs, run(['ipset', 'save']).stdout)
+        advance('ipset_read')
+        payload = run(['ipset', 'save']).stdout
+        advance('ipset_compare')
+        report = membership(expected, refs, payload)
         report['state'] = 'pending' if report['missing'] else 'ok'
-        return report
+        advance('decision_coverage')
+        return finish(report, 'decisions_pending' if report['missing'] else 'none', bool(report['missing']))
     except PathCoverageError:
-        return {'state': 'fault', 'reason': '防火墙执行入口或引用规则不完整。'}
-    except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError, subprocess.SubprocessError):
-        return {'state': 'unknown', 'reason': '无法完整核对适用决策及实际引用的内核集合；请查看配置和连接状态。'}
+        return finish({'state': 'fault', 'reason': '防火墙执行入口或引用规则不完整。'}, 'firewall_path_incomplete')
+    except IncompletePathError as error:
+        diagnostic = getattr(error, 'diagnostic', None)
+        return finish({'state': 'unknown', 'reason': '无法确认空链对应地址族的有效决策；请按阶段和错误码检查。'},
+                      diagnostic.error_code if isinstance(diagnostic, EvidenceError) else 'rules_decisions_unknown',
+                      diagnostic.retryable if isinstance(diagnostic, EvidenceError) else True,
+                      diagnostic.phase if isinstance(diagnostic, EvidenceError) else 'rules_read')
+    except EvidenceError as error:
+        # Membership errors share the fixed exception type but belong to the
+        # comparison phase, whereas live API failures retain their own stage.
+        api = phase in ('api_request', 'decision_selection', 'rules_read')
+        return finish({'state': 'unknown', 'reason': '无法完整核对适用决策及实际引用的内核集合；请按阶段和错误码检查。'},
+                      error.error_code if api else 'ipset_membership_invalid',
+                      error.retryable if api else False, error.phase if api else phase)
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError, yaml.YAMLError, subprocess.SubprocessError):
+        codes = {'config_read': 'config_invalid', 'rules_read': 'rules_read_failed', 'ipset_read': 'ipset_read_failed',
+                 'api_request': 'api_connection_failed', 'decision_selection': 'api_response_invalid', 'ipset_compare': 'ipset_membership_invalid'}
+        return finish({'state': 'unknown', 'reason': '无法完整核对适用决策及实际引用的内核集合；请按阶段和错误码检查。'},
+                      codes[phase], phase in ('rules_read', 'ipset_read', 'api_request'))
 
 
 def wait(config, seconds=30, docker=None):
@@ -154,6 +261,10 @@ def render(report):
         print(f"{label} 决策入核：适用网络 {report['expected']}，实际集合网络 {report['kernel']}，遗漏 {report['missing']}。")
     else:
         print(label+' 决策入核：'+report['reason'])
+    if 'phase' in report:
+        print(f"  phase={report['phase']} error_code={report['error_code']} duration_seconds={report['duration_seconds']:.3f} retryable={str(report['retryable']).lower()}")
+        print('  阶段耗时：'+', '.join(f"{entry['phase']}={entry['duration_seconds']:.3f}s"+
+              (' (nested)' if entry.get('nested') else '') for entry in report.get('phases', [])))
     return 0 if state == 'ok' else 1 if state == 'fault' else 2
 
 

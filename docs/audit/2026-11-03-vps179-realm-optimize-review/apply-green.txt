@@ -1,0 +1,7 @@
+test_keyboard_interrupt_recovers_attempted_core_restart (__main__.ApplyRecoveryTests.test_keyboard_interrupt_recovers_attempted_core_restart) ... ok
+test_remove_failure_does_not_skip_core_recovery (__main__.ApplyRecoveryTests.test_remove_failure_does_not_skip_core_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.008s
+
+OK

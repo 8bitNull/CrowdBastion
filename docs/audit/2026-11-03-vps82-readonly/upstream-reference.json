@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-03T11:58:11.128237+00:00",
+  "sources": {
+    "https://www.debian.org/releases/bullseye/": {
+      "sha256": "925c91f741b2d15e1ead66811babaf26cc66da2921aed5d09a86ed601076324a",
+      "excerpt": "The Debian 11 life cycle encompassed five years: the initial three years of full Debian support, until August 14th, 2024, and two years of Long Term Support (LTS), until August 31st, 2026. The set of supported architectures was limited during the Bullseye LTS term to i386, amd64, armhf and arm64. For more information, please refer to the Security Information webpage and the LTS section of the Debian Wiki . Third-parties offer paid security support for bullseye, up to June 30th, 2031. See: extended LTS support . To obta"
+    },
+    "https://install.crowdsec.net": {
+      "sha256": "b0fb116217e1aa4c2fb09fe3b887615a80c17ca7b80253e56df176dc9d555591",
+      "apt_source_lines": [
+        "echo \"deb [signed-by=/etc/apt/keyrings/crowdsec_${repo}-archive-keyring.gpg] https://packagecloud.io/crowdsec/${repo}/any/ any main\" >\"$apt_source_path\""
+      ]
+    }
+  }
+}

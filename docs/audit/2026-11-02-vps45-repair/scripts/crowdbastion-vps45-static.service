@@ -1,0 +1,13 @@
+[Unit]
+Description=CrowdBastion VPS45 static INPUT baseline
+After=local-fs.target
+Before=docker.service crowdsec-firewall-bouncer.service 1panel-agent.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -B /usr/local/lib/crowdbastion-vps45-static/apply.py
+RemainAfterExit=yes
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

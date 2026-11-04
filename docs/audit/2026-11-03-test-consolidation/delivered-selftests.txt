@@ -1,0 +1,14 @@
+test_default_runs_full_suite_and_writes_per_test_timings (test_test_runner.TestEntrypoint.test_default_runs_full_suite_and_writes_per_test_timings) ... ok
+test_empty_selection_and_broken_import_are_not_successful (test_test_runner.TestEntrypoint.test_empty_selection_and_broken_import_are_not_successful) ... ok
+test_expected_failure_and_unexpected_success_preserve_unittest_semantics (test_test_runner.TestEntrypoint.test_expected_failure_and_unexpected_success_preserve_unittest_semantics) ... ok
+test_failures_subtests_and_fixture_errors_cannot_be_reported_as_success (test_test_runner.TestEntrypoint.test_failures_subtests_and_fixture_errors_cannot_be_reported_as_success) ... ok
+test_invalid_manifest_or_unknown_module_fails_before_running (test_test_runner.TestEntrypoint.test_invalid_manifest_or_unknown_module_fails_before_running) ... ok
+test_skip_reason_is_visible_and_strict_mode_rejects_skips (test_test_runner.TestEntrypoint.test_skip_reason_is_visible_and_strict_mode_rejects_skips) ... ok
+test_tiers_and_module_filters_list_without_running_setup (test_test_runner.TestEntrypoint.test_tiers_and_module_filters_list_without_running_setup) ... ok
+test_unwritable_timing_report_is_an_error (test_test_runner.TestEntrypoint.test_unwritable_timing_report_is_an_error) ... ok
+test_fixture_has_no_discoverable_test_case_or_test_method (test_test_runner.WorkflowFixtureContract.test_fixture_has_no_discoverable_test_case_or_test_method) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.131s
+
+OK

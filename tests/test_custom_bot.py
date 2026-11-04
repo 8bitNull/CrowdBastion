@@ -9,7 +9,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -269,9 +269,9 @@ class CustomBot(unittest.TestCase):
 
 
 class BotService(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def setup_bot(self, overrides=''):
         return self.run_shell('setup_custom_bot', '123:ABC\n-123\n456\n\n\n', overrides, timeout=10)

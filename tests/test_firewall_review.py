@@ -271,10 +271,10 @@ class FlowReview(unittest.TestCase):
 
 
 class ManagerReview(unittest.TestCase):
-    import test_workflows as workflows
-    setUp = workflows.Workflows.setUp
-    run_shell = workflows.Workflows.run_shell
-    commands = workflows.Workflows.commands
+    import workflow_fixture as workflows
+    setUp = workflows.WorkflowFixtureMixin.setUp
+    run_shell = workflows.WorkflowFixtureMixin.run_shell
+    commands = workflows.WorkflowFixtureMixin.commands
 
     def test_pending_migration_blocks_other_mutations_but_allows_read_only_check(self):
         overrides = 'mkdir -p "$FIREWALL_MIGRATION_STATE"'

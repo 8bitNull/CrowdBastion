@@ -12,7 +12,7 @@ import time
 import unittest
 from contextlib import redirect_stdout
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'lib'))
@@ -81,9 +81,9 @@ class Preferences(unittest.TestCase):
 
 
 class Guidance(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def roles(self, *roles):
         path = self.base/'var/lib/crowdbastion/node-roles.json'
@@ -409,3 +409,47 @@ class SystemMetrics(unittest.TestCase):
             self.assertEqual(result, 2)
             self.assertIn('96', output.getvalue())
             self.assertIn('尚未验证', output.getvalue())
+
+
+class PurposeAwareOptimize(unittest.TestCase):
+    setUp = Guidance.setUp
+    def run_shell(self, action, user_input='', overrides=''):
+        return Guidance.run_shell(self, action, user_input,
+                                  'prompt() { printf "%s\\n" "$2"; read -r "$1"; }\n'+overrides)
+
+    commands = Guidance.commands
+    roles = Guidance.roles
+
+    def test_node_only_skips_http_repair_without_changing_preferences(self):
+        self.roles('node')
+        pref = self.base/'var/lib/crowdbastion/node-roles.json'
+        before = pref.read_bytes()
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertNotIn('修复 HTTP 日志采集？', p.stdout)
+        self.assertIn('不适用', p.stdout)
+        self.assertEqual(pref.read_bytes(), before)
+        self.assertNotIn('collections install', self.commands())
+
+    def test_unset_roles_retains_legacy_http_prompt_order(self):
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\nn\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertLess(p.stdout.index('补齐基础'), p.stdout.index('修复 HTTP'))
+        self.assertLess(p.stdout.index('修复 HTTP'), p.stdout.index('启用 loopback'))
+
+    def test_managed_website_keeps_http_repair_on_node_role(self):
+        self.roles('node')
+        (self.config/'acquis.d').mkdir(exist_ok=True)
+        (self.config/'acquis.d/web-sites.yaml').write_text('filenames: [/web/access.log]\nlabels: {type: nginx}\n')
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\nn\n')
+        self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+        self.assertIn('修复 HTTP 日志采集？', p.stdout)
+
+    def test_invalid_preferences_stop_before_prompts(self):
+        self.roles('node')
+        pref = self.base/'var/lib/crowdbastion/node-roles.json'
+        pref.write_text('{"version":99,"roles":["node"]}')
+        p = self.run_shell('smart_audit_and_optimize', 'n\nn\nn\n')
+        self.assertEqual(p.returncode, 1, p.stdout+p.stderr)
+        self.assertNotIn('修复 HTTP 日志采集？', p.stdout)
+        self.assertEqual(pref.read_text(), '{"version":99,"roles":["node"]}')

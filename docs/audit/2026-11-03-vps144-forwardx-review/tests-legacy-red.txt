@@ -1,0 +1,65 @@
+test_executable_rejects_path_override_arguments (__main__.StaticPolicyTest.test_executable_rejects_path_override_arguments) ... skipped 'candidate CLI contract'
+test_intact_is_idempotent_and_preserves_first_bouncer_jump (__main__.StaticPolicyTest.test_intact_is_idempotent_and_preserves_first_bouncer_jump) ... ok
+test_invalid_late_manifest_is_rejected_without_commands (__main__.StaticPolicyTest.test_invalid_late_manifest_is_rejected_without_commands) ... FAIL
+test_late_append_failure_rolls_back_only_new_rules (__main__.StaticPolicyTest.test_late_append_failure_rolls_back_only_new_rules) ... FAIL
+test_late_lookup_failure_does_not_append (__main__.StaticPolicyTest.test_late_lookup_failure_does_not_append) ... FAIL
+test_real_cancellation_and_repeated_cleanup_signals (__main__.StaticPolicyTest.test_real_cancellation_and_repeated_cleanup_signals) ... skipped 'legacy SIGTERM would terminate test harness'
+test_rollback_failure_continues_and_reports_incomplete (__main__.StaticPolicyTest.test_rollback_failure_continues_and_reports_incomplete) ... skipped 'candidate reporting contract'
+test_side_effect_then_timeout_is_owned_and_removed (__main__.StaticPolicyTest.test_side_effect_then_timeout_is_owned_and_removed) ... FAIL
+test_sticky_lock_parent_and_busy_lock_preserve_existing_file (__main__.StaticPolicyTest.test_sticky_lock_parent_and_busy_lock_preserve_existing_file) ... skipped 'candidate lock contract'
+test_unsafe_lock_link_and_writable_file_are_rejected (__main__.StaticPolicyTest.test_unsafe_lock_link_and_writable_file_are_rejected) ... skipped 'candidate lock contract'
+
+======================================================================
+FAIL: test_invalid_late_manifest_is_rejected_without_commands (__main__.StaticPolicyTest.test_invalid_late_manifest_is_rejected_without_commands)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/docs/audit/2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py", line 151, in test_invalid_late_manifest_is_rejected_without_commands
+    with self.assertRaises(Exception):
+AssertionError: Exception not raised
+
+======================================================================
+FAIL: test_late_append_failure_rolls_back_only_new_rules (__main__.StaticPolicyTest.test_late_append_failure_rolls_back_only_new_rules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/docs/audit/2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py", line 160, in test_late_append_failure_rolls_back_only_new_rules
+    self.assertEqual(self.snapshot()['rules'], self.initial)
+AssertionError: Lists differ: [['ip[246 chars]PT']], ['iptables', 'mangle', ['OUTPUT', '-p',[358 chars]8']]] != [['ip[246 chars]PT']]]
+
+First list contains 3 additional elements.
+First extra element 3:
+['iptables', 'mangle', ['OUTPUT', '-p', 'tcp', '-m', 'tcp', '--tcp-flags', 'SYN,RST', 'SYN', '-j', 'TCPMSS', '--set-mss', '1448']]
+
+Diff is 1120 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_late_lookup_failure_does_not_append (__main__.StaticPolicyTest.test_late_lookup_failure_does_not_append)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/docs/audit/2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py", line 145, in test_late_lookup_failure_does_not_append
+    self.assertEqual(self.snapshot()['rules'], self.initial)
+AssertionError: Lists differ: [['ip[246 chars]PT']], ['iptables', 'mangle', ['OUTPUT', '-p',[620 chars]T']]] != [['ip[246 chars]PT']]]
+
+First list contains 6 additional elements.
+First extra element 3:
+['iptables', 'mangle', ['OUTPUT', '-p', 'tcp', '-m', 'tcp', '--tcp-flags', 'SYN,RST', 'SYN', '-j', 'TCPMSS', '--set-mss', '1448']]
+
+Diff is 1407 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_side_effect_then_timeout_is_owned_and_removed (__main__.StaticPolicyTest.test_side_effect_then_timeout_is_owned_and_removed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/projects/script/CrowdBastion/docs/audit/2026-11-03-vps144-forwardx-review/scripts/test_static_policy.py", line 166, in test_side_effect_then_timeout_is_owned_and_removed
+    self.assertEqual(self.snapshot()['rules'], self.initial)
+AssertionError: Lists differ: [['ip[246 chars]PT']], ['iptables', 'mangle', ['OUTPUT', '-p',[458 chars]T']]] != [['ip[246 chars]PT']]]
+
+First list contains 4 additional elements.
+First extra element 3:
+['iptables', 'mangle', ['OUTPUT', '-p', 'tcp', '-m', 'tcp', '--tcp-flags', 'SYN,RST', 'SYN', '-j', 'TCPMSS', '--set-mss', '1448']]
+
+Diff is 1231 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 10 tests in 7.445s
+
+FAILED (failures=4, skipped=5)

@@ -7,15 +7,15 @@ import subprocess
 import unittest
 
 import yaml
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class RelayMode(unittest.TestCase):
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
 
     def setUp(self):
-        test_workflows.Workflows.setUp(self)
+        test_workflows.WorkflowFixtureMixin.setUp(self)
         # main re-detects the OS, using the fixture's rewritten /etc path.
         (self.base/'etc/os-release').write_text('ID=debian\n')
 

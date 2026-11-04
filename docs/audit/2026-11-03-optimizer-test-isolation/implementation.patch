@@ -1,0 +1,232 @@
+--- before/tests/workflow_fixture.py
++++ after/tests/workflow_fixture.py
+@@ -143,6 +143,17 @@
+         return subprocess.run(['bash', '-c', cmd], input=user_input, text=True, capture_output=True, env=env, timeout=timeout)
+ 
+ 
++    def run_optimizer(self, user_input='', overrides='', timeout=15):
++        """Exercise transactions with a fixed pending preliminary health result.
++
++        Health report and end-to-end optimizer tests must keep using run_shell.
++        Caller overrides still apply after this explicit diagnostic replacement.
++        """
++        diagnostic = 'check_health_status() { record optimizer-health; return 2; }\n'
++        return self.run_shell('smart_audit_and_optimize', user_input,
++                              diagnostic + overrides, timeout)
++
++
+     def commands(self):
+         return self.trace.read_text()
+ 
+--- before/tests/test_workflows.py
++++ after/tests/test_workflows.py
+@@ -608,7 +608,7 @@
+         original.parent.mkdir()
+         original.write_text('# Keep my custom settings\nfilenames: [/custom/access.log]\nlabels: {type: nginx, site: custom}\n')
+         before = original.read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'n\ny\nn\ny\n')
++        p = self.run_optimizer('n\ny\nn\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.assertIn((str(log), 'nginx'), self.repaired_sources())
+         self.assertEqual(original.read_bytes(), before)
+@@ -616,7 +616,7 @@
+ 
+     def test_optimize_rules_only_preserves_config_and_reloads_once(self):
+         before = (self.config/'config.yaml').read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'y\nn\nn\ny\n')
++        p = self.run_optimizer('y\nn\nn\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+         self.assertIn('collections install', self.commands())
+@@ -627,7 +627,7 @@
+     def test_optimize_logs_only_does_not_install_rules_or_enable_metrics(self):
+         log = self.web_log('var/log/nginx/access.log')
+         before = (self.config/'config.yaml').read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'n\ny\nn\ny\n')
++        p = self.run_optimizer('n\ny\nn\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.assertIn((str(log), 'nginx'), self.repaired_sources())
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+@@ -636,7 +636,7 @@
+ 
+     def test_optimize_metrics_only_does_not_install_rules_or_write_acquisition(self):
+         self.web_log('var/log/nginx/access.log')
+-        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
++        p = self.run_optimizer('n\nn\ny\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         metrics = yaml.safe_load((self.config/'config.yaml').read_text())['prometheus']
+         self.assertTrue(metrics['enabled'])
+@@ -660,7 +660,7 @@
+         for answers in ('n\nn\nn\n', 'y\ny\ny\nn\n', 'y\n', 'y\ny\ny\n'):
+             with self.subTest(answers=answers):
+                 self.trace.write_text('')
+-                p = self.run_shell('smart_audit_and_optimize', answers)
++                p = self.run_optimizer(answers)
+                 self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+                 self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+                 self.assertNotIn('collections install', self.commands())
+@@ -670,11 +670,11 @@
+                 self.assertFalse((self.base/'var/backups/crowdsec-1key').exists())
+ 
+     def test_optimize_repeated_metrics_selection_skips_service_load(self):
+-        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
++        p = self.run_optimizer('n\nn\ny\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.trace.write_text('')
+         before = (self.config/'config.yaml').read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n')
++        p = self.run_optimizer('n\nn\ny\ny\n')
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+         self.assertNotIn('systemctl restart', self.commands())
+@@ -683,7 +683,7 @@
+     def test_optimize_validation_failure_restores_selected_config(self):
+         self.web_log('var/log/nginx/access.log')
+         before = (self.config/'config.yaml').read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'n\ny\ny\ny\n',
++        p = self.run_optimizer('n\ny\ny\ny\n',
+                            'crowdsec() { record crowdsec "$@"; return 1; }')
+         self.assertNotEqual(p.returncode, 0)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+@@ -694,7 +694,7 @@
+     def test_optimize_metric_port_conflict_stops_before_rules_and_log_changes(self):
+         self.web_log('var/log/nginx/access.log')
+         before = (self.config/'config.yaml').read_bytes()
+-        p = self.run_shell('smart_audit_and_optimize', 'y\ny\ny\ny\n',
++        p = self.run_optimizer('y\ny\ny\ny\n',
+                            'ss() { echo \'LISTEN 0 128 127.0.0.1:6060 users:(("other",pid=1,fd=3))\'; }')
+         self.assertNotEqual(p.returncode, 0)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+@@ -712,7 +712,7 @@
+  fi
+  return 0
+ }'''
+-        p = self.run_shell('smart_audit_and_optimize', 'n\ny\ny\ny\n', override)
++        p = self.run_optimizer('n\ny\ny\ny\n', override)
+         self.assertNotEqual(p.returncode, 0)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+         self.assertFalse((self.config/'acquis.d/crowdsec-1key-log-repair.yaml').exists())
+@@ -725,7 +725,7 @@
+  yaml_tool metrics "${CS_DIR}/config.yaml" || return 1
+  kill -TERM "$BASHPID"
+ }'''
+-        p = self.run_shell('smart_audit_and_optimize', 'n\nn\ny\ny\n', override)
++        p = self.run_optimizer('n\nn\ny\ny\n', override)
+         self.assertEqual(p.returncode, 143, p.stdout+p.stderr)
+         self.assertEqual((self.config/'config.yaml').read_bytes(), before)
+         self.assertNotIn('systemctl restart', self.commands())
+--- before/tests/test_test_runner.py
++++ after/tests/test_test_runner.py
+@@ -168,3 +168,37 @@
+         result = self.run_entrypoint('--timings', str(self.tests))
+         self.assertEqual(result.returncode, 2, result.stderr)
+         self.assertIn('report', result.stderr.lower())
++
++
++import workflow_fixture
++
++
++class OptimizerFixtureContract(workflow_fixture.WorkflowFixtureMixin, unittest.TestCase):
++    def test_transaction_fixture_runs_metrics_without_health_report_processes(self):
++        self.assertTrue(callable(getattr(self, 'run_optimizer', None)),
++                        'explicit optimizer transaction fixture is required')
++        result = self.run_optimizer('n\nn\ny\ny\n', overrides=r'''
++python3() {
++ if [[ "${1##*/}" == crowdbastion_health.py ]]; then
++  record unexpected-health-process; return 91
++ fi
++ command python3 "$@"
++}
++''')
++        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
++        self.assertTrue(workflow_fixture.yaml.safe_load((self.config/'config.yaml').read_text())['prometheus']['enabled'])
++        self.assertNotIn('unexpected-health-process', self.commands())
++        self.assertEqual(self.commands().count('optimizer-health\n'), 1)
++        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 1)
++
++    def test_caller_can_override_diagnostic_status_without_bypassing_transaction(self):
++        self.assertTrue(callable(getattr(self, 'run_optimizer', None)),
++                        'explicit optimizer transaction fixture is required')
++        result = self.run_optimizer('n\nn\ny\ny\n', overrides='''
++check_health_status() { record caller-health; return 1; }
++''')
++        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
++        self.assertTrue(workflow_fixture.yaml.safe_load((self.config/'config.yaml').read_text())['prometheus']['enabled'])
++        self.assertNotIn('optimizer-health', self.commands())
++        self.assertEqual(self.commands().count('caller-health\n'), 1)
++        self.assertEqual(self.commands().count('systemctl restart crowdsec\n'), 1)
+--- before/docs/superpowers/specs/2026-11-03-optimizer-test-isolation-design.md
++++ after/docs/superpowers/specs/2026-11-03-optimizer-test-isolation-design.md
+@@ -0,0 +1,11 @@
++# 优化事务测试的诊断边界收敛
++
++用户要求继续定位整仓耗时。本轮先按命令边界剖析：四项取消/EOF 输入累计健康事件序列化 92 次（2.926 秒）、PyYAML 可用性探测 40 次（1.435 秒），以及多次真实诊断 helper。事务断言反复承担独立健康报告的成本。
++
++方案：增加显式测试夹具入口 `run_optimizer(user_input='', overrides='', timeout=15)`，只替换 smart_audit_and_optimize 的前置 check_health_status 为记录一次调用并返回 2（检查尚未验证）的固定结果。真实事务、日志发现、配置写入、锁、参数交互、配置/服务校验和回滚保持不变。调用者 overrides 在固定诊断后追加，仍可显式覆盖。
++
++仅把 tests/test_workflows.py 中 10 个以 test_optimize_ 开头的事务测试改用该入口。四个原有测试继续走完整 run_shell：test_optimize_cancel_does_not_change_configuration、两个缺少 YAML 的诊断测试、test_optimize_all_items_loads_changes_once。独立健康报告、节点引导、CLI 集成和其它夹具消费者完全不变。相比默认抹去诊断、缓存 import 结果、持续 Python 服务或并行执行，显式边界更便于确定各测试在验证什么。
++
++保留原 1667 个测试 ID、原断言 AST；只允许这 10 项测试方法改变调用入口。增加 2 项夹具行为约束：真实 metrics 事务执行但不运行健康 helper；调用者覆盖诊断失败状态后事务仍按实际代码执行。新入口只在测试中存在，不修改生产代码、默认 run_shell 行为、分层清单或 VPS。
++
++验收：10 项改前/改后单独计时，四项完整集成及健康报告重点验证，真实事务定向变异应被原断言检测；所有旧 ID/断言保留检查；独立复审；一次最终完整验证；基线哈希保护交付。全量耗时按实测报告，不从局部收益推断整仓提速。不提交或部署。
+--- before/docs/superpowers/plans/2026-11-03-optimizer-test-isolation.md
++++ after/docs/superpowers/plans/2026-11-03-optimizer-test-isolation.md
+@@ -0,0 +1,46 @@
++# Optimizer Test Isolation Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans task-by-task.
++
++**Goal:** Avoid repeatedly running full health diagnostics in transaction-only optimizer regressions while retaining integration coverage.
++
++**Architecture:** Explicit run_optimizer fixture wrapper, fixed pending health result, real optimizer/transaction helpers and caller overrides. Four existing end-to-end cases retain original run_shell.
++
++**Tech Stack:** Existing Python unittest/Bash/PyYAML only.
++
++**Spec:** docs/superpowers/specs/2026-11-03-optimizer-test-isolation-design.md
++
++## Global Constraints
++
++- No production, default run_shell, real timeout, tier manifest, historical artifact or VPS changes. No commit/push.
++- All 1667 IDs and assertion ASTs preserved; only 10 selected old test method bodies can change.
++- Four listed optimizer integration cases and all health report test sources remain unchanged.
++
++## Review Focus
++
++- Diagnostic replacement is explicit and does not reach health or integration tests.
++- Return 2 means pending evidence; dependency checks or transaction guards must not be bypassed.
++- Caller overrides retain precedence, input/timeouts and subprocess result preserved.
++- Source mutations still trigger original rollback/no-mutation assertions.
++- Report local timing and full timing separately; never infer whole-suite speedup.
++
++### Task 1: Introduce explicit transaction fixture
++
++**Files:** tests/workflow_fixture.py, tests/test_workflows.py, tests/test_test_runner.py.
++**Interfaces:** WorkflowFixtureMixin.run_optimizer(user_input='', overrides='', timeout=15) -> subprocess.CompletedProcess, calls unchanged run_shell.
++
++- [x] Capture baseline source hashes, call profile and 10 target timing.
++- [x] Add two failing fixture behavior contracts, verify RED.
++- [x] Implement minimal wrapper and change 10 explicit call sites, preserve assertions.
++- [x] Verify GREEN, focused before/after timings, real integration and health suite.
++- [x] Verify disposable transaction mutations fail original assertions; prove discovery/source preservation.
++
++### Task 2: Final validation and delivery
++
++**Files:** tests/README.md, docs/audit/2026-11-03-optimizer-test-isolation.md and evidence.
++**Interfaces:** Existing full runner/tier manifests unchanged; quick adds two fixture contract checks.
++
++- [x] Independent review, resolve important findings.
++- [x] Final full run, validate skips/statuses and measured runtime.
++- [x] Document scope, evidence and remaining costs.
++- [x] Deliver guarded file set and verify main smoke/source hashes.
+--- before/tests/README.md
++++ after/tests/README.md
+@@ -44,6 +44,8 @@
+ 
+ 耗时用于定位维护成本，不能直接证明用例冗余。优先优化反复启动进程、真实等待和重复准备；仅在输入、风险路径、断言和失败可定位性都等价时才合并用例。共享可变目录、缓存被测配置或按历史耗时跳过测试会削弱隔离性，不作为本轮提速手段。
+ 
+-最近的 quick 实测为 309 项、无跳过、约 39 秒；最新 full 为 1667 项、1578 通过、89 项因环境条件跳过、约 580 秒。原有覆盖保留，测试入口增加 9 项自测、虚拟时钟增加 3 项行为测试。三个显式启用虚拟时钟的业务回归从 40.49 秒降至 3.19 秒；单次全量运行未体现整体提速。耗时受机器和依赖条件影响，不能以 quick 替代相关功能回归或发布验证。
++最新 quick 为 311 项全部通过、无跳过、约 33 秒；最新 full 为 1669 项、1580 通过、89 项因环境条件跳过、约 487 秒。原有覆盖保留，入口和夹具行为自测合计新增 14 项。三项显式虚拟时钟回归从 40.49 秒降至 3.19 秒，十项显式事务夹具回归从 29.79 秒降至 7.50 秒；这些局部收益不代表整仓按相同比例提速。不能以 quick 替代相关功能回归或发布验证。
+ 
+ `reload_clock.virtual_reload_clock()` 仅供三项使用同步假命令的重载业务回归显式启用。它让假 sleep 推进每个临时树自己的逻辑时间，仍执行真实的 PID、日志证据与回滚代码。真实命令、线程、截止时间和子进程清理测试继续使用实钟；不要把该辅助函数设为默认夹具。支持的 sleep 参数为 0–60 秒的单个十进制数，转义、负值、单位后缀及科学计数法会被拒绝。
++
++`WorkflowFixtureMixin.run_optimizer()` 供只验证优化事务的测试显式使用：前置健康诊断固定为待验证（返回 2），事务仍运行原来的锁、依赖、YAML、确认、写入、校验、服务加载与回滚。调用者的 overrides 在该替换后执行。健康报告本身、诊断依赖、交互摘要或完整集成行为测试应继续使用 `run_shell()`。原有取消测试、两项缺少 YAML 的诊断测试、完整优化测试和独立健康报告测试保留真实诊断。

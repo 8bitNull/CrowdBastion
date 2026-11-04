@@ -1,0 +1,1939 @@
+--- before/tests/test_workflows.py
++++ after/tests/test_workflows.py
+@@ -12,145 +12,14 @@
+ 
+ import yaml
+ 
++from workflow_fixture import WorkflowFixtureMixin
++
+ ROOT = Path(__file__).resolve().parents[1]
+ SCRIPT = ROOT / "install-crowdsec-1panel.sh"
+ 
+ 
+-class Workflows(unittest.TestCase):
+-    def setUp(self):
+-        self.tmp = tempfile.TemporaryDirectory(prefix="crowdsec-workflows-")
+-        self.addCleanup(self.tmp.cleanup)
+-        self.base = Path(self.tmp.name)
+-        source = SCRIPT.read_text()
+-        source = re.sub(r'^main "\$@"\s*$', '', source, flags=re.M)
+-        # Rewrite absolute paths once; /data/logs inside an NPM mount is a suffix.
+-        source = re.sub(r'(?<![\w./-])(?:/(?:etc|var|opt|run|home|usr/local)/|/data/logs)',
+-                        lambda match: str(self.base) + match.group(0), source)
+-        self.source = self.base / "manager.sh"
+-        self.source.write_text(source)
+-        (self.base / "lib").mkdir()
+-        (self.base / "proc").mkdir()
+-        for helper in (ROOT/'lib').glob('*'):
+-            if helper.is_file() and helper.suffix in ('.py', '.sh', '.lua'):
+-                helper_source = helper.read_text()
+-                # Keep process discovery inside the fixture like config/systemd.
+-                # Concurrent config-validation subprocesses belong to other tests.
+-                if helper.name == 'crowdsec_bot_settings.py':
+-                    helper_source = helper_source.replace("Path('/proc')", f"Path({str(self.base/'proc')!r})")
+-                (self.base/'lib'/helper.name).write_text(helper_source)
+-        self.trace = self.base / "trace"
+-        self.trace.touch()
+-        self.config = self.base / "etc/crowdsec"
+-        self.config.mkdir(parents=True)
+-        (self.base / "etc/cron.d").mkdir(parents=True)
+-        (self.config / "config.yaml").write_text('api:\n  client:\n    credentials_path: '+str(self.config/'local_api_credentials.yaml')+'\n  server:\n    listen_uri: 127.0.0.1:8080\nprometheus:\n  enabled: false\n  listen_addr: 0.0.0.0\n  listen_port: 6060\n  level: aggregated\n')
+-        with (self.config/'config.yaml').open('a') as config_file:
+-            config_file.write(yaml.safe_dump({'crowdsec_service': {
+-                'acquisition_path': str(self.config/'acquis.yaml'),
+-                'acquisition_dir': str(self.config/'acquis.d')}}))
+-        (self.config / "local_api_credentials.yaml").write_text('url: http://127.0.0.1:8080/\nlogin: webui-legitimate-host\npassword: test-password\n')
+-        (self.config / "profiles.yaml").write_text('name: default_ip_remediation\nfilters:\n  - Alert.Remediation == true\ndecisions:\n  - type: ban\n    duration: 4h\non_success: break\n')
+-
+-    def run_shell(self, action, user_input='', overrides='', timeout=15):
+-        stub = r'''
+-# Host firewall effects are mocked, like the package and systemd commands below.
+-environment_tool() { printf '{"state":"stable"}\n'; }
+-repair_firewall_startup() { record repair_firewall_startup; return 0; }
+-firewall_write_startup() { record firewall_write_startup; return 0; }
+-check_firewall_runtime() { record check_firewall_runtime; return 0; }
+-nginx_test_reload() {
+- local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
+- echo "$((generation+1))" > "$TRACE.workers"
+- printf '2026/10/20 00:00:00 [notice] 42#42: reconfiguring\n2026/10/20 00:00:00 [notice] 42#42: start worker processes\n2026/10/20 00:00:00 [notice] 42#42: start worker process %s\n' "$((generation+1))" >> "$TRACE.nginx-error"
+-}
+-nginx_test_processes() {
+- local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
+- mkdir -p "$TRACE.proc/42" "$TRACE.proc/$generation"
+- printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
+- printf 'NSpid:\t%s\n' "$generation" > "$TRACE.proc/$generation/status"
+- printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n%s 42 S nginx: worker process\n' "$generation"
+-}
+-# Fake process metadata and the discovered log file; production cursor parsing,
+-# inode checks, fresh master/cohort evidence and PID correlation still run.
+-nginx_reload_tool() { timeout --signal=KILL "$1" python3 "$SCRIPT_DIR/lib/crowdsec_nginx_reload.py" --proc-root "$TRACE.proc" "${@:2}"; }
+-nginx_reload_log_source() {
+- mkdir -p "$TRACE.proc/42"
+- printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
+- touch "$TRACE.nginx-error"
+- printf '%s\n' "$TRACE.nginx-error"
+-}
+-timeout() { [[ "$1" != --signal=KILL ]] || shift; shift; "$@"; }
+-ps() { if [[ "$*" == '-eo pid,ppid,stat,args' ]]; then nginx_test_processes; else command ps "$@"; fi; }
+-record() { printf '%s\n' "$*" >> "$TRACE"; }
+-cscli() {
+- record cscli "$@"
+- case "$*" in
+-  'machines list -o json') echo '[{"machineId":"webui-legitimate-host"},{"machineId":"webui-other-owner"}]' ;;
+-  'collections list -o json') echo '[]' ;;
+-  'collections install '*) mkdir -p "$CS_DIR/hub"; printf '%s\n' "$*" > "$CS_DIR/hub/test-installed" ;;
+-  'metrics show acquisition -o json') echo '{"acquisition":{}}' ;;
+-  'metrics show appsec -o json') echo '{"appsec":{}}' ;;
+-  'bouncers add '*'-o raw') echo '0123456789abcdef0123456789abcdef' ;;
+- esac
+- return 0
+-}
+-crowdsec() { record crowdsec "$@"; return 0; }
+-systemctl() {
+- record systemctl "$@"
+- if [[ "$1" == is-enabled ]]; then
+-  [[ "$*" == *--quiet* ]] || echo enabled
+-  return 0
+- fi
+- if [[ "$1" == show && "$*" == *crowdsec-v2bx-* ]]; then
+-  printf 'LoadState=not-found\nActiveState=inactive\nUnitFileState=\n'; return 0
+- fi
+- if [[ "$1" == show && "$*" == *MainPID* ]]; then echo 42; return 0; fi
+- if [[ "$1" == reload && ( "$2" == nginx || "$2" == openresty ) ]]; then nginx_test_reload; fi
+- if [[ "$1" == show && "$*" == *crowdsec-1key-bot.service* ]]; then
+-  if [[ -f "$CUSTOM_BOT_UNIT" ]]; then printf 'LoadState=loaded\nFragmentPath=%s\n' "$CUSTOM_BOT_UNIT"; else echo 'LoadState=not-found'; fi
+- fi
+- return 0
+-}
+-docker() {
+- record docker "$@"
+- case "$*" in
+-  'image inspect --format {{json .RepoDigests}} '*) echo '["ghcr.io/theduffman85/crowdsec-web-ui@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]' ;;
+-  inspect*) echo false ;;
+- esac
+- return 0
+-}
+-apt-get() { record apt-get "$@"; return 0; }
+-yum() { record yum "$@"; return 0; }
+-dnf() { record dnf "$@"; return 0; }
+-nft() { record nft "$@"; [[ "$*" == "list tables" ]]; }
+-iptables() { record iptables "$@"; [[ "$*" == "-S" ]]; }
+-ip6tables() { record ip6tables "$@"; [[ "$*" == "-S" ]]; }
+-ipset() { record ipset "$@"; return 0; }
+-ip() { record ip "$@"; echo "[]"; }
+-modprobe() { return 0; }
+-curl() { record curl "$@"; [[ "$*" != *'/api/health'* ]] || echo '{"status":"ok"}'; return 0; }
+-pkill() { record pkill "$@"; return 0; }
+-pgrep() { return 1; }
+-dpkg-query() { return 1; }
+-rpm() { return 1; }
+-ss() { if [[ "$*" == '-H -lnt' ]]; then echo 'LISTEN 0 128 127.0.0.1:7422 0.0.0.0:*'; fi; }
+-sleep() { :; }
+-clear() { :; }
+-journalctl() { record journalctl "$@"; }
+-'''
+-        env = {**os.environ, 'TRACE': str(self.trace), 'TERM': 'dumb', 'SSH_CLIENT': '', 'SSH_CONNECTION': ''}
+-        cmd = f'source {shlex.quote(str(self.source))}\n' + stub + '\nOS_ID=debian\n' + overrides + '\n' + action
+-        return subprocess.run(['bash', '-c', cmd], input=user_input, text=True, capture_output=True, env=env, timeout=timeout)
+-
+-    def commands(self):
+-        return self.trace.read_text()
+-
+-    def webui_docker(self, running='true healthy', previous='', existing=True):
+-        return ('docker() { record docker "$@"; case "$*" in '
+-                "'container inspect crowdsec-web-ui') return "+('0' if existing else '1')+';; '
+-                "'image inspect '* ) echo '[\"ghcr.io/theduffman85/crowdsec-web-ui@sha256:"+'a'*64+"\"]';; "
+-                '*State.Running*) echo '+shlex.quote(running)+';; '
+-                "*'{{.Image}}'*) echo "+shlex.quote(previous)+";; esac; return 0; }")
++class Workflows(WorkflowFixtureMixin, unittest.TestCase):
++
+ 
+     def test_help_is_successful_and_read_only(self):
+         p = self.run_shell('main --help')
+@@ -395,31 +264,6 @@
+         self.assertFalse((d/'crowdsec-1key-appsec.yaml').exists())
+         self.assertNotIn('collections install', self.commands())
+ 
+-    def appsec_docker_stub(self, mounted=False, network='host', hook=True, waf=True, reload_succeeds=True):
+-        config = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
+-        if mounted:
+-            config.parent.mkdir(exist_ok=True)
+-            config.write_text('API_KEY=keep-secret\nAPPSEC_URL=http://old.example:7422\n')
+-        mounts = json.dumps([{'Type': 'bind', 'Source': str(config), 'Destination': str(config)}] if mounted else [])
+-        effective = ('init_by_lua_block { require "crowdsec" }\naccess_by_lua_block { cs.Allow(ngx.var.remote_addr) }\n' if hook else '')
+-        if waf:
+-            effective += 'access_by_lua_file /usr/local/openresty/1pwaf/waf.lua;\n'
+-        reload_command = 'nginx_test_reload; return 0' if reload_succeeds else 'return 1'
+-        return '''docker() {
+- record docker "$@"
+- case "$1" in
+- top) nginx_test_processes;;
+- ps) echo 'web123 1panel/openresty:test openresty';;
+- inspect) case "$3" in
+- *NetworkMode*) echo '''+shlex.quote(network)+''';;
+- *Mounts*) printf '%s\\n' '''+shlex.quote(mounts)+''';;
+- *Running*) echo true;; esac;;
+- exec) case "$4" in
+- -T) printf '%s\\n' '''+shlex.quote(effective)+''';;
+- -t) return 0;;
+- -s) '''+reload_command+''';; esac;;
+- esac
+-}'''
+ 
+     def test_appsec_container_missing_bouncer_has_guidance_not_host_options(self):
+         p = self.run_shell('setup_appsec', '0\n', self.appsec_docker_stub(hook=False))
+@@ -649,12 +493,6 @@
+         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
+         self.assertEqual(self.commands().splitlines(), ['health', 'logs', 'appsec', 'self-report'])
+ 
+-    def make_webui(self):
+-        ui = self.base/'opt/crowdsec-web-ui'
+-        (ui/'data').mkdir(parents=True)
+-        (ui/'data/webui_api_credentials.yaml').write_text('url: http://127.0.0.1:8080/\nlogin: webui-owned\npassword: valid-test-password\n')
+-        (ui/'docker-compose.yml').write_text('services:\n  crowdsec-web-ui:\n    image: ghcr.io/theduffman85/crowdsec-web-ui:old\n')
+-        return ui
+ 
+     def test_purge_preserves_config_when_web_bouncer_is_installed(self):
+         file = self.config/'bouncers/crowdsec-nginx-bouncer.conf'
+@@ -763,17 +601,6 @@
+         self.assertNotIn('apt-get', self.commands())
+         self.assertNotIn('systemctl restart', self.commands())
+ 
+-    def web_log(self, relative):
+-        path = self.base/relative
+-        path.parent.mkdir(parents=True, exist_ok=True)
+-        path.write_text('test HTTP log\n')
+-        return path
+-
+-    def repaired_sources(self):
+-        path = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
+-        return [(name, doc['labels']['type'])
+-                for doc in yaml.safe_load_all(path.read_text())
+-                for name in doc.get('filenames', [])]
+ 
+     def test_optimize_repairs_missing_1panel_log_acquisition(self):
+         log = self.web_log('opt/1panel/1panel/www/sites/bob.example.com/log/access.log')
+--- before/tests/workflow_fixture.py
++++ after/tests/workflow_fixture.py
+@@ -0,0 +1,206 @@
++"""Shared workflow fixture; all system effects stay inside a fresh temporary tree."""
++import fnmatch
++import glob
++import json
++import os
++from pathlib import Path
++import re
++import shlex
++import subprocess
++import tempfile
++
++import yaml
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPT = ROOT / "install-crowdsec-1panel.sh"
++
++
++class WorkflowFixtureMixin:
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory(prefix="crowdsec-workflows-")
++        self.addCleanup(self.tmp.cleanup)
++        self.base = Path(self.tmp.name)
++        source = SCRIPT.read_text()
++        source = re.sub(r'^main "\$@"\s*$', '', source, flags=re.M)
++        # Rewrite absolute paths once; /data/logs inside an NPM mount is a suffix.
++        source = re.sub(r'(?<![\w./-])(?:/(?:etc|var|opt|run|home|usr/local)/|/data/logs)',
++                        lambda match: str(self.base) + match.group(0), source)
++        self.source = self.base / "manager.sh"
++        self.source.write_text(source)
++        (self.base / "lib").mkdir()
++        (self.base / "proc").mkdir()
++        for helper in (ROOT/'lib').glob('*'):
++            if helper.is_file() and helper.suffix in ('.py', '.sh', '.lua'):
++                helper_source = helper.read_text()
++                # Keep process discovery inside the fixture like config/systemd.
++                # Concurrent config-validation subprocesses belong to other tests.
++                if helper.name == 'crowdsec_bot_settings.py':
++                    helper_source = helper_source.replace("Path('/proc')", f"Path({str(self.base/'proc')!r})")
++                (self.base/'lib'/helper.name).write_text(helper_source)
++        self.trace = self.base / "trace"
++        self.trace.touch()
++        self.config = self.base / "etc/crowdsec"
++        self.config.mkdir(parents=True)
++        (self.base / "etc/cron.d").mkdir(parents=True)
++        (self.config / "config.yaml").write_text('api:\n  client:\n    credentials_path: '+str(self.config/'local_api_credentials.yaml')+'\n  server:\n    listen_uri: 127.0.0.1:8080\nprometheus:\n  enabled: false\n  listen_addr: 0.0.0.0\n  listen_port: 6060\n  level: aggregated\n')
++        with (self.config/'config.yaml').open('a') as config_file:
++            config_file.write(yaml.safe_dump({'crowdsec_service': {
++                'acquisition_path': str(self.config/'acquis.yaml'),
++                'acquisition_dir': str(self.config/'acquis.d')}}))
++        (self.config / "local_api_credentials.yaml").write_text('url: http://127.0.0.1:8080/\nlogin: webui-legitimate-host\npassword: test-password\n')
++        (self.config / "profiles.yaml").write_text('name: default_ip_remediation\nfilters:\n  - Alert.Remediation == true\ndecisions:\n  - type: ban\n    duration: 4h\non_success: break\n')
++
++
++    def run_shell(self, action, user_input='', overrides='', timeout=15):
++        stub = r'''
++# Host firewall effects are mocked, like the package and systemd commands below.
++environment_tool() { printf '{"state":"stable"}\n'; }
++repair_firewall_startup() { record repair_firewall_startup; return 0; }
++firewall_write_startup() { record firewall_write_startup; return 0; }
++check_firewall_runtime() { record check_firewall_runtime; return 0; }
++nginx_test_reload() {
++ local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
++ echo "$((generation+1))" > "$TRACE.workers"
++ printf '2026/10/20 00:00:00 [notice] 42#42: reconfiguring\n2026/10/20 00:00:00 [notice] 42#42: start worker processes\n2026/10/20 00:00:00 [notice] 42#42: start worker process %s\n' "$((generation+1))" >> "$TRACE.nginx-error"
++}
++nginx_test_processes() {
++ local generation=100; [[ ! -f "$TRACE.workers" ]] || read -r generation < "$TRACE.workers"
++ mkdir -p "$TRACE.proc/42" "$TRACE.proc/$generation"
++ printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
++ printf 'NSpid:\t%s\n' "$generation" > "$TRACE.proc/$generation/status"
++ printf 'PID PPID STAT COMMAND\n42 1 Ss nginx: master process nginx\n%s 42 S nginx: worker process\n' "$generation"
++}
++# Fake process metadata and the discovered log file; production cursor parsing,
++# inode checks, fresh master/cohort evidence and PID correlation still run.
++nginx_reload_tool() { timeout --signal=KILL "$1" python3 "$SCRIPT_DIR/lib/crowdsec_nginx_reload.py" --proc-root "$TRACE.proc" "${@:2}"; }
++nginx_reload_log_source() {
++ mkdir -p "$TRACE.proc/42"
++ printf 'NSpid:\t42\n' > "$TRACE.proc/42/status"
++ touch "$TRACE.nginx-error"
++ printf '%s\n' "$TRACE.nginx-error"
++}
++timeout() { [[ "$1" != --signal=KILL ]] || shift; shift; "$@"; }
++ps() { if [[ "$*" == '-eo pid,ppid,stat,args' ]]; then nginx_test_processes; else command ps "$@"; fi; }
++record() { printf '%s\n' "$*" >> "$TRACE"; }
++cscli() {
++ record cscli "$@"
++ case "$*" in
++  'machines list -o json') echo '[{"machineId":"webui-legitimate-host"},{"machineId":"webui-other-owner"}]' ;;
++  'collections list -o json') echo '[]' ;;
++  'collections install '*) mkdir -p "$CS_DIR/hub"; printf '%s\n' "$*" > "$CS_DIR/hub/test-installed" ;;
++  'metrics show acquisition -o json') echo '{"acquisition":{}}' ;;
++  'metrics show appsec -o json') echo '{"appsec":{}}' ;;
++  'bouncers add '*'-o raw') echo '0123456789abcdef0123456789abcdef' ;;
++ esac
++ return 0
++}
++crowdsec() { record crowdsec "$@"; return 0; }
++systemctl() {
++ record systemctl "$@"
++ if [[ "$1" == is-enabled ]]; then
++  [[ "$*" == *--quiet* ]] || echo enabled
++  return 0
++ fi
++ if [[ "$1" == show && "$*" == *crowdsec-v2bx-* ]]; then
++  printf 'LoadState=not-found\nActiveState=inactive\nUnitFileState=\n'; return 0
++ fi
++ if [[ "$1" == show && "$*" == *MainPID* ]]; then echo 42; return 0; fi
++ if [[ "$1" == reload && ( "$2" == nginx || "$2" == openresty ) ]]; then nginx_test_reload; fi
++ if [[ "$1" == show && "$*" == *crowdsec-1key-bot.service* ]]; then
++  if [[ -f "$CUSTOM_BOT_UNIT" ]]; then printf 'LoadState=loaded\nFragmentPath=%s\n' "$CUSTOM_BOT_UNIT"; else echo 'LoadState=not-found'; fi
++ fi
++ return 0
++}
++docker() {
++ record docker "$@"
++ case "$*" in
++  'image inspect --format {{json .RepoDigests}} '*) echo '["ghcr.io/theduffman85/crowdsec-web-ui@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"]' ;;
++  inspect*) echo false ;;
++ esac
++ return 0
++}
++apt-get() { record apt-get "$@"; return 0; }
++yum() { record yum "$@"; return 0; }
++dnf() { record dnf "$@"; return 0; }
++nft() { record nft "$@"; [[ "$*" == "list tables" ]]; }
++iptables() { record iptables "$@"; [[ "$*" == "-S" ]]; }
++ip6tables() { record ip6tables "$@"; [[ "$*" == "-S" ]]; }
++ipset() { record ipset "$@"; return 0; }
++ip() { record ip "$@"; echo "[]"; }
++modprobe() { return 0; }
++curl() { record curl "$@"; [[ "$*" != *'/api/health'* ]] || echo '{"status":"ok"}'; return 0; }
++pkill() { record pkill "$@"; return 0; }
++pgrep() { return 1; }
++dpkg-query() { return 1; }
++rpm() { return 1; }
++ss() { if [[ "$*" == '-H -lnt' ]]; then echo 'LISTEN 0 128 127.0.0.1:7422 0.0.0.0:*'; fi; }
++sleep() { :; }
++clear() { :; }
++journalctl() { record journalctl "$@"; }
++'''
++        env = {**os.environ, 'TRACE': str(self.trace), 'TERM': 'dumb', 'SSH_CLIENT': '', 'SSH_CONNECTION': ''}
++        cmd = f'source {shlex.quote(str(self.source))}\n' + stub + '\nOS_ID=debian\n' + overrides + '\n' + action
++        return subprocess.run(['bash', '-c', cmd], input=user_input, text=True, capture_output=True, env=env, timeout=timeout)
++
++
++    def commands(self):
++        return self.trace.read_text()
++
++
++    def webui_docker(self, running='true healthy', previous='', existing=True):
++        return ('docker() { record docker "$@"; case "$*" in '
++                "'container inspect crowdsec-web-ui') return "+('0' if existing else '1')+';; '
++                "'image inspect '* ) echo '[\"ghcr.io/theduffman85/crowdsec-web-ui@sha256:"+'a'*64+"\"]';; "
++                '*State.Running*) echo '+shlex.quote(running)+';; '
++                "*'{{.Image}}'*) echo "+shlex.quote(previous)+";; esac; return 0; }")
++
++
++    def appsec_docker_stub(self, mounted=False, network='host', hook=True, waf=True, reload_succeeds=True):
++        config = self.config/'bouncers/crowdsec-openresty-bouncer.conf'
++        if mounted:
++            config.parent.mkdir(exist_ok=True)
++            config.write_text('API_KEY=keep-secret\nAPPSEC_URL=http://old.example:7422\n')
++        mounts = json.dumps([{'Type': 'bind', 'Source': str(config), 'Destination': str(config)}] if mounted else [])
++        effective = ('init_by_lua_block { require "crowdsec" }\naccess_by_lua_block { cs.Allow(ngx.var.remote_addr) }\n' if hook else '')
++        if waf:
++            effective += 'access_by_lua_file /usr/local/openresty/1pwaf/waf.lua;\n'
++        reload_command = 'nginx_test_reload; return 0' if reload_succeeds else 'return 1'
++        return '''docker() {
++ record docker "$@"
++ case "$1" in
++ top) nginx_test_processes;;
++ ps) echo 'web123 1panel/openresty:test openresty';;
++ inspect) case "$3" in
++ *NetworkMode*) echo '''+shlex.quote(network)+''';;
++ *Mounts*) printf '%s\\n' '''+shlex.quote(mounts)+''';;
++ *Running*) echo true;; esac;;
++ exec) case "$4" in
++ -T) printf '%s\\n' '''+shlex.quote(effective)+''';;
++ -t) return 0;;
++ -s) '''+reload_command+''';; esac;;
++ esac
++}'''
++
++
++    def make_webui(self):
++        ui = self.base/'opt/crowdsec-web-ui'
++        (ui/'data').mkdir(parents=True)
++        (ui/'data/webui_api_credentials.yaml').write_text('url: http://127.0.0.1:8080/\nlogin: webui-owned\npassword: valid-test-password\n')
++        (ui/'docker-compose.yml').write_text('services:\n  crowdsec-web-ui:\n    image: ghcr.io/theduffman85/crowdsec-web-ui:old\n')
++        return ui
++
++
++    def web_log(self, relative):
++        path = self.base/relative
++        path.parent.mkdir(parents=True, exist_ok=True)
++        path.write_text('test HTTP log\n')
++        return path
++
++
++    def repaired_sources(self):
++        path = self.config/'acquis.d/crowdsec-1key-log-repair.yaml'
++        return [(name, doc['labels']['type'])
++                for doc in yaml.safe_load_all(path.read_text())
++                for name in doc.get('filenames', [])]
++
++
+--- before/tests/test_host_environment.py
++++ after/tests/test_host_environment.py
+@@ -6,14 +6,14 @@
+ 
+ import yaml
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class HostEnvironment(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
+-    make_webui = test_workflows.Workflows.make_webui
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
++    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
+ 
+     def bouncer(self, content='mode: nftables\napi_key: ""\n'):
+         path = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
+--- before/tests/test_deployment_adapters.py
++++ after/tests/test_deployment_adapters.py
+@@ -11,7 +11,7 @@
+ from unittest.mock import patch
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_native_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -182,9 +182,9 @@
+ 
+ 
+ class AdapterWorkflows(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_host_custom_log_path_is_discovered_without_changing_configuration(self):
+         directory = self.base/'custom-http'
+@@ -235,9 +235,9 @@
+ 
+ 
+ class NpmPersistence(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_native_workflows.NativeWorkflows.fixture
+ 
+     def test_npm_generated_site_rebuild_keeps_custom_entry_and_account(self):
+@@ -272,9 +272,9 @@
+ 
+ 
+ class PrivateBridgeWorkflows(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_native_workflows.NativeWorkflows.fixture
+ 
+     def bridge_fixture(self):
+@@ -345,9 +345,9 @@
+ 
+ 
+ class PrivateBridgeDiagnostics(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_native_workflows.NativeWorkflows.fixture
+     bridge_fixture = PrivateBridgeWorkflows.bridge_fixture
+ 
+--- before/tests/test_audit_safety.py
++++ after/tests/test_audit_safety.py
+@@ -1,7 +1,8 @@
+ """Fail-closed destructive safety and explicitly requested administrator protection."""
+-from test_workflows import Workflows
++import unittest
++from workflow_fixture import WorkflowFixtureMixin
+ 
+-class AuditSafety(Workflows):
++class AuditSafety(WorkflowFixtureMixin, unittest.TestCase):
+     def run_shell(self, action, user_input='', overrides='', timeout=5):
+         return super().run_shell(action, user_input, 'ip() { echo "[]"; };\n'+overrides, timeout)
+ 
+@@ -75,8 +76,3 @@
+         self.assertNotIn('cscli capi status', self.commands())
+         self.assertNotRegex(self.commands(), r'decisions (delete|add)|allowlists (add|create)|systemctl restart|curl')
+ 
+-# Do not inherit and duplicate the baseline workflow suite.
+-for name in list(vars(Workflows)):
+-    if name.startswith('test_') and name not in AuditSafety.__dict__:
+-        setattr(AuditSafety, name, None)
+-del Workflows
+--- before/tests/verify_vps_matrix.py
++++ after/tests/verify_vps_matrix.py
+@@ -10,7 +10,13 @@
+ import shlex
+ import sys
+ 
+-import test_workflows
++import unittest
++from workflow_fixture import WorkflowFixtureMixin
++
++
++class Fixture(WorkflowFixtureMixin, unittest.TestCase):
++    """Standalone fixture with TestCase cleanup support and no test methods."""
++
+ 
+ ROOT=Path(__file__).resolve().parents[1]
+ OS_IDS=('debian','ubuntu','centos','rhel','almalinux','rocky','fedora')
+@@ -65,7 +71,7 @@
+ 
+ 
+ def run_case(case):
+-    fixture=test_workflows.Workflows(methodName='runTest')
++    fixture=Fixture(methodName='runTest')
+     fixture.setUp()
+     try:
+         (fixture.base/'etc/os-release').write_text('ID='+case['os_id']+'\n')
+--- before/tests/test_hub_maintenance.py
++++ after/tests/test_hub_maintenance.py
+@@ -1,9 +1,10 @@
+ """Hub transactions use real temporary files and isolated command stubs."""
+-from test_workflows import Workflows
++import unittest
++from workflow_fixture import WorkflowFixtureMixin
+ import shlex
+ import subprocess
+ 
+-class HubMaintenance(Workflows):
++class HubMaintenance(WorkflowFixtureMixin, unittest.TestCase):
+     def complete_inventory_stub(self):
+         import json
+         names = ['linux', 'sshd', 'nginx', 'nginx-proxy-manager', 'http-cve',
+@@ -293,7 +294,3 @@
+         self.assertTrue((runner.parent/'lib/hub_maintenance.sh').exists())
+         self.assertTrue((runner.parent/'lib/crowdsec_hub_snapshot.py').exists())
+ 
+-for name in list(vars(Workflows)):
+-    if name.startswith('test_') and name not in HubMaintenance.__dict__:
+-        setattr(HubMaintenance,name,None)
+-del Workflows
+--- before/tests/test_remote_bouncer.py
++++ after/tests/test_remote_bouncer.py
+@@ -138,12 +138,12 @@
+         self.assertEqual(outside.read_text(),'keep')
+ 
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ class RemoteWorkflow(unittest.TestCase):
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     def setUp(self):
+-        test_workflows.Workflows.setUp(self)
++        test_workflows.WorkflowFixtureMixin.setUp(self)
+         (self.base/'etc/os-release').write_text('ID=debian\n')
+         directory=self.config/'bouncers'; directory.mkdir()
+         self.file=directory/'crowdsec-firewall-bouncer.yaml'
+--- before/tests/test_v2bx_diagnosis.py
++++ after/tests/test_v2bx_diagnosis.py
+@@ -8,7 +8,7 @@
+ import tempfile
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ HELPER = ROOT / 'lib/crowdsec_v2bx.py'
+@@ -353,9 +353,9 @@
+ 
+ 
+ class V2bXRouting(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_cli_bypasses_lock_and_propagates_unverified(self):
+         result = self.run_shell('main --diagnose-v2bx', overrides=
+--- before/tests/test_protocol_navigation.py
++++ after/tests/test_protocol_navigation.py
+@@ -4,14 +4,14 @@
+ import subprocess
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_node_guidance
+ 
+ 
+ class ProtocolNavigation(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     run_terminal = test_node_guidance.Guidance.run_terminal
+ 
+     def test_protocol_choices_use_actual_capabilities_without_writes(self):
+--- before/tests/test_relay_paths.py
++++ after/tests/test_relay_paths.py
+@@ -8,7 +8,7 @@
+ import tempfile
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ HELPER = ROOT / 'lib/crowdsec_relay_paths.py'
+@@ -142,9 +142,9 @@
+ 
+ 
+ class RelayPathRouting(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_cli_bypasses_lock_and_cancellation_does_not_run_audit(self):
+         p = self.run_shell('main --relay-path', '0\n', overrides='locked_operation() { record LOCK; return 99; }; check_relay_status() { record AUDIT; return 2; }')
+--- before/tests/test_nginx_reload.py
++++ after/tests/test_nginx_reload.py
+@@ -9,14 +9,14 @@
+ import unittest
+ import urllib.request
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_web_bouncer_runtime as runtime_tests
+ NGINX = runtime_tests.NGINX
+ 
+ 
+ @unittest.skipUnless(NGINX and Path(NGINX).is_file(), 'Lua-enabled Nginx required')
+ class LiveReload(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
+ 
+     @contextlib.contextmanager
+     def runtime(self):
+@@ -193,8 +193,8 @@
+ 
+ 
+ class ReloadProcessEvidence(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+ 
+     def test_forked_child_inheriting_master_title_is_transient(self):
+         result = self.run_shell('nginx_process_snapshot docker web', overrides=r'''
+--- before/tests/test_vps_hardening.py
++++ after/tests/test_vps_hardening.py
+@@ -4,15 +4,15 @@
+ import shlex
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_native_workflows
+ from test_web_install import REMOTE_WAF
+ 
+ 
+ class FirewallBackendSafety(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_fresh_install_avoids_nftables_renewal_backend(self):
+         result = self.run_shell('install_bouncer_package')
+@@ -106,9 +106,9 @@
+ 
+ 
+ class UnifiedFailurePolicy(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_native_workflows.NativeWorkflows.fixture
+ 
+     def native_install(self):
+--- before/tests/test_script_review_fixes.py
++++ after/tests/test_script_review_fixes.py
+@@ -5,7 +5,7 @@
+ 
+ import test_native_workflows
+ import test_notify
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class NotificationTransactions(unittest.TestCase):
+@@ -131,9 +131,9 @@
+ 
+ 
+ class NativeReloadTransactions(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_native_workflows.NativeWorkflows.fixture
+ 
+     def reject(self, overrides):
+@@ -174,9 +174,9 @@
+ 
+ 
+ class V2bxPurge(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def service_state(self, active='active', enabled='enabled', loaded='loaded'):
+         return '''
+@@ -221,10 +221,10 @@
+ 
+ 
+ class AdditionalTransactionReview(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
+-    appsec_docker_stub = test_workflows.Workflows.appsec_docker_stub
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
++    appsec_docker_stub = test_workflows.WorkflowFixtureMixin.appsec_docker_stub
+ 
+     def test_silent_host_rollback_rejection_keeps_package_account(self):
+         snapshot = self.base/'accounts-before.json'
+--- before/tests/test_telegram_alignment.py
++++ after/tests/test_telegram_alignment.py
+@@ -199,9 +199,9 @@
+ 
+ 
+ class CanonicalHealthCLI(unittest.TestCase):
+-    from test_workflows import Workflows
+-    setUp = Workflows.setUp
+-    run_shell = Workflows.run_shell
++    from workflow_fixture import WorkflowFixtureMixin
++    setUp = WorkflowFixtureMixin.setUp
++    run_shell = WorkflowFixtureMixin.run_shell
+ 
+     def test_json_cli_uses_same_readonly_collection_without_leaking_details(self):
+         fixture = '''check_health_status_raw() {
+@@ -232,11 +232,11 @@
+ 
+ 
+ class BotDeployment(unittest.TestCase):
+-    from test_workflows import Workflows
++    from workflow_fixture import WorkflowFixtureMixin
+     from test_custom_bot import BotService
+-    setUp = Workflows.setUp
+-    run_shell = Workflows.run_shell
+-    commands = Workflows.commands
++    setUp = WorkflowFixtureMixin.setUp
++    run_shell = WorkflowFixtureMixin.run_shell
++    commands = WorkflowFixtureMixin.commands
+     setup_bot = BotService.setup_bot
+ 
+     @property
+--- before/tests/test_relay_verification.py
++++ after/tests/test_relay_verification.py
+@@ -12,7 +12,7 @@
+ import unittest
+ from unittest import mock
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT / 'lib'))
+@@ -329,9 +329,9 @@
+ 
+ 
+ class ShellVerification(unittest.TestCase):
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
+-    setUp = test_workflows.Workflows.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
+ 
+     def test_cli_is_read_only_and_preserves_incomplete_exit(self):
+         run = self.run_shell('main --verify-relay', overrides='''
+--- before/tests/test_audit_ops.py
++++ after/tests/test_audit_ops.py
+@@ -2,18 +2,18 @@
+ import subprocess
+ import yaml
+ import unittest
+-import test_workflows
++import workflow_fixture as test_workflows
+ ROOT = test_workflows.ROOT
+ 
+ 
+ class AuditOps(unittest.TestCase):
+     # Reuse only fixture helpers; keep the baseline suite independent.
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
+-    web_log = test_workflows.Workflows.web_log
+-    make_webui = test_workflows.Workflows.make_webui
+-    webui_docker = test_workflows.Workflows.webui_docker
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
++    web_log = test_workflows.WorkflowFixtureMixin.web_log
++    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
++    webui_docker = test_workflows.WorkflowFixtureMixin.webui_docker
+     def helper(self, *args):
+         return subprocess.run(['python3', str(ROOT/'lib/crowdsec_config.py'), *map(str, args)], text=True, capture_output=True)
+ 
+--- before/tests/test_guided_interaction.py
++++ after/tests/test_guided_interaction.py
+@@ -3,13 +3,13 @@
+ import unittest
+ 
+ import test_node_guidance
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class GuidedInteraction(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     roles = test_node_guidance.Guidance.roles
+     run_terminal = test_node_guidance.Guidance.run_terminal
+ 
+--- before/tests/test_menu_convergence.py
++++ after/tests/test_menu_convergence.py
+@@ -2,13 +2,13 @@
+ import unittest
+ 
+ import test_node_guidance
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class MenuConvergence(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     roles = test_node_guidance.Guidance.roles
+ 
+     def test_remote_ip_menu_without_core_never_uses_local_cscli(self):
+--- before/tests/test_relay_mode.py
++++ after/tests/test_relay_mode.py
+@@ -7,15 +7,15 @@
+ import unittest
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class RelayMode(unittest.TestCase):
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def setUp(self):
+-        test_workflows.Workflows.setUp(self)
++        test_workflows.WorkflowFixtureMixin.setUp(self)
+         # main re-detects the OS, using the fixture's rewritten /etc path.
+         (self.base/'etc/os-release').write_text('ID=debian\n')
+ 
+--- before/tests/test_environment_preflight.py
++++ after/tests/test_environment_preflight.py
+@@ -5,7 +5,7 @@
+ import tempfile
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ try:
+     environment = importlib.import_module('crowdbastion_environment')
+@@ -105,9 +105,9 @@
+ 
+ 
+ class EnvironmentWorkflow(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_readonly_environment_status_bypasses_lock_and_mutation(self):
+         result = self.run_shell('main --environment-status', overrides='locked_operation() { exit 98; }; environment_tool() { printf \'{"state":"stable"}\\n\'; }')
+--- before/tests/test_audit_appsec.py
++++ after/tests/test_audit_appsec.py
+@@ -2,14 +2,15 @@
+ import importlib.util
+ import unittest
+ from pathlib import Path
++import workflow_fixture
+ import test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ 
+ class AppSecAudit(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = workflow_fixture.WorkflowFixtureMixin.setUp
++    run_shell = workflow_fixture.WorkflowFixtureMixin.run_shell
++    commands = workflow_fixture.WorkflowFixtureMixin.commands
+ 
+     def test_override_refuses_host_link_before_mutation(self):
+         file = self.config/'bouncers/crowdsec-nginx-bouncer.conf'
+--- before/tests/behavior_snapshot.py
++++ after/tests/behavior_snapshot.py
+@@ -13,7 +13,13 @@
+ import shlex
+ import stat
+ 
+-import test_workflows
++import unittest
++from workflow_fixture import WorkflowFixtureMixin
++
++
++class Fixture(WorkflowFixtureMixin, unittest.TestCase):
++    """Standalone fixture with TestCase cleanup support and no test methods."""
++
+ 
+ 
+ def digest(value):
+@@ -21,7 +27,7 @@
+ 
+ 
+ def observe(action, answers='', overrides=''):
+-    fixture = test_workflows.Workflows()
++    fixture = Fixture()
+     fixture.setUp()
+     try:
+         result = fixture.run_shell(action, answers, overrides, timeout=20)
+--- before/tests/test_native_workflows.py
++++ after/tests/test_native_workflows.py
+@@ -4,14 +4,14 @@
+ import shlex
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ from test_web_install import WAF, REMOTE_WAF
+ 
+ 
+ class NativeWorkflows(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def fixture(self, extra=''):
+         if not Path('/tmp/crowdsec-official-openresty.tgz').exists():
+--- before/tests/test_node_guidance.py
++++ after/tests/test_node_guidance.py
+@@ -12,7 +12,7 @@
+ import unittest
+ from contextlib import redirect_stdout
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT / 'lib'))
+@@ -81,9 +81,9 @@
+ 
+ 
+ class Guidance(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def roles(self, *roles):
+         path = self.base/'var/lib/crowdbastion/node-roles.json'
+--- before/tests/test_appsec_verification.py
++++ after/tests/test_appsec_verification.py
+@@ -1,12 +1,12 @@
+ """Verification sends a live attack-path probe only after informed confirmation."""
+ import unittest
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class AppSecVerification(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_declined_loopback_probe_sends_no_request(self):
+         result = self.run_shell('verify_appsec', 'http://localhost\nn\n')
+--- before/tests/test_real_ip_workflows.py
++++ after/tests/test_real_ip_workflows.py
+@@ -2,13 +2,13 @@
+ import json
+ import shlex
+ import unittest
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class RealIPWorkflows(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def fixture(self, npm=False):
+         directory = self.base/('data' if npm else 'http.d')
+--- before/tests/test_real_ip_reload_review.py
++++ after/tests/test_real_ip_reload_review.py
+@@ -1,13 +1,13 @@
+ """Real-IP changes and diagnostic cleanup require accepted Nginx reloads."""
+ import shlex
+ import unittest
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_real_ip_workflows
+ 
+ class RealIPReloadReview(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     fixture = test_real_ip_workflows.RealIPWorkflows.fixture
+ 
+     def test_both_adapters_propagate_failed_reload_verification(self):
+--- before/tests/test_v2bx_logs.py
++++ after/tests/test_v2bx_logs.py
+@@ -8,7 +8,7 @@
+ import tempfile
+ import unittest
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ HELPER = ROOT/'lib/crowdsec_v2bx_logs.py'
+@@ -283,9 +283,9 @@
+ 
+ 
+ class LogCheckRouting(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_cli_and_menu_are_read_only(self):
+         overrides = 'check_v2bx_logs() { record LOGCHECK; return 2; }; locked_operation() { record LOCK; return 99; }'
+--- before/tests/test_firewall_review.py
++++ after/tests/test_firewall_review.py
+@@ -271,10 +271,10 @@
+ 
+ 
+ class ManagerReview(unittest.TestCase):
+-    import test_workflows as workflows
+-    setUp = workflows.Workflows.setUp
+-    run_shell = workflows.Workflows.run_shell
+-    commands = workflows.Workflows.commands
++    import workflow_fixture as workflows
++    setUp = workflows.WorkflowFixtureMixin.setUp
++    run_shell = workflows.WorkflowFixtureMixin.run_shell
++    commands = workflows.WorkflowFixtureMixin.commands
+ 
+     def test_pending_migration_blocks_other_mutations_but_allows_read_only_check(self):
+         overrides = 'mkdir -p "$FIREWALL_MIGRATION_STATE"'
+--- before/tests/test_firewall_runtime.py
++++ after/tests/test_firewall_runtime.py
+@@ -446,10 +446,10 @@
+ 
+ 
+ class StartupTransactions(unittest.TestCase):
+-    import test_workflows as workflows
+-    setUp = workflows.Workflows.setUp
+-    run_shell = workflows.Workflows.run_shell
+-    commands = workflows.Workflows.commands
++    import workflow_fixture as workflows
++    setUp = workflows.WorkflowFixtureMixin.setUp
++    run_shell = workflows.WorkflowFixtureMixin.run_shell
++    commands = workflows.WorkflowFixtureMixin.commands
+ 
+     def setup_config(self):
+         config = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
+--- before/tests/test_existing_workflow.py
++++ after/tests/test_existing_workflow.py
+@@ -1,12 +1,12 @@
+ """Existing-deployment navigation uses isolated system-command stubs."""
+ import unittest
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class ExistingWorkflow(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def stubs(self):
+         return '''
+--- before/tests/test_firewall_startup.py
++++ after/tests/test_firewall_startup.py
+@@ -9,7 +9,7 @@
+ from unittest.mock import patch
+ 
+ import crowdsec_firewall as firewall
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class FirewallStartup(unittest.TestCase):
+@@ -171,9 +171,9 @@
+ 
+ 
+ class FirewallStartupCallers(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_startup_defect_blocks_remote_and_repair_before_mutation(self):
+         config = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'
+--- before/tests/test_notify.py
++++ after/tests/test_notify.py
+@@ -16,7 +16,7 @@
+ sys.path.insert(0, str(ROOT/'lib'))
+ import crowdsec_notify as notify
+ from crowdsec_notify_client import request
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ def configuration(root):
+@@ -328,9 +328,9 @@
+ 
+ 
+ class NotificationInstallation(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     OVERRIDES = '''
+ notify_ready() { return 0; }
+ systemctl() {
+--- before/tests/test_custom_bot.py
++++ after/tests/test_custom_bot.py
+@@ -9,7 +9,7 @@
+ import tempfile
+ import unittest
+ from unittest.mock import patch
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ 
+@@ -269,9 +269,9 @@
+ 
+ 
+ class BotService(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def setup_bot(self, overrides=''):
+         return self.run_shell('setup_custom_bot', '123:ABC\n-123\n456\n\n\n', overrides, timeout=10)
+--- before/tests/test_custom_bot_installation.py
++++ after/tests/test_custom_bot_installation.py
+@@ -5,13 +5,13 @@
+ import unittest
+ 
+ import test_custom_bot
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ 
+ class BotInstallation(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     setup_bot = test_custom_bot.BotService.setup_bot
+ 
+     def helpers(self):
+--- before/tests/test_maintenance.py
++++ after/tests/test_maintenance.py
+@@ -11,7 +11,7 @@
+ import unittest
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'lib'))
+ maintenance = importlib.import_module('crowdsec_maintenance')
+@@ -19,11 +19,11 @@
+ 
+ 
+ class Maintenance(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
+-    make_webui = test_workflows.Workflows.make_webui
+-    webui_docker = test_workflows.Workflows.webui_docker
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
++    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
++    webui_docker = test_workflows.WorkflowFixtureMixin.webui_docker
+ 
+     def rules(self):
+         directory = self.base/'owned-hub/parsers/s01-parse'
+--- before/tests/test_user_experience.py
++++ after/tests/test_user_experience.py
+@@ -9,7 +9,7 @@
+ import unittest
+ from unittest.mock import patch
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_node_guidance
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -17,9 +17,9 @@
+ 
+ 
+ class Interaction(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     roles = test_node_guidance.Guidance.roles
+     run_terminal = test_node_guidance.Guidance.run_terminal
+ 
+--- before/tests/test_telegram.py
++++ after/tests/test_telegram.py
+@@ -12,15 +12,15 @@
+ import unittest
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = test_workflows.ROOT
+ 
+ 
+ class TelegramRoutes(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def helper(self, *args):
+         return subprocess.run(['python3', str(ROOT/'lib/crowdsec_config.py'), *map(str, args)], text=True, capture_output=True)
+@@ -113,10 +113,10 @@
+ 
+ @unittest.skipUnless(os.environ.get('CROWDSEC_TEST_RELEASE'), 'set CROWDSEC_TEST_RELEASE for official plugin checks')
+ class TelegramRendering(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
+ 
+     def setUp(self):
+-        test_workflows.Workflows.setUp(self)
++        test_workflows.WorkflowFixtureMixin.setUp(self)
+         release = Path(os.environ['CROWDSEC_TEST_RELEASE'])
+         cfg = yaml.safe_load((release/'config/config.yaml').read_text())
+         for folder in ['data', 'hub', 'plugins']:
+--- before/tests/test_health_summary.py
++++ after/tests/test_health_summary.py
+@@ -8,7 +8,7 @@
+ from pathlib import Path
+ from unittest.mock import patch
+ 
+-import test_workflows
++import workflow_fixture as test_workflows
+ import test_node_guidance
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -79,9 +79,9 @@
+ 
+ 
+ class SummaryWorkflow(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+     roles = test_node_guidance.Guidance.roles
+     run_terminal = test_node_guidance.Guidance.run_terminal
+ 
+--- before/tests/test_telegram_status.py
++++ after/tests/test_telegram_status.py
+@@ -5,15 +5,15 @@
+ import unittest
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ 
+ ROOT = test_workflows.ROOT
+ 
+ 
+ class TelegramStatus(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def setup_channel(self):
+         result = self.run_shell('setup_telegram_notification', '123:ABC\n-123\n\nn\n')
+--- before/tests/test_forwardx_review_regressions.py
++++ after/tests/test_forwardx_review_regressions.py
+@@ -6,7 +6,7 @@
+ from unittest.mock import patch
+ 
+ import yaml
+-import test_workflows
++import workflow_fixture as test_workflows
+ import crowdsec_config as config
+ import crowdsec_firewall_runtime as runtime
+ import crowdsec_remote_bouncer as remote
+@@ -114,9 +114,9 @@
+ 
+ 
+ class ManagedStartupRollback(unittest.TestCase):
+-    setUp = test_workflows.Workflows.setUp
+-    run_shell = test_workflows.Workflows.run_shell
+-    commands = test_workflows.Workflows.commands
++    setUp = test_workflows.WorkflowFixtureMixin.setUp
++    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
++    commands = test_workflows.WorkflowFixtureMixin.commands
+ 
+     def test_restart_failure_restores_managed_overlay_and_marker_together(self):
+         import hashlib
+--- before/tests/run_tests.py
++++ after/tests/run_tests.py
+@@ -0,0 +1,175 @@
++#!/usr/bin/env python3
++"""Run existing unittest coverage with explicit subsets and optional timing evidence."""
++import argparse
++import json
++from pathlib import Path
++import sys
++import time
++import unittest
++
++TEST_DIR = Path(__file__).resolve().parent
++TIERS_PATH = TEST_DIR / 'test_tiers.json'
++TIERS = ('quick', 'integration', 'archive')
++
++
++def flatten(suite):
++    for item in suite:
++        if isinstance(item, unittest.TestSuite):
++            yield from flatten(item)
++        else:
++            yield item
++
++
++def select_tests(test_dir, tiers_path, tier, modules):
++    loader = unittest.TestLoader()
++    suite = loader.discover(str(test_dir))
++    if loader.errors:
++        raise ValueError('test discovery failed:\n' + '\n'.join(loader.errors))
++    cases = list(flatten(suite))
++    ids = [case.id() for case in cases]
++    if len(set(ids)) != len(ids):
++        raise ValueError('duplicate test IDs discovered')
++    available = {name.split('.')[0] for name in ids}
++    config = json.loads(Path(tiers_path).read_text())
++    if not isinstance(config, dict) or set(config) != {'version', *TIERS}:
++        raise ValueError('tier manifest must contain version, quick, integration, archive')
++    if type(config['version']) is not int or config['version'] != 1:
++        raise ValueError('unsupported tier manifest version')
++    assigned = set()
++    for name in TIERS:
++        values = config[name]
++        if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
++            raise ValueError(f'{name}: expected a list of module names')
++        if len(set(values)) != len(values) or assigned.intersection(values):
++            raise ValueError(f'{name}: duplicate or overlapping module assignments')
++        if set(values) - available:
++            raise ValueError(f'{name}: unknown or empty modules: {sorted(set(values) - available)}')
++        assigned.update(values)
++    if set(modules) - available:
++        raise ValueError(f'unknown modules: {sorted(set(modules) - available)}')
++    selected = available if tier == 'full' else set(config[tier])
++    if modules:
++        selected = selected.intersection(modules)
++    cases = [case for case in cases if case.id().split('.')[0] in selected]
++    if not cases:
++        raise ValueError('selection contains no tests')
++    return unittest.TestSuite(cases)
++
++
++class TimingResult(unittest.TextTestResult):
++    """Measure test setup/body/cleanup; retain fixture errors without inventing timings."""
++    priority = {'passed': 0, 'expected_failure': 1, 'skipped': 2,
++                'unexpected_success': 3, 'failed': 4, 'error': 5}
++
++    def __init__(self, *args, **kwargs):
++        super().__init__(*args, **kwargs)
++        self.records = []
++        self.active = None
++        self.started = None
++
++    def startTest(self, test):
++        self.active = {'id': test.id(), 'seconds': None, 'status': 'passed', 'skip_reasons': []}
++        self.records.append(self.active)
++        self.started = time.perf_counter()
++        super().startTest(test)
++
++    def stopTest(self, test):
++        self.active['seconds'] = time.perf_counter() - self.started
++        self.active = None
++        super().stopTest(test)
++
++    def outcome(self, test, status, reason=None):
++        record = self.active
++        if record is None:
++            record = {'id': test.id(), 'seconds': None, 'status': status, 'skip_reasons': []}
++            self.records.append(record)
++        if self.priority[status] > self.priority[record['status']]:
++            record['status'] = status
++        if reason is not None:
++            record['skip_reasons'].append(reason)
++
++    def addFailure(self, test, err):
++        self.outcome(test, 'failed')
++        super().addFailure(test, err)
++
++    def addError(self, test, err):
++        self.outcome(test, 'error')
++        super().addError(test, err)
++
++    def addSkip(self, test, reason):
++        self.outcome(test, 'skipped', reason)
++        super().addSkip(test, reason)
++
++    def addExpectedFailure(self, test, err):
++        self.outcome(test, 'expected_failure')
++        super().addExpectedFailure(test, err)
++
++    def addUnexpectedSuccess(self, test):
++        self.outcome(test, 'unexpected_success')
++        super().addUnexpectedSuccess(test)
++
++    def addSubTest(self, test, subtest, err):
++        if err is not None:
++            self.outcome(test, 'failed' if issubclass(err[0], test.failureException) else 'error')
++        super().addSubTest(test, subtest, err)
++
++
++def main(argv=None, *, test_dir=TEST_DIR, tiers_path=TIERS_PATH):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--tier', choices=('full', *TIERS), default='full')
++    parser.add_argument('--module', action='append', default=[], help='module name; repeat to select several')
++    parser.add_argument('--list', action='store_true', help='list selected IDs without running fixtures')
++    parser.add_argument('--timings', type=Path, help='write timing/status JSON')
++    parser.add_argument('--top', type=int, default=10, help='number of slow tests to display (default: 10)')
++    parser.add_argument('--require-no-skips', action='store_true', help='return failure if any selected check skips')
++    args = parser.parse_args(argv)
++    if args.top < 0:
++        parser.error('--top must be nonnegative')
++    if args.list and args.timings:
++        parser.error('--list cannot produce execution timings')
++    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'lib'))
++    started = time.perf_counter()
++    try:
++        suite = select_tests(Path(test_dir).resolve(), tiers_path, args.tier, args.module)
++    except (OSError, ValueError, ImportError) as exc:
++        print(f'test selection error: {exc}', file=sys.stderr)
++        return 2
++    if args.list:
++        for case in flatten(suite):
++            print(case.id())
++        return 0
++    print(f'Tier: {args.tier}; selected {suite.countTestCases()} tests', file=sys.stderr)
++    result = unittest.TextTestRunner(resultclass=TimingResult, verbosity=1).run(suite)
++    accepted = result.wasSuccessful() and not (args.require_no_skips and result.skipped)
++    report = {'version': 1, 'tier': args.tier, 'modules': args.module,
++              'seconds': time.perf_counter() - started, 'accepted': bool(accepted),
++              'require_no_skips': args.require_no_skips,
++              'counts': {'run': result.testsRun, 'failures': len(result.failures),
++                         'errors': len(result.errors), 'skipped': len(result.skipped),
++                         'expected_failures': len(result.expectedFailures),
++                         'unexpected_successes': len(result.unexpectedSuccesses)},
++              'tests': result.records}
++    if result.skipped:
++        print('Skipped checks:', file=sys.stderr)
++        for reason in sorted({reason for _, reason in result.skipped}):
++            print(f'  {sum(reason == value for _, value in result.skipped)}: {reason}', file=sys.stderr)
++    if args.require_no_skips and result.skipped:
++        print('Required checks skipped; rejecting this run.', file=sys.stderr)
++    slowest = sorted((row for row in result.records if row['seconds'] is not None),
++                     key=lambda row: row['seconds'], reverse=True)[:args.top]
++    if slowest:
++        print('Slowest tests (setup/body/cleanup):', file=sys.stderr)
++        for row in slowest:
++            print(f"  {row['seconds']:.3f}s {row['id']}", file=sys.stderr)
++    if args.timings:
++        try:
++            args.timings.parent.mkdir(parents=True, exist_ok=True)
++            args.timings.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
++        except OSError as exc:
++            print(f'timing report error: {exc}', file=sys.stderr)
++            return 2
++    return 0 if accepted else 1
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- before/tests/test_tiers.json
++++ after/tests/test_tiers.json
+@@ -0,0 +1,33 @@
++{
++  "version": 1,
++  "quick": [
++    "test_test_runner",
++    "test_audit_safety",
++    "test_chain_normalization",
++    "test_change_transactions",
++    "test_firewall_evidence",
++    "test_firewall_runtime",
++    "test_firewall_startup",
++    "test_forwardx_review_regressions",
++    "test_lock_safety",
++    "test_environment_preflight",
++    "test_network",
++    "test_port_policy",
++    "test_profile_privacy",
++    "test_relay_iptables",
++    "test_relay_iptables_acceptance",
++    "test_relay_lifecycle",
++    "test_relay_verification",
++    "test_remote_bouncer"
++  ],
++  "integration": [
++    "test_nginx_reload",
++    "test_notify_integration",
++    "test_notify_runtime",
++    "test_web_bouncer_runtime"
++  ],
++  "archive": [
++    "test_vps167_rollback_review",
++    "test_vps45_static_policy"
++  ]
++}
+--- before/tests/test_test_runner.py
++++ after/tests/test_test_runner.py
+@@ -0,0 +1,170 @@
++"""Contracts for shared fixtures and the local test entrypoint."""
++import importlib.util
++from pathlib import Path
++import unittest
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++class WorkflowFixtureContract(unittest.TestCase):
++    def test_fixture_has_no_discoverable_test_case_or_test_method(self):
++        spec = importlib.util.find_spec('workflow_fixture')
++        self.assertIsNotNone(spec, 'shared fixture must be independent of test classes')
++        module = __import__('workflow_fixture')
++        fixture = module.WorkflowFixtureMixin
++        self.assertFalse(issubclass(fixture, unittest.TestCase))
++        self.assertFalse(any(name.startswith('test_') for name in dir(fixture)))
++        self.assertEqual(unittest.defaultTestLoader.loadTestsFromModule(module).countTestCases(), 0)
++
++import json
++import tempfile
++
++
++class TestEntrypoint(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory(prefix='crowdbastion-test-entrypoint-')
++        self.addCleanup(self.tmp.cleanup)
++        self.base = Path(self.tmp.name)
++        self.tests = self.base / 'tests'
++        self.tests.mkdir()
++        self.marker = self.base / 'executed'
++        for name in ('quick', 'normal', 'integration', 'archive'):
++            (self.tests / f'test_{name}.py').write_text(
++                'import unittest\nfrom pathlib import Path\n'
++                'class Case(unittest.TestCase):\n'
++                f'    def test_{name}(self):\n'
++                f'        Path({str(self.marker)!r}).write_text({name!r})\n')
++        self.manifest = self.base / 'tiers.json'
++        self.config = {'version': 1, 'quick': ['test_quick'],
++                       'integration': ['test_integration'], 'archive': ['test_archive']}
++        self.manifest.write_text(json.dumps(self.config))
++
++    def run_entrypoint(self, *args):
++        # Separate interpreters prevent unittest discovery caching temporary modules.
++        import subprocess
++        import sys
++        bootstrap = ('import sys;sys.path.insert(0,sys.argv[1]);import run_tests;'
++                     'raise SystemExit(run_tests.main(sys.argv[4:],'
++                     'test_dir=sys.argv[2],tiers_path=sys.argv[3]))')
++        result = subprocess.run([sys.executable, '-c', bootstrap, str(ROOT/'tests'),
++                                 str(self.tests), str(self.manifest), *args],
++                                text=True, capture_output=True, timeout=10)
++        return result
++
++    def test_tiers_and_module_filters_list_without_running_setup(self):
++        for tier, count in (('full', 4), ('quick', 1), ('integration', 1), ('archive', 1)):
++            with self.subTest(tier=tier):
++                result = self.run_entrypoint('--tier', tier, '--list')
++                self.assertEqual(result.returncode, 0, result.stderr)
++                self.assertEqual(len(result.stdout.splitlines()), count)
++                if tier != 'full':
++                    self.assertIn(f'test_{tier}.Case.test_{tier}', result.stdout)
++                self.assertFalse(self.marker.exists())
++        result = self.run_entrypoint('--module', 'test_normal', '--list')
++        self.assertEqual(result.returncode, 0, result.stderr)
++        self.assertEqual(result.stdout.strip(), 'test_normal.Case.test_normal')
++
++    def test_default_runs_full_suite_and_writes_per_test_timings(self):
++        report = self.base / 'results' / 'timings.json'
++        result = self.run_entrypoint('--timings', str(report), '--top', '1')
++        self.assertEqual(result.returncode, 0, result.stderr)
++        data = json.loads(report.read_text())
++        self.assertEqual(data['counts']['run'], 4)
++        self.assertTrue(data['accepted'])
++        self.assertEqual(len(data['tests']), 4)
++        self.assertEqual({row['status'] for row in data['tests']}, {'passed'})
++        self.assertTrue(all(row['seconds'] >= 0 for row in data['tests']))
++        self.assertGreaterEqual(data['seconds'], 0)
++        self.assertTrue(self.marker.exists())
++
++    def test_failures_subtests_and_fixture_errors_cannot_be_reported_as_success(self):
++        (self.tests/'test_bad.py').write_text('''import unittest
++class Failures(unittest.TestCase):
++    def test_subtest(self):
++        with self.subTest(value=1): self.assertEqual(1, 2)
++    def test_error(self):
++        raise RuntimeError('intentional test error')
++''')
++        (self.tests/'test_fixture.py').write_text('''import unittest
++def setUpModule(): raise RuntimeError('intentional fixture error')
++class Fixture(unittest.TestCase):
++    def test_not_run(self): pass
++''')
++        report = self.base/'timings.json'
++        result = self.run_entrypoint('--timings', str(report))
++        self.assertEqual(result.returncode, 1, result.stderr)
++        data = json.loads(report.read_text())
++        self.assertFalse(data['accepted'])
++        self.assertEqual(data['counts']['failures'], 1)
++        self.assertEqual(data['counts']['errors'], 2)
++        self.assertIn('failed', {row['status'] for row in data['tests']})
++        self.assertIn('error', {row['status'] for row in data['tests']})
++        fixture = next(row for row in data['tests'] if 'setUpModule' in row['id'])
++        self.assertIsNone(fixture['seconds'])
++
++    def test_skip_reason_is_visible_and_strict_mode_rejects_skips(self):
++        (self.tests/'test_skipped.py').write_text('''import unittest
++class Optional(unittest.TestCase):
++    @unittest.skip('official binary unavailable')
++    def test_optional(self): pass
++''')
++        for strict, expected in ((False, 0), (True, 1)):
++            with self.subTest(strict=strict):
++                report = self.base/'timings.json'
++                args = ['--timings', str(report)]
++                if strict: args.append('--require-no-skips')
++                result = self.run_entrypoint(*args)
++                self.assertEqual(result.returncode, expected, result.stderr)
++                data = json.loads(report.read_text())
++                self.assertEqual(data['counts']['skipped'], 1)
++                self.assertEqual(data['accepted'], not strict)
++                row = next(row for row in data['tests'] if row['status'] == 'skipped')
++                self.assertEqual(row['skip_reasons'], ['official binary unavailable'])
++                self.assertIn('official binary unavailable', result.stderr)
++
++    def test_invalid_manifest_or_unknown_module_fails_before_running(self):
++        variants = [dict(self.config, quick=['test_typo']),
++                    dict(self.config, quick=['test_quick', 'test_quick']),
++                    dict(self.config, integration=['test_quick']),
++                    dict(self.config, quick='test_quick'),
++                    dict(self.config, version=2)]
++        for config in variants:
++            with self.subTest(config=config):
++                self.manifest.write_text(json.dumps(config))
++                result = self.run_entrypoint('--list')
++                self.assertEqual(result.returncode, 2, result.stderr)
++                self.assertFalse(self.marker.exists())
++        self.manifest.write_text(json.dumps(self.config))
++        result = self.run_entrypoint('--module', 'test_missing')
++        self.assertEqual(result.returncode, 2, result.stderr)
++        self.assertFalse(self.marker.exists())
++
++    def test_empty_selection_and_broken_import_are_not_successful(self):
++        result = self.run_entrypoint('--tier', 'quick', '--module', 'test_normal')
++        self.assertEqual(result.returncode, 2, result.stderr)
++        (self.tests/'test_broken.py').write_text('raise ImportError("broken dependency")\n')
++        result = self.run_entrypoint('--tier', 'quick', '--list')
++        self.assertEqual(result.returncode, 2, result.stderr)
++        self.assertIn('broken dependency', result.stderr)
++
++    def test_expected_failure_and_unexpected_success_preserve_unittest_semantics(self):
++        (self.tests/'test_expected.py').write_text('''import unittest
++class Expected(unittest.TestCase):
++    @unittest.expectedFailure
++    def test_expected(self): self.fail('known')
++    @unittest.expectedFailure
++    def test_unexpected(self): pass
++''')
++        report = self.base/'timings.json'
++        result = self.run_entrypoint('--timings', str(report))
++        self.assertEqual(result.returncode, 1, result.stderr)
++        data = json.loads(report.read_text())
++        self.assertEqual(data['counts']['expected_failures'], 1)
++        self.assertEqual(data['counts']['unexpected_successes'], 1)
++        self.assertIn('unexpected_success', {row['status'] for row in data['tests']})
++
++    def test_unwritable_timing_report_is_an_error(self):
++        # A directory at the requested filename also fails reliably as root.
++        result = self.run_entrypoint('--timings', str(self.tests))
++        self.assertEqual(result.returncode, 2, result.stderr)
++        self.assertIn('report', result.stderr.lower())
+--- before/tests/README.md
++++ after/tests/README.md
+@@ -0,0 +1,47 @@
++# 测试入口与范围
++
++仓库沿用 unittest。默认完整测试，不根据旧耗时自动排除用例；现有 `python3 -m unittest discover -s tests` 仍可用。先准备现有依赖：
++
++```bash
++python3 -m venv .venv
++.venv/bin/pip install -r tests/requirements.txt
++```
++
++从仓库根目录执行：
++
++```bash
++# 日常核心回归：防误封、凭据、事务、锁、双栈、转发证据与生命周期
++.venv/bin/python tests/run_tests.py --tier quick
++
++# 修改功能后的相关模块；可重复 --module，名称不含 .py
++.venv/bin/python tests/run_tests.py --module test_workflows --module test_maintenance
++
++# 发布或跨模块变更前：完整发现，包括专项与历史节点回归
++.venv/bin/python tests/run_tests.py --timings /tmp/crowdbastion-full-timings.json
++
++# 环境依赖专项；缺少条件时显示每种跳过原因
++.venv/bin/python tests/run_tests.py --tier integration
++
++# 已备齐该专项全部依赖时，禁止用跳过项冒充验收通过
++.venv/bin/python tests/run_tests.py --tier integration --require-no-skips
++
++# 特定节点历史脚本的回归；保留原始审计脚本和用例
++.venv/bin/python tests/run_tests.py --tier archive
++
++# 只看清单，不运行 setUp/用例
++.venv/bin/python tests/run_tests.py --tier quick --list
++```
++
++`test_tiers.json` 显式列出 quick、integration、archive 的模块，三者不重叠。full 包含全部发现的测试，包括未列入清单的新模块。quick 是精选子集，不能代替完整验证；普通功能模块在 full 中，通过 `--module` 单独运行。模块筛选与 `--tier` 取交集；未知模块、重复清单、空选择或导入失败返回 2，避免静默漏测。只列清单仍会导入测试模块。
++
++专项入口复用已有测试：integration 包含 Lua Nginx、官方通知插件和本地 TLS worker 等环境依赖模块；其中部分测试在普通主机上也能运行。常见依赖由现有用例检查，包括 `CROWDBASTION_TEST_NGINX`、`CROWDBASTION_TEST_LUA_PREFIX`、`CROWDSEC_TEST_RELEASE`、openssl 和预备好的固定版本资源。严格检查某一专项可加 `--module`，不必为无关模块备齐依赖。
++
++真实内核网络、容器/虚拟机、官方 Bouncer 与 realm/gost 的数据面验收，仍使用已有 `verify_relay_network.py`、`verify_relay_iptables.py`、`verify_remote_bouncer.py`、`verify_vps_matrix.py` 等隔离实验入口，按各脚本 `--help` 和相关文档准备条件。普通 unittest 通过不代表这些实验已执行，也不代表公网 UDP、重启或攻击流量验收通过。本轮没有运行它们。
++
++`--timings PATH` 输出 JSON，记录选择范围、总墙钟时间、每项状态和耗时、跳过原因、失败/错误/预期失败/意外成功计数，以及最终是否被接受。逐项耗时包含用例 setUp、测试本体、tearDown 与 cleanup；模块/类夹具与导入耗时只计入总时间，夹具失败单独记录且耗时为 null。跳过的子测试会让父用例标记 skipped；跳过计数按 unittest 事件计，可能与 skipped 状态的父用例数不同。`--top N` 控制控制台慢项摘要，默认 10；`--top 0` 关闭摘要。失败返回 1，严格模式遇到 skip 也返回 1，报告写入失败返回 2；`--list` 不能与 `--timings` 合用。
++
++`workflow_fixture.py` 只保存公共夹具，不继承 TestCase，也没有测试方法。每项仍创建独立临时目录；不要让功能测试继承包含测试方法的类。`Workflows` 保留为原回归类，并继承该 mixin；少量现有测试内直接调用它继承来的辅助方法保持兼容，以保留原测试方法源码。新测试应直接使用 `WorkflowFixtureMixin`。
++
++耗时用于定位维护成本，不能直接证明用例冗余。优先优化反复启动进程、真实等待和重复准备；仅在输入、风险路径、断言和失败可定位性都等价时才合并用例。共享可变目录、缓存被测配置或按历史耗时跳过测试会削弱隔离性，不作为本轮提速手段。
++
++本轮实测：quick 309 项、无跳过、总墙钟约 39 秒；full 1664 项、1575 通过、89 项因环境条件跳过、约 560 秒。原有 1655 项覆盖保留，新增 9 项入口自测；耗时受机器和依赖条件影响，不能以 quick 替代相关功能回归或发布验证。
+--- before/docs/superpowers/specs/2026-11-03-test-consolidation-design.md
++++ after/docs/superpowers/specs/2026-11-03-test-consolidation-design.md
+@@ -0,0 +1,11 @@
++# 测试收敛设计
++
++用户已确认按测试分层、公共夹具、耗时统计推进。沿用 unittest 和现有依赖，不按数量删用例，也不改生产代码或 VPS。
++
++方案：相比直接删除形似用例，或引入 pytest/并行执行，本轮增加薄的 unittest 入口与显式模块清单；完整发现仍是发布基准。quick 是精选核心回归子集，integration 是环境依赖专项，archive 是节点历史回归；full 包含所有模块，已有 discover 命令继续有效。专项不代表真实攻击验收。清单错误或未知模块必须报错。
++
++公共夹具提取为不继承 TestCase、无 test_ 方法的 WorkflowFixtureMixin。保留现有测试类和测试 ID，继承测试类的两个消费者改为 mixin + TestCase；其它消费者直接引用 mixin。每个用例仍有独立临时树，不共享可变状态。
++
++新入口支持只列出测试、按模块筛选、逐项耗时 JSON、慢项摘要、可选禁止 skip。默认 full。报告保留跳过原因、失败状态和退出码；不根据上一次耗时自动选择或隐藏测试。新入口自身用小型临时测试集验证，避免为其重跑整仓。
++
++验收：原 1655 项测试 ID 和方法实现哈希不变；补充入口自测；基线及最终全量运行；记录 quick 实测耗时和慢项来源。历史审计证据原样保存；在隔离快照中工作，再按基线哈希检查后仅交付本轮文件，不提交或部署。
+--- before/docs/superpowers/plans/2026-11-03-test-consolidation.md
++++ after/docs/superpowers/plans/2026-11-03-test-consolidation.md
+@@ -0,0 +1,54 @@
++# Test Consolidation Implementation Plan
++
++> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
++
++**Goal:** Reduce everyday validation and fixture maintenance cost while preserving independent risk coverage.
++
++**Architecture:** Test-free fixture mixin, explicit quick/integration/archive module lists, unittest wrapper with opt-in timing JSON. Full discovery remains authoritative.
++
++**Tech Stack:** Python 3 stdlib unittest, existing PyYAML fixture dependency.
++
++**Spec:** docs/superpowers/specs/2026-11-03-test-consolidation-design.md
++
++## Global Constraints
++
++- No production code, VPS, dependency, commit or deployment changes. Preserve unrelated workspace edits and historical audit files.
++- Keep all original test IDs and method body hashes. No automatic timing-based exclusion or shared mutable fixtures.
++- Default execution includes every discovered test; quick is a documented subset. Missing dependencies remain visible skips, with opt-in strict skip rejection.
++
++## Review Focus
++
++- Missing/misspelled manifest modules and explicit filters must not silently yield success.
++- Test errors, failing subtests and module/class setup errors preserve nonzero exit and timing report integrity.
++- Importing helpers must not duplicate or suppress real test discovery.
++- Fixture copies remain isolated and use the correct source root in both worktrees.
++- Listing tests must not execute setup; reports must not turn skips into passing evidence.
++
++### Task 1: Extract the shared workflow fixture
++
++**Files:** tests/workflow_fixture.py, tests/test_workflows.py, consumers of Workflows fixture methods.
++**Interfaces:** WorkflowFixtureMixin contains only the existing non-test helper methods.
++
++- [x] Capture baseline IDs/method hashes and run full baseline with timings.
++- [x] Assert fixture module is importable, test-free and does not subclass TestCase (RED before extraction).
++- [x] Move helper methods verbatim; preserve test classes/IDs and replace consumers, remove inherited-method suppression.
++- [x] Compare discovery IDs/method hashes and run focused workflow consumers.
++
++### Task 2: Add test tiers and timing entrypoint
++
++**Files:** tests/run_tests.py, tests/test_tiers.json, tests/test_test_runner.py.
++**Interfaces:** CLI --tier {full,quick,integration,archive}, --module NAME (repeatable), --list, --timings PATH, --top N, --require-no-skips. Timing JSON includes counts, total duration, per-test status/duration and skip reasons.
++
++- [x] Add failing CLI self-tests with temporary small suites covering selection, reports, failures/subtests/skips and invalid input.
++- [x] Implement minimal unittest runner; classify explicit quick and specialty lists.
++- [x] Run self-tests and inspect original discovery preservation.
++
++### Task 3: Validate and document
++
++**Files:** tests/README.md, docs/audit/2026-11-03-test-consolidation.md and evidence directory.
++**Interfaces:** New entrypoint consumes the unchanged fixture discovery from Task 1.
++
++- [x] Run quick with timings and full suite with timings, inspect skip reasons and slow modules.
++- [x] Document commands, boundaries, measured results and any further optimizations supported by data.
++- [x] Independent final review; fix important findings with regression evidence.
++- [x] Deliver only current batch files using baseline hash guards and verify delivered hashes.

@@ -1,0 +1,21 @@
+{
+  "reviewers": [
+    "/root/forwardx_chain_rereview",
+    "/root/forwardx_parser_rereview"
+  ],
+  "initial_findings": [
+    "P1 managed Docker startup invalidates owner; rollback metadata omitted",
+    "P2 owned reapply loses effective custom chain overlay after base changes",
+    "P2 omitted/null list diverges from official empty slices",
+    "P2 nft pre-verdict ACCEPT and replaced named counter could supply false growth"
+  ],
+  "final_reviews": {
+    "chains": "three findings fixed; normal, idempotent, no-adopt and rollback checked; independent93tests passed; narrow type-guard7tests passed",
+    "nft": "no remaining concrete false pass found; independent47tests passed"
+  },
+  "documented_limits": [
+    "custom shared inet chain mixing address families stays incomplete",
+    "q/EOF/CtrlC handled; TERM/HUP may terminate without replacing historical record",
+    "noncooperating privileged concurrent edits, SIGKILL/powerloss not guaranteed atomic"
+  ]
+}

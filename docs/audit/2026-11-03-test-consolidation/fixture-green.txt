@@ -1,0 +1,42 @@
+test_fixture_has_no_discoverable_test_case_or_test_method (test_test_runner.WorkflowFixtureContract.test_fixture_has_no_discoverable_test_case_or_test_method) ... ok
+test_allowlist_cancel_never_mutates (test_audit_safety.AuditSafety.test_allowlist_cancel_never_mutates) ... ok
+test_allowlist_explicit_add_protects_same_address (test_audit_safety.AuditSafety.test_allowlist_explicit_add_protects_same_address) ... ok
+test_default_hook_is_not_a_residual_chain (test_audit_safety.AuditSafety.test_default_hook_is_not_a_residual_chain) ... ok
+test_firewall_empty_success_is_absent (test_audit_safety.AuditSafety.test_firewall_empty_success_is_absent) ... ok
+test_firewall_failure_is_unknown (test_audit_safety.AuditSafety.test_firewall_failure_is_unknown) ... ok
+test_local_interface_refused (test_audit_safety.AuditSafety.test_local_interface_refused) ... ok
+test_loopback_unspecified_refused (test_audit_safety.AuditSafety.test_loopback_unspecified_refused) ... ok
+test_package_query_failure_aborts_before_service_stop (test_audit_safety.AuditSafety.test_package_query_failure_aborts_before_service_stop) ... ok
+test_public_target_is_not_guessed_as_local (test_audit_safety.AuditSafety.test_public_target_is_not_guessed_as_local) ... ok
+test_purge_unknown_aborts_before_service_stop (test_audit_safety.AuditSafety.test_purge_unknown_aborts_before_service_stop) ... ok
+test_purge_unsupported_os_aborts_before_service_stop (test_audit_safety.AuditSafety.test_purge_unsupported_os_aborts_before_service_stop) ... ok
+test_recorded_admin_refused (test_audit_safety.AuditSafety.test_recorded_admin_refused) ... ok
+test_self_report_read_only (test_audit_safety.AuditSafety.test_self_report_read_only) ... ok
+test_busy_lock_does_not_modify_hub (test_hub_maintenance.HubMaintenance.test_busy_lock_does_not_modify_hub) ... ok
+test_collection_holds_hub_lock_until_core_load (test_hub_maintenance.HubMaintenance.test_collection_holds_hub_lock_until_core_load) ... ok
+test_collection_install_respects_maintenance_lock (test_hub_maintenance.HubMaintenance.test_collection_install_respects_maintenance_lock) ... ok
+test_collection_reload_failure_rolls_back (test_hub_maintenance.HubMaintenance.test_collection_reload_failure_rolls_back) ... ok
+test_collection_signal_rolls_back_and_preserves_signal_status (test_hub_maintenance.HubMaintenance.test_collection_signal_rolls_back_and_preserves_signal_status) ... ok
+test_collection_validation_failure_rolls_back_before_loading (test_hub_maintenance.HubMaintenance.test_collection_validation_failure_rolls_back_before_loading) ... ok
+test_core_signal_with_existing_collections_restores_config_and_cleans_stage (test_hub_maintenance.HubMaintenance.test_core_signal_with_existing_collections_restores_config_and_cleans_stage) ... ok
+test_cron_installs_independent_owned_runner (test_hub_maintenance.HubMaintenance.test_cron_installs_independent_owned_runner) ... ok
+test_failed_update_restores_added_file (test_hub_maintenance.HubMaintenance.test_failed_update_restores_added_file) ... ok
+test_optimize_final_validation_failure_rolls_back_rules_and_config (test_hub_maintenance.HubMaintenance.test_optimize_final_validation_failure_rolls_back_rules_and_config) ... ok
+test_partial_collection_install_rolls_back (test_hub_maintenance.HubMaintenance.test_partial_collection_install_rolls_back) ... ok
+test_public_install_propagates_hub_lock_conflict (test_hub_maintenance.HubMaintenance.test_public_install_propagates_hub_lock_conflict) ... ok
+test_reload_failure_restores_changed_files (test_hub_maintenance.HubMaintenance.test_reload_failure_restores_changed_files) ... ok
+test_removal_entrypoints_preserve_hub_busy_status (test_hub_maintenance.HubMaintenance.test_removal_entrypoints_preserve_hub_busy_status) ... ok
+test_remove_restores_downloads_without_touching_database (test_hub_maintenance.HubMaintenance.test_remove_restores_downloads_without_touching_database) ... ok
+test_restore_validation_failure_retains_snapshot (test_hub_maintenance.HubMaintenance.test_restore_validation_failure_retains_snapshot) ... ok
+test_signal_after_hub_commit_preserves_loaded_config (test_hub_maintenance.HubMaintenance.test_signal_after_hub_commit_preserves_loaded_config) ... ok
+test_signal_during_config_load_without_hub_changes_loads_restored_state (test_hub_maintenance.HubMaintenance.test_signal_during_config_load_without_hub_changes_loads_restored_state) ... ok
+test_signal_during_load_restores_hub_before_loading_old_state (test_hub_maintenance.HubMaintenance.test_signal_during_load_restores_hub_before_loading_old_state) ... ok
+test_successful_config_load_without_hub_changes_keeps_new_config (test_hub_maintenance.HubMaintenance.test_successful_config_load_without_hub_changes_keeps_new_config) ... ok
+test_symlinked_hub_root_aborts_before_mutation (test_hub_maintenance.HubMaintenance.test_symlinked_hub_root_aborts_before_mutation) ... ok
+test_unmanaged_custom_rule_change_survives_rollback (test_hub_maintenance.HubMaintenance.test_unmanaged_custom_rule_change_survives_rollback) ... ok
+test_validation_failure_restores_changed_files (test_hub_maintenance.HubMaintenance.test_validation_failure_restores_changed_files) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 32.585s
+
+OK

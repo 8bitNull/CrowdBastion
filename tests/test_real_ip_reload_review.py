@@ -1,13 +1,14 @@
 """Real-IP changes and diagnostic cleanup require accepted Nginx reloads."""
 import shlex
+from reload_clock import virtual_reload_clock
 import unittest
-import test_workflows
+import workflow_fixture as test_workflows
 import test_real_ip_workflows
 
 class RealIPReloadReview(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     fixture = test_real_ip_workflows.RealIPWorkflows.fixture
 
     def test_both_adapters_propagate_failed_reload_verification(self):
@@ -24,7 +25,7 @@ nginx_reload_verified() { record verified "$@"; return 37; }
     def test_silent_reload_rejection_restores_real_ip_configuration_and_registry(self):
         overrides = self.fixture().replace("'exec '*' nginx -s reload') nginx_test_reload;;",
                                             "'exec '*' nginx -s reload') record silent_rejection;;")
-        overrides += '\nsleep() { command sleep "$@"; }\n'
+        overrides += virtual_reload_clock()
         result = self.run_shell('repair_cloudflare_real_ip', 'openresty\n1\ny\n', overrides, timeout=30)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('silent_rejection', self.commands())

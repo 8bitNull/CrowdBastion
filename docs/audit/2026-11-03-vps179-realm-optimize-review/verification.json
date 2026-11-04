@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "focused_tests": 39,
+  "rollback_tests": 28,
+  "enforcement_tests": 9,
+  "apply_tests": 2,
+  "journal_read": 2,
+  "journal_parsed": 2,
+  "isolated_journal_alerts": 0,
+  "isolated_journal_decisions": 0,
+  "live_enforcement": "passed",
+  "cleanup": "passed",
+  "production_pids_unchanged": {
+    "forwardx-agent.service": true,
+    "forwardx-realm-both-56017.service": true,
+    "forwardx-realm-both-58372.service": true,
+    "crowdsec.service": true,
+    "crowdsec-firewall-bouncer.service": true,
+    "systemd-journald.service": true
+  },
+  "decision_networks": 16835,
+  "missing": 0,
+  "historical_local_artifacts_unchanged": true,
+  "remote_rollback_updated": true,
+  "production_rollback_executed": false,
+  "syntax_links_sensitive_scan": "passed"
+}

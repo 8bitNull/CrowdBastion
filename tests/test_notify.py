@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'lib'))
 import crowdsec_notify as notify
 from crowdsec_notify_client import request
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 def configuration(root):
@@ -328,9 +328,9 @@ class NotificationHTTP(unittest.TestCase):
 
 
 class NotificationInstallation(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     OVERRIDES = '''
 notify_ready() { return 0; }
 systemctl() {

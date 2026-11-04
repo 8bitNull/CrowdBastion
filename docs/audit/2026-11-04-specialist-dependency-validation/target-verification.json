@@ -1,0 +1,12 @@
+{
+  "original_tests": 1669,
+  "remaining44_all_passed": true,
+  "target_ids_matched_exactly": true,
+  "configured_discovery_skips": [],
+  "full_suite_rerun": false,
+  "group_counts": {
+    "lua": 18,
+    "notifications": 21,
+    "seed-gost": 5
+  }
+}

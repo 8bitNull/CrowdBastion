@@ -1,0 +1,16 @@
+{
+  "verified_at": "2026-11-02T03:56:27.311843+00:00",
+  "main_baseline_health_hash_matched": true,
+  "main_baseline_index_hash_matched": true,
+  "source_files_matching_tested_worktree": 173,
+  "new_test_synchronized": true,
+  "user_changes_preserved": true,
+  "committed": false,
+  "pushed": false,
+  "initial_document_hashes": {
+    "docs/audit/2026-11-02-vps167-optimize.md": "7bbb3130e080c6434e01e43a4838aeeee793170e4a498997360c7570ce504685",
+    "docs/audit/README.md": "288f52daf32826aa83449084efa413346fd73d1ba4b1b85705e5f6592fea3a62",
+    "docs/superpowers/plans/2026-11-02-vps167-optimize.md": "ad137bb6e074d868da965657666dbcca714099bdde944c6a85677f33dd177b9b",
+    "docs/superpowers/specs/2026-11-02-vps167-optimize-design.md": "96a16187c10ecdd7a6162dd90ed9419799598ed6c65b11c4ac5a98028461c0c6"
+  }
+}

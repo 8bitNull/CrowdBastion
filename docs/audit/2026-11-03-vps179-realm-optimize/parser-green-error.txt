@@ -1,0 +1,46 @@
+line: [2026-11-03][01:00:00][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:45012 => 192.0.2.13:2053, error: Connection timed out (os error 110)
+	├ s00-raw
+	|	├ 🔴 crowdsecurity/syslog-logs
+	|	└ 🟢 crowdsecurity/non-syslog (+5 ~8)
+	|		└ update evt.ExpectMode : %!s(int=0) -> 1
+	|		└ update evt.Stage :  -> s01-parse
+	|		└ update evt.Line.Raw :  -> [2026-11-03][01:00:00][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:45012 => 192.0.2.13:2053, error: Connection timed out (os error 110)
+	|		└ update evt.Line.Src :  -> /tmp/cscli_explain4261852869/cscli_test_tmp.log
+	|		└ update evt.Line.Time : 0001-01-01 00:00:00 +0000 UTC -> 2026-11-03 09:24:35.56095985 +0000 UTC
+	|		└ create evt.Line.Labels.type : realm-forwardx
+	|		└ update evt.Line.Process : %!s(bool=false) -> true
+	|		└ update evt.Line.Module :  -> file
+	|		└ create evt.Parsed.message : [2026-11-03][01:00:00][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:45012 => 192.0.2.13:2053, error: Connection timed out (os error 110)
+	|		└ create evt.Parsed.program : realm-forwardx
+	|		└ update evt.Time : 0001-01-01 00:00:00 +0000 UTC -> 2026-11-03 09:24:35.561522577 +0000 UTC
+	|		└ create evt.Meta.datasource_path : /tmp/cscli_explain4261852869/cscli_test_tmp.log
+	|		└ create evt.Meta.datasource_type : file
+	├ s01-parse
+	|	├ 🔴 custom/openssh-session-normalize
+	|	└ 🟢 local/realm-forwardx-observation (+13 ~1)
+	|		└ update evt.Stage : s01-parse -> s02-enrich
+	|		└ create evt.Parsed.realm_level : ERROR
+	|		└ create evt.Parsed.realm_protocol : tcp
+	|		└ create evt.Parsed.realm_year : 2026
+	|		└ create evt.Parsed.realm_message : [::ffff:203.0.113.77]:45012 => 192.0.2.13:2053, error: Connection timed out (os error 110)
+	|		└ create evt.Parsed.realm_module : realm_core::tcp
+	|		└ create evt.Parsed.realm_month : 11
+	|		└ create evt.Parsed.realm_time : 01:00:00
+	|		└ create evt.Parsed.realm_day : 03
+	|		└ create evt.Meta.service : realm
+	|		└ create evt.Meta.log_type : realm_forwardx_observation
+	|		└ create evt.Meta.realm_level : ERROR
+	|		└ create evt.Meta.realm_module : realm_core::tcp
+	|		└ create evt.Meta.realm_protocol : tcp
+	├ s02-enrich
+	|	├ 🟢 custom/admin-whitelist (unchanged)
+	|	├ 🟢 custom/tg-whitelist (unchanged)
+	|	├ 🔴 crowdsecurity/dateparse-enrich
+	|	├ 🔴 crowdsecurity/geoip-enrich
+	|	├ 🔴 crowdsecurity/http-logs
+	|	├ 🟢 crowdsecurity/public-dns-allowlist (unchanged)
+	|	├ 🟢 custom/telegram-whitelist (unchanged)
+	|	└ 🟢 crowdsecurity/whitelists (unchanged)
+	├-------- parser success 🟢
+	├ Scenarios
+

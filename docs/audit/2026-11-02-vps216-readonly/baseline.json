@@ -1,0 +1,22 @@
+{
+  "started_at": "2026-11-02T12:22:04.302965+00:00",
+  "head": "ce8e8677a18bfe7df6ef5262c0139935afadb57f",
+  "prior_index_sha256": "aaecefd00e84978b1f98c12e6fc159df36670d4f76acb5ba20672bd526ec2a98",
+  "historical_manifests": {
+    "docs/audit/2026-11-01-repository-consolidation/manifest.json": "fd06458109f837854e83d66524477ced24987fedc2517bbdc014dcac526ba155",
+    "docs/audit/2026-11-01-telegram-noise/manifest.json": "4b0aa6c2a8c144f3cf346716c3864cf75a1bb167181bdac61cb03aa43c54e1d9",
+    "docs/audit/2026-11-01-telegram-noise-review/manifest.json": "46eda5b0f021e72f872959770aa5b136f671329779bbe930dac813f912341173",
+    "docs/audit/2026-11-01-telegram-responsive/manifest.json": "58d06e95fd868e12fc0cbe2acdd2bfc565e886a04bc09e909fd915d76872ae6b",
+    "docs/audit/2026-11-01-vps179-readonly/manifest.json": "af2d99ebc5319b555b6b629edf958960fbf6d35e0ed2236425a8f96b84066a3a",
+    "docs/audit/2026-11-01-vps179-repair/manifest.json": "c074f59a54850019956d70065b0e3c4f401ce4d740566420e6b1b86bf201be26",
+    "docs/audit/2026-11-01-vps179-review/manifest.json": "533f00b1665ec3f2b4ce5d735fc29b8af60748b0d04600897cf0e17ee4061672",
+    "docs/audit/2026-11-02-vps167-optimize/manifest.json": "f12aea1b2cfbc6289946a194f2b79e22c1841a46f4ebc93f926a34f951dca4d8",
+    "docs/audit/2026-11-02-vps167-optimize-review/manifest.json": "82b0edde875baaa150d9aae7bc9b94e859e31e082edd82d5bf2553daac663c66",
+    "docs/audit/2026-11-02-vps167-readonly/manifest.json": "e9ff72d0af676fc6e6b930b9b5d14665ba0c313f0be782fb539a6e7da0f8ad9e",
+    "docs/audit/2026-11-02-vps45-readonly/manifest.json": "d859c967ff2c6dcaba6b84974fed86d931bc9bf8cd557c7d3c77019cd4b63c05",
+    "docs/audit/2026-11-02-vps45-repair/manifest.json": "168843511dbc8684649a6acd9255f1fc2410dcb6712555a4c3e978ffadc9e248",
+    "docs/audit/v2bx-mixed-ingress-2026-10-13/manifest.json": "9d275d97a2146870e36257f77af2f609347b2cb3091e3fe6a346ca12089cca7a",
+    "docs/audit/vps-rpm-arm-evidence/sources/manifest.json": "98f48bb53b4b84100f72562682a5c6994e3cf461124174851370bfcfecb799d9"
+  },
+  "scope": "read-only VPS216 inspection; no configuration, deployment, firewall or service mutation"
+}

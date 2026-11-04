@@ -6,14 +6,14 @@ import unittest
 
 import yaml
 
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class HostEnvironment(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
-    make_webui = test_workflows.Workflows.make_webui
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
+    make_webui = test_workflows.WorkflowFixtureMixin.make_webui
 
     def bouncer(self, content='mode: nftables\napi_key: ""\n'):
         path = self.config/'bouncers/crowdsec-firewall-bouncer.yaml'

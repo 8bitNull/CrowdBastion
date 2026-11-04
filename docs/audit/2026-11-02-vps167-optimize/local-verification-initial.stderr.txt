@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/vps167-optimize-local-verify.py", line 27, in <module>
+    assert v['acquisition']['state']=='ok' and v['acquisition']['sources'][':']=={'whitelisted':9}
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

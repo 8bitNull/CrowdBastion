@@ -1,0 +1,19 @@
+line: [2026-11-03][01:00:00][realm_core::tcp][ERROR][tcp][::ffff:203.0.113.77]:45012 => 192.0.2.13:2053, error: Connection timed out (os error 110)
+	├ s00-raw
+	|	├ 🔴 crowdsecurity/syslog-logs
+	|	└ 🟢 crowdsecurity/non-syslog (+5 ~8)
+	├ s01-parse
+	|	├ 🔴 custom/openssh-session-normalize
+	|	├ 🔴 crowdsecurity/apache2-logs
+	|	├ 🔴 crowdsecurity/appsec-logs
+	|	├ 🔴 crowdsecurity/iptables-logs
+	|	├ 🔴 crowdsecurity/nginx-logs
+	|	├ 🔴 crowdsecurity/nginx-proxy-manager-logs
+	|	├ 🔴 crowdsecurity/postfix-logs
+	|	├ 🔴 crowdsecurity/postscreen-logs
+	|	├ 🔴 crowdsecurity/sshd-logs
+	|	├ 🔴 crowdsecurity/sshd-success-logs
+	|	├ 🔴 crowdsecurity/suricata-fastlogs
+	|	└ 🔴 crowdsecurity/suricata-evelogs
+	└-------- parser failure 🔴
+

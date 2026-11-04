@@ -30,7 +30,8 @@ bash crowdbastion.sh --help
 | `--relay-status` | 只读检查中转 INPUT/FORWARD、IPv4/IPv6 规则引用，输出简短结论 |
 | `--relay-status-details` | 显示中转结论和完整技术详情；退出码与简短模式一致 |
 | `--relay-path` | 交互声明节点角色/流量路径，选择 TCP/UDP 端口，读取 socket/NAT 与 Bouncer 证据 |
-| `--verify-relay` | 中转入口引导验收；外部连接结果人工确认，本机只读 nftables；保存本次入口验收摘要，详见 [验收流程](relay-mode.md#中转入口引导验收) |
+| `--verify-relay` | 中转入口引导验收；外部连接结果人工确认，本机只读 nftables 或 iptables/ipset；保存本次入口验收摘要，详见 [验收流程](relay-mode.md#中转入口引导验收) |
+| `--verify-relay-lifecycle` | 本机只读，引导续封跨原期限、精确删除和自然到期；外部结果及决策操作由操作者确认 |
 | `--relay-acceptance` | 只读查看上次中转验收的入口、时间、结果及配置适用性；历史记录不提升当前健康结论 |
 | `--diagnose-v2bx-details` | 显示 V2bX 检查结论和完整技术详情 |
 | `--diagnose-v2bx` | 只读核查 V2bX 三内核配置、日志、混合入口声明和本地 Bouncer；详见 [V2bX 指南](v2bx-guide.md)，未验证端到端保护返回 2 |
@@ -55,6 +56,7 @@ bash crowdbastion.sh --help
 | `--disable-appsec` | 停用本工具 AppSec |
 | `--enable-cron` | 每天 03:30 更新 Hub |
 | `--runtime-status` | 只读比较当前源码与定时任务维护副本的内容指纹；相同返回 0，不同/未安装返回 2 |
+| `--environment-status` | 只读输出宿主机环境 JSON；3 次 `/proc` 采样、间隔 0.25 秒，区分持续压力、单次尖峰与计数器不可用；stable/unstable/unknown 分别返回 0/1/2 |
 | `--sync-runtime` | 预览后确认同步脚本和 lib；须已有 cron，保留原文与原执行时间 |
 | `--update-hub` | 带锁、快照、校验及失败回滚的 Hub 更新 |
 | `--check-logs` | 只读检查新增/漏采日志和重复采集 |
@@ -96,6 +98,8 @@ bash crowdbastion.sh --help
 
 ## 菜单交互与并发
 
+通用代理协议导航：首页 `5 → 9`、检查与修复 `4 → 4 → 10` 或安装/调整页 `8`；V2bX 专项菜单 `5` 直接选择程序/协议/传输。该选择只影响本次只读指导，旧 `--protocol-status` 不新增提示或修改声明画像退出码。专项日志检测的范围不因协议导航扩展，详见[使用导航](usage-guide.md#代理协议使用导航)。
+
 | 首页 | 功能 |
 | --- | --- |
 | 1 | 检查防护情况：按用途检查并选择下一步 |
@@ -115,9 +119,9 @@ bash crowdbastion.sh --help
 | `4 → 7` | 设置节点用途：网站、本地中转、远端执行、V2bX 落地，可组合 |
 | `4 → 8` | 按用途检查并选择下一步；日常检查统一从首页 `1` 进入 |
 
-检查与修复的五个入口依次为：整体运行情况、网站问题、中转节点、V2bX 落地节点、基础配置修复。V2bX 入口统一提供配置检查、日志检查、持续记录和异常告警。
+检查与修复保留原五个入口，依次为：整体运行情况、网站问题、中转节点、V2bX 落地节点、基础配置修复。V2bX 入口统一提供配置检查、日志检查、持续记录和异常告警。新增 `4 → 4 → 6` 环境压力、`7` TCP 配置、`8` 端口策略、`9` 协议声明；TCP／端口子菜单均为 1 状态、2 计划、3 应用暂存、4 核验、5 提交、6 回退。基础修复菜单保留 1–5，新增 6 TCP、7 端口。
 
-中转节点入口的第 3 项为引导验收。`--install-relay` 和 `--install-relay-bouncer` 成功后自动只读检查服务与防火墙，终端中可选择进入向导；检查结果单独说明，不把后续检查异常改写成安装失败。
+中转节点入口的第 3 项为基础引导验收，第 4 项为续封、精确删除和自然到期验收。`--install-relay` 和 `--install-relay-bouncer` 成功后自动只读检查服务与防火墙，终端中可选择进入向导；检查结果单独说明，不把后续检查异常改写成安装失败。
 
 用途保存到 `/var/lib/crowdbastion/node-roles.json`。首次终端运行且未保存用途时先选择用途，随后进入安装或调整引导；选择本身不安装组件。首页 `2` 可再次进入引导，每步返回后可继续、选 `9` 检查或选 `0` 返回首页。`remote` 与 `web`／`relay` 互斥，允许 `remote node`。内容损坏可从 `4 → 7` 重设；不安全的权限、归属或链接须先人工修正。
 
@@ -127,9 +131,13 @@ bash crowdbastion.sh --help
 
 子菜单在操作后保留，输入 `0` 返回；返回菜单和无效选项不再额外暂停，叶子操作最多保留一次阅读暂停。输入结束或 `Ctrl+D` 可退出菜单。删除、注销、停用和卸载操作默认取消，需要明确输入 `y`。命令行操作失败返回非零状态，交互菜单会保留供继续操作。
 
-安装、修复、更新等修改操作使用同一把 `flock` 锁，并发操作返回 `75`。TG 机器人确认后的修改也使用这把锁；占用、迁移未完成或维护路径不安全时明确反馈未执行，需重新发起。首页 `3` 的封禁与放行菜单，以及高级管理 `4 → 1`、`4 → 2`、`4 → 3`、`4 → 5`、`4 → 6`，持锁直到退出对应菜单。首页 `5` 中防火墙、真实 IP、通知菜单同样持锁，V2bX 修改和维护副本同步按具体操作获取锁。首页、高级管理容器菜单、用途引导和检查流程本身不持续持锁：用途保存、引导中需修改的步骤、检查中的安装／配置／启动服务，以及 `4 → 4` 中的具体修改动作分别获取管理锁；只读检查不获取管理锁。确认启动服务后，锁内复验 unit 已加载、状态查询正常且仍为 `inactive`／`failed`；核心还重新执行 `crowdsec -t`，Firewall Bouncer 执行原有后端 guard，检查通过后才启动并核对运行状态。
+修改操作之前必须已有 Python 3；安全锁检查依赖标准库，缺少时在打开锁或业务写入前停止，包括首次安装，不提供绕过锁的自举。安装、修复、更新等修改操作使用同一把 `flock` 锁，并发操作返回 `75`。TG 机器人确认后的修改也使用这把锁；占用、迁移未完成或维护路径不安全时明确反馈未执行，需重新发起。首页 `3` 的封禁与放行菜单，以及高级管理 `4 → 1`、`4 → 2`、`4 → 3`、`4 → 5`、`4 → 6`，持锁直到退出对应菜单。首页 `5` 中防火墙、真实 IP、通知菜单同样持锁，V2bX 修改和维护副本同步按具体操作获取锁。首页、高级管理容器菜单、用途引导和检查流程本身不持续持锁：用途保存、引导中需修改的步骤、检查中的安装／配置／启动服务，以及 `4 → 4` 中的具体修改动作分别获取管理锁；只读检查不获取管理锁。确认启动服务后，锁内复验 unit 已加载、状态查询正常且仍为 `inactive`／`failed`；核心还重新执行 `crowdsec -t`，Firewall Bouncer 执行原有后端 guard，检查通过后才启动并核对运行状态。
 
 ## 状态与退出码
+
+`--environment-status` 不读取 API 凭据、不修改服务或配置。版本 1 JSON 包含 `state`、`phase`、`error_code`、`duration_seconds`、`retryable`、`windows`、`unavailable` 与固定操作建议 `reason`。I/O 等待使用相邻 CPU 计数器差值，PSI 使用 stall total 的采样差值，不将历史平均当作本次持续压力；PSI 不可用只列入可选信号缺失。此短时观察不代表性能测试或后续命令耗时保证。`--repair-existing` 与 `--optimize` 在已有管理锁内、确认后写入前执行同源检查，环境不稳定或无法确认时返回 `75` 并暂停修改；可先排查宿主机存储和内存，再重试。环境菜单和已有修改门禁显示同一次报告的短理由，不再打印 windows JSON；显式状态输出完整 JSON。其他安装入口不新增压力门禁，但都遵守 Python 3 安全锁前提。
+
+防火墙决策入核详情提供脱敏的 `phase/error_code/duration_seconds/retryable` 及 `phases` 阶段耗时：分别记录配置、规则引用、API、内核集合和成员比对，失败保留已完成与失败阶段；空链检查内嵌 API 失败标为 `nested`，与父阶段重叠，不应相加。API 401/403 为 `api_auth_failed`，超时为 `api_timeout`，响应格式为 `api_response_invalid`，规则/集合读取分别为 `rules_read_failed/ipset_read_failed`。单次超时不表示认证失败；原有 state 与退出码保持兼容。
 
 `--status`、`--relay-status`、`--diagnose-v2bx` 默认显示简短总结，区分运行通过但拦截待验证、发现问题、部署未完成与检查未完成。退出 `1` 表示发现异常或读取失败，`2` 表示部署／证据不全或实际拦截待验证；组合用途中 `1` 优先。详情参数沿用相同判断和退出码。服务、规则引用和累计 AppSec 计数不代表所有公网站点已验证阻断。
 
@@ -137,7 +145,7 @@ bash crowdbastion.sh --help
 
 健康检查与专项 AppSec 状态共用有效数据源检查，每次读取一次监听列表；WebUI 共用部署就绪检查，每次只核对一次容器健康、实际端口的 HTTP 健康响应及独立 LAPI 登录，未配置端口时使用默认 3000。可选组件未部署不会作为异常。
 
-`--verify-relay` 返回 `0` 表示本次入口的人工连接对照与本机证据全部齐全，`1` 表示已确认连接对照失败，`2` 表示未完成／证据不足／取消，Ctrl+C 返回 `130`。它只验证声明的新连接入口，不更改静态健康检查的结论。
+`--verify-relay` 与 `--verify-relay-lifecycle` 返回 `0` 表示本次入口的人工连接对照与本机证据全部齐全，`1` 表示已确认连接对照失败，`2` 表示未完成／证据不足／取消，Ctrl+C 返回 `130`。它只验证声明的新连接入口，不更改静态健康检查的结论。
 
 具体状态入口的退出码见[使用说明：安装后的验证](usage-guide.md#安装后的验证)。
 
@@ -154,3 +162,25 @@ Machine 清理、WebUI 部署／卸载及防火墙 Bouncer 修复按 `config.yam
 `--v2bx-observe` 使用 `V2BX_LOG_FILE`、`V2BX_LOG_CORE`、`V2BX_OBSERVE_DB` 指定源和私有数据库，沿用 `V2BX_LOG_TIMEZONE`、`V2BX_RELAY_CIDRS`、`V2BX_UNIT`。可设 `V2BX_OBSERVE_DURATION`（默认60秒）、`V2BX_OBSERVE_MAX_EVENTS`（默认100000）、`V2BX_OBSERVE_EXPORT`（新的快照路径）。它只保存脱敏投影与采集指标，不安装服务／CrowdSec acquisition 或产生决策。完成返回2；错误返回1，Ctrl-C返回130。
 
 快照覆盖全部已保存事件，不适合作为反复更新的实时tail文件。轮转与截断的连续性风险、同一源重复采集的限制及具体命令见 [V2bX 指南](v2bx-guide.md)。
+
+## 可选入口端口策略
+
+`--port-policy-plan`、`--port-policy-status` 只读；`--port-policy-apply` 从固定私有文件 `/var/lib/crowdbastion/port-policy.json` 规划并确认后暂存，15 分钟未提交自动回退。`--port-policy-verify` 核验规则与持久化文件，`--port-policy-commit` 重新核验并提交，`--port-policy-rollback` 恢复未提交事务。仍然每次只能指定一个操作。外部客户端验收需要独立完成；规则通过不表示实际流量已经验证。JSON 格式、自动化 Python 参数、host-only/Docker 覆盖边界及回退恢复接口见 [端口策略说明](port-policy.md)。
+
+## 独立可选的 TCP 配置
+
+`--network-status`、`--network-plan` 只读审计网络配置归属、链接别名、systemd/procps 加载顺序、运行值和真实维护副本。`--network-apply` 从私有 `/var/lib/crowdbastion/network.json` 读取显式选定的 TCP 项，确认后恢复本机临时网络命名空间读取的内核默认值并暂存；15 分钟未提交自动回退。`--network-verify`、`--network-commit`、`--network-rollback` 仅选择网络事务，端口事务保持独立。默认安装及 `--optimize` 不调内核参数。支持范围、覆盖归属、错误码与实际中转验收边界见[网络配置说明](network-configuration.md)。
+
+## 只读程序／协议／传输画像
+
+`--protocol-status` 读取声明 `NODE_PROGRAM`（v2bx/v2node）、`NODE_PROTOCOL`、`NODE_TRANSPORT`、`NODE_TOPOLOGY`（direct/shared-relay/unknown）；不保存用途偏好、不发现配置或验证版本，返回 2 表示运行证据尚未验证。程序名不能作为协议名。V2Node 仓库归属尚未确认时只给候选说明，不声称配置解析支持。传输不明保持未知；内核 TCP BBR 不设置用户态 QUIC 拥塞控制。`--diagnose-v2bx` 保留原接口与三内核诊断。官方来源、精确边界和示例见[协议能力说明](protocol-capabilities.md)。
+
+`--optimize` 先校验已有用途：明确仅落地／远端执行／中转且无托管网站时跳过 HTTP 修复；未选择用途保留旧提示顺序，存在托管网站仍保留网站检查。独立网站请使用网站专项命令。
+
+## 可选变更输出与自动化
+
+`--network-status/plan`、`--port-policy-status/plan` 保留完整 JSON；`--environment-status` 始终输出采样 JSON。菜单中的状态／计划及 shell apply/verify/commit/rollback 显示简短结论。需要完整变更结果的自动化使用各指南中的直接 Python 命令；Python 入口不弹确认框，apply 即授权执行。
+
+无变化显示“无需变更”，不创建新事务；已有未提交事务会提示在原期限内提交；`apply_failed` 即使 `state=rolled_back` 仍返回 `1`。核验失败或过期提交不会取消恢复机会。JSON 的 `pending_change` 与 `pending_kind` 指明应先处理的事务类型；过期 commit 返回 `state=verification_failed/refusal_code=transaction_expired`。其他未知错误保持固定拒绝信息，不从异常文本推断原因。环境／锁暂缓保留 `75`，格式化结果不掩盖原失败码。
+
+Python 同源环境入口也可 `python3 lib/crowdbastion_environment.py --guard --human`：同一次有界采样的短理由，稳定返回 `0`，未知或持续压力返回 `75`；此展示选项不替调用方取得管理锁。

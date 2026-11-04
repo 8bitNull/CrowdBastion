@@ -1,0 +1,216 @@
+{
+  "checked_at": 1793622613.667743,
+  "effective_firewall": {
+    "mode": "iptables",
+    "iptables_chains": [
+      "INPUT",
+      "FORWARD",
+      "DOCKER-USER"
+    ],
+    "iptables_v4_chains": null,
+    "iptables_v6_chains": null,
+    "disable_ipv4": null,
+    "disable_ipv6": false,
+    "iptables_chain": null,
+    "blacklists_ipv4": "crowdsec-blacklists",
+    "blacklists_ipv6": "crowdsec6-blacklists",
+    "supported_decisions_types": [
+      "ban"
+    ],
+    "update_frequency": "10s",
+    "origins": null,
+    "scopes": null,
+    "scenarios_containing": null,
+    "scenarios_not_containing": null,
+    "api_endpoint": {
+      "scheme": "http",
+      "host": "127.0.0.1",
+      "port": 8080
+    }
+  },
+  "rules_ipv4": {
+    "exit": 0,
+    "sha256": "93160aa78da4c5a7ff6abed4972edd941ff5eb930c57efad28cb46a47f65bc3d",
+    "policies": [
+      "-P INPUT ACCEPT",
+      "-P FORWARD ACCEPT",
+      "-P OUTPUT ACCEPT"
+    ],
+    "first_rules": {
+      "INPUT": "-A INPUT -j CROWDSEC_CHAIN",
+      "FORWARD": "-A FORWARD -j CROWDSEC_CHAIN",
+      "DOCKER-USER": "-A DOCKER-USER -j CROWDSEC_CHAIN",
+      "CROWDSEC_CHAIN": "-A CROWDSEC_CHAIN -m set --match-set crowdsec-blacklists-1 src -m comment --comment \"CrowdSec: crowdsec\" -j DROP"
+    },
+    "crowdsec_rule_count": 6
+  },
+  "rules_ipv6": {
+    "exit": 0,
+    "sha256": "3c2a5fdc29ac3b52b570753ca496e0d7481365705d159c732534f48e1b73b3b6",
+    "policies": [
+      "-P INPUT ACCEPT",
+      "-P FORWARD ACCEPT",
+      "-P OUTPUT ACCEPT"
+    ],
+    "first_rules": {
+      "INPUT": "-A INPUT -j CROWDSEC_CHAIN",
+      "FORWARD": "-A FORWARD -j CROWDSEC_CHAIN",
+      "DOCKER-USER": "-A DOCKER-USER -j CROWDSEC_CHAIN",
+      "CROWDSEC_CHAIN": "-A CROWDSEC_CHAIN -m set --match-set crowdsec6-blacklists-1 src -m comment --comment \"CrowdSec: crowdsec\" -j DROP"
+    },
+    "crowdsec_rule_count": 6
+  },
+  "latest_readonly_firewall_audit": {
+    "exit": 1,
+    "output": "[异常] 开机规则覆盖与 Docker 启动顺序\n  可能覆盖动态规则的任务：netfilter-persistent.service（仅定位，未修改）\n  可能覆盖动态规则的任务：iptables.service（仅定位，未修改）\n  可能覆盖动态规则的任务：ip6tables.service（仅定位，未修改）\n[已检查] IPv4/IPv6 INPUT、FORWARD 与适用的 Docker 链入口；实际业务拦截仍需外部验收。\n"
+  },
+  "decision_membership": {
+    "expected": 15296,
+    "kernel": 15296,
+    "missing": 0,
+    "state": "ok"
+  },
+  "lapi_status": {
+    "exit": 0,
+    "seconds": 0.532
+  },
+  "bouncer_registry": [
+    {
+      "name": "cs-firewall-bouncer-1791875435",
+      "revoked": false,
+      "last_pull": "2026-11-02T12:30:09.092489325Z",
+      "type": "Python-urllib",
+      "version": "3.11"
+    }
+  ],
+  "acquisition": {
+    "exit": 0,
+    "state": "fault",
+    "sources": {
+      "file:/home/web/log/nginx/access.log": {
+        "parsed": 590,
+        "pour": 524,
+        "reads": 590
+      },
+      "file:/var/log/auth.log": {
+        "parsed": 73,
+        "pour": 309,
+        "reads": 199,
+        "unparsed": 126
+      },
+      "file:/var/log/syslog": {
+        "reads": 18294,
+        "unparsed": 18294
+      }
+    }
+  },
+  "web_registry_present": false,
+  "web_installs": {},
+  "nginx_configuration": {
+    "exit": 0,
+    "seconds": 0.328,
+    "lua_access_hook_present": false,
+    "crowdsec_named_directive_present": false
+  },
+  "journal_error_counts_24h": {
+    "crowdsec.service": {
+      "records": 0,
+      "classes": {
+        "out_of_memory": 0,
+        "network_timeout": 0,
+        "authentication": 0,
+        "traceback": 0,
+        "rate_limit": 0
+      }
+    },
+    "crowdsec-firewall-bouncer.service": {
+      "records": 0,
+      "classes": {
+        "out_of_memory": 0,
+        "network_timeout": 0,
+        "authentication": 0,
+        "traceback": 0,
+        "rate_limit": 0
+      }
+    },
+    "crowdsec-1key-bot.service": {
+      "records": 0,
+      "classes": {
+        "out_of_memory": 0,
+        "network_timeout": 0,
+        "authentication": 0,
+        "traceback": 0,
+        "rate_limit": 0
+      }
+    },
+    "crowdbastion-notify.service": {
+      "records": 0,
+      "classes": {
+        "out_of_memory": 0,
+        "network_timeout": 0,
+        "authentication": 0,
+        "traceback": 0,
+        "rate_limit": 0
+      }
+    }
+  },
+  "listener_processes": {
+    "exit": 0,
+    "seconds": 0.021,
+    "stdout": "udp UNCONN 0      0        0.0.0.0:443   0.0.0.0:* users:((\"nginx\",pid=1227,fd=10),(\"nginx\",pid=1226,fd=10),(\"nginx\",pid=1051,fd=10))\nudp UNCONN 0      0           [::]:443      [::]:* users:((\"nginx\",pid=1227,fd=11),(\"nginx\",pid=1226,fd=11),(\"nginx\",pid=1051,fd=11))\ntcp LISTEN 0      511      0.0.0.0:80    0.0.0.0:* users:((\"nginx\",pid=1226,fd=6),(\"nginx\",pid=1051,fd=6))                           \ntcp LISTEN 0      128      0.0.0.0:53322 0.0.0.0:* users:((\"sshd\",pid=687,fd=3))                                                     \ntcp LISTEN 0      32768    0.0.0.0:5244  0.0.0.0:* users:((\"docker-proxy\",pid=1124,fd=8))                                            \ntcp LISTEN 0      32768  127.0.0.1:8080  0.0.0.0:* users:((\"crowdsec\",pid=1245,fd=16))                                               \ntcp LISTEN 0      32768  127.0.0.1:6060  0.0.0.0:* users:((\"crowdsec\",pid=1245,fd=29))                                               \ntcp LISTEN 0      32768    0.0.0.0:51080 0.0.0.0:* users:((\"docker-proxy\",pid=1156,fd=8))                                            \ntcp LISTEN 0      511      0.0.0.0:443   0.0.0.0:* users:((\"nginx\",pid=1226,fd=8),(\"nginx\",pid=1051,fd=8))                           \ntcp LISTEN 0      511         [::]:80       [::]:* users:((\"nginx\",pid=1226,fd=7),(\"nginx\",pid=1051,fd=7))                           \ntcp LISTEN 0      128         [::]:53322    [::]:* users:((\"sshd\",pid=687,fd=4))                                                     \ntcp LISTEN 0      32768       [::]:5244     [::]:* users:((\"docker-proxy\",pid=1130,fd=8))                                            \ntcp LISTEN 0      32768          *:8443        *:* users:((\"V2bX\",pid=661,fd=11))                                                    \ntcp LISTEN 0      32768       [::]:51080    [::]:* users:((\"docker-proxy\",pid=1160,fd=8))                                            \ntcp LISTEN 0      511         [::]:443      [::]:* users:((\"nginx\",pid=1226,fd=9),(\"nginx\",pid=1051,fd=9))                           \n",
+    "stderr": ""
+  },
+  "firewall_binary_version": {
+    "exit": 0,
+    "seconds": 0.05,
+    "stdout": "version: v0.0.36-debian-pragmatic-amd64-4c315193cd4f19e3937cdee2f15183ec4d602f56\nBuildDate: 2026-08-04_11:27:10\nGoVersion: 1.26.3\nPlatform: linux\n",
+    "stderr": ""
+  },
+  "system_restore_services": {
+    "netfilter-persistent.service": {
+      "exit": 0,
+      "stdout": "LoadState=loaded\nActiveState=active\nUnitFileState=enabled\n"
+    },
+    "nftables.service": {
+      "exit": 0,
+      "stdout": "LoadState=loaded\nActiveState=inactive\nUnitFileState=disabled\n"
+    },
+    "iptables.service": {
+      "exit": 0,
+      "stdout": "LoadState=loaded\nActiveState=active\nUnitFileState=enabled\n"
+    },
+    "ip6tables.service": {
+      "exit": 0,
+      "stdout": "LoadState=loaded\nActiveState=active\nUnitFileState=enabled\n"
+    }
+  },
+  "maintenance_paths": {
+    "/opt/crowdsec-1key-maintenance/cron.sh": {
+      "exists": false
+    },
+    "/etc/cron.d/crowdsec-autoupdate": {
+      "exists": false
+    },
+    "/etc/systemd/system/crowdsec-firewall-bouncer.service.d/20-crowdbastion-docker-order.conf": {
+      "exists": true,
+      "sha256": "a5e83ab3b540efe5bbe142dd1ab99c2110e7a6dda661c1e967980b615ab865a3",
+      "size": 28,
+      "mode": "0o600",
+      "uid": 0
+    }
+  },
+  "existing_manager_status": {
+    "exit": 2,
+    "seconds": 7.928,
+    "stdout": "检查结论：运行检查通过，实际拦截待验证\n检查范围：网站\n已确认：本地检测服务运行、防火墙防护服务运行、日志读取与解析正常。\n待确认：外部连接是否确实被拦截。\n本次未发现需要修复的问题。\n下一步：按实际流量路径完成一次外部拦截验证。\n查看详情：--status-details\n",
+    "stderr": ""
+  },
+  "existing_node_diagnosis": {
+    "exit": 2,
+    "seconds": 1.527,
+    "stdout": "检查结论：运行检查通过，实际拦截待验证\n检查范围：V2bX 落地\n已确认：本地检测服务运行、防火墙防护服务运行、已发现来源 IP 封禁规则、V2bX 配置可读取。\n待确认：专用攻击检测与外部连接拦截效果。\n本次未发现需要修复的问题。\n下一步：按实际流量路径完成一次外部拦截验证。\n查看详情：--diagnose-v2bx-details\n",
+    "stderr": ""
+  },
+  "finished_at": 1793622627.9737155,
+  "exact_credential_matches_in_output": 0
+}

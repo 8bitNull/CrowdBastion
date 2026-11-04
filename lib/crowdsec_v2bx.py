@@ -20,6 +20,7 @@ import yaml
 from crowdsec_config import acquisition_locations, go_glob
 from crowdsec_relay_paths import endpoint
 from crowdbastion_health import emit
+from crowdbastion_protocols import profile
 
 CORES = {'xray', 'sing', 'hysteria2'}
 PROTOCOLS = {'vless', 'vmess', 'trojan', 'shadowsocks', 'hysteria', 'hysteria2',
@@ -225,7 +226,9 @@ def node_report(raw, index, cores, mode, working_dir):
             'entry_declared': mode, 'source_status': 'unverified',
             'enforcement': enforcement,
             'limit_fields_present': [key for key in ('SpeedLimit', 'DeviceLimit', 'ConnLimit') if key in limits],
-            'limit_effect_status': 'unverified'}
+            'limit_effect_status': 'unverified',
+            'capabilities': profile('v2bx', enum(api.get('NodeType'), PROTOCOLS),
+                                    topology='shared-relay' if mode == 'relay-proxy' else 'direct' if mode == 'direct' else 'unknown')}
 
 
 def socket_report(pid):
@@ -474,6 +477,10 @@ def display(report):
         print(f"节点 #{n['index']}：{n['core']}/{n['protocol']}；监听 IP={n['listen_ip'] or '未知'}；入口声明={n['entry_declared']}")
         print(f"  配置={n['config_status']}；PROXY protocol 声明={n['proxy_protocol_declared']}；封禁位置建议={n['enforcement']}")
         print('  [尚未验证] 端口/传输通常由面板下发；日志 IP、数据包 IP、限制字段效果需实际核验。')
+        cap = n['capabilities']
+        print(f"  协议能力（配置声明，运行尚未验证）：网络={cap['network']}；UDP载荷={cap['udp_payload']}")
+        for line in cap['guidance']:
+            print('  '+line)
     print('本机 socket 读取：'+report['socket_status'])
     for s in report['sockets']:
         if s['service_pid_match']:

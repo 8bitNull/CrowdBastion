@@ -5,13 +5,13 @@ import subprocess
 import unittest
 
 import test_custom_bot
-import test_workflows
+import workflow_fixture as test_workflows
 
 
 class BotInstallation(unittest.TestCase):
-    setUp = test_workflows.Workflows.setUp
-    run_shell = test_workflows.Workflows.run_shell
-    commands = test_workflows.Workflows.commands
+    setUp = test_workflows.WorkflowFixtureMixin.setUp
+    run_shell = test_workflows.WorkflowFixtureMixin.run_shell
+    commands = test_workflows.WorkflowFixtureMixin.commands
     setup_bot = test_custom_bot.BotService.setup_bot
 
     def helpers(self):
