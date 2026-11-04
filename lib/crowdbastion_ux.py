@@ -7,12 +7,102 @@ import os
 from pathlib import Path
 import re
 import shlex
+import shutil
 import stat
 import sys
 import tempfile
 import time
+import unicodedata
 
 from crowdbastion_node import safe_path
+
+
+def show_home_menu(role_label, roles_ok=True, banner=True):
+    """Render navigation only; the shell owns prompts and operation dispatch."""
+    columns = shutil.get_terminal_size().columns if sys.stdout.isatty() else 80
+    boxed = columns >= 68
+    color = (sys.stdout.isatty() and os.environ.get('TERM', 'dumb') != 'dumb'
+             and 'NO_COLOR' not in os.environ)
+
+    def paint(text, code):
+        return f'\033[{code}m{text}\033[0m' if color else text
+
+    def width(text):
+        return sum(0 if unicodedata.combining(c) else
+                   2 if unicodedata.east_asian_width(c) in 'WF' else 1 for c in text)
+
+    def rule():
+        print(paint('+' + '-' * 66 + '+' if boxed else '-' * max(1, columns), '90'))
+
+    def row(text='', center=False):
+        plain = re.sub(r'\033\[[0-9;]*m', '', text)
+        if boxed:
+            left = (66 - width(plain)) // 2 if center else 4
+            print(paint('|', '90') + ' ' * left + text
+                  + ' ' * (66 - left - width(plain)) + paint('|', '90'))
+        else:
+            # Count CJK characters as two columns; textwrap counts code points.
+            indent = '  ' if columns > 4 else ''
+            available = max(2, columns - len(indent))
+            if width(plain) <= available:
+                print(indent + text)
+                return
+            chunk = ''
+            for char in plain:
+                if width(chunk + char) > available:
+                    print(indent + chunk)
+                    chunk = ''
+                chunk += char
+            print(indent + chunk)
+
+    print()
+    rule()
+    row()
+    if banner:
+        if boxed:
+            for art in (r'''
+  ____ ____   _____        ______
+ / ___|  _ \ / _ \ \      / /  _ \
+| |   | |_) | | | \ \ /\ / /| | | |
+| |___|  _ <| |_| |\ V  V / | |_| |
+ \____|_| \_\\___/  \_/\_/  |____/
+''', r'''
+ ____    _    ____ _____ ___ ___  _   _
+| __ )  / \  / ___|_   _|_ _/ _ \| \ | |
+|  _ \ / _ \ \___ \ | |  | | | | |  \| |
+| |_) / ___ \ ___) || |  | | |_| | |\  |
+|____/_/   \_\____/ |_| |___\___/|_| \_|
+'''):
+                lines = art.strip('\n').splitlines()
+                offset = (66 - max(map(len, lines))) // 2
+                for line in lines:
+                    # Align each word as a block, retaining its letter spacing.
+                    row(paint(line, '96') + ' ' * (66 - 2 * offset - len(line)), True)
+                row()
+            row(paint('S E R V E R   S E C U R I T Y   &   O P E R A T I O N S', '22;90'), True)
+        else:
+            row(paint('CrowdBastion', '96'))
+        row(paint('服务器防护 · 运维管理', '22;37'), True)
+        row()
+        rule()
+
+    if roles_ok:
+        row(paint('节点用途：', '37') + paint(role_label.strip(), '92'))
+    else:
+        row(paint('用途配置无法读取，请在高级管理中重新设置。', '33'))
+    row(paint('先了解当前情况，再按提示安装或处理问题。', '90'))
+    rule()
+    for number, label, note in (
+            ('1', '检查防护情况', '建议先看这里'),
+            ('2', '安装或调整防护', '按用途引导'),
+            ('3', '管理封禁与放行', ''),
+            ('4', '高级管理', '规则、通知、专项排查等'),
+            ('5', '常用操作', '防火墙、验收、落地、维护副本')):
+        row(paint(f'[{number}]', '96') + '  ' + paint(label, '37')
+            + (paint(f'（{note}）', '90') if note else ''))
+    row(paint('[0]', '96') + '  ' + paint('退出', '37'))
+    rule()
+    print(paint('  Ctrl+D 退出', '90'))
 
 
 def read_regular(path, maximum=8 * 1024 * 1024):
@@ -288,7 +378,10 @@ def change_summary(report, kind, action, code):
 
 def main(args):
     action, *values = args
-    if action == 'change-result':
+    if action == 'home-menu':
+        role_label, roles_status, banner = values
+        show_home_menu(role_label, roles_ok=roles_status == '0', banner=banner == 'true')
+    elif action == 'change-result':
         kind, operation, code = values
         print(change_summary(json.load(sys.stdin), kind, operation, int(code)))
     elif action == 'fingerprint':

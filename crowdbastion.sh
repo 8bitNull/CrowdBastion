@@ -2255,26 +2255,24 @@ manage_integrations() {
     done
 }
 
-show_startup_banner() {
-    printf '\nCrowdBastion · 服务器防护\n先了解当前情况，再按提示安装或处理问题。\n'
-}
-
 show_main_menu() {
-    local choice roles_status=0
-    show_startup_banner
+    local choice roles_status=0 role_label show_banner=true
     load_node_roles || roles_status=$?
     if [[ "$roles_status" == 0 && -z "$NODE_ROLES" && -t 0 ]]; then
         locked_operation select_node_roles
         if load_node_roles && [[ -n "$NODE_ROLES" ]]; then guided_setup; fi
     fi
     while true; do
+        roles_status=0
         if load_node_roles; then
-            printf '\n这台服务器的用途：%s\n' "$(node_role_label)"
+            role_label=$(node_role_label)
         else
-            printf '\n用途配置无法读取，请在高级管理中重新设置。\n'
+            roles_status=1
+            role_label=''
         fi
-        printf '1. 检查防护情况（建议先看这里）\n2. 安装或调整防护（按用途引导）\n3. 管理封禁与放行\n4. 高级管理（规则、通知、专项排查等）\n5. 常用操作（防火墙、验收、落地、维护副本）\n0. 退出\n'
-        prompt choice '请选择 [0-5]（Ctrl+D 退出）: ' || return 0
+        ux_tool home-menu "$role_label" "$roles_status" "$show_banner" || return 1
+        show_banner=false
+        prompt choice '  请选择 [0-5] > ' || return 0
         case "$choice" in
             1) interactive_health_check ;;
             2) guided_setup ;;

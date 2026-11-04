@@ -20,7 +20,7 @@ class GuidedInteraction(unittest.TestCase):
         p = self.run_shell('show_main_menu', '1\n2\n3\n4\n0\n', overrides)
         self.assertEqual(p.returncode, 0, p.stdout+p.stderr)
         self.assertEqual(self.commands().splitlines(), ['invoked '+name for name in names])
-        self.assertIn('1. 检查防护情况', p.stdout)
+        self.assertIn('[1]  检查防护情况', p.stdout)
         self.assertNotIn('Next-Gen', p.stdout)
 
     def test_setup_dispatches_role_specific_steps_and_recheck(self):
