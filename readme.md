@@ -1,15 +1,19 @@
 <div align="center">
-<pre>   ______                        ______             __  _&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;
-  / ____/________ _      _______/ __  /____ ______/ /_(_)___  ____&#32;
- / /   / ___/ __ \ | /| / / __  / __  / __ `/ ___/ __/ / __ \/ __ \
-/ /___/ /  / /_/ / |/ |/ / /_/ / /_/ / /_/ (__  ) /_/ / /_/ / / / /
-\____/_/   \____/|__/|__/\__,_/_____/\__,_/____/\__/_/\____/_/ /_/&#32;</pre>
-</div>
+<pre>
+  ____ ____   _____        ______
+ / ___|  _ \ / _ \ \      / /  _ \
+| |   | |_) | | | \ \ /\ / /| | | |
+| |___|  _ &lt;| |_| |\ V  V / | |_| |
+ \____|_| \_\\___/  \_/\_/  |____/
 
-<p align="center">
-  <strong>基于 CrowdSec 的服务器防护与运维管理工具</strong><br />
-  网站 · 中转 VPS · V2bX 落地节点
-</p>
+ ____    _    ____ _____ ___ ___  _   _
+| __ )  / \  / ___|_   _|_ _/ _ \| \ | |
+|  _ \ / _ \ \___ \ | |  | | | | |  \| |
+| |_) / ___ \ ___) || |  | | |_| | |\  |
+|____/_/   \_\____/ |_| |___\___/|_| \_|
+</pre>
+<p>服务器防护 · 运维管理<br />基于 CrowdSec，面向网站、中转 VPS 与 V2bX 落地节点</p>
+</div>
 
 <p align="center">
   <a href="docs/audit/2026-10-12-vps-compatibility.md"><img src="https://img.shields.io/badge/platform-Linux-FCC624?logo=linux&amp;logoColor=black" alt="Platform: Linux" /></a>
@@ -21,34 +25,20 @@
 </p>
 
 <p align="center">
-  <a href="#适用场景">适用场景</a> ·
   <a href="#快速开始">快速开始</a> ·
+  <a href="#首页导航">首页导航</a> ·
+  <a href="#适用场景">适用场景</a> ·
   <a href="#检查结果怎么看">检查结果</a> ·
   <a href="#常用操作">常用操作</a> ·
+  <a href="#更新与维护">更新维护</a> ·
   <a href="#文档导航">详细文档</a>
 </p>
 
-CrowdBastion 把 CrowdSec 安装、日志检测、IP 封禁和日常维护集中到一个中文菜单。选择服务器用途后，可以按用途检查运行情况，查看原因和推荐的下一步操作。
-
-## 适用场景
-
-首页提供 `1` 检查防护情况、`2` 安装或调整防护（按用途引导）、`3` 管理封禁与放行、`4` 高级管理、`5` 常用操作。表中的 `4 → 1 → 1` 表示从首页进入高级管理，再依次选择 `1`、`1`。高级管理保留原菜单及内部编号，命令行参数不变。
-
-| 你的服务器用途 | 提供的能力 | 从哪里开始 |
-| --- | --- | --- |
-| **网站服务器** | 分析访问日志、封禁攻击来源；按需接入 AppSec 网站请求检查 | 首页 `2`，按网站用途依次安装和接入 |
-| **中转 VPS，需要本机检测** | 检测本机系统／SSH 日志中的攻击，执行 IP 封禁 | 首页 `2`，按本地中转用途安装基础防护 |
-| **中转 VPS，已有检测中心** | 接收中心的封禁决策，在本机防火墙执行 | 首页 `2`，按远端执行用途连接检测中心 |
-| **V2bX 落地节点** | 检查配置、日志与连接来源，支持持续观察和告警；业务检测仅观察 | 首页 `2`，按落地用途检查，详见 [落地指南](docs/v2bx-guide.md) |
-| **AnyTLS／Hysteria／TUIC 等代理节点** | 按实际协议与传输提供只读指导，按需核对环境、TCP 配置及入口端口；不自动安装代理程序 | 首页 `5 → 9`，详见 [协议导航](docs/usage-guide.md#代理协议使用导航) |
-
-网站接入覆盖 **1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）及宿主机 Nginx/OpenResty**，具体条件见 [AppSec 指南](docs/appsec-guide.md)。中转模式适用于 gost、realm、socat、Nginx Stream 或 NAT 节点，详见 [中转部署](docs/relay-mode.md)和 [中心运维](docs/remote-bouncer-operations.md)。
-
-日常管理还提供规则更新、配置备份恢复，以及可选的 WebUI 管理界面和 Telegram 通知，按部署的组件使用。
+CrowdBastion 将 CrowdSec 安装、日志检测、IP 封禁和日常维护集中到一个中文终端菜单。选择服务器用途后，按引导安装或调整防护，再检查运行情况、查看原因并选择下一步操作。
 
 ## 快速开始
 
-**运行环境：** systemd Linux、root／sudo 权限、Git、Bash 和 Python 3。首次安装前必须已安装 Python 3，安全管理锁依赖它；缺少时会在修改前停止，不自动绕过锁。配置操作还需 PyYAML，安装入口会准备该依赖；手动准备方法见 [环境说明](docs/usage-guide.md#准备环境与下载)。
+需要使用 systemd 的 Linux、root／sudo 权限，以及 Git、Bash 和 Python 3。软件源、CrowdSec Hub 与所需镜像应可访问；系统与架构的实测范围见 [兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md)。
 
 ```bash
 git clone --branch main https://github.com/8bitNull/CrowdBastion.git
@@ -56,144 +46,154 @@ cd CrowdBastion
 sudo bash crowdbastion.sh
 ```
 
-> 请下载完整仓库，并保留主脚本旁的 `lib/` 目录。
+请下载完整仓库，保留主脚本旁的 `lib/` 目录。Python 3 必须在首次运行前安装，管理锁依赖它；配置操作还需 PyYAML，安装入口会准备该依赖。手动准备方法见 [环境与依赖](docs/usage-guide.md#准备环境与下载)。
 
 安装前保存现有 CrowdSec／防火墙配置，核对管理员来源 IP，并准备 VPS 控制台或恢复入口。
 
 ### 首次使用
 
-1. **选择用途，了解当前情况。** 首次在终端启动时，按提示选择网站、本地中转、远端执行或 V2bX 落地，随后进入对应引导；选择本身只保存用途，不会自动安装。之后可从 `4 → 7` 调整用途。已有安装可先从首页 `1` 检查。
-2. **按步骤安装或调整。** 首页 `2` 按用途列出步骤，已有配置可以直接检查。例如网站依次处理基础防护、网站请求防护和访客真实 IP；中转先安装基础防护或连接检测中心，再核对入口路径；落地节点先检查配置与日志。需要单独操作时进入首页 `4` 的高级管理，网站检测规则在 `4 → 2` 中选择。
-3. **检查并继续处理。** 完成步骤后，在引导中选 `9`，或返回首页选 `1` 检查。检查页选 `1` 执行推荐操作、`2` 查看技术详情、`3` 重新检查、`4` 导出脱敏报告、`0` 返回。成功修改配置或服务后自动只读复查；取消或失败保留本页，仍可选 `3` 手动重查。
+1. **选择用途。** 首次终端启动时，选择网站、本地中转、远端执行或 V2bX 落地，随后进入对应引导。选择只保存用途，不自动安装；已有部署也可先返回首页，选 `1` 检查。
+2. **按步骤安装或调整。** 首页 `2` 列出当前用途的步骤，由你选择执行。网站依次处理基础防护、网站请求防护与真实 IP；中转先准备本地检测或连接中心；落地节点先检查配置与日志。
+3. **检查并验证。** 在引导中选 `9`，或回首页选 `1`。根据“需要关注”和“下一步”继续处理，再按实际业务路径验证拦截效果。
 
-网站向导先选择宿主机、Docker host 或 bridge，再按引擎、私有地址（仅 bridge）、拦截组件、请求验证的顺序接入。私有网关需自行准备；“网站防护接入”也可选 `8` 登记地址、选 `9` 查看撤销顺序。首页 `3` 为远端执行节点提供本机状态与中心操作说明；防火墙维护可从 `4 → 4 → 5 → 5` 进入。
+用途可组合，例如输入 `2 4` 选择本地中转＋落地。远端执行不能与网站／本地中转同选，可以与落地组合。之后可从 `4 → 7` 调整，偏好保存在 `/var/lib/crowdbastion/node-roles.json`，不保存密钥。
 
-新增代理协议导航可从首页 `5 → 9` 进入，交互选择程序、协议、传输与入口拓扑，无需先配置环境变量。独立代理程序可在首次用途提示选 `0` 后进入该页；现有“V2bX 落地”用途仍用于 V2bX 专项检查，不用于推断所有代理程序。
+独立 AnyTLS／Hysteria／TUIC 等代理程序可在首次用途提示选 `0`，再从首页 `5 → 9` 进入协议导航，无需选择 V2bX 用途或预先配置环境变量。
 
-菜单输入 `0` 返回，`Ctrl+D` 退出；删除、停用和卸载需明确确认。
+## 首页导航
 
-<details>
-<summary><strong>环境要求与用途组合</strong></summary>
+首页使用双层 ASCII 标题和紧凑面板，动态显示当前节点用途。主要操作如下：
 
-软件源、CrowdSec Hub 和所需镜像须可访问。WebUI 另需 Docker/Compose，定时更新另需 cron/crond；系统版本与实际测试范围见 [VPS 兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md)。
+```text
+[1]  检查防护情况（建议先看这里）
+[2]  安装或调整防护（按用途引导）
+[3]  管理封禁与放行
+[4]  高级管理（规则、通知、专项排查等）
+[5]  常用操作（防火墙、验收、落地、维护副本）
+[0]  退出
+```
 
-用途可以组合，例如输入 `2 4` 选择本地中转＋落地。远端执行不能与网站／本地中转同选，可与落地组合。偏好保存于 `/var/lib/crowdbastion/node-roles.json`，不保存密钥；尚未选择用途时，`--status` 沿用网站检查范围。
+- 输入编号执行操作，子菜单选 `0` 返回，`Ctrl+D` 退出。删除、停用和卸载需要明确确认。
+- 路径 `4 → 1 → 1` 表示从首页进入高级管理，再依次选择 `1`、`1`。
+- 大标题仅在首次进入首页时展示，返回后刷新用途和菜单。标题、副标题和菜单均使用普通字重；小于 68 列的终端显示紧凑版，`NO_COLOR`、`TERM=dumb` 或重定向输出时不带颜色。
 
-V2bX 落地可以独立诊断，不要求安装本地 CrowdSec；纯远端执行节点也无需本地检测核心。完整步骤见 [使用指南](docs/usage-guide.md)。
+检查页提供 `1` 推荐操作、`2` 技术详情、`3` 重新检查、`4` 导出脱敏报告、`0` 返回。成功修改配置或服务后会自动只读复查；取消或失败后可手动重查。报告分享前仍需人工核对敏感信息。
 
-</details>
+## 适用场景
+
+| 服务器用途 | 提供的能力 | 开始位置 |
+| --- | --- | --- |
+| 网站服务器 | 访问日志检测、IP 封禁，按需接入 AppSec 网站请求检查 | 首页 `2`，选择网站用途 |
+| 本地中转 VPS | 检测本机系统／SSH 日志，执行防火墙封禁 | 首页 `2`，选择本地中转用途 |
+| 远端决策执行节点 | 连接已有检测中心，在本机执行中心封禁决策 | 首页 `2`，选择远端执行用途 |
+| V2bX 落地节点 | 检查配置、日志与连接来源，按需持续观察和告警 | 首页 `2`，选择落地用途；[落地指南](docs/v2bx-guide.md) |
+| 独立代理程序 | 按程序、协议、实际传输和拓扑提供只读指导 | 首页 `5 → 9`；[协议导航](docs/usage-guide.md#代理协议使用导航) |
+
+网站接入支持 1Panel、科技lion LDNMP、Nginx Proxy Manager（NPM）及宿主机 Nginx/OpenResty，具体前提见 [AppSec 指南](docs/appsec-guide.md)。向导按宿主机、Docker host 或 bridge 分支接入；bridge 所需私有网关须先自行准备。
+
+中转适用于 gost、realm、socat、Nginx Stream 或 NAT 节点，部署方式见 [中转指南](docs/relay-mode.md)与 [中心运维](docs/remote-bouncer-operations.md)。纯远端执行节点无需本地检测核心；V2bX 也可独立诊断，不要求安装本地 CrowdSec。
+
+协议导航不自动安装代理程序，也不等于专项日志检测或运行验证。程序、协议与传输的区别，以及 AnyTLS、VMess/VLESS、Shadowsocks、Trojan、Hysteria、TUIC 的能力范围，见 [协议能力与官方来源](docs/protocol-capabilities.md)。
 
 ## 检查结果怎么看
 
-**先看“检查结论”，再看“需要关注”和“下一步”。** 检查本身只读取状态，处理操作由你另行选择。
+先看“检查结论”，再看“需要关注”和“下一步”。检查本身只读取状态，处理操作由你另行选择。
 
-| 检查结论 | 是什么意思 | 你该怎么做 |
+| 检查结论 | 含义 | 下一步 |
 | --- | --- | --- |
-| **运行检查通过，实际拦截待验证** | 本次运行检查未发现需要修复的问题，实际拦截效果还需验证 | 无需根据本次结果修复；按“下一步”完成业务验证 |
-| **发现问题，需要处理** | 已确认服务、配置或日志处理存在问题 | 优先处理“需要关注”中的问题，再检查一次 |
-| **部署尚未完成** | 当前用途所需的组件或配置还没有准备齐 | 按推荐入口补齐安装或接入 |
-| **检查未完成，暂时无法判断** | 状态无法读取，或暂时没有足够的日志样本 | 查看详情，按原因补充样本或解决读取问题 |
+| 运行检查通过，实际拦截待验证 | 本次未发现运行问题，尚未确认实际连接被拦截 | 按实际流量路径完成业务验证 |
+| 发现问题，需要处理 | 已确认服务、配置或日志处理存在问题 | 处理“需要关注”中的问题，再检查 |
+| 部署尚未完成 | 当前用途所需组件或配置尚未齐备 | 按引导补齐安装或接入 |
+| 检查未完成，暂时无法判断 | 状态读取失败，或缺少足够日志样本 | 查看详情，解决读取问题或补充样本 |
 
-例如，本地中转节点的服务、日志和规则检查通过后，会显示：
+服务运行、规则存在和累计计数不能证明实际连接已被拦截。应使用自己控制的测试来源，核对 IPv4/IPv6、入口、转发路径和恢复情况，详见 [安装后的验证](docs/usage-guide.md#安装后的验证)。
 
-```text
-检查结论：运行检查通过，实际拦截待验证
-检查范围：本地中转
-已确认：本地检测服务运行、防火墙防护服务运行、日志读取与解析正常、已发现来源 IP 封禁规则。
-待确认：外部连接是否确实被拦截。
-本次未发现需要修复的问题。
-下一步：按实际流量路径完成一次外部拦截验证。
-```
+中转节点可通过 `--verify-relay` 执行 [入口引导验收](docs/relay-mode.md#中转入口引导验收)，外部连接结果由操作者确认；续封、精确删除和自然到期使用 `--verify-relay-lifecycle`。验收记录仅适用于本次核对的入口与范围。
 
-服务运行、规则存在和累计计数，不能证明实际连接已被拦截。业务验证需要使用自己控制的测试来源，核对实际入口和转发路径；具体步骤见 [安装后的验证](docs/usage-guide.md#安装后的验证)。
-
-中转节点可运行 `--verify-relay`，按 [引导验收](docs/relay-mode.md#中转入口引导验收)完成连接对照与恢复检查。向导给出本次入口的通过／未通过／未完成结论，注明外部测试由操作者确认；中转安装完成后也会自动检查并提供验证入口。
-
-检查页选 `2` 查看技术详情；命令行用 `--status` 查看短结论，用 `--status-details` 查看完整输出。服务异常时，推荐操作会核对状态、配置和日志；确认检测服务或防火墙封禁服务已停止后，可按提示确认启动，启动前在管理锁内复验，之后选 `3` 重新检查。未安装的可选 AppSec／WebUI 不影响运行检查；已部署组件仍会被检查。
+未安装的可选 AppSec／WebUI 不影响运行检查，已部署组件仍会被检查。尚未选择用途时，`--status` 沿用网站检查范围。
 
 ## 常用操作
 
-在下载的 `CrowdBastion` 目录内运行：
+在仓库目录运行，每次指定一个操作；命令行仍保留所需的交互确认。
 
 ```bash
-# 按保存的节点用途检查
+# 按保存的用途查看检查结论与下一步
 sudo bash crowdbastion.sh --status
 
 # 查看完整检查详情
 sudo bash crowdbastion.sh --status-details
 
-# 查看所有命令行入口
+# 查看全部命令行入口，无需 root
 bash crowdbastion.sh --help
 ```
 
 | 想做什么 | 入口 |
 | --- | --- |
-| 调整服务器用途 | 菜单 `4 → 7` |
-| 检查并选择下一步 | 首页 `1` |
+| 设置节点用途 | 菜单 `4 → 7` |
 | 管理 IP 封禁与放行 | 首页 `3` |
 | 更新检测规则 | `--update-hub`，在本地核心或检测中心执行 |
-| 验证中转入口实际拦截 | `--verify-relay` 或 `4 → 4 → 3 → 3` |
-| 查看中转防火墙状态 | `--relay-status`；详情用 `--relay-status-details` |
-| 查看远端决策执行节点状态 | `--relay-bouncer-status` |
+| 检查中转防火墙 | `--relay-status`；详情用 `--relay-status-details` |
+| 查看远端执行节点状态 | `--relay-bouncer-status` |
+| 验证中转入口拦截 | `--verify-relay` 或菜单 `5 → 2` |
 | 检查 V2bX 配置与日志 | `--diagnose-v2bx`；详情用 `--diagnose-v2bx-details` |
-| 检查宿主机短时环境压力 | `--environment-status`（JSON）；菜单 `4 → 4 → 6`（简短结论） |
-| 审计 TCP 配置归属与维护副本 | `--network-status`；可选调整见 [网络配置](docs/network-configuration.md) |
-| 管理明确选定的入口端口 | 菜单 `4 → 4 → 8`；先按 [端口策略](docs/port-policy.md) 准备私有 JSON |
-| 区分程序、协议与传输 | `--protocol-status`；声明方式与 [官方来源索引](docs/protocol-capabilities.md) |
-| 配置管理界面或通知 | 菜单 `4 → 5` |
+| 排查网站与真实 IP | 菜单 `5 → 4`；[排查指南](docs/detection-guide.md) |
+| 管理网页面板、在线控制台与通知 | 菜单 `4 → 5` |
+| 防火墙检查与修复 | 菜单 `5 → 1`；[维护与迁移](docs/firewall-maintenance.md) |
+| 查看短时环境压力 | `--environment-status`（JSON）或菜单 `4 → 4 → 6` |
+| 审计 TCP 配置归属与维护副本 | `--network-status`；[网络配置](docs/network-configuration.md) |
+| 管理选定入口端口 | 菜单 `4 → 4 → 8`；[端口策略](docs/port-policy.md) |
+| 查看程序／协议／传输声明 | `--protocol-status`；交互指导用菜单 `5 → 9` |
 
-命令行入口的运行方式为 `sudo bash crowdbastion.sh 参数`。更多操作见 [命令行参考](docs/cli-reference.md)和 [管理维护](docs/management-guide.md)。
+更多参数、退出码和菜单路径见 [命令行参考](docs/cli-reference.md)。WebUI 另需 Docker/Compose；通知与机器人按需配置，见 [管理维护](docs/management-guide.md)。
 
-<details>
-<summary><strong>已有安装：更新与更名说明</strong></summary>
+## 更新与维护
 
-在已下载的仓库目录中，先结束修改操作，保存本地源码改动，再更新：
+### 更新源码
+
+先结束正在进行的修改操作，保存本地源码改动，再在仓库目录执行：
 
 ```bash
 git pull --ff-only origin main
 bash crowdbastion.sh --help
 ```
 
-项目原名 `crowdsec-1key`。旧入口 `install-crowdsec-1panel.sh` 保留为指向 `crowdbastion.sh` 的兼容链接；已有安装的服务名、配置、备份和规则标识继续沿用。旧仓库地址、分支切换和升级步骤见 [更名与升级](docs/project-rename.md)。
+### 同步定时任务维护副本
 
-已配置定时更新的安装，更新仓库后还需同步其脚本副本，详见 [日常维护与更新](docs/usage-guide.md#日常维护与更新)。
+已经启用定时更新时，`git pull` 不会更新 cron 使用的脚本副本，还需比较并确认同步：
 
-</details>
+```bash
+sudo bash crowdbastion.sh --runtime-status
+sudo bash crowdbastion.sh --sync-runtime
+```
 
-网络与端口策略均为独立可选操作，默认安装和状态检查不调整策略。暂存变更需独立验收并在 15 分钟期限内提交，否则自动回退；本地核验不等于公网阻断或吞吐通过。
+也可使用菜单 `5 → 6` 查看版本、`5 → 7` 同步。同步保留原执行时间；首次设置定时更新用 `--enable-cron`，需要 cron/crond。Hub 规则更新、源码更新和软件包升级是不同操作，详见 [日常维护与更新](docs/usage-guide.md#日常维护与更新)。已部署的 Telegram 交互机器人需在其管理菜单单独检查并更新代码，见 [机器人说明](docs/2026-10-13-custom-telegram-bot.md)。
+
+### 兼容旧版安装
+
+项目原名 `crowdsec-1key`。旧入口 `install-crowdsec-1panel.sh` 保留为指向 `crowdbastion.sh` 的兼容链接，已有服务名、配置、备份和规则标识继续沿用。旧仓库地址、分支与升级步骤见 [更名与升级](docs/project-rename.md)。
+
+## 防护范围与使用边界
+
+- Firewall Bouncer 执行 IP 封禁；AppSec 在线请求检查需要兼容的 Web Bouncer，并完成各网站接入。CDN、反代和多跳中转还需核对真实客户端 IP，不能用共享中转来源代替用户 IP。
+- 中转管理不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗；链路带宽耗尽需要上游防护。
+- V2bX 业务日志的持续观察与告警不自动封禁或限速。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。生产试点条件见 [落地部署验收](docs/v2bx-deployment-acceptance.md)，规则样板见 [落地规则说明](rules/v2bx/README.md)。
+- TCP 配置与端口策略是独立可选操作，默认安装和状态检查不调整策略。暂存变更需独立验收，并在 15 分钟期限内提交，否则自动回退；本地核验不等于公网阻断或吞吐通过。
+- 配置修改提供备份与恢复，系统软件包、实时数据库和网站数据不属于完整事务备份。恢复或卸载前先核对 [备份与失败恢复](docs/usage-guide.md#备份与失败恢复)。
+
+源码回归与隔离实验不代表公网吞吐或生产放行。实际覆盖、待验收项目和历史失败见 [验证记录](docs/verification.md)、[验收索引](docs/audit/README.md)与 [修复进度](docs/audit/2026-10-12-vps-repair-progress.md)。
 
 ## 文档导航
 
-| 你需要了解什么 | 文档 |
+| 主题 | 文档 |
 | --- | --- |
-| **安装与基本使用** | [使用指南](docs/usage-guide.md) · [命令行参考](docs/cli-reference.md) · [更名与升级](docs/project-rename.md) |
-| **网站防护与日志排查** | [AppSec 指南](docs/appsec-guide.md) · [日志与真实 IP](docs/detection-guide.md) |
-| **中转与检测中心部署** | [中转模式](docs/relay-mode.md) · [中心运维](docs/remote-bouncer-operations.md) |
-| **V2bX 落地观察** | [落地指南](docs/v2bx-guide.md) · [部署验收](docs/v2bx-deployment-acceptance.md) |
-| **维护、恢复与通知** | [管理维护](docs/management-guide.md) · [备份与恢复](docs/usage-guide.md#备份与失败恢复) · [Telegram 机器人](docs/2026-10-13-custom-telegram-bot.md) |
-| **兼容性与测试记录** | [兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md) · [验证记录](docs/verification.md) · [验收索引](docs/audit/README.md) |
-
-<details>
-<summary><strong>防护范围与使用边界</strong></summary>
-
-- Firewall Bouncer 执行 IP 封禁；AppSec 在线请求检查需要兼容的 Web Bouncer，并完成各网站接入。
-- 核验实际启用的 IPv4/IPv6、INPUT/FORWARD 和 Docker 路径。CDN、代理和多跳中转还需确认真实来源 IP；共享中转来源不能代替用户 IP 作为业务封禁对象。
-- 当前中转管理不提供 gost/realm 专用行为检测、连接限速或带宽型 DDoS 清洗；链路带宽耗尽需要上游防护。
-- V2bX 的常驻观察与告警不启用自动封禁或限速；生产节点仍需完成 [部署验收](docs/v2bx-deployment-acceptance.md)。
-- 配置修改提供备份与恢复；系统软件包、实时数据库和网站数据不属于完整事务备份。卸载前核对 [恢复与卸载流程](docs/usage-guide.md#备份与失败恢复)。
-
-</details>
-
-<details>
-<summary><strong>实验覆盖与待验收项目</strong></summary>
-
-V2bX 的 xray、sing、hysteria2 已有基础协议、双账号混合入口、IPv4/IPv6 和 TCP/UDP 应用载荷的隔离证据。QUIC 认证事件依赖 [固定版本实验补丁](experimental/README.md)，官方未打补丁包不能沿用该覆盖；Shadowsocks 和 xray Trojan 仍有专用检测缺口。
-
-菜单 `4 → 4 → 4` 支持独立文件日志常驻观察和 `--enable-v2bx-alerts` 仅观察告警接入，专用 profiles guard 隔离决策。日志样本检查与快照导出入口为 `--v2bx-log-check`、`--v2bx-observe`；采样容量与轮转风险见 [V2bX 指南](docs/v2bx-guide.md)，规则样板见 [落地规则说明](rules/v2bx/README.md)。
-
-真实 VPS 的仅观察试点仍待验收。系统长测、恢复及部分架构／资源组合尚未关闭；源码回归和 QEMU 结果不代表公网吞吐或生产放行。具体测试数量、配置对照与失败记录见 [验证记录](docs/verification.md)、[验收索引](docs/audit/README.md)和 [修复进度](docs/audit/2026-10-12-vps-repair-progress.md)。
-
-</details>
+| 安装与基本使用 | [使用指南](docs/usage-guide.md) · [命令行参考](docs/cli-reference.md) · [更名与升级](docs/project-rename.md) |
+| 网站防护与来源识别 | [AppSec 接入](docs/appsec-guide.md) · [日志与真实 IP](docs/detection-guide.md) |
+| 中转与检测中心 | [中转部署](docs/relay-mode.md) · [中心运维](docs/remote-bouncer-operations.md) · [性能测量](docs/relay-benchmark.md) |
+| V2bX 落地与代理协议 | [落地指南](docs/v2bx-guide.md) · [部署验收](docs/v2bx-deployment-acceptance.md) · [协议能力](docs/protocol-capabilities.md) |
+| 防火墙与可选配置 | [防火墙维护](docs/firewall-maintenance.md) · [TCP 配置](docs/network-configuration.md) · [端口策略](docs/port-policy.md) |
+| 维护、通知与恢复 | [管理维护](docs/management-guide.md) · [Telegram 机器人](docs/2026-10-13-custom-telegram-bot.md) · [通知降噪](docs/telegram-noise-control.md) · [备份恢复](docs/usage-guide.md#备份与失败恢复) |
+| 兼容性与验收 | [兼容性矩阵](docs/audit/2026-10-12-vps-compatibility.md) · [验证记录](docs/verification.md) · [验收索引](docs/audit/README.md) |
+| 开发与本地测试 | [测试入口、依赖与验证范围](tests/README.md) |
 
 <p align="center">
   <a href="docs/README.md">完整文档索引</a> ·
