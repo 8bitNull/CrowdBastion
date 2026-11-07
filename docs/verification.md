@@ -1,6 +1,8 @@
 # 使用流程与官方配置验证记录
 
-最新源码整合见 [2026-10-20 仓库整合验收](audit/2026-10-20-repository-consolidation.md)：1047 项回归，1026 通过、21 可选跳过、0 失败；16 项跳过的官方 Telegram 检查另行补验通过。实际运行时覆盖 18 项 Nginx/Lua 测试；其余 5 项可选依赖检查未运行。本轮只同步仓库，未部署 VPS。
+当前源码回归见 [2026-11-07 真实内核与 Docker 链路验收](audit/2026-11-07-kernel-docker-validation.md)：1,846 项严格零跳过通过，原有 1,828 项全部保留；隔离客机另完成 nftables／iptables 各 12 项、Docker 相关 8 项及 daemon 重启后的续封和内核自然到期复验。各类证据分开记录，指定 VPS／公网业务闭环仍待验收。收敛前基线与阻断项见[功能回归记录](audit/2026-11-07-functional-regression.md)。
+
+2026-10-20 的源码整合见 [仓库整合验收](audit/2026-10-20-repository-consolidation.md)：1047 项回归，1026 通过、21 可选跳过、0 失败；16 项跳过的官方 Telegram 检查另行补验通过。实际运行时覆盖 18 项 Nginx/Lua 测试；其余 5 项可选依赖检查未运行。该轮只同步仓库，未部署 VPS。
 
 2026-10-19 的[多台 VPS 问题回流加固](audit/2026-10-19-vps-script-hardening.md)补充防火墙续封缺陷检查、新装后端选择，以及托管 Web Bouncer 的 AppSec/LAPI 故障策略与旧模块升级。验证结果和未部署边界见该报告；下列轮次按各自日期保留。
 

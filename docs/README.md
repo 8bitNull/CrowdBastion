@@ -35,6 +35,8 @@
 
 ## 验收、历史与计划
 
+2026-11-07 [功能回归与阻断项](audit/2026-11-07-functional-regression.md)记录收敛前的 1,828 项回归；[真实内核与 Docker 链路验收](audit/2026-11-07-kernel-docker-validation.md)记录后续 nftables／iptables 各 12 项、Docker 相关 8 项及重启后的续封与自然到期复验。新增验证工具后的完整回归为 1,846 项严格零跳过通过；指定 VPS／公网业务闭环仍待验收。
+
 2026-11-04 [智能首页与任务流程交付](audit/2026-11-04-intelligent-user-flow.md)记录新首页、业务目标、推荐与续办；[循环复审记录](audit/2026-11-04-intelligent-flow-review.md)汇总六轮修复及完整回归边界。
 
 2026-11-03 [脚本保护与协议说明交付记录](audit/2026-11-03-script-hardening-delivery.md)记录本轮行为、兼容性裁决及验证边界；最终复审、全仓回归与同步证据由交付阶段追加。

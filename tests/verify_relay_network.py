@@ -30,11 +30,11 @@ def start_forwarder(args, owned, directory, tool, protocol, listen, target, port
     owned.start(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
-def client(namespace, host, port, protocol):
+def client(namespace, host, port, protocol, *, process_timeout=5):
     argv = [sys.executable, str(Path(__file__).resolve()), '--probe', host, str(port), protocol]
     if namespace:
         argv = ['ip', 'netns', 'exec', namespace] + argv
-    result = subprocess.run(argv, text=True, capture_output=True, timeout=5)
+    result = subprocess.run(argv, text=True, capture_output=True, timeout=process_timeout)
     return json.loads(result.stdout) if result.returncode == 0 else None
 
 

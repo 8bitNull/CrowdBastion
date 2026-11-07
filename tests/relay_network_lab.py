@@ -3,6 +3,7 @@ import contextlib
 import http.server
 import json
 import os
+from pathlib import Path
 import secrets
 import signal
 import socket
@@ -24,13 +25,51 @@ def accepted(e):
 
 
 class Processes:
-    def __init__(self, grace=8):
+    def __init__(self, grace=8, *, subreaper=False):
         self.grace = grace
         self.children = []
+        self.subreaper = subreaper
     def __enter__(self):
+        if self.subreaper:
+            import ctypes
+            self.baseline = self.descendants()
+            self.libc = ctypes.CDLL(None, use_errno=True)
+            previous = ctypes.c_int()
+            if self.libc.prctl(37, ctypes.byref(previous), 0, 0, 0) or self.libc.prctl(36, 1, 0, 0, 0):
+                raise OSError(ctypes.get_errno(), 'cannot contain acceptance descendants')
+            self.previous_subreaper = previous.value
         self.old_sigterm = signal.getsignal(signal.SIGTERM)
         signal.signal(signal.SIGTERM, self.terminate)
         return self
+    @staticmethod
+    def process_identity(pid):
+        try:
+            fields = Path('/proc', str(pid), 'stat').read_text().rsplit(')', 1)[1].split()
+            return int(fields[1]), int(fields[19])
+        except (OSError, ValueError, IndexError):
+            return None
+    @classmethod
+    def descendants(cls):
+        records = {int(path.name): cls.process_identity(int(path.name))
+                   for path in Path('/proc').iterdir() if path.name.isdigit()}
+        pending, found = [os.getpid()], {}
+        while pending:
+            parent = pending.pop()
+            for pid, identity in records.items():
+                if identity and identity[0] == parent and pid not in found:
+                    found[pid] = identity[1]
+                    pending.append(pid)
+        return found
+    def stop_descendants(self, signum):
+        for pid, started in self.descendants().items():
+            if self.baseline.get(pid) == started:
+                continue
+            identity = self.process_identity(pid)
+            if identity and identity[1] == started:
+                with contextlib.suppress(ProcessLookupError):
+                    os.kill(pid, signum)
+                with contextlib.suppress(ChildProcessError):
+                    os.waitpid(pid, os.WNOHANG)
     @staticmethod
     def terminate(signum, frame):
         raise KeyboardInterrupt('acceptance interrupted')
@@ -40,22 +79,37 @@ class Processes:
         return child
     def __exit__(self, *args):
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        for child in reversed(self.children):
-            if child.poll() is None:
-                with contextlib.suppress(ProcessLookupError):
-                    os.killpg(child.pid, signal.SIGTERM)
-        deadline = time.monotonic() + self.grace
-        for child in reversed(self.children):
-            try:
-                child.wait(timeout=max(0, deadline - time.monotonic()))
-            except subprocess.TimeoutExpired:
-                pass
-        for child in reversed(self.children):
-            if child.poll() is None:
-                with contextlib.suppress(ProcessLookupError):
-                    os.killpg(child.pid, signal.SIGKILL)
-            child.wait()
-        signal.signal(signal.SIGTERM, self.old_sigterm)
+        try:
+            if self.subreaper:
+                self.stop_descendants(signal.SIGTERM)
+            for child in reversed(self.children):
+                if child.poll() is None:
+                    with contextlib.suppress(ProcessLookupError):
+                        os.killpg(child.pid, signal.SIGTERM)
+            deadline = time.monotonic() + self.grace
+            for child in reversed(self.children):
+                try:
+                    child.wait(timeout=max(0, deadline - time.monotonic()))
+                except subprocess.TimeoutExpired:
+                    pass
+            for child in reversed(self.children):
+                if child.poll() is None:
+                    with contextlib.suppress(ProcessLookupError):
+                        os.killpg(child.pid, signal.SIGKILL)
+                child.wait()
+            if self.subreaper:
+                deadline = time.monotonic()+3
+                while time.monotonic() < deadline:
+                    self.stop_descendants(signal.SIGKILL)
+                    if all(self.baseline.get(pid) == started for pid, started in self.descendants().items()):
+                        break
+                    time.sleep(.01)
+                else:
+                    raise RuntimeError('acceptance descendants did not terminate')
+        finally:
+            if self.subreaper:
+                self.libc.prctl(36, self.previous_subreaper, 0, 0, 0)
+            signal.signal(signal.SIGTERM, self.old_sigterm)
 
 
 class DecisionAPI:

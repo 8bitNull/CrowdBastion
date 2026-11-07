@@ -1,5 +1,7 @@
 # 测试入口与范围
 
+2026-11-07 当前完整回归为 1,846 项严格零跳过通过，原 1,828 项全部保留。另在隔离 QEMU 客机执行真实 nftables／iptables 各 12 项及 Docker 相关 8 项，完成 Docker 重启后的续封和内核自然到期复验；版本、失败轮次和边界见[真实链路验收](../docs/audit/2026-11-07-kernel-docker-validation.md)。本地单测与客机实验分开记录。
+
 仓库沿用 unittest。默认完整测试，不根据旧耗时自动排除用例；现有 `python3 -m unittest discover -s tests` 仍可用。先准备现有依赖：
 
 ```bash
@@ -36,7 +38,20 @@ python3 -m venv .venv
 
 专项入口复用已有测试：integration 包含 Lua Nginx、官方通知插件和本地 TLS worker 等环境依赖模块；其中部分测试在普通主机上也能运行。常见依赖由现有用例检查，包括 `CROWDBASTION_TEST_NGINX`、`CROWDBASTION_TEST_LUA_PREFIX`、`CROWDSEC_TEST_RELEASE`、openssl 和预备好的固定版本资源。严格检查某一专项可加 `--module`，不必为无关模块备齐依赖。
 
-真实内核网络、容器/虚拟机、官方 Bouncer 与 realm/gost 的数据面验收，仍使用已有 `verify_relay_network.py`、`verify_relay_iptables.py`、`verify_remote_bouncer.py`、`verify_vps_matrix.py` 等隔离实验入口，按各脚本 `--help` 和相关文档准备条件。普通 unittest 通过不代表这些实验已执行，也不代表公网 UDP、重启或攻击流量验收通过。本轮没有运行它们。
+真实内核网络、容器/虚拟机、官方 Bouncer 与 realm/gost 的数据面验收，仍使用已有 `verify_relay_network.py`、`verify_relay_iptables.py`、`verify_remote_bouncer.py`、`verify_vps_matrix.py` 等隔离实验入口，按各脚本 `--help` 和相关文档准备条件。普通 unittest 通过不代表这些实验已执行，也不代表公网 UDP、重启或攻击流量验收通过。实际执行的版本、范围和结果以对应验收报告为准。
+
+真实 Docker 发布端口实验使用 `verify_docker_network.py`：
+
+```bash
+sudo .venv/bin/python tests/verify_docker_network.py \
+  --docker /path/to/docker --dockerd /path/to/dockerd \
+  --bouncer /path/to/crowdsec-firewall-bouncer \
+  --output /tmp/crowdbastion-docker-packets.json
+```
+
+需要具备网络／挂载命名空间权限的隔离 Linux 测试机或虚拟机，以及 Python/PyYAML、Docker CLI/daemon/runtime、iproute2、iptables/ip6tables、ipset、nftables、mount/unshare 和兼容的官方 Bouncer。入口始终先进入私有网络和挂载命名空间，再创建专属 Docker 数据目录和 daemon；不会连接已有 Docker socket。使用 vfs 存储驱动，从客机的 Python 与依赖库离线导入回显镜像，不拉取镜像。
+
+矩阵包含 IPv4/IPv6 × TCP/UDP 的本机 INPUT 与 Docker 发布端口共 8 项。发布端口与容器端口不同，关闭 userland-proxy，核对实际 DNAT、原始来源、封禁前后计数、正常对照及解除恢复；随后核对 Docker daemon 重启并恢复容器后的续封和内核自然到期。决定来自本地模拟 API，Bouncer、内核、daemon、bridge 和容器流量均须真实运行。缺少依赖或无法隔离返回未验证，空矩阵、缺项、失败对照或清理不完整不能作为通过。它不代表公网入口、真实 LAPI 同步、既有连接或生产 Docker 服务自动恢复已验收。
 
 `--timings PATH` 输出 JSON，记录选择范围、总墙钟时间、每项状态和耗时、跳过原因、失败/错误/预期失败/意外成功计数，以及最终是否被接受。逐项耗时包含用例 setUp、测试本体、tearDown 与 cleanup；模块/类夹具与导入耗时只计入总时间，夹具失败单独记录且耗时为 null。跳过的子测试会让父用例标记 skipped；跳过计数按 unittest 事件计，可能与 skipped 状态的父用例数不同。`--top N` 控制控制台慢项摘要，默认 10；`--top 0` 关闭摘要。失败返回 1，严格模式遇到 skip 也返回 1，报告写入失败返回 2；`--list` 不能与 `--timings` 合用。
 
@@ -44,15 +59,15 @@ python3 -m venv .venv
 
 耗时用于定位维护成本，不能直接证明用例冗余。优先优化反复启动进程、真实等待和重复准备；仅在输入、风险路径、断言和失败可定位性都等价时才合并用例。共享可变目录、缓存被测配置或按历史耗时跳过测试会削弱隔离性，不作为本轮提速手段。
 
-最新 quick 为 311 项全部通过、无跳过、约 33 秒；最新 full 为 1669 项、1580 通过、89 项因环境条件跳过、约 487 秒。原有覆盖保留，入口和夹具行为自测合计新增 14 项。三项显式虚拟时钟回归从 40.49 秒降至 3.19 秒，十项显式事务夹具回归从 29.79 秒降至 7.50 秒；这些局部收益不代表整仓按相同比例提速。不能以 quick 替代相关功能回归或发布验证。
+2026-11-03 测试分层与耗时优化时，quick 为 311 项全部通过、无跳过、约 33 秒；full 为 1669 项、1580 通过、89 项因环境条件跳过、约 487 秒。原有覆盖保留，入口和夹具行为自测合计新增 14 项。三项显式虚拟时钟回归从 40.49 秒降至 3.19 秒，十项显式事务夹具回归从 29.79 秒降至 7.50 秒；这些局部收益不代表整仓按相同比例提速。不能以 quick 替代相关功能回归或发布验证。
 
 `reload_clock.virtual_reload_clock()` 仅供三项使用同步假命令的重载业务回归显式启用。它让假 sleep 推进每个临时树自己的逻辑时间，仍执行真实的 PID、日志证据与回滚代码。真实命令、线程、截止时间和子进程清理测试继续使用实钟；不要把该辅助函数设为默认夹具。支持的 sleep 参数为 0–60 秒的单个十进制数，转义、负值、单位后缀及科学计数法会被拒绝。
 
 `WorkflowFixtureMixin.run_optimizer()` 供只验证优化事务的测试显式使用：前置健康诊断固定为待验证（返回 2），事务仍运行原来的锁、依赖、YAML、确认、写入、校验、服务加载与回滚。调用者的 overrides 在该替换后执行。健康报告本身、诊断依赖、交互摘要或完整集成行为测试应继续使用 `run_shell()`。原有取消测试、两项缺少 YAML 的诊断测试、完整优化测试和独立健康报告测试保留真实诊断。
 
-官方 Web 归档已在本机准备并校验：`/tmp/crowdsec-official-openresty.tgz`（OpenResty Bouncer v1.2.3）和 `/tmp/crowdsec-http`（lua-resty-http v0.17.1）。此前因这两份资源缺失而跳过的 45 项已全部补跑通过，剩余 44 项仍需其它环境依赖。本次是定向补跑，未产生新的整仓运行结果；测试总数仍为 1669。资源未随仓库分发，/tmp 清理后需从上游重新下载，并按 `lib/crowdsec_web.py` 固定 SHA256 校验。
+2026-11-03 官方 Web 归档定向补验时，已在本机准备并校验 `/tmp/crowdsec-official-openresty.tgz`（OpenResty Bouncer v1.2.3）和 `/tmp/crowdsec-http`（lua-resty-http v0.17.1）。此前因这两份资源缺失而跳过的 45 项全部补跑通过，当时剩余 44 项仍需其它环境依赖。该次为定向补跑，未产生新的整仓运行结果；测试总数仍为 1669。资源未随仓库分发，/tmp 清理后需从上游重新下载，并按 `lib/crowdsec_web.py` 固定 SHA256 校验。
 
-剩余 44 项专项已补齐依赖并全部实际通过（Lua Nginx18、官方通知21、种子/gost5）。原工作区可先 `source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh`，再运行 `tests/run_tests.py --tier integration --require-no-skips`；该环境脚本仅保留在本地，引用已校验的 /tmp 资源。新克隆需按上文准备依赖并设置对应变量，不能直接使用该路径。可选 Python 依赖在 `tests/requirements-integration.txt`。设置该环境后的发现阶段没有依赖跳过；本轮是分组验证，未重新运行完整套件。详细版本、SHA256 和边界见对应审计记录。
+2026-11-04 专项依赖补验时，剩余 44 项已补齐依赖并全部实际通过（Lua Nginx18、官方通知21、种子/gost5）。原工作区可先 `source docs/audit/2026-11-04-specialist-dependency-validation/environment.sh`，再运行 `tests/run_tests.py --tier integration --require-no-skips`；该环境脚本仅保留在本地，引用已校验的 /tmp 资源。新克隆需按上文准备依赖并设置对应变量，不能直接使用该路径。可选 Python 依赖在 `tests/requirements-integration.txt`。设置该环境后的发现阶段没有依赖跳过；该次是分组验证，未重新运行完整套件。详细版本、SHA256 和边界见对应审计记录。
 
 原始验收输出、临时脚本与计划仅在本地归档。现有回归直接引用的两份节点脚本和一份脱敏 JSON 仍随仓库分发，见 [发布范围](../docs/repository-layout.md)，普通测试不依赖未跟踪的本地证据。
 
@@ -60,6 +75,6 @@ python3 -m venv .venv
 
 2026-11-04 智能流程变更后完整发现 1,728 项：1,684 通过、44 因环境条件跳过、无失败或错误，约 534 秒；新增智能流程 59 项全部通过。跳过和真实网络验收边界见 [交付记录](../docs/audit/2026-11-04-intelligent-user-flow.md)。
 
-后续六轮复审修复后的最新稳定 full：1,826 项，1,782 通过、44 环境跳过、0 失败或错误，624.44 秒。六个智能流程模块共 157 项，包含原三个模块及 `test_flow_review_regressions`、`test_flow_probe_review`、`test_flow_remote_plan`，均已纳入完整运行；覆盖事务扫描完整性、来源前提、逐实例执行、远端计划、Docker 实际 AppSec 端点和共享时间预算。详见[循环复审记录](../docs/audit/2026-11-04-intelligent-flow-review.md)。
+2026-11-04 六轮复审修复后的 full：1,826 项，1,782 通过、44 环境跳过、0 失败或错误，624.44 秒。六个智能流程模块共 157 项，包含原三个模块及 `test_flow_review_regressions`、`test_flow_probe_review`、`test_flow_remote_plan`，均已纳入完整运行；覆盖事务扫描完整性、来源前提、逐实例执行、远端计划、Docker 实际 AppSec 端点和共享时间预算。详见[循环复审记录](../docs/audit/2026-11-04-intelligent-flow-review.md)。
 
-提交前补充修复 Nginx 发行版模块链接误拒绝及宿主机 AppSec 端点误判后，最新 full 为 1,828 项：1,788 通过、40 环境跳过、0 失败或错误，583.15 秒；六个智能流程模块共 159 项通过。跳过项为 Lua Nginx 18 项、可选官方 gost 1 项、未设置 `CROWDSEC_TEST_RELEASE` 的官方插件 16 项和回执检查 5 项。214 个源码及测试文件在完整运行期间无变化；跳过项及真实网络验收仍不视为通过。详情见上述循环复审记录的提交前补充复核。
+2026-11-04 提交前补充修复 Nginx 发行版模块链接误拒绝及宿主机 AppSec 端点误判后，full 为 1,828 项：1,788 通过、40 环境跳过、0 失败或错误，583.15 秒；六个智能流程模块共 159 项通过。跳过项为 Lua Nginx 18 项、可选官方 gost 1 项、未设置 `CROWDSEC_TEST_RELEASE` 的官方插件 16 项和回执检查 5 项。214 个源码及测试文件在完整运行期间无变化；跳过项及真实网络验收仍不视为通过。详情见上述循环复审记录的提交前补充复核。
